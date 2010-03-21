@@ -1,2 +1,8 @@
 # Temporary files:
 *~
+
+# Project files:
+private/
+
+# Compilation result
+deploy/
