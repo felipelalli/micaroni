@@ -1,6 +1,22 @@
+%
 % Raças de gatos
+%
 
 \documentclass[a4paper]{article}
+
+\usepackage{graphicx}
+%\usepackage{wrapfig}
+\usepackage{subfig}
+
+\graphicspath{{./cats/}}
+
+% Constants
+%\newcommand{\DEFAULTWIDTH}{0.3\textwidth}
+
+% Shortcuts
+% ...
+
+% Body
 
 \title{Ra\c{c}as de gatos}
 \author{Felipe Micaroni Lalli}
@@ -11,10 +27,25 @@
 
   \section{Cornish Rex}
 
-%    \begin{itemize}
-%      \item Test1
-%      \item Test2
-%    \end{itemize}
+  \begin{figure}[h]
+    \centering
+
+    \subfloat[][T\'a olhando pra mim?]{
+      \label{fig:cornish-rex01}
+      \includegraphics[height=5cm]{cornish-rex01}
+    }\subfloat[][Eleg\^ancia de um Cornish Rex]{
+      \label{fig:cornish-rex02}
+      \includegraphics[height=5cm]{cornish-rex02}
+    }
+
+    \subfloat[][Filhotinho de Cornish Rex]{
+      \label{fig:cornish-rex03}
+      \includegraphics[height=5cm]{cornish-rex03}
+    }
+
+    \caption{Exemplos de Cornish Rex}
+    \label{fig:cornish-rex}
+  \end{figure}
 
   \section{Mau Eg\'ipcio}
 

@@ -1,6 +1,10 @@
 # Temporary files:
 *~
 *.dvi
+*.aux
+*.log
+\#*
+.#*
 
 # Project files:
 private/
