@@ -1,0 +1,4 @@
+latex cats.tex
+dvips cats.dvi
+ps2pdf cats.ps
+
