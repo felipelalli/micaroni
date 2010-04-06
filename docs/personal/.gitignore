@@ -1,2 +1,5 @@
-cats.pdf
-cats.ps
+*.aux
+*.dvi
+*.pdf
+*.log
+*.ps
