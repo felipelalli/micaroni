@@ -166,7 +166,7 @@
         />
 
         <!-- All content of etc/doc are copied to the javadoc's root -->
-        <copy todir="${doc}" overwrite="true">			
+        <copy todir="${doc}" overwrite="true" failonerror="false">
                 <fileset dir="${etc.doc}">
                         <exclude name="**/leiame.txt"/>
                 </fileset>
