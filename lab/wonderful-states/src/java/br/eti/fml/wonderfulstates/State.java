@@ -1,6 +1,8 @@
 package br.eti.fml.wonderfulstates;
 
 /**
+ * A State represents a "snapshot" of anything.
+ *
  * A State has the follow characteristics:
  * <ul>
  *  <li>At first it contains history, but the history values can be
