@@ -1,9 +1,10 @@
 package br.eti.fml.wonderfulstates;
 
 /**
+ * Event represents a {@link State} delta (its changing).
  *
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
-public class Event<T extends Object, U extends Universe<T>> {
-
+public interface Event<T extends Object> {
+    T processes(T previousValue);
 }

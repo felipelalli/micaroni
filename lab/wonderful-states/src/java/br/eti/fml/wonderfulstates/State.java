@@ -1,5 +1,7 @@
 package br.eti.fml.wonderfulstates;
 
+import java.util.concurrent.TimeoutException;
+
 /**
  * <p>
  * A State represents a "snapshot" of anything in a timeline and it
@@ -12,15 +14,32 @@ package br.eti.fml.wonderfulstates;
  *  <li>It is part of an {@link Universe}.</li>
  *  <li>It is mutable until an {@link Event} frozen it.</li>
  *  <li>It can be broken or fuzzy.</li>
- *  <li>It has a universal unique number represented by 160 bits
- *      (or 20 bytes) from its born to its frozen state. This number
- *      doesn't represent its content.</li>
+ *  <li>It has a universal ID.</li>
  * </ul>
  * </p>
  *
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
 public interface State<T extends Object, U extends Universe<T>> {
+    /**
+     * Means that this state is not ready to be read yet, but could
+     * be transformed soon into a valid, fuzzy or broken value.
+     */
+    boolean isUnreacheableYet();
+
+    /**
+     * The default-default timeout is 0L, and 0L means no timeout.
+     * By default any read-function needs to wait the value
+     * become {@link #isUnreacheableYet() reacheable}. The methods
+     * {@link #isBroken()}, {@link #isFrozen()}, {@link #isFuzzy()},
+     * {@link #getValue()}, {@link #getValueInTheTime()} and
+     * {@link #isBeforeTheFirstValue()} can block for a undetermined
+     * time if the timeout is not defined (or defined to 0L).
+     * 
+     * @param timeout in millis
+     */
+    void setDefaultTimeout(long timeout);
+
     /**
      * Indicates that it is a invalid state and all functions to get value
      * will return a runtime exception of {@link BrokenStateException}.
@@ -30,7 +49,7 @@ public interface State<T extends Object, U extends Universe<T>> {
      * is only corrupted but it can guess some value, the state would be
      * {@link #isFuzzy() fuzzy}.
      */
-    boolean isBroken();
+    boolean isBroken() throws TimeoutException;
 
     /**
      * Indicates that it state has a not accurate value. It can
@@ -40,19 +59,19 @@ public interface State<T extends Object, U extends Universe<T>> {
      * presumed value. All {@link #isBroken() broken} states is also
      * {@link #isFuzzy() fuzzy}.
      */
-    boolean isFuzzy();
+    boolean isFuzzy() throws TimeoutException;
 
     /**
      * When this State is frozen, i. e., it is immutable forever.
      */
-    boolean isFrozen();
+    boolean isFrozen() throws TimeoutException;
 
     /**
      * It is a really weird situation, but it can happens if you create
      * a state and never set any value. When the State is in this state
      * not means that it is {@link #isBroken() broken} or fuzzy.
      */
-    boolean isBeforeTheFirstValue();
+    boolean isBeforeTheFirstValue() throws TimeoutException;
 
     /**
      * Accesses its {@link Universe}. It never returns null, even the
@@ -63,17 +82,17 @@ public interface State<T extends Object, U extends Universe<T>> {
     /**
      * Get the current value.
      */
-    T getValue() throws BrokenStateException;
-
-    /**
-     * Get the timestamp of the last change.
-     */
-    Long getLastTimestampChange() throws CantDetermineLastChangeException;
+    T getValue() throws BrokenStateException, TimeoutException;
 
     /**
      * Get the current value and the timestamp when it was defined.
      */
-    Pair<T, Long> getValueInTheTime() throws BrokenStateException;
+    Pair<T, Long> getValueInTheTime() throws BrokenStateException, TimeoutException;
+
+    /**
+     * Get the timestamp of the last changing.
+     */
+    Long getLastTimestampChanging() throws CantDetermineLastChangingException;
 
     /**
      * Try to apply the {@link Event}.
@@ -81,9 +100,9 @@ public interface State<T extends Object, U extends Universe<T>> {
      * @throws OutdateException if the previousValue is not equals
      *                          {@link #getValue the current value}.
      */
-    void apply(T previousValue, Event<T, U> event)
+    void apply(T previousValue, Event<T> event)
             throws InvalidInitialValueException, InvalidFinalValueException,
-                   InvalidChangeException, FrozenException, OutdatedException;
+                   InvalidChangingException, FrozenException, OutdatedException;
 
     /**
      * <b>Dangerous!</b> It will ignore the {@link #getUniverse() universe}, but
@@ -93,5 +112,10 @@ public interface State<T extends Object, U extends Universe<T>> {
      *
      * @return true only if in case of success
      */
-    boolean forceApply(Event<T, U> event);
+    boolean forceApply(Event<T> event);
+
+    /**
+     * Unique ID number in universe.
+     */
+    Long getUniversalID();
 }
