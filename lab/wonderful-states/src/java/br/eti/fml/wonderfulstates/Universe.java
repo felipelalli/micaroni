@@ -9,22 +9,22 @@ package br.eti.fml.wonderfulstates;
 public abstract class Universe<T extends Object> {
 
     /**
-     * Checks if this change is part of this universe.
-     * If the <code>previousValue</code> parameter is null
+     * Checks if this changing is part of this universe.
+     * If the <code>previousValue</code> parameter is <code>null</code>
      * then this function will check if the <code>newValue</code>
      * is a {@link #checksIfItIsAValidInitialValue(java.lang.Object) valid
      * initial value}.
      */
-    public abstract boolean checksIfItIsAValidChange(T previousValue, T newValue);
+    public abstract boolean checksIfItIsAValidChanging(T previousValue, T newValue);
 
     /**
      * It is the same of a
-     * {@link #checksIfItIsAValidChange(java.lang.Object, java.lang.Object)
-     * checksIfItIsAValidChange(null, T)} call. The default implementation
+     * {@link #checksIfItIsAValidChanging(java.lang.Object, java.lang.Object)
+     * checksIfItIsAValidChanging(<code>null</code>, T)} call. The default implementation
      * is exactly this.
      */
     public boolean checksIfItIsAValidInitialValue(T value) {
-        return checksIfItIsAValidChange(null, value);
+        return checksIfItIsAValidChanging(null, value);
     }
 
     /**

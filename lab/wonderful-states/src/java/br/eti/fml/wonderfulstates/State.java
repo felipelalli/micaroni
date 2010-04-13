@@ -11,7 +11,7 @@ import java.util.concurrent.TimeoutException;
  * A State has the follow characteristics:
  * <ul>
  *  <li>It is part of an {@link Universe}.</li>
- *  <li>It can be broken or fuzzy.</li>
+ *  <li>It can be {@link #isBroken() broken} or {@link #isFuzzy() fuzzy}.</li>
  *  <li>It has a universal ID.</li>
  * </ul>
  * </p>
@@ -67,12 +67,13 @@ public interface State<T extends Object, U extends Universe<T>> {
     /**
      * It is a really weird situation, but it can happens if you create
      * a state and never set any value. When the State is in this state
-     * not means that it is {@link #isBroken() broken} or fuzzy.
+     * not means that it is {@link #isBroken() broken} or
+     * {@link #isFuzzy() fuzzy}.
      */
     boolean isBeforeTheFirstValue() throws TimeoutException;
 
     /**
-     * Accesses its {@link Universe}. It never returns null, even the
+     * Accesses its {@link Universe}. It never returns <code>null</code>, even the
      * universe is a {@link Any generic universe}.
      */
     U getUniverse();
