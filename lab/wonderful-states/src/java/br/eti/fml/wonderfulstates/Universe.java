@@ -6,7 +6,7 @@ package br.eti.fml.wonderfulstates;
  *
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
-public interface Universe<T extends Object> {
+public abstract class Universe<T extends Object> {
 
     /**
      * Checks if this change is part of this universe.
@@ -15,18 +15,21 @@ public interface Universe<T extends Object> {
      * is a {@link #checksIfItIsAValidInitialValue(java.lang.Object) valid
      * initial value}.
      */
-    boolean checksIfItIsAValidChange(T previousValue, T newValue);
+    public abstract boolean checksIfItIsAValidChange(T previousValue, T newValue);
 
     /**
      * It is the same of a
      * {@link #checksIfItIsAValidChange(java.lang.Object, java.lang.Object)
-     * checksIfItIsAValidChange(null, T)} call.
+     * checksIfItIsAValidChange(null, T)} call. The default implementation
+     * is exactly this.
      */
-    boolean checksIfItIsAValidInitialValue(T value);
+    public boolean checksIfItIsAValidInitialValue(T value) {
+        return checksIfItIsAValidChange(null, value);
+    }
 
     /**
      * Checks if the state related with this Universe
      * can be freezed after the set of this value.
      */
-    boolean checksIfItIsAValidFinalValue(T value);
+    public abstract boolean checksIfItIsAValidFinalValue(T value);
 }

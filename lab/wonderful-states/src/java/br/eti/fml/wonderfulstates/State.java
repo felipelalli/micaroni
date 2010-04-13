@@ -1,24 +1,30 @@
 package br.eti.fml.wonderfulstates;
 
 /**
- * A State represents a "snapshot" of anything.
+ * <p>
+ * A State represents a "snapshot" of anything in a timeline and it
+ * can be changed only by a valid {@link Event}.
+ * </p>
  *
+ * <p>
  * A State has the follow characteristics:
  * <ul>
- *  <li>At first it contains history, but the history values can be
- *      {@link #isBroken() broken} or {@link #isFuzzy() fuzzy}.</li>
  *  <li>It is part of an {@link Universe}.</li>
- *  <li>It is mutable until the {@link #setAndFreeze} is called.</li>
+ *  <li>It is mutable until an {@link Event} frozen it.</li>
  *  <li>It can be broken or fuzzy.</li>
+ *  <li>It has a universal unique number represented by 160 bits
+ *      (or 20 bytes) from its born to its frozen state. This number
+ *      doesn't represent its content.</li>
  * </ul>
+ * </p>
  *
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
-public interface State<T, U extends Universe<T>> {
+public interface State<T extends Object, U extends Universe<T>> {
     /**
      * Indicates that it is a invalid state and all functions to get value
      * will return a runtime exception of {@link BrokenStateException}.
-     * Every broken states also will return true for {@link #isFuzzy()}.
+     * All broken states also will return true for {@link #isFuzzy()}.
      * This function guarantees that you cannot retrieve any value: this
      * is not only corrupted, it is also completely inaccessible. If the state
      * is only corrupted but it can guess some value, the state would be
@@ -27,26 +33,26 @@ public interface State<T, U extends Universe<T>> {
     boolean isBroken();
 
     /**
-     * Indicates that this state has a not accurate value. It can
+     * Indicates that it state has a not accurate value. It can
      * be true or not. This state probably has the true value or at least
      * it do its best to have it. It can happens, e. g., because the value
-     * was storedin a non safe place or because it is a calculated or
-     * presumed value. All {@link #isBroken() broken} states is also fuzzy.
+     * was stored in a non safe place or because it is a calculated or
+     * presumed value. All {@link #isBroken() broken} states is also
+     * {@link #isFuzzy() fuzzy}.
      */
     boolean isFuzzy();
 
     /**
-     * It is a really weird situation, but it can happens if you create
-     * a state and never set any value.
+     * When this State is frozen, i. e., it is immutable forever.
      */
-    boolean isBeforeTheFirstValue();
+    boolean isFrozen();
 
     /**
-     * Accesses its {@link History}. It never returns null, even the
-     * implementation of this state doesn't have a valid, complete
-     * or any history.
+     * It is a really weird situation, but it can happens if you create
+     * a state and never set any value. When the State is in this state
+     * not means that it is {@link #isBroken() broken} or fuzzy.
      */
-    History<State<T, U>> getHistory();
+    boolean isBeforeTheFirstValue();
 
     /**
      * Accesses its {@link Universe}. It never returns null, even the
@@ -54,47 +60,38 @@ public interface State<T, U extends Universe<T>> {
      */
     U getUniverse();
 
-
     /**
-     * Get value and don't block.
+     * Get the current value.
      */
-    T getToSee() throws BrokenStateException;
+    T getValue() throws BrokenStateException;
 
     /**
-     * Get value and block.
+     * Get the timestamp of the last change.
      */
-    T getToChange() throws BrokenStateException, FreezedException;
+    Long getLastTimestampChange() throws CantDetermineLastChangeException;
 
     /**
-     * Set and unblock if success.
+     * Get the current value and the timestamp when it was defined.
      */
-    boolean set(T previousValue, T newValue)
-            throws InvalidInitialValueException, InvalidChangeException,
-                   SetWithoutGetToChangeFirstException;
+    Pair<T, Long> getValueInTheTime() throws BrokenStateException;
 
     /**
-     * Dangerous! It will ignore the {@link #getUniverse() universe}, but
-     * it can be faster depending on the implementation. It will unblock
-     * if it was previously blocked.
+     * Try to apply the {@link Event}.
+     * 
+     * @throws OutdateException if the previousValue is not equals
+     *                          {@link #getValue the current value}.
      */
-    boolean forceSet(T newValue);
+    void apply(T previousValue, Event<T, U> event)
+            throws InvalidInitialValueException, InvalidFinalValueException,
+                   InvalidChangeException, FrozenException, OutdatedException;
 
     /**
-     * Set and freeze this state. Unblock this state if success.
+     * <b>Dangerous!</b> It will ignore the {@link #getUniverse() universe}, but
+     * it can be faster depending on the implementation. Notice that this need
+     * to be avoided. Use only for a necessary optimization and in cases where
+     * the {@link Universe} is flexible enough.
      *
-     * @return if it was really set.
+     * @return true only if in case of success
      */
-    boolean setAndFreeze(T previousValue, T finalValue)
-            throws InvalidInitialValueException, InvalidChangeException,
-                   InvalidFinalValueException;
-
-    /**
-     * Give up to change this state.
-     */
-    void giveUpAndUnblock();
-
-    /**
-     * Every state has a hashcode.
-     */
-    long calculateHash() throws BrokenStateException;
+    boolean forceApply(Event<T, U> event);
 }
