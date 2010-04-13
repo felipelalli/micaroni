@@ -4,15 +4,13 @@ import java.util.concurrent.TimeoutException;
 
 /**
  * <p>
- * A State represents a "snapshot" of anything in a timeline and it
- * can be changed only by a valid {@link Event}.
+ * A State represents a "snapshot" of anything in a timeline.
  * </p>
  *
  * <p>
  * A State has the follow characteristics:
  * <ul>
  *  <li>It is part of an {@link Universe}.</li>
- *  <li>It is mutable until an {@link Event} frozen it.</li>
  *  <li>It can be broken or fuzzy.</li>
  *  <li>It has a universal ID.</li>
  * </ul>
@@ -95,27 +93,7 @@ public interface State<T extends Object, U extends Universe<T>> {
     Long getLastTimestampChanging() throws CantDetermineLastChangingException;
 
     /**
-     * Try to apply the {@link Event}.
-     * 
-     * @throws OutdateException if the previousValue is not equals
-     *                          {@link #getValue the current value}.
+     * Unique ID number to indentify this state in all world.
      */
-    void apply(T previousValue, Event<T> event)
-            throws InvalidInitialValueException, InvalidFinalValueException,
-                   InvalidChangingException, FrozenException, OutdatedException;
-
-    /**
-     * <b>Dangerous!</b> It will ignore the {@link #getUniverse() universe}, but
-     * it can be faster depending on the implementation. Notice that this need
-     * to be avoided. Use only for a necessary optimization and in cases where
-     * the {@link Universe} is flexible enough.
-     *
-     * @return true only if in case of success
-     */
-    boolean forceApply(Event<T> event);
-
-    /**
-     * Unique ID number in universe.
-     */
-    Long getUniversalID();
+    String getUID();
 }
