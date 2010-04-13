@@ -90,7 +90,7 @@ public interface State<T extends Object, U extends Universe<T>> {
     /**
      * Get the timestamp of the last changing.
      */
-    Long getLastTimestampChanging() throws CantDetermineLastChangingException;
+    Long getLastChangingTimestamp() throws CantDetermineLastChangingException;
 
     /**
      * Unique ID number to indentify this state in all world.
