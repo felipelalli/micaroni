@@ -1,0 +1,205 @@
+<HTML>
+<HEAD>
+<TITLE>
+TecladoAllegro.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: TecladoAllegro.cpp.html,v $
+ * $Date: 2005/03/22 20:18:50 $
+ * $Revision: 1.28 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/gde/TecladoAllegro.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia<font color="black">:</font><font color="black">:</font>gde;
+
+<font color="green">/* CPPDOC_BEGIN_EXCLUDE */</font>
+
+<font color="blue">void</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia<font color="black">:</font><font color="black">:</font>gde<font color="black">:</font><font color="black">:</font>evento_tecla<font color="black">(</font><font color="blue">int</font> scancode<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">static</font> Semaforo s<font color="black">(</font><font color="maroon">1</font><font color="black">)</font>;
+    Lock lock<font color="black">(</font>s<font color="black">)</font>;
+
+    try <font color="black">{</font>
+        TecladoAllegro<font color="black">*</font> ta <font color="black">=</font> TecladoAllegro<font color="black">:</font><font color="black">:</font>unicaInstancia<font color="black">(</font><font color="black">)</font>;
+
+        <font color="blue">if</font> <font color="black">(</font>ta<font color="black">-</font><font color="black">&#62;</font>ligado<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+            <font color="blue">if</font> <font color="black">(</font>scancode <font color="black">&#60;</font> <font color="maroon">128</font><font color="black">)</font> <font color="black">{</font>
+                <font color="green">// Pressionou a tecla específica</font>
+                <font color="black">{</font>
+                    Valor nome<font color="black">(</font><font color="maroon">"Sinfonia.Reservados.Teclas.tecla"</font>
+                            <font color="black">+</font> Inteiro<font color="black">(</font>scancode<font color="black">)</font>.emString<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+                    nome.adicionaApelido<font color="black">(</font><font color="maroon">"pressionou"</font><font color="black">)</font>;
+                    ModificadorDeEstado mde<font color="black">(</font>nome<font color="black">)</font>;
+                    mde.adicionaParametro<font color="black">(</font>Valor<font color="black">(</font><font color="blue">true</font><font color="black">)</font><font color="black">)</font>;
+
+                    Evento<font color="black">*</font> pressionou <font color="black">=</font> Evento<font color="black">(</font>nome, mde<font color="black">)</font>.dispara<font color="black">(</font>TecladoAllegro<font color="black">:</font><font color="black">:</font>tempo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                    pressionou<font color="black">-</font><font color="black">&#62;</font>especial<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+                    ta<font color="black">-</font><font color="black">&#62;</font>gera<font color="black">(</font>pressionou<font color="black">)</font>;
+                <font color="black">}</font>
+
+                <font color="green">// Pressionou qualquer tecla</font>
+                <font color="black">{</font>
+                    Valor nome<font color="black">(</font><font color="maroon">"Sinfonia.Reservados.Teclas.ultima tecla pressionada"</font><font color="black">)</font>;
+                    ModificadorDeEstado mde<font color="black">(</font>nome<font color="black">)</font>;
+                    mde.adicionaParametro<font color="black">(</font>Valor<font color="black">(</font><font color="maroon">"tecla"</font>
+                            <font color="black">+</font> Inteiro<font color="black">(</font>scancode<font color="black">)</font>.emString<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+
+                    Evento<font color="black">*</font> pressionou <font color="black">=</font> Evento<font color="black">(</font>nome, mde<font color="black">)</font>.dispara<font color="black">(</font>TecladoAllegro<font color="black">:</font><font color="black">:</font>tempo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                    pressionou<font color="black">-</font><font color="black">&#62;</font>especial<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+                    ta<font color="black">-</font><font color="black">&#62;</font>gera<font color="black">(</font>pressionou<font color="black">)</font>;
+                <font color="black">}</font>
+            <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+                scancode <font color="black">-</font><font color="black">=</font> <font color="maroon">128</font>;
+                <font color="green">// Soltou a tecla específica</font>
+                <font color="black">{</font>
+                    Valor nome<font color="black">(</font><font color="maroon">"Sinfonia.Reservados.Teclas.tecla"</font>
+                            <font color="black">+</font> Inteiro<font color="black">(</font>scancode<font color="black">)</font>.emString<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+                    nome.adicionaApelido<font color="black">(</font><font color="maroon">"soltou"</font><font color="black">)</font>;
+                    ModificadorDeEstado mde<font color="black">(</font>nome<font color="black">)</font>;
+                    mde.adicionaParametro<font color="black">(</font>Valor<font color="black">(</font><font color="blue">false</font><font color="black">)</font><font color="black">)</font>;
+
+                    Evento<font color="black">*</font> soltou <font color="black">=</font> Evento<font color="black">(</font>nome, mde<font color="black">)</font>.dispara<font color="black">(</font>TecladoAllegro<font color="black">:</font><font color="black">:</font>tempo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                    soltou<font color="black">-</font><font color="black">&#62;</font>especial<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+                    ta<font color="black">-</font><font color="black">&#62;</font>gera<font color="black">(</font>soltou<font color="black">)</font>;
+                <font color="black">}</font>
+
+                <font color="green">// Soltou qualquer tecla</font>
+                <font color="black">{</font>
+                    Valor nome<font color="black">(</font><font color="maroon">"Sinfonia.Reservados.Teclas.ultima tecla solta"</font><font color="black">)</font>;
+                    ModificadorDeEstado mde<font color="black">(</font>nome<font color="black">)</font>;
+                    mde.adicionaParametro<font color="black">(</font>Valor<font color="black">(</font><font color="maroon">"tecla"</font>
+                            <font color="black">+</font> Inteiro<font color="black">(</font>scancode<font color="black">)</font>.emString<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+
+                    Evento<font color="black">*</font> soltou <font color="black">=</font> Evento<font color="black">(</font>nome, mde<font color="black">)</font>.dispara<font color="black">(</font>TecladoAllegro<font color="black">:</font><font color="black">:</font>tempo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                    soltou<font color="black">-</font><font color="black">&#62;</font>especial<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+                    ta<font color="black">-</font><font color="black">&#62;</font>gera<font color="black">(</font>soltou<font color="black">)</font>;
+                <font color="black">}</font>
+            <font color="black">}</font>
+        <font color="black">}</font>
+    <font color="black">}</font> <font color="blue">catch</font><font color="black">(</font>exception<font color="black">&</font> e<font color="black">)</font> <font color="black">{</font>
+        <font color="blue">throw</font> e;
+    <font color="black">}</font> <font color="blue">catch</font><font color="black">(</font>...<font color="black">)</font> <font color="black">{</font>
+        Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>ERRO, <font color="maroon">"biblia::dinamicas::sinfonia::gde::evento_tecla::"</font>
+                <font color="maroon">" Ocorreu um erro desconhecido ao capturar uma tecla."</font>
+                <font color="maroon">" Provavelmente ocorreu porque a função não terminou"</font>
+                <font color="maroon">" enquanto o TecladoAllegro era deletado."</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+<font color="black">}</font> END_OF_FUNCTION<font color="black">(</font>evento_tecla<font color="black">)</font>;
+
+<font color="green">/* CPPDOC_END_EXCLUDE */</font>
+
+TecladoAllegro<font color="black">*</font> TecladoAllegro<font color="black">:</font><font color="black">:</font>singleton <font color="black">=</font> NULL;
+UniversoDeTempo<font color="black">*</font> TecladoAllegro<font color="black">:</font><font color="black">:</font>pTempo <font color="black">=</font> NULL;
+
+TecladoAllegro<font color="black">*</font> TecladoAllegro<font color="black">:</font><font color="black">:</font>criaTecladoAllegro<font color="black">(</font>
+        <font color="blue">const</font> MediadorDeEstados<font color="black">&</font> mde, <font color="blue">const</font> UniversoDeTempo<font color="black">&</font> u<font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>TecladoAllegro<font color="black">:</font><font color="black">:</font>singleton <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font> <font color="black">{</font>
+        <font color="blue">delete</font> TecladoAllegro<font color="black">:</font><font color="black">:</font>singleton;
+    <font color="black">}</font>
+    
+    TecladoAllegro<font color="black">:</font><font color="black">:</font>singleton <font color="black">=</font> <font color="blue">new</font> TecladoAllegro<font color="black">(</font>mde<font color="black">)</font>;
+
+    TecladoAllegro<font color="black">:</font><font color="black">:</font>pTempo <font color="black">=</font> <font color="black">(</font>UniversoDeTempo<font color="black">*</font><font color="black">)</font> <font color="black">&</font>u;
+    <font color="blue">return</font> TecladoAllegro<font color="black">:</font><font color="black">:</font>singleton;
+<font color="black">}</font>
+
+TecladoAllegro<font color="black">*</font> TecladoAllegro<font color="black">:</font><font color="black">:</font>unicaInstancia<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>TecladoAllegro<font color="black">:</font><font color="black">:</font>singleton <font color="black">=</font><font color="black">=</font> NULL<font color="black">)</font> <font color="black">{</font>
+        Debug<font color="black">:</font><font color="black">:</font>sair<font color="black">(</font><font color="maroon">"TecladoAllegro::unicaInstancia():: a função 'criaTecladoAllegro'"</font>
+                <font color="maroon">" deve ser chamada antes desta!"</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">return</font> TecladoAllegro<font color="black">:</font><font color="black">:</font>singleton;
+<font color="black">}</font>
+
+<font color="blue">const</font> UniversoDeTempo<font color="black">&</font> TecladoAllegro<font color="black">:</font><font color="black">:</font>tempo<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>TecladoAllegro<font color="black">:</font><font color="black">:</font>pTempo <font color="black">=</font><font color="black">=</font> NULL<font color="black">)</font> <font color="black">{</font>
+        Debug<font color="black">:</font><font color="black">:</font>sair<font color="black">(</font><font color="maroon">"TecladoAllegro::tempo():: tempo nao definido!"</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">return</font> <font color="black">*</font><font color="black">(</font>TecladoAllegro<font color="black">:</font><font color="black">:</font>pTempo<font color="black">)</font>;
+<font color="black">}</font>
+
+TecladoAllegro<font color="black">:</font><font color="black">:</font>TecladoAllegro<font color="black">(</font><font color="blue">const</font> MediadorDeEstados<font color="black">&</font> mde<font color="black">)</font>
+        <font color="black">:</font>GeradorDeEventosEspecial<font color="black">(</font>mde<font color="black">)</font>, pLiga<font color="black">(</font><font color="blue">false</font><font color="black">)</font>, pEsperaAcabar<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">static</font> <font color="blue">bool</font> jaExecutou <font color="black">=</font> <font color="blue">false</font>;
+
+    <font color="blue">if</font> <font color="black">(</font>jaExecutou<font color="black">)</font> <font color="black">{</font>
+        Debug<font color="black">:</font><font color="black">:</font>sair<font color="black">(</font><font color="maroon">"TecladoAllegro::TecladoAllegro:: só é possível"</font>
+                <font color="maroon">" criar uma vez por aplicação."</font><font color="black">)</font>;
+    <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+        jaExecutou <font color="black">=</font> <font color="blue">true</font>;
+        LOCK_FUNCTION<font color="black">(</font>evento_tecla<font color="black">)</font>;
+        keyboard_lowlevel_callback <font color="black">=</font> evento_tecla;
+        three_finger_flag <font color="black">=</font> <font color="black">(</font><font color="blue">int</font><font color="black">)</font> <font color="blue">false</font>;
+    <font color="black">}</font>
+
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>naoDeveReceberNenhumEvento<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+TecladoAllegro<font color="black">:</font><font color="black">:</font>~TecladoAllegro<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+<font color="green">//  Debug::msg(INFO, "--- vai acabar teclado allegro...");</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pLiga <font color="black">=</font> <font color="blue">false</font>;
+
+    <font color="blue">while</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pAcabou<font color="black">)</font> <font color="black">{</font>
+<font color="green">//      Debug::msg(INFO, "--- vai simular tecla...");</font>
+        simulate_keypress<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>;
+        Thread<font color="black">:</font><font color="black">:</font>sleep<font color="black">(</font>Intervalo<font color="black">(</font><font color="maroon">100</font>, Milissegundo<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    keyboard_lowlevel_callback <font color="black">=</font> NULL;
+    Thread<font color="black">:</font><font color="black">:</font>sleep<font color="black">(</font>Intervalo<font color="black">(</font><font color="maroon">100</font>, Milissegundo<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEsperaAcabar.esperar<font color="black">(</font><font color="black">)</font>;
+<font color="green">//  Debug::msg(INFO, "--- acabou teclado allegro...");</font>
+<font color="black">}</font>
+
+<font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font> TecladoAllegro<font color="black">:</font><font color="black">:</font>ligado<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pLiga;
+<font color="black">}</font>
+
+Executavel<font color="black">&</font> TecladoAllegro<font color="black">:</font><font color="black">:</font>executa<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pLiga <font color="black">=</font> <font color="blue">true</font>;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pAcabou <font color="black">=</font> <font color="blue">false</font>;
+    TecladoAllegro<font color="black">*</font> ta <font color="black">=</font> TecladoAllegro<font color="black">:</font><font color="black">:</font>unicaInstancia<font color="black">(</font><font color="black">)</font>;
+
+    <font color="blue">while</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pLiga<font color="black">)</font> <font color="black">{</font>
+<font color="green">//      Debug::msg(INFO, "--- espera por ler tecla...");</font>
+        <font color="blue">int</font> tecla <font color="black">=</font> readkey<font color="black">(</font><font color="black">)</font>;
+<font color="green">//      Debug::msg(INFO, "--- leu tecla...");</font>
+        <font color="blue">char</font> msg<font color="black">[</font><font color="maroon">5</font><font color="black">]</font>;
+        sprintf<font color="black">(</font>msg, <font color="maroon">"%c"</font>, tecla <font color="black">&</font> <font color="maroon">0xff</font><font color="black">)</font>;
+
+        <font color="black">{</font>
+            Valor nome<font color="black">(</font><font color="maroon">"Sinfonia.Reservados.Teclas.ultima tecla ascii"</font><font color="black">)</font>;
+            ModificadorDeEstado mde<font color="black">(</font>nome<font color="black">)</font>;
+            mde.adicionaParametro<font color="black">(</font>Valor<font color="black">(</font>msg, <font color="blue">true</font><font color="black">)</font><font color="black">)</font>;
+
+            Evento<font color="black">*</font> pressionou <font color="black">=</font> Evento<font color="black">(</font>nome, mde<font color="black">)</font>.dispara<font color="black">(</font>TecladoAllegro<font color="black">:</font><font color="black">:</font>tempo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+            pressionou<font color="black">-</font><font color="black">&#62;</font>especial<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+            ta<font color="black">-</font><font color="black">&#62;</font>gera<font color="black">(</font>pressionou<font color="black">)</font>;
+        <font color="black">}</font>
+    <font color="black">}</font>
+
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pAcabou <font color="black">=</font> <font color="blue">true</font>;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEsperaAcabar.liberar<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

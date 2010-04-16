@@ -1,0 +1,718 @@
+<HTML>
+<HEAD>
+<TITLE>
+ScriptDinamica.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: ScriptDinamica.cpp.html,v $
+ * $Date: 2005/03/22 20:19:07 $
+ * $Revision: 1.42 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/ScriptDinamica.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia; 
+
+ScriptDinamica<font color="black">:</font><font color="black">:</font>ScriptDinamica<font color="black">(</font><font color="blue">const</font> string<font color="black">&</font> caminhoDoArquivo, 
+                               BasicoVisual<font color="black">&</font> bv,
+                               ResultadoSonoro<font color="black">&</font> resultadoSonoro,
+                               CarregadorDeSom<font color="black">&</font> carregadorDeSom<font color="black">)</font>
+
+        <font color="black">:</font>pSinfonia<font color="black">(</font>NULL<font color="black">)</font>, 
+         pArquivo<font color="black">(</font>caminhoDoArquivo<font color="black">)</font>, 
+         pVisual<font color="black">(</font>bv<font color="black">)</font>,
+         pResultadoSonoro <font color="black">(</font>resultadoSonoro<font color="black">)</font>,
+         pCarregadorDeSom <font color="black">(</font>carregadorDeSom<font color="black">)</font>,
+         pTempo<font color="black">(</font>bv.tempo<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+<font color="black">{</font><font color="black">}</font>
+
+ScriptDinamica<font color="black">:</font><font color="black">:</font>~ScriptDinamica<font color="black">(</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+<font color="blue">const</font> Sinfonia<font color="black">&</font> ScriptDinamica<font color="black">:</font><font color="black">:</font>sinfonia<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="black">*</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSinfonia<font color="black">)</font>;
+<font color="black">}</font>
+
+Sinfonia<font color="black">&</font> ScriptDinamica<font color="black">:</font><font color="black">:</font>sinfonia<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="black">*</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSinfonia<font color="black">)</font>;
+<font color="black">}</font>
+
+Sinfonia<font color="black">*</font> ScriptDinamica<font color="black">:</font><font color="black">:</font>geraSinfonia<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>inicia<font color="black">(</font><font color="black">)</font>;
+
+    <font color="green">// lembrar que este deriva de Conclusivo</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSinfonia <font color="black">=</font> <font color="blue">new</font> Sinfonia<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTempo<font color="black">)</font>;
+
+    string erro <font color="black">=</font> <font color="maroon">"ScriptDinamica::executa:: ocorreu um erro"</font>
+                <font color="maroon">" ao ler o arquivo '"</font> <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pArquivo <font color="black">+</font> <font color="maroon">"'. Certifique-se que"</font>
+                <font color="maroon">" ele esteja disponível para leitura e que ele tenha sido gerado"</font>
+                <font color="maroon">" exclusivamente pelo software auxiliar SinfoniaScriptCreator."</font>;
+
+    try <font color="black">{</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>carregaEstados<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pArquivo<font color="black">)</font>;
+    <font color="black">}</font> <font color="blue">catch</font><font color="black">(</font><font color="blue">const</font> Excecao<font color="black">&</font> e<font color="black">)</font> <font color="black">{</font>
+        Debug<font color="black">:</font><font color="black">:</font>sair<font color="black">(</font>erro <font color="black">+</font> <font color="maroon">" A Exceção '"</font> <font color="black">+</font> typeid<font color="black">(</font>e<font color="black">)</font>.<font color="blue">name</font><font color="black">(</font><font color="black">)</font> <font color="black">+</font> <font color="maroon">"' foi lançada: "</font> <font color="black">+</font> e<font color="black">)</font>;
+    <font color="black">}</font><font color="green">/* catch(...) {
+        Debug::sair(erro + " Uma exceção desconhecida foi lançada!");
+    }*/</font>
+
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pLixo.limpa<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>conclui<font color="black">(</font><font color="black">)</font>;
+
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSinfonia;
+<font color="black">}</font>
+
+<font color="blue">const</font> string ScriptDinamica<font color="black">:</font><font color="black">:</font>grupo<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    string retorno;
+
+    <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGrupo.tamanho<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+        retorno <font color="black">+</font><font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGrupo<font color="black">[</font>i<font color="black">]</font>;
+
+        <font color="blue">if</font> <font color="black">(</font>i <font color="black">&#60;</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGrupo.tamanho<font color="black">(</font><font color="black">)</font> <font color="maroon">-1</font><font color="black">)</font> <font color="black">{</font>
+            retorno <font color="black">+</font><font color="black">=</font> <font color="maroon">"."</font>;
+        <font color="black">}</font>
+    <font color="black">}</font>
+
+    <font color="blue">return</font> retorno;
+<font color="black">}</font>
+
+<font color="blue">bool</font> ScriptDinamica<font color="black">:</font><font color="black">:</font>carregaEstados<font color="black">(</font>string arquivo<font color="black">)</font><font color="black">{</font>
+    ArquivoXMLXerces arquivoXML <font color="black">(</font>arquivo<font color="black">)</font>;
+    
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>arquivoXML.carregado<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">{</font>
+        <font color="blue">return</font> <font color="blue">false</font>;
+        
+    <font color="black">}</font><font color="blue">else</font><font color="black">{</font>
+
+        string tabulacao <font color="black">=</font> <font color="maroon">"\t"</font>;
+        
+        <font color="blue">char</font><font color="black">*</font> campos<font color="black">[</font><font color="black">]</font> <font color="black">=</font> <font color="black">{</font><font color="maroon">"Nome"</font><font color="black">}</font>;
+        GrupoXML grupoSinfonia <font color="black">(</font>arquivoXML.noPrincipal<font color="black">(</font><font color="black">)</font>,campos,<font color="maroon">1</font><font color="black">)</font>;
+        tabulacao <font color="black">+</font><font color="black">=</font> <font color="maroon">"\t"</font>;
+<font color="green">//      Debug::msg(INFO, "--- passo 1");</font>
+        percorreGruposParaEstados<font color="black">(</font>arquivoXML.noPrincipal<font color="black">(</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>primeiroFilho<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+<font color="green">//      Debug::msg(INFO, "--- passo 2");</font>
+        percorreGruposParaEventos<font color="black">(</font>arquivoXML.noPrincipal<font color="black">(</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>primeiroFilho<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+<font color="green">//      Debug::msg(INFO, "--- passo 3");</font>
+        percorreGruposParaDinamica<font color="black">(</font>arquivoXML.noPrincipal<font color="black">(</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>primeiroFilho<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+<font color="green">//      Debug::msg(INFO, "--- passo 4");</font>
+    
+        <font color="blue">return</font> <font color="blue">true</font>;
+    
+    <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> ScriptDinamica<font color="black">:</font><font color="black">:</font>percorreGruposParaEstados<font color="black">(</font>NoXML<font color="black">*</font> no<font color="black">)</font><font color="black">{</font>
+
+    <font color="blue">if</font> <font color="black">(</font>no <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font><font color="black">{</font>
+
+        <font color="blue">if</font> <font color="black">(</font>no<font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font>.compare<font color="black">(</font><font color="maroon">"Grupo"</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font><font color="black">{</font>            
+            
+            <font color="blue">char</font><font color="black">*</font> campos<font color="black">[</font><font color="black">]</font> <font color="black">=</font> <font color="black">{</font><font color="maroon">"Id"</font>, <font color="maroon">"Nome"</font>, <font color="maroon">"Descricao"</font><font color="black">}</font>;
+            GrupoXML grupoXML <font color="black">(</font>no,campos,<font color="maroon">3</font><font color="black">)</font>;
+
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGrupo.adiciona<font color="black">(</font>Valor<font color="black">(</font>grupoXML.getCampo<font color="black">(</font><font color="maroon">"Nome"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+            percorreGruposParaEstados <font color="black">(</font>no<font color="black">-</font><font color="black">&#62;</font>primeiroFilho<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGrupo.remove<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGrupo.tamanho<font color="black">(</font><font color="black">)</font> <font color="maroon">-1</font><font color="black">)</font>;
+
+        <font color="black">}</font><font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>no<font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font>.compare<font color="black">(</font><font color="maroon">"Estado"</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font><font color="black">{</font>
+                           
+            <font color="blue">char</font><font color="black">*</font> campos<font color="black">[</font><font color="black">]</font> <font color="black">=</font> <font color="black">{</font><font color="maroon">"Id"</font>, <font color="maroon">"Nome"</font>, <font color="maroon">"Classe"</font>,
+                    <font color="maroon">"Descricao"</font>, <font color="maroon">"Externo"</font>, <font color="maroon">"SomenteEsses"</font><font color="black">}</font>;
+
+            <font color="blue">char</font><font color="black">*</font> grupos<font color="black">[</font><font color="black">]</font> <font color="black">=</font> <font color="black">{</font><font color="maroon">"Atributos"</font>, <font color="maroon">"Eventos"</font><font color="black">}</font>;
+
+            GrupoXML grupoEstado <font color="black">(</font>no,campos,<font color="maroon">6</font>,grupos,<font color="maroon">2</font><font color="black">)</font>;
+
+            Estado<font color="black">*</font> novoEstado <font color="black">=</font> <font color="blue">new</font> Estado<font color="black">(</font>grupoEstado.getCampo<font color="black">(</font><font color="maroon">"Nome"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+            novoEstado<font color="black">-</font><font color="black">&#62;</font>grupo<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>grupo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+            Valor classe<font color="black">(</font>grupoEstado.getCampo<font color="black">(</font><font color="maroon">"Classe"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+            <font color="blue">if</font> <font color="black">(</font>classe <font color="black">=</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"MultiFuncional"</font><font color="black">)</font>
+                <font color="black">|</font><font color="black">|</font> classe <font color="black">=</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"Timer"</font><font color="black">)</font>
+                <font color="black">|</font><font color="black">|</font> classe <font color="black">=</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"Animacao"</font><font color="black">)</font>
+                <font color="black">|</font><font color="black">|</font> classe <font color="black">=</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"Mouse"</font><font color="black">)</font>
+                <font color="black">|</font><font color="black">|</font> classe <font color="black">=</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"Som"</font><font color="black">)</font>
+                <font color="black">|</font><font color="black">|</font> classe <font color="black">=</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"AreaClicavel"</font><font color="black">)</font><font color="black">)</font>
+            <font color="black">{</font>
+                <font color="green">// ok</font>
+            <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+                Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>WARN, <font color="maroon">"ScriptDinamica::geraSinfonia:: ainda não suporta esta"</font>
+                        <font color="maroon">" classe: '"</font> <font color="black">+</font> grupoEstado.getCampo<font color="black">(</font><font color="maroon">"Classe"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font> <font color="black">+</font> <font color="maroon">"'"</font><font color="black">)</font>;
+            <font color="black">}</font>
+
+            novoEstado<font color="black">-</font><font color="black">&#62;</font>defineComentario<font color="black">(</font>grupoEstado.getCampo<font color="black">(</font><font color="maroon">"Descricao"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+            novoEstado<font color="black">-</font><font color="black">&#62;</font>externo<font color="black">(</font><font color="black">!</font>grupoEstado.getCampo<font color="black">(</font><font color="maroon">"Externo"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>semValor<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+            string idEstado <font color="black">=</font> grupoEstado.getCampo<font color="black">(</font><font color="maroon">"Id"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>;
+
+            <font color="blue">if</font> <font color="black">(</font>grupoEstado.getGrupo<font color="black">(</font><font color="maroon">"Atributos"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>no<font color="black">(</font><font color="black">)</font> <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font><font color="black">{</font>
+                NoXML<font color="black">*</font> noAtributos <font color="black">=</font> grupoEstado.getGrupo<font color="black">(</font><font color="maroon">"Atributos"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>no<font color="black">(</font><font color="black">)</font>;      
+                NoXML<font color="black">*</font> noAtributoAtual <font color="black">=</font> noAtributos<font color="black">-</font><font color="black">&#62;</font>primeiroFilho<font color="black">(</font><font color="black">)</font>;
+                
+                <font color="blue">while</font> <font color="black">(</font>noAtributoAtual <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font><font color="black">{</font>                                
+                    <font color="blue">char</font><font color="black">*</font> campos<font color="black">[</font><font color="black">]</font> <font color="black">=</font> <font color="black">{</font><font color="maroon">"Id"</font>, <font color="maroon">"Nome"</font>, <font color="maroon">"Principal"</font><font color="black">}</font>;
+                    <font color="blue">char</font><font color="black">*</font> grupos<font color="black">[</font><font color="black">]</font> <font color="black">=</font> <font color="black">{</font><font color="maroon">"Parametros"</font><font color="black">}</font>;
+                    GrupoXML grupoAtributo <font color="black">(</font>noAtributoAtual,campos,<font color="maroon">3</font>,grupos,<font color="maroon">1</font><font color="black">)</font>;
+                    Valor nomeAtributo<font color="black">(</font>Multifuncional<font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL<font color="black">)</font>;
+
+                    <font color="blue">if</font> <font color="black">(</font>grupoAtributo.getCampo<font color="black">(</font><font color="maroon">"Principal"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>semValor<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                        nomeAtributo <font color="black">=</font> Valor<font color="black">(</font>grupoAtributo
+                                .getCampo<font color="black">(</font><font color="maroon">"Nome"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                    <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+                        nomeAtributo.adicionaApelido<font color="black">(</font>
+                                grupoAtributo.getCampo<font color="black">(</font><font color="maroon">"Nome"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                    <font color="black">}</font>
+
+                    string idAtributo <font color="black">=</font> idEstado <font color="black">+</font> <font color="maroon">" idAtributo: "</font>
+                            <font color="black">+</font> grupoAtributo.getCampo<font color="black">(</font><font color="maroon">"Id"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>;
+
+                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pAtributo.insere<font color="black">(</font>idAtributo, nomeAtributo.valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                    novoEstado<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font>Irrelevante<font color="black">(</font><font color="black">)</font>, <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTempo, nomeAtributo<font color="black">)</font>;
+
+                    <font color="blue">if</font> <font color="black">(</font>grupoAtributo.getGrupo<font color="black">(</font><font color="maroon">"Parametros"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>no<font color="black">(</font><font color="black">)</font> <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font><font color="black">{</font>                                                                 
+                        NoXML<font color="black">*</font> noParametros <font color="black">=</font> grupoAtributo.getGrupo<font color="black">(</font><font color="maroon">"Parametros"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>no<font color="black">(</font><font color="black">)</font>;
+                        NoXML<font color="black">*</font> noParametroAtual <font color="black">=</font> noParametros<font color="black">-</font><font color="black">&#62;</font>primeiroFilho<font color="black">(</font><font color="black">)</font>;
+                        
+                        <font color="blue">while</font> <font color="black">(</font>noParametroAtual <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font><font color="black">{</font>
+                     
+                            <font color="blue">char</font><font color="black">*</font> campos<font color="black">[</font><font color="black">]</font> <font color="black">=</font> <font color="black">{</font><font color="maroon">"Id"</font>, <font color="maroon">"Nome"</font>, <font color="maroon">"ValorInicial"</font><font color="black">}</font>;
+                            <font color="blue">char</font><font color="black">*</font> grupos<font color="black">[</font><font color="black">]</font> <font color="black">=</font> <font color="black">{</font><font color="maroon">"Apelidos"</font><font color="black">}</font>;
+                            GrupoXML grupoParametro <font color="black">(</font>noParametroAtual,campos,<font color="maroon">3</font>,grupos,<font color="maroon">1</font><font color="black">)</font>;
+
+                            string idParametro <font color="black">=</font> idAtributo <font color="black">+</font> <font color="maroon">" idParametro: "</font>
+                                    <font color="black">+</font> grupoParametro.getCampo<font color="black">(</font><font color="maroon">"Id"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>;
+
+                            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pParametro.insere<font color="black">(</font>idParametro,
+                                    grupoParametro.getCampo<font color="black">(</font><font color="maroon">"Nome"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+                            Valor possibilidade<font color="black">(</font>
+                                    grupoParametro.getCampo<font color="black">(</font><font color="maroon">"Nome"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>, <font color="blue">true</font><font color="black">)</font>;
+
+                            <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>grupoParametro.getCampo<font color="black">(</font><font color="maroon">"ValorInicial"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>semValor<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                                <font color="green">// atribuindo valor inicial</font>
+
+                                novoEstado<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font>
+                                        Valor<font color="black">(</font>grupoParametro
+                                            .getCampo<font color="black">(</font><font color="maroon">"Nome"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>, <font color="blue">true</font><font color="black">)</font>,
+                                        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTempo, nomeAtributo<font color="black">)</font>;
+                            <font color="black">}</font>
+
+                            <font color="blue">if</font> <font color="black">(</font>grupoParametro.getGrupo<font color="black">(</font><font color="maroon">"Apelidos"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>no<font color="black">(</font><font color="black">)</font> <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font><font color="black">{</font>
+                                NoXML<font color="black">*</font> noApelidos <font color="black">=</font> grupoParametro.getGrupo<font color="black">(</font><font color="maroon">"Apelidos"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>no<font color="black">(</font><font color="black">)</font>;
+                                NoXML<font color="black">*</font> noApelidoAtual <font color="black">=</font> noApelidos<font color="black">-</font><font color="black">&#62;</font>primeiroFilho<font color="black">(</font><font color="black">)</font>;
+                                
+                                <font color="blue">while</font> <font color="black">(</font>noApelidoAtual <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font><font color="black">{</font>                                         
+                                    <font color="blue">char</font><font color="black">*</font> campos<font color="black">[</font><font color="black">]</font> <font color="black">=</font> <font color="black">{</font><font color="maroon">"Id"</font>, <font color="maroon">"Nome"</font><font color="black">}</font>;
+                                    GrupoXML grupoApelido <font color="black">(</font>noApelidoAtual, campos,<font color="maroon">2</font><font color="black">)</font>;
+                                    possibilidade.adicionaApelido<font color="black">(</font>
+                                            grupoApelido.getCampo<font color="black">(</font><font color="maroon">"Nome"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+                                    noApelidoAtual <font color="black">=</font> noApelidoAtual<font color="black">-</font><font color="black">&#62;</font>proximoNo<font color="black">(</font><font color="black">)</font>;
+                                <font color="black">}</font>
+                            <font color="black">}</font>
+
+                            <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>grupoEstado.getCampo<font color="black">(</font><font color="maroon">"SomenteEsses"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>semValor<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                                novoEstado<font color="black">-</font><font color="black">&#62;</font>universoParaModificar<font color="black">(</font>nomeAtributo<font color="black">)</font>
+                                        .adicionaPossibilidade<font color="black">(</font>possibilidade<font color="black">)</font>;
+                            <font color="black">}</font>
+
+                            noParametroAtual <font color="black">=</font> noParametroAtual<font color="black">-</font><font color="black">&#62;</font>proximoNo<font color="black">(</font><font color="black">)</font>;
+                        <font color="black">}</font>
+                    <font color="black">}</font>
+                
+                    noAtributoAtual <font color="black">=</font> noAtributoAtual<font color="black">-</font><font color="black">&#62;</font>proximoNo<font color="black">(</font><font color="black">)</font>;
+                <font color="black">}</font>
+            <font color="black">}</font>
+
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSinfonia<font color="black">-</font><font color="black">&#62;</font>adicionaEstado<font color="black">(</font>novoEstado<font color="black">)</font>;
+
+            <font color="green">// recuperando-o de volta:</font>
+            novoEstado <font color="black">=</font> <font color="black">(</font>Estado<font color="black">*</font><font color="black">)</font> <font color="black">&</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSinfonia
+                    <font color="black">-</font><font color="black">&#62;</font>estados<font color="black">(</font><font color="black">)</font>.estado<font color="black">(</font>novoEstado<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+            <font color="green">// estado do evento atual:s</font>
+            Estado<font color="black">*</font> estadoDoEventoAtual <font color="black">=</font> <font color="black">(</font>Estado<font color="black">*</font><font color="black">)</font> <font color="black">&</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSinfonia
+                    <font color="black">-</font><font color="black">&#62;</font>estados<font color="black">(</font><font color="black">)</font>.estadoDoEventoAtual<font color="black">(</font>novoEstado<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstados.insere<font color="black">(</font>idEstado, novoEstado<font color="black">)</font>;
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstadosAtuais.insere<font color="black">(</font>idEstado, estadoDoEventoAtual<font color="black">)</font>;
+
+            <font color="blue">if</font> <font color="black">(</font>classe <font color="black">=</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"Timer"</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                <font color="green">// Ligando o timer de fato:</font>
+
+                try <font color="black">{</font>
+                    Timer<font color="black">*</font> novoTimer <font color="black">=</font> <font color="blue">new</font> Timer<font color="black">(</font>
+                            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTempo, <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSinfonia<font color="black">-</font><font color="black">&#62;</font>estados<font color="black">(</font><font color="black">)</font>, novoEstado<font color="black">)</font>;
+
+                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSinfonia<font color="black">-</font><font color="black">&#62;</font>adicionaGeradorDeEventosEspecial<font color="black">(</font>
+                            novoTimer, <font color="blue">true</font><font color="black">)</font>;
+                <font color="black">}</font> <font color="blue">catch</font> <font color="black">(</font><font color="blue">const</font> ImpossivelCriarTimerExcecao<font color="black">&</font> icte<font color="black">)</font> <font color="black">{</font>
+                    Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>ERRO, <font color="maroon">"Ignorando erro em ScriptDinamica:: "</font> <font color="black">+</font> icte<font color="black">)</font>;
+                <font color="black">}</font>
+            <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>classe <font color="black">=</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"Animacao"</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                <font color="green">// Associando a animação:</font>
+
+                try <font color="black">{</font>
+                    AnimacaoBiblia<font color="black">*</font> novaAnimacao <font color="black">=</font> <font color="blue">new</font> AnimacaoBiblia<font color="black">(</font>
+                            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSinfonia<font color="black">-</font><font color="black">&#62;</font>estados<font color="black">(</font><font color="black">)</font>, <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pVisual,
+                            novoEstado<font color="black">)</font>;
+
+                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSinfonia<font color="black">-</font><font color="black">&#62;</font>adicionaGeradorDeEventosEspecial<font color="black">(</font>
+                            novaAnimacao, <font color="blue">true</font><font color="black">)</font>;
+                <font color="black">}</font> <font color="blue">catch</font> <font color="black">(</font><font color="blue">const</font> ImpossivelCriarAnimacaoBibliaExcecao<font color="black">&</font> icabe<font color="black">)</font> <font color="black">{</font>
+                    Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>ERRO, <font color="maroon">"Ignorando erro em ScriptDinamica:: "</font> <font color="black">+</font> icabe<font color="black">)</font>;
+                <font color="black">}</font>
+
+
+            <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>classe <font color="black">=</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"Som"</font><font color="black">)</font><font color="black">)</font><font color="black">{</font>
+
+                try <font color="black">{</font>
+                    SomBiblia<font color="black">*</font> novoSom <font color="black">=</font> <font color="blue">new</font> SomBiblia<font color="black">(</font>
+                        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSinfonia<font color="black">-</font><font color="black">&#62;</font>estados<font color="black">(</font><font color="black">)</font>,
+                        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pResultadoSonoro,
+                        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pCarregadorDeSom,
+                        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pVisual.tempo<font color="black">(</font><font color="black">)</font>,
+                        novoEstado<font color="black">)</font>;
+
+                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSinfonia<font color="black">-</font><font color="black">&#62;</font>adicionaGeradorDeEventosEspecial<font color="black">(</font>novoSom, <font color="blue">true</font><font color="black">)</font>;
+
+                <font color="black">}</font> <font color="blue">catch</font> <font color="black">(</font><font color="blue">const</font> ImpossivelCriarAnimacaoBibliaExcecao<font color="black">&</font> icsbe<font color="black">)</font><font color="black">{</font>
+                    Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>ERRO, <font color="maroon">"Ignorando erro em ScriptDinamica:: "</font> <font color="black">+</font> icsbe<font color="black">)</font>;
+                <font color="black">}</font>
+
+            <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>classe <font color="black">=</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"Mouse"</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                <font color="green">// Criando o mouse:</font>
+
+                try <font color="black">{</font>
+                    MouseBiblia<font color="black">*</font> novoMouse <font color="black">=</font> <font color="blue">new</font> MouseBiblia<font color="black">(</font>
+                            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSinfonia<font color="black">-</font><font color="black">&#62;</font>estados<font color="black">(</font><font color="black">)</font>, <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pVisual.tempo<font color="black">(</font><font color="black">)</font>,
+                            novoEstado<font color="black">)</font>;
+
+                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSinfonia<font color="black">-</font><font color="black">&#62;</font>adicionaGeradorDeEventosEspecial<font color="black">(</font>
+                            novoMouse, <font color="blue">true</font><font color="black">)</font>;
+                <font color="black">}</font> <font color="blue">catch</font> <font color="black">(</font><font color="blue">const</font> ImpossivelCriarMouseBibliaExcecao<font color="black">&</font> icmbe<font color="black">)</font> <font color="black">{</font>
+                    Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>ERRO, <font color="maroon">"Ignorando erro em ScriptDinamica:: "</font> <font color="black">+</font> icmbe<font color="black">)</font>;
+                <font color="black">}</font>
+
+            <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>classe <font color="black">=</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"AreaClicavel"</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                <font color="green">// Criando uma área clicável:</font>
+
+                try <font color="black">{</font>
+                    AreaClicavel<font color="black">*</font> novaArea <font color="black">=</font> <font color="blue">new</font> AreaClicavel<font color="black">(</font>
+                            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSinfonia<font color="black">-</font><font color="black">&#62;</font>estados<font color="black">(</font><font color="black">)</font>, <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pVisual.tempo<font color="black">(</font><font color="black">)</font>,
+                            novoEstado<font color="black">)</font>;
+
+                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSinfonia<font color="black">-</font><font color="black">&#62;</font>adicionaGeradorDeEventosEspecial<font color="black">(</font>
+                            novaArea, <font color="blue">true</font><font color="black">)</font>;
+                <font color="black">}</font> <font color="blue">catch</font> <font color="black">(</font><font color="blue">const</font> ImpossivelCriarAreaClicavelExcecao<font color="black">&</font> icace<font color="black">)</font> <font color="black">{</font>
+                    Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>ERRO, <font color="maroon">"Ignorando erro em ScriptDinamica:: "</font> <font color="black">+</font> icace<font color="black">)</font>;
+                <font color="black">}</font>       
+            <font color="black">}</font>
+        <font color="black">}</font>
+
+        percorreGruposParaEstados <font color="black">(</font>no<font color="black">-</font><font color="black">&#62;</font>proximoNo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> ScriptDinamica<font color="black">:</font><font color="black">:</font>percorreGruposParaEventos<font color="black">(</font>NoXML<font color="black">*</font> no<font color="black">)</font><font color="black">{</font>
+
+    <font color="blue">if</font> <font color="black">(</font>no <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font><font color="black">{</font>
+
+        <font color="blue">if</font> <font color="black">(</font>no<font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font>.compare<font color="black">(</font><font color="maroon">"Grupo"</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font><font color="black">{</font>            
+            
+            <font color="blue">char</font><font color="black">*</font> campos<font color="black">[</font><font color="black">]</font> <font color="black">=</font> <font color="black">{</font><font color="maroon">"Id"</font>, <font color="maroon">"Nome"</font>, <font color="maroon">"Descricao"</font><font color="black">}</font>;
+            GrupoXML grupoXML <font color="black">(</font>no,campos,<font color="maroon">3</font><font color="black">)</font>;
+
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGrupo.adiciona<font color="black">(</font>Valor<font color="black">(</font>grupoXML.getCampo<font color="black">(</font><font color="maroon">"Nome"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+            percorreGruposParaEventos <font color="black">(</font>no<font color="black">-</font><font color="black">&#62;</font>primeiroFilho<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGrupo.remove<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGrupo.tamanho<font color="black">(</font><font color="black">)</font> <font color="maroon">-1</font><font color="black">)</font>;
+
+        <font color="black">}</font><font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>no<font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font>.compare<font color="black">(</font><font color="maroon">"Estado"</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font><font color="black">{</font>
+
+            <font color="blue">char</font><font color="black">*</font> campos<font color="black">[</font><font color="black">]</font> <font color="black">=</font> <font color="black">{</font><font color="maroon">"Id"</font>, <font color="maroon">"Nome"</font>, <font color="maroon">"Classe"</font>, <font color="maroon">"Descricao"</font>, <font color="maroon">"Externo"</font><font color="black">}</font>;
+            <font color="blue">char</font><font color="black">*</font> grupos<font color="black">[</font><font color="black">]</font> <font color="black">=</font> <font color="black">{</font><font color="maroon">"Atributos"</font>, <font color="maroon">"Eventos"</font><font color="black">}</font>;
+
+            GrupoXML grupoEstado <font color="black">(</font>no,campos,<font color="maroon">5</font>,grupos,<font color="maroon">2</font><font color="black">)</font>;
+
+            <font color="blue">if</font> <font color="black">(</font>grupoEstado.getGrupo<font color="black">(</font><font color="maroon">"Eventos"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>no<font color="black">(</font><font color="black">)</font> <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font><font color="black">{</font>
+                NoXML<font color="black">*</font> noEventos <font color="black">=</font> grupoEstado.getGrupo<font color="black">(</font><font color="maroon">"Eventos"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>no<font color="black">(</font><font color="black">)</font>;            
+                NoXML<font color="black">*</font> noEventoAtual <font color="black">=</font> noEventos<font color="black">-</font><font color="black">&#62;</font>primeiroFilho<font color="black">(</font><font color="black">)</font>;
+                percorreGruposParaEventos <font color="black">(</font>noEventoAtual<font color="black">)</font>;
+            <font color="black">}</font>
+
+        <font color="black">}</font><font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>no<font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font>.compare<font color="black">(</font><font color="maroon">"Evento"</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font><font color="black">{</font>        
+            
+            <font color="blue">char</font><font color="black">*</font> campos<font color="black">[</font><font color="black">]</font> <font color="black">=</font> <font color="black">{</font><font color="maroon">"Id"</font>, <font color="maroon">"Nome"</font>, <font color="maroon">"Intermediario"</font>, <font color="maroon">"IdEstado"</font>,
+                    <font color="maroon">"IdAtributo"</font>, <font color="maroon">"Acao"</font>, <font color="maroon">"Externo"</font><font color="black">}</font>;
+
+            <font color="blue">char</font><font color="black">*</font> grupos<font color="black">[</font><font color="black">]</font> <font color="black">=</font> <font color="black">{</font><font color="maroon">"Estado_Dependente"</font><font color="black">}</font>;
+
+            GrupoXML grupoEvento <font color="black">(</font>no, campos, <font color="maroon">7</font>, grupos, <font color="maroon">1</font><font color="black">)</font>;
+                        
+            Evento<font color="black">*</font> novoEvento <font color="black">=</font> NULL;
+
+            <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>grupoEvento.getCampo<font color="black">(</font><font color="maroon">"Intermediario"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>semValor<font color="black">(</font><font color="black">)</font>
+                <font color="black">|</font><font color="black">|</font> grupoEvento.getCampo<font color="black">(</font><font color="maroon">"IdAtributo"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>semValor<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+            <font color="black">{</font>
+                <font color="green">// É intermediário</font>
+                novoEvento <font color="black">=</font> <font color="blue">new</font> Evento<font color="black">(</font>Valor<font color="black">(</font>grupoEvento.getCampo<font color="black">(</font><font color="maroon">"Nome"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+            <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+                string idEstado <font color="black">=</font> grupoEvento.getCampo<font color="black">(</font><font color="maroon">"IdEstado"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>;
+                Estado<font color="black">*</font> estado <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstados<font color="black">[</font>idEstado<font color="black">]</font>;
+
+                string idAtributo <font color="black">=</font> idEstado <font color="black">+</font> <font color="maroon">" idAtributo: "</font>
+                        <font color="black">+</font> grupoEvento.getCampo<font color="black">(</font><font color="maroon">"IdAtributo"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>;
+
+                string atributo <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pAtributo<font color="black">[</font>idAtributo<font color="black">]</font>;
+                string acao <font color="black">=</font> grupoEvento.getCampo<font color="black">(</font><font color="maroon">"Acao"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>;
+
+                Identificacao acaoProcessada<font color="black">(</font><font color="black">(</font>acao.compare<font color="black">(</font><font color="maroon">"="</font><font color="black">)</font> <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+                        ?Identificacao<font color="black">(</font>acao<font color="black">)</font><font color="black">:</font>ModificadorDeEstado<font color="black">:</font><font color="black">:</font>APENAS_ATRIBUI<font color="black">)</font>;
+
+                Valor nomeCompleto <font color="black">=</font> estado<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font>;
+                Valor nomeDoEstado <font color="black">=</font> estado<font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font>;
+                ModificadorDeEstado mde<font color="black">(</font>nomeCompleto, acaoProcessada<font color="black">)</font>;
+                mde.defineCampo<font color="black">(</font>atributo<font color="black">)</font>;
+
+                NoXML <font color="black">*</font> noEstadoDependente <font color="black">=</font> grupoEvento
+                        .getGrupo<font color="black">(</font><font color="maroon">"Estado_Dependente"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>no<font color="black">(</font><font color="black">)</font>;
+ 
+                string campo, nome;
+                Estado<font color="black">*</font> estadoDependente <font color="black">=</font> carregaEstadoDependente<font color="black">(</font>
+                        noEstadoDependente, campo, nome<font color="black">)</font>;
+
+                mde.adicionaParametro<font color="black">(</font>EstadoAlvo<font color="black">(</font>estadoDependente, campo<font color="black">)</font><font color="black">)</font>;
+
+                novoEvento <font color="black">=</font> <font color="blue">new</font> Evento<font color="black">(</font>nomeDoEstado, mde<font color="black">)</font>;
+            <font color="black">}</font>
+
+            <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>grupoEvento.getCampo<font color="black">(</font><font color="maroon">"Externo"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>semValor<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                novoEvento<font color="black">-</font><font color="black">&#62;</font>especial<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+            <font color="black">}</font>
+
+            novoEvento<font color="black">-</font><font color="black">&#62;</font>grupo<font color="black">(</font>Valor<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>grupo<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pLixo.adiciona<font color="black">(</font>novoEvento<font color="black">)</font>;
+
+            string idEvento <font color="black">=</font> grupoEvento.getCampo<font color="black">(</font><font color="maroon">"Id"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>;
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEventos.insere<font color="black">(</font>idEvento, novoEvento<font color="black">)</font>;
+        <font color="black">}</font>
+
+        percorreGruposParaEventos <font color="black">(</font>no<font color="black">-</font><font color="black">&#62;</font>proximoNo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">void</font> ScriptDinamica<font color="black">:</font><font color="black">:</font>percorreGruposParaDinamica<font color="black">(</font>NoXML<font color="black">*</font> no<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>no <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font><font color="black">{</font>        
+        <font color="blue">if</font> <font color="black">(</font>no<font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font>.compare<font color="black">(</font><font color="maroon">"Grupo"</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font><font color="black">{</font>            
+            
+            <font color="blue">char</font><font color="black">*</font> campos<font color="black">[</font><font color="black">]</font> <font color="black">=</font> <font color="black">{</font><font color="maroon">"Id"</font>, <font color="maroon">"Nome"</font>, <font color="maroon">"Descricao"</font><font color="black">}</font>;
+            GrupoXML grupoXML <font color="black">(</font>no,campos,<font color="maroon">3</font><font color="black">)</font>;
+
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGrupo.adiciona<font color="black">(</font>Valor<font color="black">(</font>grupoXML.getCampo<font color="black">(</font><font color="maroon">"Nome"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+            percorreGruposParaDinamica <font color="black">(</font>no<font color="black">-</font><font color="black">&#62;</font>primeiroFilho<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGrupo.remove<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGrupo.tamanho<font color="black">(</font><font color="black">)</font> <font color="maroon">-1</font><font color="black">)</font>;
+
+        <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>no<font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font>.compare<font color="black">(</font><font color="maroon">"Dinamica"</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font><font color="black">{</font>  
+            <font color="green">// Dinâmica     </font>
+
+            <font color="blue">char</font><font color="black">*</font> campos<font color="black">[</font><font color="black">]</font> <font color="black">=</font> <font color="black">{</font><font color="maroon">"Id"</font>, <font color="maroon">"Nome"</font>, <font color="maroon">"Desabilitada"</font><font color="black">}</font>;
+            <font color="blue">char</font><font color="black">*</font> grupos<font color="black">[</font><font color="black">]</font> <font color="black">=</font> <font color="black">{</font><font color="maroon">"Eventos_Disparadores"</font>, <font color="maroon">"Condição"</font>, <font color="maroon">"Eventos_Gerados"</font>,
+                              <font color="maroon">"Eventos_Gerados_Senão"</font><font color="black">}</font>;
+
+            GrupoXML grupoDinamica <font color="black">(</font>no,campos,<font color="maroon">3</font>,grupos,<font color="maroon">4</font><font color="black">)</font>;                               
+ 
+            <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>grupoDinamica.getCampo<font color="black">(</font><font color="maroon">"Desabilitada"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>semValor<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>INFO, <font color="maroon">"Carregamento da Sinfonia: A Situação '"</font>
+                        <font color="black">+</font> grupoDinamica.getCampo<font color="black">(</font><font color="maroon">"Nome"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>
+                        <font color="black">+</font> <font color="maroon">"' está desabilitada."</font><font color="black">)</font>;
+            <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+                Situacao<font color="black">*</font> novaSituacao;
+                novaSituacao <font color="black">=</font> <font color="blue">new</font> Situacao<font color="black">(</font>grupoDinamica.getCampo<font color="black">(</font><font color="maroon">"Nome"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+<font color="green">//              Debug::msg(INFO, "--- eventos disparadores");</font>
+
+                <font color="green">//EVENTOS DISPARADORES</font>
+                <font color="green">//*********************************************************************************</font>
+                NoXML<font color="black">*</font> noEvento <font color="black">=</font> grupoDinamica
+                        .getGrupo<font color="black">(</font><font color="maroon">"Eventos_Disparadores"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>no<font color="black">(</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>primeiroFilho<font color="black">(</font><font color="black">)</font>;
+ 
+                <font color="blue">bool</font> qualquerUmDosEventos <font color="black">=</font> <font color="blue">false</font>;
+
+                <font color="blue">if</font> <font color="black">(</font>noEvento <font color="black">=</font><font color="black">=</font> NULL<font color="black">)</font> <font color="black">{</font>
+                    <font color="green">// se não houver evento nenhum é porque qualquer um dos eventos</font>
+                    <font color="green">// relacionados a qualquer uma das condições deverão ser levados em conta</font>
+                    qualquerUmDosEventos <font color="black">=</font> <font color="blue">true</font>;
+                <font color="black">}</font>
+
+                <font color="blue">while</font> <font color="black">(</font>noEvento <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font><font color="black">{</font>
+                    
+                    <font color="blue">char</font><font color="black">*</font> campos<font color="black">[</font><font color="black">]</font> <font color="black">=</font> <font color="black">{</font><font color="maroon">"Id"</font>, <font color="maroon">"IdEvento"</font><font color="black">}</font>;
+                    GrupoXML grupoEventoAss <font color="black">(</font>noEvento,campos,<font color="maroon">2</font><font color="black">)</font>;
+                    
+                    novaSituacao<font color="black">-</font><font color="black">&#62;</font>adicionaEvento<font color="black">(</font><font color="black">*</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEventos<font color="black">[</font>
+                            grupoEventoAss.getCampo<font color="black">(</font><font color="maroon">"IdEvento"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font><font color="black">]</font><font color="black">)</font><font color="black">)</font>;                         
+
+                    noEvento <font color="black">=</font> noEvento<font color="black">-</font><font color="black">&#62;</font>proximoNo<font color="black">(</font><font color="black">)</font>;
+                <font color="black">}</font>
+
+<font color="green">//              Debug::msg(INFO, "--- condição");</font>
+
+                <font color="green">//*********************************************************************************</font>
+                <font color="green">// CONDIÇÃO</font>
+
+                Lista<font color="black">&#60;</font>string<font color="black">&#62;</font> estadosRelacionados;
+                Condicao<font color="black">*</font> novaCondicao <font color="black">=</font> carregaCondicao <font color="black">(</font>
+                        grupoDinamica.getGrupo<font color="black">(</font><font color="maroon">"Condição"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>no<font color="black">(</font><font color="black">)</font>, estadosRelacionados,
+                        grupoDinamica.getCampo<font color="black">(</font><font color="maroon">"Nome"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+                novaSituacao<font color="black">-</font><font color="black">&#62;</font>defineCondicao<font color="black">(</font><font color="black">*</font>novaCondicao<font color="black">)</font>;
+                <font color="blue">delete</font> novaCondicao;
+
+                <font color="blue">if</font> <font color="black">(</font>qualquerUmDosEventos<font color="black">)</font> <font color="black">{</font>
+<font color="green">//                  Debug::msg(INFO, "--- 'qualquer um dos' na situação " + *novaSituacao);</font>
+
+                    <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> estadosRelacionados.tamanho<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+                        <font color="blue">if</font> <font color="black">(</font>estadosRelacionados<font color="black">[</font>i<font color="black">]</font>.compare<font color="black">(</font><font color="maroon">""</font><font color="black">)</font> <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font> <font color="black">{</font>
+                            novaSituacao<font color="black">-</font><font color="black">&#62;</font>adicionaEvento<font color="black">(</font>Evento<font color="black">(</font>estadosRelacionados<font color="black">[</font>i<font color="black">]</font><font color="black">)</font><font color="black">)</font>;
+<font color="green">//                          Debug::msg(INFO, "--- estado relacionado: " + estadosRelacionados[i]);</font>
+                        <font color="black">}</font>
+                    <font color="black">}</font>
+
+<font color="green">//                  Debug::msg(INFO, "--- situação depois de adicionar: " + *novaSituacao);</font>
+                <font color="black">}</font>
+
+<font color="green">//              Debug::msg(INFO, "--- eventos gerados");</font>
+
+                <font color="green">//EVENTOS GERADOS</font>
+                <font color="green">//*********************************************************************************</font>
+                noEvento <font color="black">=</font> grupoDinamica.getGrupo<font color="black">(</font><font color="maroon">"Eventos_Gerados"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>no<font color="black">(</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>primeiroFilho<font color="black">(</font><font color="black">)</font>;
+                
+                <font color="blue">while</font> <font color="black">(</font>noEvento <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font><font color="black">{</font>
+                    
+                    <font color="blue">char</font><font color="black">*</font> campos<font color="black">[</font><font color="black">]</font> <font color="black">=</font> <font color="black">{</font><font color="maroon">"Id"</font>, <font color="maroon">"IdEvento"</font><font color="black">}</font>;
+                    GrupoXML grupoEventoAss <font color="black">(</font>noEvento,campos,<font color="maroon">2</font><font color="black">)</font>;
+                    
+                    novaSituacao<font color="black">-</font><font color="black">&#62;</font>adicionaEventoQueGera<font color="black">(</font><font color="black">*</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEventos<font color="black">[</font>
+                            grupoEventoAss.getCampo<font color="black">(</font><font color="maroon">"IdEvento"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font><font color="black">]</font><font color="black">)</font><font color="black">)</font>;                      
+
+                    noEvento <font color="black">=</font> noEvento<font color="black">-</font><font color="black">&#62;</font>proximoNo<font color="black">(</font><font color="black">)</font>;
+                <font color="black">}</font>
+                <font color="green">//*********************************************************************************</font>
+            
+<font color="green">//              Debug::msg(INFO, "--- eventos gerados senão");</font>
+
+                <font color="green">//EVENTOS GERADOS SENÃO</font>
+                <font color="green">//*********************************************************************************</font>
+                noEvento <font color="black">=</font> grupoDinamica.getGrupo<font color="black">(</font><font color="maroon">"Eventos_Gerados_Senão"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>no<font color="black">(</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>primeiroFilho<font color="black">(</font><font color="black">)</font>;
+                
+                <font color="blue">while</font> <font color="black">(</font>noEvento <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font><font color="black">{</font>
+                    
+                    <font color="blue">char</font><font color="black">*</font> campos<font color="black">[</font><font color="black">]</font> <font color="black">=</font> <font color="black">{</font><font color="maroon">"Id"</font>, <font color="maroon">"IdEvento"</font><font color="black">}</font>;
+                    GrupoXML grupoEventoAss <font color="black">(</font>noEvento, campos,<font color="maroon">2</font><font color="black">)</font>;
+                    
+                    novaSituacao<font color="black">-</font><font color="black">&#62;</font>adicionaEventoQueGeraSenao<font color="black">(</font><font color="black">*</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEventos<font color="black">[</font>
+                            grupoEventoAss.getCampo<font color="black">(</font><font color="maroon">"IdEvento"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font><font color="black">]</font><font color="black">)</font><font color="black">)</font>;
+
+                    noEvento <font color="black">=</font> noEvento<font color="black">-</font><font color="black">&#62;</font>proximoNo<font color="black">(</font><font color="black">)</font>;
+                <font color="black">}</font>
+                <font color="green">//*********************************************************************************</font>
+
+<font color="green">//              Debug::msg(INFO, "--- antes de adicionar");</font>
+
+                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSinfonia<font color="black">-</font><font color="black">&#62;</font>adicionaSituacao<font color="black">(</font>novaSituacao<font color="black">)</font>;
+
+<font color="green">//              Debug::msg(INFO, "--- adicionou");</font>
+            <font color="black">}</font>
+        <font color="black">}</font>
+
+        percorreGruposParaDinamica <font color="black">(</font>no<font color="black">-</font><font color="black">&#62;</font>proximoNo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>
+<font color="black">}</font>
+
+Condicao<font color="black">*</font> ScriptDinamica<font color="black">:</font><font color="black">:</font>carregaCondicao<font color="black">(</font>NoXML<font color="black">*</font> noCondicao,
+        Lista<font color="black">&#60;</font>string<font color="black">&#62;</font><font color="black">&</font> estadosRelacionados, string nomeDaSituacao<font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">char</font><font color="black">*</font> campos <font color="black">[</font><font color="black">]</font> <font color="black">=</font> <font color="black">{</font><font color="maroon">"Id"</font>, <font color="maroon">"Tipo_Condição"</font>, <font color="maroon">"Modificador"</font>, <font color="maroon">"Operador"</font>, <font color="maroon">"Operador_Booleano"</font><font color="black">}</font>;
+    <font color="blue">char</font><font color="black">*</font> grupos <font color="black">[</font><font color="black">]</font> <font color="black">=</font> <font color="black">{</font><font color="maroon">"Estados_Dependentes"</font>, <font color="maroon">"Condições"</font><font color="black">}</font>;
+
+    GrupoXML grupoCondicao <font color="black">(</font>noCondicao,campos,<font color="maroon">5</font>,grupos,<font color="maroon">2</font><font color="black">)</font>;
+    Condicao<font color="black">*</font> novaCondicao <font color="black">=</font> NULL;
+                                             
+    <font color="blue">if</font> <font color="black">(</font>grupoCondicao.getCampo<font color="black">(</font><font color="maroon">"Tipo_Condição"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>.compare<font color="black">(</font><font color="maroon">"Comparação"</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font><font color="black">{</font>
+        
+        NoXML <font color="black">*</font> noEstadoDependente <font color="black">=</font> grupoCondicao.getGrupo<font color="black">(</font><font color="maroon">"Estados_Dependentes"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>no<font color="black">(</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>primeiroFilho<font color="black">(</font><font color="black">)</font>;
+     
+        string campo1, campo2, nome1, nome2;
+        Estado<font color="black">*</font> estado1 <font color="black">=</font> carregaEstadoDependente <font color="black">(</font>noEstadoDependente, campo1, nome1<font color="black">)</font>;
+        Estado<font color="black">*</font> estado2 <font color="black">=</font> carregaEstadoDependente <font color="black">(</font>noEstadoDependente<font color="black">-</font><font color="black">&#62;</font>proximoNo<font color="black">(</font><font color="black">)</font>, campo2, nome2<font color="black">)</font>;
+
+        estadosRelacionados.adiciona<font color="black">(</font>nome1<font color="black">)</font>;
+        estadosRelacionados.adiciona<font color="black">(</font>nome2<font color="black">)</font>;
+
+        string operador <font color="black">=</font> grupoCondicao.getCampo<font color="black">(</font><font color="maroon">"Operador"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>;
+        novaCondicao <font color="black">=</font> <font color="blue">new</font> CondicaoDeComparacao<font color="black">(</font>EstadoAlvo<font color="black">(</font>estado1, campo1<font color="black">)</font>,
+                operador, EstadoAlvo<font color="black">(</font>estado2, campo2<font color="black">)</font><font color="black">)</font>;
+
+    <font color="black">}</font><font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>grupoCondicao.getCampo<font color="black">(</font><font color="maroon">"Tipo_Condição"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>.compare<font color="black">(</font><font color="maroon">"Composta"</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font><font color="black">{</font>
+                    
+        Valor ligacao<font color="black">(</font>grupoCondicao.getCampo<font color="black">(</font><font color="maroon">"Operador_Booleano"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+        
+        NoXML<font color="black">*</font> noCondicaoComposta <font color="black">=</font> grupoCondicao.getGrupo<font color="black">(</font><font color="maroon">"Condições"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>no<font color="black">(</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>primeiroFilho<font color="black">(</font><font color="black">)</font>;
+        
+        Condicao<font color="black">*</font> primeiraCondicao <font color="black">=</font> NULL;
+
+        <font color="blue">if</font> <font color="black">(</font>noCondicaoComposta <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font> <font color="black">{</font>
+            primeiraCondicao <font color="black">=</font> carregaCondicao <font color="black">(</font>
+                    noCondicaoComposta, estadosRelacionados, nomeDaSituacao<font color="black">)</font>;
+
+            novaCondicao <font color="black">=</font> <font color="blue">new</font> CondicaoComposta<font color="black">(</font><font color="black">*</font>primeiraCondicao<font color="black">)</font>;
+            <font color="blue">delete</font> primeiraCondicao;
+
+            noCondicaoComposta <font color="black">=</font> noCondicaoComposta<font color="black">-</font><font color="black">&#62;</font>proximoNo<font color="black">(</font><font color="black">)</font>;
+        <font color="black">}</font>
+
+        <font color="blue">while</font> <font color="black">(</font>noCondicaoComposta <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font><font color="black">{</font>
+        
+            Condicao<font color="black">*</font> outraCondicao <font color="black">=</font> carregaCondicao <font color="black">(</font>noCondicaoComposta, estadosRelacionados, nomeDaSituacao<font color="black">)</font>;
+            
+            <font color="blue">if</font> <font color="black">(</font>ligacao <font color="black">!</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"and"</font><font color="black">)</font> <font color="black">&</font><font color="black">&</font> ligacao <font color="black">!</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"or"</font><font color="black">)</font>
+                <font color="black">&</font><font color="black">&</font> ligacao <font color="black">!</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"dif"</font><font color="black">)</font> <font color="black">&</font><font color="black">&</font> ligacao <font color="black">!</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"xor"</font><font color="black">)</font>
+                <font color="black">&</font><font color="black">&</font> ligacao <font color="black">!</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"eq"</font><font color="black">)</font><font color="black">)</font>
+            <font color="black">{</font>
+                Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>ERRO, <font color="maroon">"Erro ao carregar Script! O operador '"</font>
+                        <font color="black">+</font> ligacao <font color="black">+</font> <font color="maroon">"'"</font>
+                        <font color="maroon">" não pôde ser reconhecido. Ele não é AND, OR,"</font>
+                        <font color="maroon">" DIF, XOR nem EQ."</font>
+                        <font color="maroon">" Colocando por padrão 'AND'..."</font>
+                        <font color="maroon">" Corrija isto! Situacao relacionada: '"</font>
+                        <font color="black">+</font> nomeDaSituacao <font color="black">+</font> <font color="maroon">"'"</font><font color="black">)</font>;
+            <font color="black">}</font>
+            
+            <font color="black">(</font><font color="black">(</font>CondicaoComposta<font color="black">*</font><font color="black">)</font> novaCondicao<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>adiciona<font color="black">(</font>
+                    ligacao <font color="black">=</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"and"</font><font color="black">)</font>?AND
+                    <font color="black">:</font>ligacao <font color="black">=</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"or"</font><font color="black">)</font>?OR
+                    <font color="black">:</font>ligacao <font color="black">=</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"xor"</font><font color="black">)</font>?XOR
+                    <font color="black">:</font>ligacao <font color="black">=</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"eq"</font><font color="black">)</font>?EQ
+                    <font color="black">:</font>ligacao <font color="black">=</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"dif"</font><font color="black">)</font>?DIF<font color="black">:</font>AND, <font color="black">*</font>outraCondicao<font color="black">)</font>;
+
+            <font color="blue">delete</font> outraCondicao;
+            noCondicaoComposta <font color="black">=</font> noCondicaoComposta<font color="black">-</font><font color="black">&#62;</font>proximoNo<font color="black">(</font><font color="black">)</font>;        
+        <font color="black">}</font>
+    <font color="black">}</font>
+
+    <font color="blue">if</font> <font color="black">(</font>novaCondicao <font color="black">=</font><font color="black">=</font> NULL<font color="black">)</font> <font color="black">{</font>
+        novaCondicao <font color="black">=</font> <font color="blue">new</font> Boleana<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>grupoCondicao.getCampo<font color="black">(</font><font color="maroon">"Modificador"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>semValor<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        <font color="green">// NOT:</font>
+        Condicao<font color="black">*</font> novaCondicaoModificada <font color="black">=</font> <font color="blue">new</font> CondicaoModificadora<font color="black">(</font><font color="black">*</font>novaCondicao<font color="black">)</font>;
+        <font color="blue">delete</font> novaCondicao;
+        novaCondicao <font color="black">=</font> novaCondicaoModificada;
+    <font color="black">}</font>
+
+    <font color="blue">return</font> novaCondicao;
+<font color="black">}</font>
+
+
+Estado<font color="black">*</font> ScriptDinamica<font color="black">:</font><font color="black">:</font>carregaEstadoDependente<font color="black">(</font>
+        NoXML<font color="black">*</font> noEstado, string<font color="black">&</font> atributo, string<font color="black">&</font> nomeAAtualizar<font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">char</font><font color="black">*</font> campos<font color="black">[</font><font color="black">]</font> <font color="black">=</font> <font color="black">{</font><font color="maroon">"Id"</font><font color="black">}</font>;
+    <font color="blue">char</font><font color="black">*</font> grupos<font color="black">[</font><font color="black">]</font> <font color="black">=</font> <font color="black">{</font><font color="maroon">"Estados_Compostos"</font><font color="black">}</font>;
+
+    GrupoXML grupoEstadoDep <font color="black">(</font>noEstado, campos,<font color="maroon">1</font>,grupos,<font color="maroon">1</font><font color="black">)</font>;
+    NoXML<font color="black">*</font> noEstadoComposto <font color="black">=</font> grupoEstadoDep.getGrupo<font color="black">(</font><font color="maroon">"Estados_Compostos"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>no<font color="black">(</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>primeiroFilho<font color="black">(</font><font color="black">)</font>;
+    string operadorAnterior <font color="black">=</font> <font color="maroon">"_nenhum"</font>;
+    Estado<font color="black">*</font> aRetornar <font color="black">=</font> NULL;
+
+    <font color="blue">while</font> <font color="black">(</font>noEstadoComposto <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font><font color="black">{</font>
+ 
+        <font color="blue">char</font><font color="black">*</font> campos<font color="black">[</font><font color="black">]</font> <font color="black">=</font> <font color="black">{</font><font color="maroon">"Id"</font>, <font color="maroon">"Operador"</font>, <font color="maroon">"ValorAtual"</font>, <font color="maroon">"Constante"</font>,
+                <font color="maroon">"Valor"</font>, <font color="maroon">"IdEstado"</font>, <font color="maroon">"IdAtributo"</font>, <font color="maroon">"IdParametro"</font><font color="black">}</font>;        
+
+        GrupoXML grupoEstadoComposto <font color="black">(</font>noEstadoComposto, campos,<font color="maroon">8</font><font color="black">)</font>;
+        Estado<font color="black">*</font> estadoAtual;
+
+        <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>grupoEstadoComposto.getCampo<font color="black">(</font><font color="maroon">"Constante"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>semValor<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+            <font color="green">//grupoEstadoComposto.getCampo("Valor")-&#62;valor();</font>
+            estadoAtual <font color="black">=</font> <font color="black">(</font>Estado<font color="black">*</font><font color="black">)</font> <font color="black">&</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>sinfonia<font color="black">(</font><font color="black">)</font>.estados<font color="black">(</font><font color="black">)</font>
+                    .estadoConstante<font color="black">(</font>Valor<font color="black">(</font>grupoEstadoComposto
+                        .getCampo<font color="black">(</font><font color="maroon">"Valor"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>, <font color="blue">true</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+
+            atributo <font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL.valor<font color="black">(</font><font color="black">)</font>;
+
+        <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>grupoEstadoComposto.getCampo<font color="black">(</font><font color="maroon">"IdParametro"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>semValor<font color="black">(</font><font color="black">)</font>
+                <font color="black">&</font><font color="black">&</font> <font color="black">!</font>grupoEstadoComposto.getCampo<font color="black">(</font><font color="maroon">"IdAtributo"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>semValor<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+        <font color="black">{</font>
+            string idEstado <font color="black">=</font> grupoEstadoComposto.getCampo<font color="black">(</font><font color="maroon">"IdEstado"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>;
+            string idAtributo <font color="black">=</font> idEstado <font color="black">+</font> <font color="maroon">" idAtributo: "</font>
+                    <font color="black">+</font> grupoEstadoComposto.getCampo<font color="black">(</font><font color="maroon">"IdAtributo"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>;
+
+            string idParametro <font color="black">=</font> idAtributo <font color="black">+</font> <font color="maroon">" idParametro: "</font>
+                    <font color="black">+</font> grupoEstadoComposto.getCampo<font color="black">(</font><font color="maroon">"IdParametro"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>;
+
+            string valor <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pParametro<font color="black">[</font>idParametro<font color="black">]</font>;
+            estadoAtual <font color="black">=</font> <font color="black">(</font>Estado<font color="black">*</font><font color="black">)</font> <font color="black">&</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>sinfonia<font color="black">(</font><font color="black">)</font>
+                    .estados<font color="black">(</font><font color="black">)</font>.estadoConstante<font color="black">(</font>Valor<font color="black">(</font>valor, <font color="blue">true</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+
+            atributo <font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL.valor<font color="black">(</font><font color="black">)</font>;
+
+        <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>grupoEstadoComposto.getCampo<font color="black">(</font><font color="maroon">"IdEstado"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>semValor<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+            string idEstado <font color="black">=</font> grupoEstadoComposto.getCampo<font color="black">(</font><font color="maroon">"IdEstado"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>;
+
+            <font color="blue">if</font> <font color="black">(</font>grupoEstadoComposto.getCampo<font color="black">(</font><font color="maroon">"ValorAtual"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>semValor<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                estadoAtual <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstados<font color="black">[</font>idEstado<font color="black">]</font>;
+            <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+                estadoAtual <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstadosAtuais<font color="black">[</font>idEstado<font color="black">]</font>;
+            <font color="black">}</font>
+
+            nomeAAtualizar <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstados<font color="black">[</font>idEstado<font color="black">]</font><font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font>.emString<font color="black">(</font><font color="black">)</font>;
+
+            <font color="blue">if</font> <font color="black">(</font>grupoEstadoComposto.getCampo<font color="black">(</font><font color="maroon">"IdAtributo"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>semValor<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                atributo <font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL.valor<font color="black">(</font><font color="black">)</font>;
+            <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+                string idEstado <font color="black">=</font> grupoEstadoComposto.getCampo<font color="black">(</font><font color="maroon">"IdEstado"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>;
+                string idAtributo <font color="black">=</font> idEstado <font color="black">+</font> <font color="maroon">" idAtributo: "</font>
+                        <font color="black">+</font> grupoEstadoComposto.getCampo<font color="black">(</font><font color="maroon">"IdAtributo"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>;
+
+                atributo <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pAtributo<font color="black">[</font>idAtributo<font color="black">]</font>;
+            <font color="black">}</font>
+        <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+            Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>ERRO, <font color="maroon">"ERRO FATAL: Nunca devia ter entrado aqui!"</font>
+                <font color="maroon">" Informe o código 120056."</font><font color="black">)</font>;
+        <font color="black">}</font>
+
+        <font color="blue">if</font> <font color="black">(</font>aRetornar <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font> <font color="black">{</font>
+            <font color="green">// não é a primeira vez que está passando aqui</font>
+            <font color="black">(</font><font color="black">(</font>EstadoDependente<font color="black">*</font><font color="black">)</font> aRetornar<font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>adicionaEstado<font color="black">(</font>
+                    operadorAnterior, EstadoAlvo<font color="black">(</font>estadoAtual, atributo<font color="black">)</font><font color="black">)</font>;
+        <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+            <font color="green">// primeira vez</font>
+            <font color="blue">if</font> <font color="black">(</font>noEstadoComposto<font color="black">-</font><font color="black">&#62;</font>proximoNo<font color="black">(</font><font color="black">)</font> <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font> <font color="black">{</font>
+                <font color="green">// se tem próximo, é um estado dependente</font>
+                aRetornar <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>sinfonia<font color="black">(</font><font color="black">)</font>.estados<font color="black">(</font><font color="black">)</font>
+                        .criaEstadoDependente<font color="black">(</font>estadoAtual, atributo<font color="black">)</font>;
+            <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+                aRetornar <font color="black">=</font> estadoAtual;
+            <font color="black">}</font>
+        <font color="black">}</font>
+
+        operadorAnterior <font color="black">=</font> grupoEstadoComposto.getCampo<font color="black">(</font><font color="maroon">"Operador"</font><font color="black">)</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>;
+        noEstadoComposto <font color="black">=</font> noEstadoComposto<font color="black">-</font><font color="black">&#62;</font>proximoNo<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">return</font> aRetornar;
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

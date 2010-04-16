@@ -1,0 +1,208 @@
+<HTML>
+<HEAD>
+<TITLE>
+AreaClicavel.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: AreaClicavel.cpp.html,v $
+ * $Date: 2005/03/22 20:18:43 $
+ * $Revision: 1.6 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/gde/AreaClicavel.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia<font color="black">:</font><font color="black">:</font>gde;
+
+AreaClicavel<font color="black">:</font><font color="black">:</font>AreaClicavel<font color="black">(</font><font color="blue">const</font> MediadorDeEstados<font color="black">&</font> mde,
+         <font color="blue">const</font> UniversoDeTempo<font color="black">&</font> tempo, Estado<font color="black">*</font> e<font color="black">)</font>
+    <font color="black">:</font>GeradorDeEventosEspecial<font color="black">(</font>mde<font color="black">)</font>,
+     pTempo<font color="black">(</font>tempo<font color="black">)</font>, pEstado<font color="black">(</font>e<font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>modificaEventosQueTrata<font color="black">(</font><font color="black">)</font>
+                .adiciona<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>.emString<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="green">// ver executa</font>
+<font color="black">}</font>
+
+AreaClicavel<font color="black">:</font><font color="black">:</font>~AreaClicavel<font color="black">(</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+Executavel<font color="black">&</font> AreaClicavel<font color="black">:</font><font color="black">:</font>executa<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">const</font> MediadorDeEstados<font color="black">&</font> mde <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>mediadorDeEstados<font color="black">(</font><font color="black">)</font>;
+    Valor nomeEstado<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>mde.existeEstado<font color="black">(</font>nomeEstado<font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>WARN, <font color="maroon">"AreaClicavel: aguardando"</font>
+                <font color="maroon">" Estado '"</font> <font color="black">+</font> nomeEstado <font color="black">+</font> <font color="maroon">"'"</font>
+                <font color="maroon">" ser criado..."</font><font color="black">)</font>;
+    <font color="black">}</font>
+    
+    <font color="blue">while</font> <font color="black">(</font><font color="black">!</font>mde.existeEstado<font color="black">(</font>nomeEstado<font color="black">)</font> <font color="black">&</font><font color="black">&</font> <font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>encerrou<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        Thread<font color="black">:</font><font color="black">:</font>sleep<font color="black">(</font>Intervalo<font color="black">(</font><font color="maroon">100</font>, Milissegundo<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    try <font color="black">{</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font><font color="blue">false</font>, <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTempo, <font color="maroon">"mouse sobre"</font><font color="black">)</font>;
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font><font color="blue">false</font>, <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTempo, <font color="maroon">"clicado sobre"</font><font color="black">)</font>;
+
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>modificaEventosQueTrata<font color="black">(</font><font color="black">)</font>
+                .adiciona<font color="black">(</font>mde.estado<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font>.emString<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+    <font color="black">}</font> <font color="blue">catch</font><font color="black">(</font><font color="blue">const</font> Excecao<font color="black">&</font> ex<font color="black">)</font> <font color="black">{</font>
+        ImpossivelCriarAreaClicavelExcecao icace;
+        icace <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"Erro ao criar AreaClicavel! Campo principal deve"</font>
+                <font color="maroon">" existir e deve existir também um Estado da classe"</font>
+                <font color="maroon">" Mouse válido relacionado."</font>
+                <font color="maroon">" Lembre-se que é o nome completo. Excecao: "</font> <font color="black">+</font> ex;
+
+        <font color="blue">throw</font> icace;
+    <font color="black">}</font>
+
+    <font color="blue">while</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>encerrou<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        <font color="blue">const</font> Evento<font color="black">*</font> e <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>esperaAteQueVenhaEvento<font color="black">(</font><font color="black">)</font>;
+
+        <font color="blue">if</font> <font color="black">(</font>e <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font> <font color="black">{</font>
+            try <font color="black">{</font>
+                <font color="blue">if</font> <font color="black">(</font>e<font color="black">-</font><font color="black">&#62;</font>modificaEstadoDiretamente<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                    Valor campo <font color="black">=</font> e<font color="black">-</font><font color="black">&#62;</font>modificador<font color="black">(</font><font color="black">)</font>.campo<font color="black">(</font><font color="black">)</font>;
+
+                    <font color="blue">if</font> <font color="black">(</font>e<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font> <font color="green">// clicou</font>
+                        <font color="black">|</font><font color="black">|</font> e<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>mediadorDeEstados<font color="black">(</font><font color="black">)</font>
+                          .estado<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="green">// moveu</font>
+                    <font color="black">{</font>
+                        Lista<font color="black">&#60;</font>Evento<font color="black">*</font><font color="black">&#62;</font> aDisparar;
+
+                        <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"habilitado"</font><font color="black">)</font>.emBool<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                            <font color="blue">const</font> Estado<font color="black">&</font> mousePos
+                                <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>mediadorDeEstados<font color="black">(</font><font color="black">)</font>.estado<font color="black">(</font>
+                                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>mediadorDeEstados<font color="black">(</font><font color="black">)</font>
+                                    .estado<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+                            <font color="blue">int</font> xMouse <font color="black">=</font> mousePos.valor<font color="black">(</font><font color="maroon">"x"</font><font color="black">)</font>.emInt<font color="black">(</font><font color="black">)</font>;
+                            <font color="blue">int</font> yMouse <font color="black">=</font> mousePos.valor<font color="black">(</font><font color="maroon">"y"</font><font color="black">)</font>.emInt<font color="black">(</font><font color="black">)</font>;
+
+                            <font color="blue">const</font> Estado<font color="black">&</font> mouse
+                                <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>mediadorDeEstados<font color="black">(</font><font color="black">)</font>
+                                    .estado<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+                            <font color="blue">bool</font> clicado <font color="black">=</font> mouse.valor<font color="black">(</font><font color="maroon">"botão esquerdo pressionado"</font><font color="black">)</font>.emBool<font color="black">(</font><font color="black">)</font>;
+
+                            <font color="blue">int</font> xArea <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"x"</font><font color="black">)</font>.emInt<font color="black">(</font><font color="black">)</font>;
+                            <font color="blue">int</font> yArea <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"y"</font><font color="black">)</font>.emInt<font color="black">(</font><font color="black">)</font>;
+                            <font color="blue">int</font> largura <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"largura"</font><font color="black">)</font>.emInt<font color="black">(</font><font color="black">)</font>;
+                            <font color="blue">int</font> altura <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"altura"</font><font color="black">)</font>.emInt<font color="black">(</font><font color="black">)</font>;
+                            <font color="blue">bool</font> clicadoSobre <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font>
+                                    <font color="maroon">"clicado sobre"</font><font color="black">)</font>.emBool<font color="black">(</font><font color="black">)</font>;
+
+                            <font color="blue">bool</font> mouseSobre <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font>
+                                    <font color="maroon">"mouse sobre"</font><font color="black">)</font>.emBool<font color="black">(</font><font color="black">)</font>;
+
+                            <font color="blue">if</font> <font color="black">(</font>xMouse <font color="black">&#62;</font><font color="black">=</font> xArea
+                                <font color="black">&</font><font color="black">&</font> xMouse <font color="black">&#60;</font> xArea <font color="black">+</font> largura
+                                <font color="black">&</font><font color="black">&</font> yMouse <font color="black">&#62;</font><font color="black">=</font> yArea
+                                <font color="black">&</font><font color="black">&</font> yMouse <font color="black">&#60;</font> yArea <font color="black">+</font> altura<font color="black">)</font>
+                            <font color="black">{</font>
+                                <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>mouseSobre<font color="black">)</font> <font color="black">{</font>
+                                    <font color="green">// lança mouse sobre</font>
+                                    ModificadorDeEstado mde<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                                    mde.adicionaParametro<font color="black">(</font>Valor<font color="black">(</font><font color="blue">true</font><font color="black">)</font><font color="black">)</font>;
+                                    mde.defineCampo<font color="black">(</font><font color="maroon">"mouse sobre"</font><font color="black">)</font>;
+                                    Evento evento<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font>, mde<font color="black">)</font>;
+                                    evento.grupo<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>grupo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                                    Evento<font color="black">*</font> disparado <font color="black">=</font> evento.dispara<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTempo<font color="black">)</font>;
+                                    disparado<font color="black">-</font><font color="black">&#62;</font>especial<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+                                    aDisparar.adiciona<font color="black">(</font>disparado<font color="black">)</font>;
+                                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font><font color="blue">true</font>, <font color="maroon">"mouse sobre"</font><font color="black">)</font>;
+                                <font color="black">}</font>
+
+                                <font color="blue">if</font> <font color="black">(</font>clicado <font color="black">&</font><font color="black">&</font> <font color="black">!</font>clicadoSobre<font color="black">)</font> <font color="black">{</font>
+                                    <font color="green">// lança evento clicado sobre</font>
+                                    ModificadorDeEstado mde<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                                    mde.adicionaParametro<font color="black">(</font>Valor<font color="black">(</font><font color="blue">true</font><font color="black">)</font><font color="black">)</font>;
+                                    mde.defineCampo<font color="black">(</font><font color="maroon">"clicado sobre"</font><font color="black">)</font>;
+                                    Evento evento<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font>, mde<font color="black">)</font>;
+                                    evento.grupo<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>grupo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                                    Evento<font color="black">*</font> disparado <font color="black">=</font> evento.dispara<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTempo<font color="black">)</font>;
+                                    disparado<font color="black">-</font><font color="black">&#62;</font>especial<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+                                    aDisparar.adiciona<font color="black">(</font>disparado<font color="black">)</font>;
+                                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font><font color="blue">true</font>, <font color="maroon">"clicado sobre"</font><font color="black">)</font>;
+                                <font color="black">}</font>
+
+                                <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>clicado <font color="black">&</font><font color="black">&</font> clicadoSobre<font color="black">)</font> <font color="black">{</font>
+                                    <font color="green">// lança evento desclicando</font>
+                                    ModificadorDeEstado mde<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                                    mde.adicionaParametro<font color="black">(</font>Valor<font color="black">(</font><font color="blue">false</font><font color="black">)</font><font color="black">)</font>;
+                                    mde.defineCampo<font color="black">(</font><font color="maroon">"clicado sobre"</font><font color="black">)</font>;
+                                    Evento evento<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font>, mde<font color="black">)</font>;
+                                    evento.grupo<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>grupo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                                    Evento<font color="black">*</font> disparado <font color="black">=</font> evento.dispara<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTempo<font color="black">)</font>;
+                                    disparado<font color="black">-</font><font color="black">&#62;</font>especial<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+                                    aDisparar.adiciona<font color="black">(</font>disparado<font color="black">)</font>;
+                                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font><font color="blue">false</font>, <font color="maroon">"clicado sobre"</font><font color="black">)</font>;
+                                <font color="black">}</font>
+
+                            <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font> <font color="green">// está fora da área</font>
+                                <font color="blue">if</font> <font color="black">(</font>mouseSobre<font color="black">)</font> <font color="black">{</font>
+                                    <font color="green">// lança pra tirar o mouse sobre</font>
+                                    ModificadorDeEstado mde<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                                    mde.adicionaParametro<font color="black">(</font>Valor<font color="black">(</font><font color="blue">false</font><font color="black">)</font><font color="black">)</font>;
+                                    mde.defineCampo<font color="black">(</font><font color="maroon">"mouse sobre"</font><font color="black">)</font>;
+                                    Evento evento<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font>, mde<font color="black">)</font>;
+                                    evento.grupo<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>grupo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                                    Evento<font color="black">*</font> disparado <font color="black">=</font> evento.dispara<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTempo<font color="black">)</font>;
+                                    disparado<font color="black">-</font><font color="black">&#62;</font>especial<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+                                    aDisparar.adiciona<font color="black">(</font>disparado<font color="black">)</font>;
+                                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font><font color="blue">false</font>, <font color="maroon">"mouse sobre"</font><font color="black">)</font>;
+                                <font color="black">}</font>
+
+                                <font color="blue">if</font> <font color="black">(</font>clicadoSobre<font color="black">)</font> <font color="black">{</font>
+                                    <font color="green">// lança pra desclicar</font>
+                                    ModificadorDeEstado mde<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                                    mde.adicionaParametro<font color="black">(</font>Valor<font color="black">(</font><font color="blue">false</font><font color="black">)</font><font color="black">)</font>;
+                                    mde.defineCampo<font color="black">(</font><font color="maroon">"clicado sobre"</font><font color="black">)</font>;
+                                    Evento evento<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font>, mde<font color="black">)</font>;
+                                    evento.grupo<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>grupo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                                    Evento<font color="black">*</font> disparado <font color="black">=</font> evento.dispara<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTempo<font color="black">)</font>;
+                                    disparado<font color="black">-</font><font color="black">&#62;</font>especial<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+                                    aDisparar.adiciona<font color="black">(</font>disparado<font color="black">)</font>;
+                                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font><font color="blue">false</font>, <font color="maroon">"clicado sobre"</font><font color="black">)</font>;
+                                <font color="black">}</font>
+                            <font color="black">}</font>
+                        <font color="black">}</font>
+
+                        <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> aDisparar.tamanho<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+                            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>gera<font color="black">(</font>aDisparar<font color="black">[</font>i<font color="black">]</font><font color="black">)</font>;
+                        <font color="black">}</font>
+                    <font color="black">}</font>
+                <font color="black">}</font>
+            <font color="black">}</font> <font color="blue">catch</font><font color="black">(</font><font color="blue">const</font> Excecao<font color="black">&</font> e<font color="black">)</font> <font color="black">{</font>
+                Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>WARN, <font color="maroon">"AreaClicavel::executa():: ignorando"</font>
+                        <font color="maroon">" a exceção "</font> <font color="black">+</font> e <font color="black">+</font> <font color="maroon">"! Corrija o mais rápido"</font>
+                        <font color="maroon">" possível."</font><font color="black">)</font>;
+            <font color="black">}</font>
+
+            <font color="blue">delete</font> e;
+        <font color="black">}</font>
+    <font color="black">}</font>
+
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+string AreaClicavel<font color="black">:</font><font color="black">:</font>emString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="maroon">"AreaClicavel("</font> <font color="black">+</font> <font color="black">*</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">)</font> <font color="black">+</font> <font color="maroon">")x="</font>
+            <font color="black">+</font> Inteiro<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"x"</font><font color="black">)</font>.emInt<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+            <font color="black">+</font> <font color="maroon">", y="</font> <font color="black">+</font> Inteiro<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"y"</font><font color="black">)</font>.emInt<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+            <font color="black">+</font> <font color="maroon">", largura="</font> <font color="black">+</font> Inteiro<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"largura"</font><font color="black">)</font>.emInt<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+            <font color="black">+</font> <font color="maroon">", altura="</font> <font color="black">+</font> Inteiro<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"altura"</font><font color="black">)</font>.emInt<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

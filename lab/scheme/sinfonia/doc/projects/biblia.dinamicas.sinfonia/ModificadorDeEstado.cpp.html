@@ -1,0 +1,117 @@
+<HTML>
+<HEAD>
+<TITLE>
+ModificadorDeEstado.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: ModificadorDeEstado.cpp.html,v $
+ * $Date: 2005/03/22 20:19:04 $
+ * $Revision: 1.42 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/ModificadorDeEstado.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia;
+
+Identificacao ModificadorDeEstado<font color="black">:</font><font color="black">:</font>APENAS_ATRIBUI <font color="black">=</font> <font color="maroon">"apenas atribui"</font>;
+
+ModificadorDeEstado<font color="black">:</font><font color="black">:</font>ModificadorDeEstado<font color="black">(</font>
+        <font color="blue">const</font> Valor<font color="black">&</font> nomeDoEstado, <font color="blue">const</font> Identificacao<font color="black">&</font> acao<font color="black">)</font>
+    <font color="black">:</font>pEstado<font color="black">(</font>nomeDoEstado<font color="black">)</font>, pAcao<font color="black">(</font>acao<font color="black">)</font>, pValores<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>defineCampo<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+ModificadorDeEstado<font color="black">:</font><font color="black">:</font>~ModificadorDeEstado<font color="black">(</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+<font color="blue">const</font> Valor<font color="black">&</font> ModificadorDeEstado<font color="black">:</font><font color="black">:</font>estado<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado;
+<font color="black">}</font>
+
+<font color="blue">const</font> Identificacao<font color="black">&</font> ModificadorDeEstado<font color="black">:</font><font color="black">:</font>acao<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pAcao;
+<font color="black">}</font>
+
+<font color="blue">const</font> Valor ModificadorDeEstado<font color="black">:</font><font color="black">:</font>campo<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> Valor<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pCampo.emString<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+ModificadorDeEstado<font color="black">&</font> ModificadorDeEstado<font color="black">:</font><font color="black">:</font>defineCampo<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> campo<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pCampo <font color="black">=</font> campo.valor<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+<font color="blue">const</font> Lista<font color="black">&#60;</font>EstadoAlvo<font color="black">&#62;</font><font color="black">&</font> ModificadorDeEstado<font color="black">:</font><font color="black">:</font>parametros<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pValores;
+<font color="black">}</font>
+
+ModificadorDeEstado<font color="black">&</font> ModificadorDeEstado<font color="black">:</font><font color="black">:</font>adicionaParametro<font color="black">(</font><font color="blue">const</font> EstadoAlvo<font color="black">&</font> ea<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pValores.adiciona<font color="black">(</font>ea<font color="black">)</font>;
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+<font color="blue">const</font> <font color="blue">bool</font> ModificadorDeEstado<font color="black">:</font><font color="black">:</font>igual<font color="black">(</font><font color="blue">const</font> Igualavel<font color="black">&</font> alheio<font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">bool</font> retorno <font color="black">=</font> <font color="blue">false</font>;
+    <font color="blue">const</font> ModificadorDeEstado<font color="black">&</font> mde <font color="black">=</font> dynamic_cast<font color="black">&#60;</font><font color="blue">const</font> ModificadorDeEstado<font color="black">&</font><font color="black">&#62;</font><font color="black">(</font>alheio<font color="black">)</font>;
+
+    <font color="blue">if</font> <font color="black">(</font>mde.acao<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>acao<font color="black">(</font><font color="black">)</font>
+        <font color="black">&</font><font color="black">&</font> mde.estado<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>estado<font color="black">(</font><font color="black">)</font>
+        <font color="black">&</font><font color="black">&</font> mde.campo<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>campo<font color="black">(</font><font color="black">)</font>
+        <font color="black">&</font><font color="black">&</font> mde.parametros<font color="black">(</font><font color="black">)</font>.tamanho<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>parametros<font color="black">(</font><font color="black">)</font>.tamanho<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+        retorno <font color="black">=</font> <font color="blue">true</font>;
+
+        <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> mde.parametros<font color="black">(</font><font color="black">)</font>.tamanho<font color="black">(</font><font color="black">)</font> <font color="black">&</font><font color="black">&</font> retorno; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+            <font color="blue">if</font> <font color="black">(</font>mde.parametros<font color="black">(</font><font color="black">)</font><font color="black">[</font>i<font color="black">]</font>.valorAlvo<font color="black">(</font><font color="black">)</font>
+                <font color="black">!</font><font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>parametros<font color="black">(</font><font color="black">)</font><font color="black">[</font>i<font color="black">]</font>.valorAlvo<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+            <font color="black">{</font>
+                retorno <font color="black">=</font> <font color="blue">false</font>;
+            <font color="black">}</font>
+        <font color="black">}</font>
+    <font color="black">}</font>
+
+    <font color="blue">return</font> retorno;
+<font color="black">}</font>
+
+Objeto<font color="black">*</font> ModificadorDeEstado<font color="black">:</font><font color="black">:</font>geraCopia<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    ModificadorDeEstado<font color="black">*</font> novo <font color="black">=</font> <font color="blue">new</font> ModificadorDeEstado<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado, <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pAcao<font color="black">)</font>;
+    novo<font color="black">-</font><font color="black">&#62;</font>defineCampo<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>campo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>parametros<font color="black">(</font><font color="black">)</font>.tamanho<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+        novo<font color="black">-</font><font color="black">&#62;</font>adicionaParametro<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>parametros<font color="black">(</font><font color="black">)</font><font color="black">[</font>i<font color="black">]</font><font color="black">)</font>;
+        <font color="green">//Debug::msg(INFO, "--- ModificadorDeEstado::geraCopia:: adicionando: "</font>
+        <font color="green">//      + this-&#62;parametros()[i]);</font>
+    <font color="black">}</font>
+
+    <font color="blue">return</font> novo;
+<font color="black">}</font>
+
+Copiavel<font color="black">&</font> ModificadorDeEstado<font color="black">:</font><font color="black">:</font>copiaEmSi<font color="black">(</font><font color="blue">const</font> Copiavel<font color="black">&</font> alheio<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">const</font> ModificadorDeEstado<font color="black">&</font> mde <font color="black">=</font> dynamic_cast<font color="black">&#60;</font><font color="blue">const</font> ModificadorDeEstado<font color="black">&</font><font color="black">&#62;</font><font color="black">(</font>alheio<font color="black">)</font>;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pAcao <font color="black">=</font> mde.pAcao;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pCampo <font color="black">=</font> mde.pCampo;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado <font color="black">=</font> mde.pEstado;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pValores.limpa<font color="black">(</font><font color="black">)</font>;
+
+    <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> mde.parametros<font color="black">(</font><font color="black">)</font>.tamanho<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>adicionaParametro<font color="black">(</font>mde.parametros<font color="black">(</font><font color="black">)</font><font color="black">[</font>i<font color="black">]</font><font color="black">)</font>;
+
+        <font color="green">//Debug::msg(INFO, "--- ModificadorDeEstado::copiaEmSi:: adicionando: "</font>
+        <font color="green">//      + mde.parametros()[i]);</font>
+    <font color="black">}</font>
+
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+
+</PRE>
+</BODY>
+</HTML>

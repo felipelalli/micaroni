@@ -1,0 +1,74 @@
+<HTML>
+<HEAD>
+<TITLE>
+Lock.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: Lock.h.html,v $
+ * $Date: 2005/03/22 20:18:54 $
+ * $Revision: 1.22 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_LOCK_H__0892701D_C459_4458_9E47_D6D3D5494B0A__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_LOCK_H__0892701D_C459_4458_9E47_D6D3D5494B0A__INCLUDED_
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/basico/Objeto.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>basico;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/fluxo/Semaforo.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>fluxo;
+
+<font color="blue">namespace</font> biblia <font color="black">{</font>
+ <font color="blue">namespace</font> dinamicas <font color="black">{</font>
+  <font color="blue">namespace</font> sinfonia <font color="black">{</font>
+   <font color="blue">namespace</font> util <font color="black">{</font>
+    <font color="green">/**
+     * Serve para garantir a execução por uma thread de cada vez,
+     * equivalente à palavra-chave &#60;b&#62;synchronized&#60;/b&#62; em Java.
+     * &#60;p&#62;
+     * Deve ser usado assim:
+     * &#60;br&#62;&#60;pre&#62;
+    int Classe::funcao() {
+        static Semaforo s(1);
+        Lock(s);
+        int valor = 10;
+
+        // ...
+        // codigo
+
+        return valor;
+    }
+       &#60;/pre&#62;
+     * &#60;p&#62;
+     * Retirado do documento "Object-Oriented Programming" encontrado em
+     * "http://www.cs.utexas.edu/users/lavender/courses/cs371/lectures/lecture-10.pdf"
+     * e copiado para "CVS/ages/doc/mais/thread/lecture-10 - Sincronização de Thread em C++.pdf".
+     */</font>
+    <font color="blue">class</font> Lock<font color="black">:</font> <font color="blue">public</font> Objeto <font color="black">{</font>
+        <font color="blue">private</font><font color="black">:</font>
+            Semaforo<font color="black">&</font> semaforo;
+
+        <font color="blue">public</font><font color="black">:</font>
+            Lock<font color="black">(</font>Semaforo<font color="black">&</font><font color="black">)</font>;
+            virtual ~Lock<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>;
+   <font color="black">}</font>
+  <font color="black">}</font>
+ <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_LOCK_H__0892701D_C459_4458_9E47_D6D3D5494B0A__INCLUDED_)</font>
+
+</PRE>
+</BODY>
+</HTML>

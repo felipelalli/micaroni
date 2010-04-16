@@ -1,0 +1,336 @@
+<HTML>
+<HEAD>
+<TITLE>
+Evento.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: Evento.h.html,v $
+ * $Date: 2005/03/22 20:18:59 $
+ * $Revision: 1.42 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_EVENTO_H__447AB505_F632_43E7_9C18_E0804E717F4F__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_EVENTO_H__447AB505_F632_43E7_9C18_E0804E717F4F__INCLUDED_
+
+<font color="blue">#include</font> <font color="maroon">&#60;string&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> std;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/fluxo/Thread.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>fluxo;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/basico/Igualavel.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>basico;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/tempo/Momento.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/tempo/Intervalo.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/tempo/UniversoDeTempo.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>tempo;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/tempo/unidades/Milissegundo.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>tempo<font color="black">:</font><font color="black">:</font>unidades;
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Rotulado.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/SinfoniaExcecao.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/ModificadorDeEstado.h"</font>
+
+<font color="blue">namespace</font> biblia <font color="black">{</font>
+ <font color="blue">namespace</font> dinamicas <font color="black">{</font>
+  <font color="blue">namespace</font> sinfonia <font color="black">{</font>
+    <font color="green">/**
+     * Relativo à Evento.
+     * @see Evento
+     */</font>
+    <font color="blue">class</font> EventoExcecao<font color="black">:</font> <font color="blue">public</font> SinfoniaExcecao <font color="black">{</font><font color="black">}</font>;
+
+    <font color="green">/**
+     * Significa que se tentou usar operações exclusivas
+     * para Eventos que já foram disparados.
+     *
+     * @see Evento
+     */</font>
+    <font color="blue">class</font> EventoNaoDisparadoExcecao<font color="black">:</font> <font color="blue">public</font> EventoExcecao <font color="black">{</font><font color="black">}</font>;
+
+    <font color="green">/**
+     * Significa que se tentou usar operações exclusivas
+     * para Eventos que não foram disparados.
+     *
+     * @see Evento
+     */</font>
+    <font color="blue">class</font> EventoDisparadoExcecao<font color="black">:</font> <font color="blue">public</font> EventoExcecao <font color="black">{</font><font color="black">}</font>;
+
+    <font color="green">/**
+     * Significa que se tentou usar operações exclusivas
+     * para Eventos que modificam um Estado diretamente.
+     *
+     * @see Evento
+     */</font>
+    <font color="blue">class</font> EventoIntermediarioExcecao<font color="black">:</font> <font color="blue">public</font> EventoExcecao <font color="black">{</font><font color="black">}</font>;
+
+    <font color="green">/**
+     * Um Evento é identificado por um nome (deriva de Rotulado)
+     * e pelo grupo a que pertence, e representa a mudança de um Estado
+     * ou algum acontecimento que disparará outros Eventos.
+     * &#60;p&#62;
+     * Pode estar diretamente ligado a um Estado que será modificado
+     * por um ModificadorDeEstado (ver {@link #modificaEstadoDiretamente()})
+     * ou pode ser apenas um Evento {@link #intermediario() intermediário}.
+     * &#60;b&#62;Por padrão, se este Evento estiver relacionado de alguma forma
+     * a um {@link Estado}, mesmo sendo intermediário, deve possuir o
+     * mesmo nome do {@link Estado}.&#60;/b&#62;
+     * &#60;p&#62;
+     * Também pode estar {@link #disparado() "disparado"} ou pode ser
+     * "somente para consulta" no caso de não estar "disparado". "Disparado"
+     * significa que esse Evento foi disparado em algum momento.
+     * &#60;p&#62;
+     * Obs.: Não é esta classe que associa um Evento a outros caso seja um Evento
+     * intermediário. Para isso, veja {@link GeradorDeEventosDependente}.
+     * &#60;p&#62;
+     * Obs2.: É possível que exista mais de um Evento com o mesmo nome e que
+     * um seja intermediário e o outro não. Isso porque um Evento que
+     * modifica um Estado diretamente também pode ser usado como um
+     * intermediário. Lembre-se que, diferente de um Estado, é possível
+     * haver diversos Eventos com o mesmo nome, cada instância é uma
+     * representação do Evento em momentos diferentes ({@link #momentoDoDisparo()}).
+     * &#60;p&#62;
+     * Exemplo de lançamento de um Evento:
+     * &#60;pre&#62;
+     {
+        Valor nome("lâmpada acesa"); // nome do evento em questão
+        nome.adicionaApelido("apaga"); // descrição do evento
+        ModificadorDeEstado mde(nome); // mde que modificará o estado
+        mde.adicionaValor(Valor(false)); // definindo o valor como falso, ou seja, apagará
+        Evento&#42 apagaLampada = Evento(mde).dispara(universoDeTempo); // dispara o Evento
+        algumGeradorDeEventos-&#62;gera(apagaLampada); // gera o evento em si
+     }
+       &#60;/pre&#62;
+     * @see ModificadorDeEstado
+     * @see Estado
+     * @see GeradorDeEventos
+     * @see GeradorDeEventosDependente
+     *
+     * @version $Revision: 1.42 $, $Date: 2005/03/22 20:18:59 $ (GMT-3)
+     * @author &#60;a href="mailto:lalli@ages.com.br?subject=$RCSfile: Evento.h.html,v $"&#62;Felipe Micaroni Lalli&#60;/a&#62;
+     * @author modificado por $Author: felipelalli $
+     */</font>
+    <font color="blue">class</font> Evento<font color="black">:</font> <font color="blue">public</font> Rotulado, <font color="blue">public</font> Igualavel, <font color="blue">public</font> Copiavel <font color="black">{</font>
+        <font color="blue">private</font><font color="black">:</font>
+            ModificadorDeEstado<font color="black">*</font> pModificador;
+            Momento<font color="black">*</font> pMomento;
+            <font color="blue">bool</font> pEspecial;
+            Valor pGrupo;
+
+        <font color="blue">protected</font><font color="black">:</font>
+            <font color="green">/**
+             * Para copiar, use {@link #geraCopia}.
+             */</font>
+            explicit Evento<font color="black">(</font><font color="blue">const</font> Evento<font color="black">&</font><font color="black">)</font>;
+
+        <font color="blue">public</font><font color="black">:</font>
+            <font color="green">/**
+             * A partir de um {@link Estado}, cria um {@link Evento}
+             * intermediário com o mesmo nome do Estado.
+             */</font>
+            <font color="blue">static</font> Evento criaEventoIntermediarioRelacionadoAEstado<font color="black">(</font><font color="blue">const</font> Estado<font color="black">&</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Cria um Evento intermediário rotulado com um nome
+             * que não modifica diretamente um Estado.
+             * Criá-lo não significa dispará-lo, para tal verifique
+             * a função {@link #dispara}.
+             */</font>
+            Evento<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> nome<font color="black">)</font>;
+
+            <font color="green">/**
+             * Cria um Evento rotulado que modifica um Estado
+             * diretamente. Para cada Estado existem
+             * Eventos correspondentes que o modificam.
+             * Criá-lo não significa dispará-lo, para tal verifique
+             * a função {@link #dispara}.
+             */</font>
+            Evento<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> nome, <font color="blue">const</font> ModificadorDeEstado<font color="black">&</font> mde<font color="black">)</font>;
+            virtual ~Evento<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * O grupo a que este Evento pertence.
+             * Está na forma de e. g.: "GrupoA.SubgrupoB"
+             *
+             * @see #nome()
+             * @see #nomeCompleto()
+             */</font>
+            virtual <font color="blue">const</font> Valor<font color="black">&</font> grupo<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Define o grupo a que este Evento pertence. Deve
+             * estar na forma de e. g.: "GrupoA.SubgrupoB"
+             */</font>
+            virtual Evento<font color="black">&</font> grupo<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * É o nome completo deste Evento que o identifica
+             * como único no universo. Este deve ser usado
+             * como chave em buscas de chaves únicas.
+             * &#60;p&#62;
+             * Soma o grupo ao nome deste unido por
+             * um ponto. E. g.: "GrupoA.SubgrupoB.nome deste estado"
+             *
+             * @see #nome()
+             * @see #grupo()
+             */</font>
+            virtual <font color="blue">const</font> Valor nomeCompleto<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Um Evento Especial pode ser lançado
+             * "a qualquer momento" sem constar na
+             * definição de dinâmica dos Estados
+             * e Eventos.
+             * &#60;p&#62;
+             * Se é especial é lançado por um
+             * GeradorDeEventosEspecial
+             * ao invés de um GeradorDeEventosDependente.
+             */</font>
+            virtual <font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font> especial<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Define se é lançado por um
+             * GeradorDeEventosEspecial ao invés de
+             * um GeradorDeEventosDependente.
+             */</font>
+            virtual Evento<font color="black">&</font> especial<font color="black">(</font><font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Indica que este Evento está ligado diretamente
+             * a um Estado e pode ser {@link #executa() executado}.
+             *
+             * @see #intermediario()
+             */</font>
+            virtual <font color="blue">const</font> <font color="blue">bool</font> modificaEstadoDiretamente<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Verifica se este Evento é intermediário, ou seja,
+             * não modifica um Estado diretamete.
+             *
+             * @see #modificaEstadoDiretamente()
+             */</font>
+            virtual <font color="blue">const</font> <font color="blue">bool</font> intermediario<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+                <font color="blue">return</font> <font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>modificaEstadoDiretamente<font color="black">(</font><font color="black">)</font>;
+            <font color="black">}</font>
+
+            <font color="green">/**
+             * Deve ser invocado toda vez que este Evento
+             * for disparado. Cria uma cópia deste (deve
+             * ser deletado externamente) e retorna.
+             *
+             * @see #momentoDoDisparo()
+             */</font>
+            virtual Evento<font color="black">*</font> dispara<font color="black">(</font><font color="blue">const</font> UniversoDeTempo<font color="black">&</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Verifica se este Evento foi disparado
+             * em algum momento.
+             *
+             * @see #momentoDoDisparo()
+             */</font>
+            virtual <font color="blue">const</font> <font color="blue">bool</font> disparado<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Retorna o momento em que este Evento foi
+             * disparado.
+             *
+             * @throws EventoNaoDisparadoExcecao
+             * @see #disparado()
+             * @see #dispara
+             */</font>
+            virtual <font color="blue">const</font> Momento<font color="black">&</font> momentoDoDisparo<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * @throws EventoIntermediarioExcecao
+             *         Só é possível se este evento não for intermediário.
+             */</font>
+            virtual <font color="blue">const</font> ModificadorDeEstado<font color="black">&</font> modificador<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Função auxílio: supõe que este Evento
+             * modifica diretamente
+             * um Estado e que possui um só parâmetro no
+             * modificador.
+             *
+             * @throws EventoIntermediarioExcecao
+             * @throws IndiceForaDeIntervaloListaExcecao
+             */</font>
+            virtual <font color="blue">const</font> Valor parametro<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+                <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>modificador<font color="black">(</font><font color="black">)</font>.parametroUnico<font color="black">(</font><font color="black">)</font>.valorAlvo<font color="black">(</font><font color="black">)</font>;
+            <font color="black">}</font>
+
+            <font color="green">// Igualavel:</font>
+            <font color="green">/**
+             * Se o nome completo é igual e:
+             * &#60;br&#62;- algum dos dois é um intermediário;
+             * &#60;br&#62;ou
+             * &#60;br&#62;- se os Modificadores de Estado internos são iguais.
+             */</font>
+            virtual <font color="blue">const</font> <font color="blue">bool</font> igual<font color="black">(</font><font color="blue">const</font> Igualavel<font color="black">&</font> alheio<font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">// Objeto:</font>
+            <font color="green">/**
+             * Se possui um apelido, coloca-o na frente do nome
+             * original, como: "deixa de estar &lt;preparado para jogar&gt;".
+             * Caso contrário, coloca o nome do evento seguido
+             * pelos parâmetros (se houver), como por exemplo:
+             * &lt;preparado para jogar&gt;(V). Com o nome do Evento
+             * sempre entre menor e maior. --- Se este Evento
+             * for disparado ({@link #disparado()}) o Momento
+             * será anexado ao final da string. --- Se este Evento
+             * for {@link #especial}, um asterisco (&#42) será adicionado
+             * ao início da string, e. g.: "&#42 &lt;preparado para jogar&gt;(V)".
+             * Se possuir ação diferente de "apenas atribuição" ela será
+             * colocada assim: "&lt;preparado para jogar&gt;ação(1)" e se
+             * possir campo diferente do principal ele será colocado assim:
+             * "&lt;preparado para jogar&gt;(campo=V)".
+             */</font>
+            virtual string emString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">// Copiavel:</font>
+            virtual Objeto<font color="black">*</font> geraCopia<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+            virtual Copiavel<font color="black">&</font> copiaEmSi<font color="black">(</font><font color="blue">const</font> Copiavel<font color="black">&</font> alheio<font color="black">)</font>;
+    <font color="black">}</font>;
+  <font color="black">}</font>
+ <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_EVENTO_H__447AB505_F632_43E7_9C18_E0804E717F4F__INCLUDED_)</font>
+
+<font color="green">/*
+
+                       .RW.   .  .             
+                     +### .  .               
+                 .  i#W+##  .                
+                   t#M  I#B                  
+           .     .i#M    R#I                 
+         .  .    i#W     .M#=                
+               .t##        ##:               
+          .   .+#W    .  . .##   .           
+              t#B.   .    . ;##.             
+           . i#M.    .     . t#B.            
+         . .t#W    .         .Y#Y:           
+           i#M           .  . .B#+           
+          I#B.                  ##:          
+         t#B.                    ## . .      
+       .I##.,:::ttttiIVRVXRBM######M .       
+      .,#MW#####BRXRRRYtttt+=;:,:,:          
+       . .     .           .        . 
+
+*/</font>
+
+</PRE>
+</BODY>
+</HTML>

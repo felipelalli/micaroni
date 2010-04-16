@@ -1,0 +1,52 @@
+usuario
+- id
+- email
+- senha_md5
+- email_verificado
+- primeiro_nome
+- sobrenome
+- apresentacao
+- data_cadastro
+
+configuracao_usuario
+- id_usuario
+- portugues
+- ingles
+- ordem_antigo_para_recente
+- ocultar_lidos
+- agrupar_por_tipo
+- mostrar_apenas_favoritos
+- mostrar_apenas_postagens_de
+
+postagem
+- id
+- id_autor
+- cidade
+- data_publicacao
+- data_modificada
+- id_clima
+- temperatura
+- id_humor
+- texto
+- id_postagem_pai (NULL)
+- rascunho
+
+clima
+- id
+- descricao
+
+humor
+- id
+- descricao
+- imagem
+
+postagem_usuario
+- id_postagem
+- id_usuario
+- favorito
+- aberto
+- lido
+
+tags_postagem
+- id_postagem
+- nome_tag

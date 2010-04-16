@@ -1,0 +1,160 @@
+<HTML>
+<HEAD>
+<TITLE>
+ModificadorDeEstado.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: ModificadorDeEstado.h.html,v $
+ * $Date: 2005/03/22 20:19:04 $
+ * $Revision: 1.42 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_MODIFICADORDEESTADO_H__FEBCF918_6F60_4D45_A5C8_D154EA1F46E0__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_MODIFICADORDEESTADO_H__FEBCF918_6F60_4D45_A5C8_D154EA1F46E0__INCLUDED_
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/basico/Objeto.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/basico/Copiavel.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/basico/Igualavel.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>basico;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/util/Lixeira.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>util;
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Valor.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/EstadoAlvo.h"</font>
+
+<font color="blue">namespace</font> biblia <font color="black">{</font>
+ <font color="blue">namespace</font> dinamicas <font color="black">{</font>
+  <font color="blue">namespace</font> sinfonia <font color="black">{</font>
+    <font color="green">/**
+     * Está relacionado diretamente a um (nome de)
+     * Estado para modificá-lo
+     * com uma determinada ação
+     * e eventuais valores como
+     * parâmetro. Pode estar associado a algum campo específico (pela
+     * função {@link #defineCampo}),
+     * caso contrário se aplicará no campo padrão {@link Multifuncional#CAMPO_PRINCIPAL}.
+     * Os valores como parâmetro são {@link EstadoAlvo apontadores para Estado}s
+     * que podem ser um {@link MediadorDeEstados#estadoConstante estado constante}.
+     * &#60;p&#62;
+     * Obs.: Não é esta classe que modifica diretamente o Estado relacionado,
+     * para esse fim veja {@link MediadorDeEstados}.
+     *
+     * @see Evento
+     * @see MediadorDeEstados
+     * @see Estado#CAMPO_PRINCIPAL
+     */</font>
+    <font color="blue">class</font> ModificadorDeEstado<font color="black">:</font> <font color="blue">public</font> Copiavel,
+                               <font color="blue">public</font> Igualavel, <font color="blue">public</font> Objeto
+    <font color="black">{</font>
+        <font color="blue">private</font><font color="black">:</font>
+            Valor pEstado;
+            Identificacao pAcao;
+            Identificacao pCampo;
+            Lista<font color="black">&#60;</font>EstadoAlvo<font color="black">&#62;</font> pValores;
+            Lista<font color="black">&#60;</font><font color="blue">const</font> Valor<font color="black">*</font><font color="black">&#62;</font> pValoresConstantes;
+
+        <font color="blue">protected</font><font color="black">:</font>
+            <font color="green">/**
+             * Use {@link #geraCopia} ao invés deste.
+             */</font>
+            ModificadorDeEstado<font color="black">(</font><font color="blue">const</font> ModificadorDeEstado<font color="black">&</font><font color="black">)</font>;
+
+        <font color="blue">public</font><font color="black">:</font>
+            <font color="green">/**
+             * É uma {@link #acao ação} especial que indica
+             * que haverá apenas um {@link #parametros parâmetro} que será atribuído
+             * ao {@link Estado} relacionado sem que seja
+             * executada outra ação em conjunto.
+             */</font>
+            <font color="blue">static</font> Identificacao APENAS_ATRIBUI;
+
+            <font color="green">/**
+             * Cria um ModificadorDeEstado.
+             *
+             * @param nomeCompletoDoEstado É necessário que seja o nome completo
+             *        do Estado, i. e., anexado ao grupo a que pertence.
+             *        Veja {@link Estado#nomeCompleto()}.
+             */</font>
+            explicit ModificadorDeEstado<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> nomeCompletoDoEstado,
+                                <font color="blue">const</font> Identificacao<font color="black">&</font> acao <font color="black">=</font> APENAS_ATRIBUI<font color="black">)</font>;
+
+            virtual ~ModificadorDeEstado<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Retorna o nome completo do Estado em questão.
+             */</font>
+            virtual <font color="blue">const</font> Valor<font color="black">&</font> estado<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Retorna a ação que será aplicada ao Estado
+             * em questão.
+             */</font>
+            virtual <font color="blue">const</font> Identificacao<font color="black">&</font> acao<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * O campo a qual será aplicado este
+             * ModificadorDeEstado.
+             */</font>
+            virtual <font color="blue">const</font> Valor campo<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Retorna os parâmetros que serão aplicados ao {@link #estado Estado}
+             * em questão.
+             */</font>
+            virtual <font color="blue">const</font> Lista<font color="black">&#60;</font>EstadoAlvo<font color="black">&#62;</font><font color="black">&</font> parametros<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Supõe que este modificador tenha um só
+             * parâmetro.
+             *
+             @throws IndiceForaDeIntervaloListaExcecao
+             */</font>
+            virtual <font color="blue">const</font> EstadoAlvo<font color="black">&</font> parametroUnico<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+                <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>parametros<font color="black">(</font><font color="black">)</font><font color="black">[</font><font color="maroon">0</font><font color="black">]</font>;
+            <font color="black">}</font>
+
+            <font color="green">/**
+             * Adiciona um {@link EstadoAlvo} como parâmetro a este ModificadorDeEstado
+             * que será usado como parâmetro na aplicação ao
+             * {@link #estado Estado} em questão.
+             */</font>
+            virtual ModificadorDeEstado<font color="black">&</font> adicionaParametro<font color="black">(</font><font color="blue">const</font> EstadoAlvo<font color="black">&</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Define o campo que este modificador aplicará.
+             */</font>
+            virtual ModificadorDeEstado<font color="black">&</font> defineCampo<font color="black">(</font>
+                    <font color="blue">const</font> Valor<font color="black">&</font> <font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL<font color="black">)</font>;
+
+            <font color="green">// Igualavel:</font>
+            <font color="green">/**
+             * É igual quando as ações são as mesmas,
+             * o Estado é o mesmo e os parâmetros
+             * também.
+             */</font>
+            virtual <font color="blue">const</font> <font color="blue">bool</font> igual<font color="black">(</font><font color="blue">const</font> Igualavel<font color="black">&</font> alheio<font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">// Copiavel:</font>
+            virtual Objeto<font color="black">*</font> geraCopia<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+            virtual Copiavel<font color="black">&</font> copiaEmSi<font color="black">(</font><font color="blue">const</font> Copiavel<font color="black">&</font> alheio<font color="black">)</font>;
+    <font color="black">}</font>;
+  <font color="black">}</font>
+ <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_MODIFICADORDEESTADO_H__FEBCF918_6F60_4D45_A5C8_D154EA1F46E0__INCLUDED_)</font>
+
+</PRE>
+</BODY>
+</HTML>

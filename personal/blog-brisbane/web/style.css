@@ -1,0 +1,128 @@
+body { margin: 0px; padding: 0px;
+       font-family: trebuchet, calibri, arial, verdana, sans-serif;
+       font-size: 11pt; color: #033; }
+
+img { border: 0px; }
+
+a { text-decoration: none; color: #007; border-bottom: 0px solid #fbb; }
+a:hover { border-bottom: 2px solid #f00; }
+
+h2 { padding: 0px; margin: 0px; }
+ul { margin: 0px; padding: 0px; list-style: none; }
+li { padding-left: 30px; background-image: url(img/bullet.png); background-repeat: no-repeat; background-position: 10px 2px; margin-top: 0px; }
+
+.li2 { background-image: url(img/bullet2.png); background-repeat: no-repeat; background-position: 10px 2px; }
+.li3 { background-image: url(img/bullet3.png); background-repeat: no-repeat; background-position: 10px 2px; }
+.lifav { background-image: url(img/bullet-fav.png); background-repeat: no-repeat; background-position: 10px 2px; }
+.liselec { background-image: url(img/bullet-selected.gif); background-repeat: no-repeat; background-position: 10px 2px; }
+
+.notfinished a { }
+.readed a { color: #aaa; font-size: 90%; text-decoration: line-through; }
+.notreaded a { font-weight: bold; font-size: 110%; }
+.selected a { font-weight: bold; color: blue; }
+
+.button { font-size: 17px; height: 30px; 
+	  background: #cfc; margin-left: 15px; cursor: pointer; font-weight: bold; }
+	  
+.button2 { font-size: 17px; height: 30px;
+           background: #cfc; margin-left: 15px; cursor: pointer; }
+
+.button-login { font-size: 14pt; width: 100px; height: 50px; border: 2px solid #caa;
+	  background: #def; margin: 10px 0px; cursor: pointer; font-weight: bold; }
+	  
+.button-newuser { font-size: 14pt; width: 150px; height: 50px; border: 2px solid #caa;
+	  background: #def; margin-top: 30px; cursor: pointer; font-weight: bold; }	
+
+#errortop { border: 2px solid red; margin: 0px auto; background: #ffc; text-align: center; font-family: Arial; }	
+#errortop2 { font-size: smaller; margin: 0px auto; background: #ffc; text-align: center; font-family: Arial; }	
+
+#head { margin: 0px 0px; min-width: 800px; }
+#head-left2 { margin: 0px 0px; background-repeat: no-repeat; width: 596px; height: 200px; background-image: url("img/head.png"); float:left; }
+#head-left { margin: 0px 0px; width: 596px; height: 200px; float:left; }
+#head-right { margin: 0px 0px; background-repeat: repeat-x; height: 200px; background-image: url("img/head2.png"); }
+#head-bottom { margin: 0px 0px; background-repeat: repeat-x; height: 25px; background-image: url("img/shadow.png"); clear: both; }
+
+#welcome { padding-top: 40px; margin: 0px auto; font-weight: bold; font-size: 150%; }
+#welcome a { color:#00a; border-bottom: 0px solid #00d; font-size: smaller; font-weight: normal; }
+#welcome a:hover { color:#00a; border-bottom: 1px solid #00d; font-size: smaller; }
+
+#left-side { margin-left: 10px; float:left; }
+
+#org { width: 230px; margin-left: 10px; }
+#org-top { width: 230px; height: 43px; background-image: url("img/left-top1.png"); background-repeat: no-repeat; }
+#org-meio { width: 230px; background-image: url("img/left-top2.png"); background-repeat: repeat-y; }
+#org-bottom { width: 230px; height: 12px; background-image: url("img/left-top3.png"); background-repeat: no-repeat; }
+#organization-messages { width: 220px; border: 0px solid red; padding-left: 20px; font-size: 80%; }
+#organization-messages p { padding: 0px; margin: 0px; }
+#messages { width: 210px; height: 300px; border: 0px solid red; padding-left: 5px; overflow:auto; }
+#messages p { padding: 0px; margin: 0px; }
+.date { font-size: smaller; color: gray; }
+
+#flickr { height: 1000px; }
+#flickr p { margin-left: 20px; font-size: 130%; }
+
+#om-bottom { margin-bottom: 10px; }
+
+#caderno { margin-left: 260px; margin-right: 40px; }
+#caderno-top-left { width: 21px; height: 20px; background-image: url("img/shadow-top-left.png"); background-repeat: no-repeat; float:left; }
+#caderno-top { height: 20px; background-image: url("img/shadow2.png"); background-repeat: repeat-x;  }
+#caderno-meio { background-image: url("img/caderno.png"); background-repeat: repeat-y;  }
+#caderno-bottom-left { margin-left: 30px; width: 21px; height: 20px; background-image: url("img/shadow-bottom-left.png"); background-repeat: no-repeat; float:left; }
+#caderno-bottom { margin-left: 30px; height: 20px; background-image: url("img/shadow3.png"); background-repeat: repeat-x;  }
+
+#content { padding-left: 60px; padding-top: 20px; padding-bottom: 30px; }
+#content p { font-family: times; font-style: italic; text-align: justify; font-size: 12pt; color: #555; }
+#titulo_postagem { font-family: trebuchet; font-style: normal; color: #333; font-size: 180%; }	 
+#data_postagem { font-family: trebuchet; font-style: italic; color: #999; margin-top: 10pt; font-size: 120%;  }
+#nothing p { font-family: trebuchet; font-style: normal; color: gray; font-size: 120%; text-align:left; color:red; }
+#info { border-top: 1px #ccc solid; margin-top: 50px; color: black; font-style: normal; }
+#info p { margin: 5px 0px 0px 0px; font-family: trebuchet; font-size: 80%; }
+
+#favbut { margin-top: 20px; border: 0px solid red; padding: 0px 0px; margin-left: 380px; }
+#star { cursor: pointer; width: 22px; height: 21px; border: 0px solid red; float: left; }
+#buttons { margin-left: 30px; border: 0px solid red; }
+
+#comments { margin-left: 330px; }
+
+#error p { font-family: arial; font-style: normal; text-align: center; }
+.error-message { color:red; font-size: 13pt; font-weight: bold; }
+.ok-message { color:green; font-weight: normal; font-size: 13pt; }
+
+#error-sql { border: 2px solid red; padding: 20px; }
+#error-sql p { color: red; font-size: 13pt; font-weight: bold;
+	       font-style: normal; text-align: center; font-family: arial; }
+
+.field { width: 200px; }
+.field-error { border: 2px solid red; width: 200px; }
+
+#newuser-form textarea { margin-top: 5px; width: 100%; }
+#newuser-form p { font-family: arial; font-style: normal; text-align: center; }
+
+#newuser p { text-align: left; }
+#newuser a { border-bottom: 1px dashed gray; }
+#newuser a:hover { border-bottom: 2px solid blue; }
+
+.login-title { font-size: 14pt; font-weight: bold; }
+
+table { border: 0px; margin: 0px auto; }
+td { font-family: Arial; }
+.right { text-align: right; }
+
+#rodape { clear:both; font-size: 100%; color: #777; text-align: right; border-top: 0px dashed #ccc;
+          padding-top: 10px; padding-right: 20px; font-family: arial; font-size: smaller;
+          background-image: url(img/traco.png); background-repeat: repeat-x; background-position: top left; }
+          
+#rodape a { text-decoration: none; border: 0px; color: #555; font-style: italic; }
+#rodape a:hover { text-decoration: none; border-bottom: 1px solid #555; }
+
+@media print {
+	#rodape { display: none; }
+	#rodape2 { clear:both; color: #ddd; text-align: right; margin: 5px 20px; font-size: 70%; }
+
+	ul { margin-left: 20px; padding-left: 0px; list-style: square; }
+	li { padding-left: 0px; background: #fff; } 	
+}
+
+@media screen {
+    #rodape2 { display: none; }
+}

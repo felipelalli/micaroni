@@ -1,0 +1,183 @@
+<HTML>
+<HEAD>
+<TITLE>
+Situacao.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: Situacao.h.html,v $
+ * $Date: 2005/03/22 20:19:09 $
+ * $Revision: 1.41 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_SITUACAO_H__04C71F0A_F6EB_4422_A65A_96F09C2EF62E__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_SITUACAO_H__04C71F0A_F6EB_4422_A65A_96F09C2EF62E__INCLUDED_
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/basico/Objeto.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>basico;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/util/Lixeira.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>util;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/armazenamento/volatil/carcacas/Lista.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>armazenamento<font color="black">:</font><font color="black">:</font>volatil<font color="black">:</font><font color="black">:</font>carcacas;
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Evento.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Condicao.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/CondicaoImpl.h"</font>
+
+<font color="blue">namespace</font> biblia <font color="black">{</font>
+ <font color="blue">namespace</font> dinamicas <font color="black">{</font>
+  <font color="blue">namespace</font> sinfonia <font color="black">{</font>
+    <font color="green">/**
+     * Uma situação "acontece" se um ou qualquer um
+     * de vários Eventos acontecerem e alguma Condicao
+     * for verdadeira. Uma Situacao está também
+     * associada ao(s) Evento(s) que ela poderá gerar.
+     *
+     * @see Evento
+     * @see Condicao
+     * @see GeradorDeEventosDependente
+     */</font>
+    <font color="blue">class</font> Situacao<font color="black">:</font> <font color="blue">public</font> Rotulado <font color="black">{</font>
+        <font color="blue">private</font><font color="black">:</font>
+            Lista<font color="black">&#60;</font><font color="blue">const</font> Evento<font color="black">*</font><font color="black">&#62;</font> pOQueGera;
+            Lista<font color="black">&#60;</font><font color="blue">const</font> Evento<font color="black">*</font><font color="black">&#62;</font> pOQueGeraSenao;
+            Lista<font color="black">&#60;</font><font color="blue">const</font> Evento<font color="black">*</font><font color="black">&#62;</font> pQuandoOcorrer;
+            <font color="blue">const</font> Condicao<font color="black">*</font> pSomenteSe;
+            Lixeira pLixo;
+
+            Situacao<font color="black">(</font><font color="blue">const</font> Situacao<font color="black">&</font><font color="black">)</font>;
+
+        <font color="blue">public</font><font color="black">:</font>
+            <font color="green">/**
+             * Cria uma situação vazia.
+             * &#60;p&#62;
+             * Use as funções {@link #adicionaEvento},
+             * {@link #defineCondicao}, {@link #adicionaEventoQueGera}
+             * e {@link #adicionaEventoQueGeraSenao} para definir
+             * esta Situacao. Enquanto uma condição
+             * não for definida, esta situação não "acontece".
+             */</font>
+            Situacao<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> nome <font color="black">=</font> <font color="maroon">"(sem nome)"</font><font color="black">)</font>;
+            virtual ~Situacao<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Adiciona um {@link Evento} que pode ser capaz
+             * de tornar esta {@link Situacao} verdadeira.
+             * &#60;p&#62;
+             * &#60;b&#62;Importante:&#60;/b&#62; caso esta Situacao não
+             * tenha nenhum Evento relacionado, deve-se adicionar
+             * Eventos intermediários com o mesmo nome &#60;b&#62;de todos
+             * os {@link Estados}&#60;/b&#62; envolvidos na {@link Condicao}
+             * desta Situacao. Para isso, use a função {@link
+             * Evento#criaEventoIntermediarioRelacionadoAEstado}.
+             */</font>
+            virtual Situacao<font color="black">&</font> adicionaEvento<font color="black">(</font><font color="blue">const</font> Evento<font color="black">&</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Define uma {@link Condicao} para
+             * esta {@link Situacao}.
+             */</font>
+            virtual Situacao<font color="black">&</font> defineCondicao<font color="black">(</font><font color="blue">const</font> Condicao<font color="black">&</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Verifica se esta situação "aconteceu",
+             * verificando se o {@link Evento} passado
+             * corresponde ({@link #eventoCorresponde})
+             * e a condição atrelada é verdadeira.
+             *
+             * @deprecated Importante: por questão de otimização, prefira
+             * usar uma combinação de {@link #eventoCorresponde}
+             * e {@link #condicaoVerdadeira} ao invés desta.
+             *
+             * @see #eventoCorresponde
+             * @see #condicaoVerdadeira
+             */</font>
+            virtual <font color="blue">const</font> <font color="blue">bool</font> aconteceu<font color="black">(</font><font color="blue">const</font> Evento<font color="black">&</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Verifica se a condição desta Situacao é verdadeira.
+             *
+             * @see #eventoCorresponde
+             */</font>
+            virtual <font color="blue">const</font> <font color="blue">bool</font> condicaoVerdadeira<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Retorna a condição associada a esta Situacao.
+             * Prefira utilizar direto {@link #condicaoVerdadeira}.
+             */</font>
+            virtual <font color="blue">const</font> Condicao<font color="black">&</font> condicao<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Verifica se o {@link Evento} passado
+             * corresponde a um dos {@link #seAcontecerUmDessesEventos
+             * eventos} desta Situação.
+             *
+             * @see Evento#igual
+             * @see #condicaoVerdadeira
+             */</font>
+            virtual <font color="blue">const</font> <font color="blue">bool</font> eventoCorresponde<font color="black">(</font><font color="blue">const</font> Evento<font color="black">&</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Retorna uma lista dos {@link Evento}s que são
+             * capazes de tornar essa situação verdadeira ou falsa.
+             */</font>
+            virtual <font color="blue">const</font> Lista<font color="black">&#60;</font><font color="blue">const</font> Evento<font color="black">*</font><font color="black">&#62;</font><font color="black">&</font> seAcontecerUmDessesEventos<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Adiciona {@link Evento}s que serão gerados quando
+             * a {@link Situacao} deste GeradorDeEventosDependente
+             * ocorrer.
+             *
+             * @see #oQueGera()
+             */</font>
+            virtual Situacao<font color="black">&</font> adicionaEventoQueGera<font color="black">(</font><font color="blue">const</font> Evento<font color="black">&</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Retorna os {@link Evento}s que serão gerados quando
+             * esta {@link Situacao} ocorrer.
+             *
+             * @see #adicionaEventoQueGera
+             */</font>
+            virtual <font color="blue">const</font> Lista<font color="black">&#60;</font><font color="blue">const</font> Evento<font color="black">*</font><font color="black">&#62;</font><font color="black">&</font> oQueGera<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Adiciona {@link Evento}s que serão gerados quando
+             * algum evento da {@link Situacao} deste GeradorDeEventosDependente
+             * ocorrer mas sua condição não for verdadeira.
+             *
+             * @see #oQueGeraSenao()
+             */</font>
+            virtual Situacao<font color="black">&</font> adicionaEventoQueGeraSenao<font color="black">(</font><font color="blue">const</font> Evento<font color="black">&</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Retorna os {@link Evento}s que serão gerados quando
+             * algum evento da {@link Situacao} ocorrer mas sua condição
+             * não for verdadeira.
+             *
+             * @see #adicionaEventoQueGeraSenao
+             */</font>
+            virtual <font color="blue">const</font> Lista<font color="black">&#60;</font><font color="blue">const</font> Evento<font color="black">*</font><font color="black">&#62;</font><font color="black">&</font> oQueGeraSenao<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">// Objeto:</font>
+            virtual string emString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+    <font color="black">}</font>;
+  <font color="black">}</font>
+ <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_SITUACAO_H__04C71F0A_F6EB_4422_A65A_96F09C2EF62E__INCLUDED_)</font>
+
+</PRE>
+</BODY>
+</HTML>

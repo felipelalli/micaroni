@@ -1,0 +1,15 @@
+#all { font-family: trebuchet, calibri, arial, verdana, sans-serif;
+       font-size: 11pt; color: #033;
+       margin-left: 40pt; }
+       
+#posting { font-family: trebuchet, calibri, arial, verdana, sans-serif;
+       	   font-size: 11pt; color: #033; margin-left: 40pt; }
+       	   
+#posting textarea { width: 560px; }          
+#posting input { margin: 0px 10px; }          
+#posting select { margin: 0px 10px; }          
+#posting div { border: 0px solid red; margin: 10px; }
+
+#tags { }
+.tag { cursor: pointer; margin: 0px 2px; }
+.tag:hover { color:red; }

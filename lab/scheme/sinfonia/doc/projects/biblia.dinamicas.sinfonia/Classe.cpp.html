@@ -1,0 +1,46 @@
+<HTML>
+<HEAD>
+<TITLE>
+Classe.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: Classe.cpp.html,v $
+ * $Date: 2005/03/22 20:18:55 $
+ * $Revision: 1.42 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Classe.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia;
+
+Classe<font color="black">:</font><font color="black">:</font>Classe<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> nome<font color="black">)</font><font color="black">:</font>Rotulado<font color="black">(</font>nome<font color="black">)</font>, pAcoesPossiveis<font color="black">(</font><font color="black">)</font>, pCampos<font color="black">(</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+Classe<font color="black">:</font><font color="black">:</font>~Classe<font color="black">(</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+<font color="blue">const</font> Lista<font color="black">&#60;</font>Identificacao<font color="black">&#62;</font><font color="black">&</font> Classe<font color="black">:</font><font color="black">:</font>acoesPossiveis<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pAcoesPossiveis;
+<font color="black">}</font>
+
+Lista<font color="black">&#60;</font>Identificacao<font color="black">&#62;</font><font color="black">&</font> Classe<font color="black">:</font><font color="black">:</font>acoes<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pAcoesPossiveis;
+<font color="black">}</font>
+
+Lista<font color="black">&#60;</font>Identificacao<font color="black">&#62;</font><font color="black">&</font> Classe<font color="black">:</font><font color="black">:</font>camposParaModificar<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pCampos;
+<font color="black">}</font>
+
+<font color="blue">const</font> Lista<font color="black">&#60;</font>Identificacao<font color="black">&#62;</font><font color="black">&</font> Classe<font color="black">:</font><font color="black">:</font>campos<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pCampos;
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

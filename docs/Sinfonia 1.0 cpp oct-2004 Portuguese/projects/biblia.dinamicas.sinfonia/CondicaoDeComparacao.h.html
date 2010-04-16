@@ -1,0 +1,122 @@
+<HTML>
+<HEAD>
+<TITLE>
+CondicaoDeComparacao.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: CondicaoDeComparacao.h.html,v $
+ * $Date: 2005/03/22 20:18:57 $
+ * $Revision: 1.41 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_CONDICAODECOMPARACAO_H__AFFE2531_0D40_4620_B14C_DE17864B9A8B__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_CONDICAODECOMPARACAO_H__AFFE2531_0D40_4620_B14C_DE17864B9A8B__INCLUDED_
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/basico/Objeto.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>basico;
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/EstadoAlvo.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Evento.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Condicao.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/SinfoniaExcecao.h"</font>
+
+<font color="blue">namespace</font> biblia <font color="black">{</font>
+ <font color="blue">namespace</font> dinamicas <font color="black">{</font>
+  <font color="blue">namespace</font> sinfonia <font color="black">{</font>
+    <font color="green">/**
+     * Relativo à CondicaoDeComparacao.
+     * @see CondicaoDeComparacao
+     */</font>
+    <font color="blue">class</font> CondicaoDeComparacaoExcecao<font color="black">:</font> <font color="blue">public</font> SinfoniaExcecao <font color="black">{</font><font color="black">}</font>;
+
+    <font color="green">/**
+     * É invocado quando dois Estados não podem
+     * ser comparados com o operador específico.
+     *
+     * @see CondicaoDeComparacao
+     */</font>
+    <font color="blue">class</font> ImpossivelCompararExcecao<font color="black">:</font> <font color="blue">public</font> CondicaoDeComparacaoExcecao <font color="black">{</font><font color="black">}</font>;
+
+    <font color="green">/**
+     * Faz a comparação (on-line) entre dois Estados.
+     */</font>
+    <font color="blue">class</font> CondicaoDeComparacao<font color="black">:</font> <font color="blue">public</font> Condicao <font color="black">{</font>
+        <font color="blue">private</font><font color="black">:</font>
+            EstadoAlvo pEstado1;
+            EstadoAlvo pEstado2;
+            Identificacao pOperador;
+
+        <font color="blue">public</font><font color="black">:</font>
+            <font color="green">/**
+             * Este construtor de cópia leva adiante a referência,
+             * i. e., não faz cópia.
+             */</font>
+            CondicaoDeComparacao<font color="black">(</font><font color="blue">const</font> CondicaoDeComparacao<font color="black">&</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * [estado1].campoA = [estado2].campoB
+             * &#60;br&#62;[estado1].campoC &#60; [estado2].campoD
+             * &#60;p&#62;
+             * O resultado da operação passada como parâmetro
+             * tem que ser boleana, caso contrário resultados
+             * inesperados podem acontecer sem aviso de erro!
+             * &#60;p&#62;
+             * Para fazer algo do tipo:
+             * &#60;br&#62;[estado1].campoA + [estado2] &#60; 56 + [estado3]
+             * use {@link EstadoDependente} para calcular
+             * &#60;br&#62;[estado1].campoA + [estado2] e 56 + [estado3]
+             * separadamente e depois unir por uma comparação
+             * através desta classe.
+             *
+             * @see Estado
+             * @see EstadoAlvo
+             * @see EstadoDependente
+             */</font>
+            CondicaoDeComparacao<font color="black">(</font>
+                    <font color="blue">const</font> EstadoAlvo<font color="black">&</font> estado1,
+                    <font color="blue">const</font> Identificacao<font color="black">&</font> operacao,
+                    <font color="blue">const</font> EstadoAlvo<font color="black">&</font> estado2<font color="black">)</font>;
+
+            virtual ~CondicaoDeComparacao<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">// Condicao:</font>
+            <font color="green">/**
+             * @throws ImpossivelCompararExcecao
+             *         É invocado quando o resultado da
+             *         operação não é um boleano.
+             */</font>
+            virtual <font color="blue">bool</font> verdadeira<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">// Copiavel:</font>
+            virtual Objeto<font color="black">*</font> geraCopia<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+            virtual Copiavel<font color="black">&</font> copiaEmSi<font color="black">(</font><font color="blue">const</font> Copiavel<font color="black">&</font> alheio<font color="black">)</font>;
+
+            <font color="green">// Objeto:</font>
+            <font color="green">/**
+             * Concatena o primeiro Estado,
+             * a operação de comparação e o segundo
+             * Estado, assim ó:
+             * &#60;p&#62;
+             * [A].campoA &#62; [B]
+             */</font>
+            virtual string emString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+    <font color="black">}</font>;
+  <font color="black">}</font>
+ <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_CONDICAODECOMPARACAO_H__AFFE2531_0D40_4620_B14C_DE17864B9A8B__INCLUDED_)</font>
+
+</PRE>
+</BODY>
+</HTML>

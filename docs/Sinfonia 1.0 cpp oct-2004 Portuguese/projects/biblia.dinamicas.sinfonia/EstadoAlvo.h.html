@@ -1,0 +1,132 @@
+<HTML>
+<HEAD>
+<TITLE>
+EstadoAlvo.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: EstadoAlvo.h.html,v $
+ * $Date: 2005/03/22 20:18:58 $
+ * $Revision: 1.10 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_ESTADOALVO_H__D99ABA99_F8CF_4D06_9EE0_AC9D8F301E97__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_ESTADOALVO_H__D99ABA99_F8CF_4D06_9EE0_AC9D8F301E97__INCLUDED_
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/basico/Copiavel.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/basico/Igualavel.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>basico;
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Estado.h"</font>
+
+<font color="blue">namespace</font> biblia <font color="black">{</font>
+ <font color="blue">namespace</font> dinamicas <font color="black">{</font>
+  <font color="blue">namespace</font> sinfonia <font color="black">{</font>
+    <font color="green">/**
+     * Aponta para um Estado indicando qual é o campo alvo.
+     * &#60;p&#62;
+     * Por questão de otimização e praticidade,
+     * esse EstadoAlvo pode ser também diretamente
+     * um valor {@link #constante}. É bom salientar
+     * que existem dois tipos de Estado constante: existe
+     * o que pode ser obtido através da função
+     * {@link MediadorDeEstados#estadoConstante} e a desta
+     * classe. Onde for possível, utilizar o valor constante
+     * diretamente nesta classe pode otimizar a performance
+     * do software, mas não é possível usá-la em todos os casos.
+     *
+     * @see Estado
+     */</font>
+    <font color="blue">class</font> EstadoAlvo<font color="black">:</font> <font color="blue">public</font> Objeto, <font color="blue">public</font> Copiavel, <font color="blue">public</font> Igualavel <font color="black">{</font>
+        <font color="blue">private</font><font color="black">:</font>
+            <font color="blue">const</font> Estado<font color="black">*</font> pEstado;
+            Valor pCampo;
+
+        <font color="blue">public</font><font color="black">:</font>
+
+            <font color="green">/**
+             * Cria um EstadoAlvo constante com o valor
+             * passado como parâmetro.
+             */</font>
+            EstadoAlvo<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> valorConstante<font color="black">)</font>;
+
+            <font color="green">/**
+             * Cria um EstadoAlvo apontando para um determinado
+             * Estado e um campo.
+             */</font>
+            EstadoAlvo<font color="black">(</font><font color="blue">const</font> Estado<font color="black">*</font> estado, <font color="blue">const</font> Valor<font color="black">&</font> campoAlvo<font color="black">)</font>;
+            
+            <font color="green">/**
+             * Utiliza {@link Multifuncional#CAMPO_PRINCIPAL}
+             * como padrão.
+             */</font>
+            explicit EstadoAlvo<font color="black">(</font><font color="blue">const</font> Estado<font color="black">*</font> estado<font color="black">)</font>;
+
+            <font color="green">/**
+             * Por questão de compatibilidade com listas e hashes.
+             * Não é possível manipular
+             * um EstadoAlvo com o Estado NULL.
+             */</font>
+            EstadoAlvo<font color="black">(</font><font color="black">)</font><font color="black">:</font>pEstado<font color="black">(</font>NULL<font color="black">)</font>, pCampo<font color="black">(</font>Valor<font color="black">(</font><font color="maroon">"ERRO"</font>, <font color="blue">true</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+            virtual ~EstadoAlvo<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Significa que este EstadoAlvo é um valor
+             * constante.
+             */</font>
+            virtual <font color="blue">const</font> <font color="blue">bool</font> constante<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+            
+            <font color="green">/**
+             * Nome do campo que este EstadoAlvo referencia. Deve
+             * ser usado em conjunto com {@link estado}.
+             */</font>
+            virtual <font color="blue">const</font> Valor<font color="black">&</font> campoAlvo<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Estado que este EstadoAlvo referencia. Deve
+             * ser usado em conjunto com {@link #campoAlvo}.
+             */</font>
+            virtual <font color="blue">const</font> Estado<font color="black">&</font> estado<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Valor do campo do Estado alvo.
+             */</font>
+            virtual <font color="blue">const</font> Valor valorAlvo<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">// Copiavel:</font>
+            virtual Objeto<font color="black">*</font> geraCopia<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+            virtual Copiavel<font color="black">&</font> copiaEmSi<font color="black">(</font><font color="blue">const</font> Copiavel<font color="black">&</font> alheio<font color="black">)</font>;
+
+            <font color="green">// Igualavel:</font>
+            <font color="green">/**
+             * É igual se aponta para o mesmo {@link Estado}
+             * e para o mesmo {@link #campoAlvo campo do Estado}.
+             * &#60;i&#62;Obs.: não compara os valores dos Estados!&#60;/i&#62;
+             */</font>
+            virtual <font color="blue">const</font> <font color="blue">bool</font> igual<font color="black">(</font><font color="blue">const</font> Igualavel<font color="black">&</font> alheio<font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">// Objeto:</font>
+            <font color="green">/**
+             * Retorna "&#62;&#62;[nome-do-estado].campo(valor)"
+             */</font>
+            virtual string emString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+    <font color="black">}</font>;
+  <font color="black">}</font>
+ <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_ESTADOALVO_H__D99ABA99_F8CF_4D06_9EE0_AC9D8F301E97__INCLUDED_)</font>
+
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,126 @@
+<HTML>
+<HEAD>
+<TITLE>
+UniversoMultifuncional.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: UniversoMultifuncional.h.html,v $
+ * $Date: 2005/03/22 20:19:10 $
+ * $Revision: 1.42 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_UNIVERSOMULTIFUNCIONAL_H__792E6EEE_A147_4044_B52C_37D382BA88CC__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_UNIVERSOMULTIFUNCIONAL_H__792E6EEE_A147_4044_B52C_37D382BA88CC__INCLUDED_
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/util/Lixeira.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>util;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/armazenamento/volatil/carcacas/MapaHash.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>armazenamento<font color="black">:</font><font color="black">:</font>volatil<font color="black">:</font><font color="black">:</font>carcacas;
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Universo.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Multifuncional.h"</font>
+
+<font color="blue">namespace</font> biblia <font color="black">{</font>
+ <font color="blue">namespace</font> dinamicas <font color="black">{</font>
+  <font color="blue">namespace</font> sinfonia <font color="black">{</font>
+    <font color="green">/**
+     * É um Universo que controla as restrições dos tipos básicos,
+     * como um conjunto de string possíveis, proibidas ou um
+     * intervalo possível de valor (maior que, menor que etc.).
+     * &#60;p&#62;
+     * A princípio aceita qualquer valor, até que alguma
+     * restrição seja feita. Se for adicionado pelo menos uma possibilidade
+     * através da função "adicionaPossibilidade" serão aceitas
+     * &#60;b&#62;somente&#60;/b&#62; as possibilidades que forem adicionadas.
+     * Caso seja adicionado alguma proibição através da função
+     * "adicionaNaoPodeSer" todos os elementos serão permitidos,
+     * exceto os que forem adicionados por esta função. Caso seja
+     * adicionado possibilidades e proibições, os valores possíveis
+     * serão o conjunto dos adicionados por "adicionaPossibilidade"
+     * exceto os que estiverem no conjunto "adicionaNaoPodeSer".
+     */</font>
+    <font color="blue">class</font> UniversoMultifuncional<font color="black">:</font> <font color="blue">public</font> Universo <font color="black">{</font>
+        <font color="blue">private</font><font color="black">:</font>
+            <font color="green">/**
+             * Para um acesso instantâneo.
+             */</font>
+            MapaHash<font color="black">&#60;</font><font color="blue">const</font> Valor<font color="black">*</font><font color="black">&#62;</font> pPossibilidades;
+            MapaHash<font color="black">&#60;</font><font color="blue">const</font> Valor<font color="black">*</font><font color="black">&#62;</font> pNaoPodeSer;
+            Lixeira pLixo;
+            Valor pMenorQue;
+            Valor pMaiorQue;
+
+        <font color="blue">public</font><font color="black">:</font>
+            <font color="green">/**
+             * A princípio aceita todas as possibilidades
+             * e depois de criado vai sendo restringido
+             * a partir das funções definidas.
+             */</font>
+            UniversoMultifuncional<font color="black">(</font><font color="black">)</font>;
+            virtual ~UniversoMultifuncional<font color="black">(</font><font color="black">)</font>;
+
+            virtual UniversoMultifuncional<font color="black">&</font> maiorQue<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font><font color="black">)</font>;
+            virtual UniversoMultifuncional<font color="black">&</font> menorQue<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font><font color="black">)</font>;
+            virtual UniversoMultifuncional<font color="black">&</font> maiorOuIgualA<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font><font color="black">)</font>;
+            virtual UniversoMultifuncional<font color="black">&</font> menorOuIgualA<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Adiciona um valor que este Universo não pode aceitar.
+             * @see #adicionaPossibilidade(const Valor&)
+             */</font>
+            virtual UniversoMultifuncional<font color="black">&</font> adicionaNaoPodeSer<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Adiciona uma possibilidade a este Universo.
+             * @see #adicionaNaoPodeSer(const Valor&)
+             */</font>
+            virtual UniversoMultifuncional<font color="black">&</font> adicionaPossibilidade<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Apenas para consulta, porque é lento e não contém
+             * os apelidos.
+             *
+             * @return deve ser deletado externamente.
+             */</font>
+            virtual Lista<font color="black">&#60;</font>Identificacao<font color="black">&#62;</font><font color="black">*</font> possibilidades<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Apenas para consulta, porque é lento e não contém
+             * os apelidos.
+             *
+             * @return deve ser deletado externamente.
+             */</font>
+            virtual Lista<font color="black">&#60;</font>Identificacao<font color="black">&#62;</font><font color="black">*</font> naoPodeAssumir<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">// Universo:</font>
+            virtual <font color="blue">const</font> <font color="blue">bool</font> estaContido<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font><font color="black">)</font> <font color="blue">const</font>;
+            virtual <font color="blue">const</font> Valor<font color="black">&</font> correspondente<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">// Objeto:</font>
+            <font color="green">/**
+             * Retorna no formato:
+             * &#60;br&#62;aceita somente: {a, b, c, ...}
+             *     e não aceita {d, e, f, ...}
+             */</font>
+            virtual string emString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+    <font color="black">}</font>;
+  <font color="black">}</font>
+ <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_UNIVERSOMULTIFUNCIONAL_H__792E6EEE_A147_4044_B52C_37D382BA88CC__INCLUDED_)</font>
+
+</PRE>
+</BODY>
+</HTML>

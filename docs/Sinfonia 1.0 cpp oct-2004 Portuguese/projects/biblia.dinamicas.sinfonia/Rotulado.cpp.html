@@ -1,0 +1,53 @@
+<HTML>
+<HEAD>
+<TITLE>
+Rotulado.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: Rotulado.cpp.html,v $
+ * $Date: 2005/03/22 20:19:06 $
+ * $Revision: 1.42 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Rotulado.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia;
+
+Rotulado<font color="black">:</font><font color="black">:</font>Rotulado<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> nome<font color="black">)</font><font color="black">:</font>pNome<font color="black">(</font>nome<font color="black">)</font>, pComentario<font color="black">(</font><font color="maroon">""</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+Rotulado<font color="black">:</font><font color="black">:</font>~Rotulado<font color="black">(</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+Rotulado<font color="black">&</font> Rotulado<font color="black">:</font><font color="black">:</font>mudaNome<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> nome<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pNome <font color="black">=</font> nome;
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+<font color="blue">const</font> Valor<font color="black">&</font> Rotulado<font color="black">:</font><font color="black">:</font>nome<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pNome;
+<font color="black">}</font>
+
+<font color="blue">const</font> string<font color="black">&</font> Rotulado<font color="black">:</font><font color="black">:</font>comentario<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pComentario;
+<font color="black">}</font>
+
+Rotulado<font color="black">&</font> Rotulado<font color="black">:</font><font color="black">:</font>defineComentario<font color="black">(</font><font color="blue">const</font> string<font color="black">&</font> c<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pComentario <font color="black">=</font> c;
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+string Rotulado<font color="black">:</font><font color="black">:</font>emString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="maroon">"nome: '"</font> <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font> <font color="black">+</font> <font color="maroon">"', comentário: '"</font>
+            <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>comentario<font color="black">(</font><font color="black">)</font> <font color="black">+</font> <font color="maroon">"'"</font>;
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

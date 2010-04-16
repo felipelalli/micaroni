@@ -1,0 +1,93 @@
+<HTML>
+<HEAD>
+<TITLE>
+Demonstracao.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: Demonstracao.h.html,v $
+ * $Date: 2005/03/22 20:18:40 $
+ * $Revision: 1.6 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AGES_BIBLIA_SINFONIA_DEMONSTRACAO_H<font color="black">)</font>
+<font color="blue">#define</font> AGES_BIBLIA_SINFONIA_DEMONSTRACAO_H
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/mais/allegro/BasicoVisualAllegro.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>mais<font color="black">:</font><font color="black">:</font>allegro;
+
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/io/som/CarregadorDeSom.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/io/som/ResultadoSonoro.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/io/som/Vitrola.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>io<font color="black">:</font><font color="black">:</font>som;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/mais/fmod/FabricaDeSonsFMod.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>mais<font color="black">:</font><font color="black">:</font>fmod;
+
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/ScriptDinamica.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/basico/Objeto.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/basico/Excecao.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>basico;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/fluxo/Thread.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/fluxo/Executavel.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>fluxo;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/util/Debug.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>util;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/tempo/unidades/Milissegundo.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>tempo<font color="black">:</font><font color="black">:</font>unidades;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/visual/dinamica/DesenhistaDeResultadoGraficoNaTela.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/visual/dinamica/CarregadorWizard.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>visual<font color="black">:</font><font color="black">:</font>dinamica;
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Sinfonia.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/ScriptDinamica.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia;
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/gde/Timer.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/gde/TecladoAllegro.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia<font color="black">:</font><font color="black">:</font>gde;
+
+<font color="green">//#include "biblia/dinamicas/sinfonia/miniaplicacao/GenesisTeste.h"</font>
+
+<font color="blue">namespace</font> biblia <font color="black">{</font>
+ <font color="blue">namespace</font> dinamicas <font color="black">{</font>
+  <font color="blue">namespace</font> sinfonia <font color="black">{</font>
+   <font color="blue">namespace</font> demonstracao <font color="black">{</font>
+    <font color="green">/**
+     * Uma aplicação teste usando a sinfonia.
+     */</font>
+    <font color="blue">class</font> Demonstracao<font color="black">:</font> <font color="blue">public</font> Executavel, <font color="blue">public</font> Objeto <font color="black">{</font>
+        <font color="blue">public</font><font color="black">:</font>
+            Demonstracao<font color="black">(</font><font color="black">)</font>;
+            virtual ~Demonstracao<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">// Executavel:</font>
+            virtual Executavel<font color="black">&</font> executa<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>;
+   <font color="black">}</font>
+  <font color="black">}</font>
+ <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_MINIAPLICACAO_H__4D45CD66_2240_4D69_93B1_5B745F09E71F__INCLUDED_)</font>
+
+</PRE>
+</BODY>
+</HTML>

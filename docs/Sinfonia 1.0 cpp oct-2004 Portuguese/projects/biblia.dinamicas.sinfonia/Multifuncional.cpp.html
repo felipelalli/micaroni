@@ -1,0 +1,126 @@
+<HTML>
+<HEAD>
+<TITLE>
+Multifuncional.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: Multifuncional.cpp.html,v $
+ * $Date: 2005/03/22 20:19:04 $
+ * $Revision: 1.42 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Multifuncional.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia;
+
+Valor Multifuncional<font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL <font color="black">=</font> <font color="maroon">"* PRINCIPAL"</font>;
+
+Identificacao Multifuncional<font color="black">:</font><font color="black">:</font>NOT <font color="black">=</font> <font color="maroon">"!"</font>;
+Identificacao Multifuncional<font color="black">:</font><font color="black">:</font>OR <font color="black">=</font> <font color="maroon">"|"</font>;
+Identificacao Multifuncional<font color="black">:</font><font color="black">:</font>AND <font color="black">=</font> <font color="maroon">"&"</font>;
+Identificacao Multifuncional<font color="black">:</font><font color="black">:</font>DIVIDIDO <font color="black">=</font> <font color="maroon">"/"</font>;
+Identificacao Multifuncional<font color="black">:</font><font color="black">:</font>VEZES <font color="black">=</font> <font color="maroon">"*"</font>;
+Identificacao Multifuncional<font color="black">:</font><font color="black">:</font>MENOS <font color="black">=</font> <font color="maroon">"-"</font>;
+Identificacao Multifuncional<font color="black">:</font><font color="black">:</font>MAIS <font color="black">=</font> <font color="maroon">"+"</font>;
+Identificacao Multifuncional<font color="black">:</font><font color="black">:</font>IGUALDADE <font color="black">=</font> <font color="maroon">"="</font>;
+Identificacao Multifuncional<font color="black">:</font><font color="black">:</font>DIFERENCA <font color="black">=</font> <font color="maroon">"!="</font>;
+Identificacao Multifuncional<font color="black">:</font><font color="black">:</font>MENOR <font color="black">=</font> <font color="maroon">"&#60;"</font>;
+Identificacao Multifuncional<font color="black">:</font><font color="black">:</font>MAIOR <font color="black">=</font> <font color="maroon">"&#62;"</font>;
+Identificacao Multifuncional<font color="black">:</font><font color="black">:</font>MENOR_OU_IGUAL <font color="black">=</font> <font color="maroon">"&#60;="</font>;
+Identificacao Multifuncional<font color="black">:</font><font color="black">:</font>MAIOR_OU_IGUAL <font color="black">=</font> <font color="maroon">"&#62;="</font>;
+
+Multifuncional<font color="black">:</font><font color="black">:</font>Multifuncional<font color="black">(</font><font color="black">)</font><font color="black">:</font>Classe<font color="black">(</font><font color="maroon">"Multifuncional"</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>acoes<font color="black">(</font><font color="black">)</font>.adiciona<font color="black">(</font>NOT<font color="black">)</font>.adiciona<font color="black">(</font>OR<font color="black">)</font>
+            .adiciona<font color="black">(</font>AND<font color="black">)</font>.adiciona<font color="black">(</font>DIVIDIDO<font color="black">)</font>
+            .adiciona<font color="black">(</font>VEZES<font color="black">)</font>.adiciona<font color="black">(</font>MENOS<font color="black">)</font>
+            .adiciona<font color="black">(</font>MAIS<font color="black">)</font>.adiciona<font color="black">(</font>IGUALDADE<font color="black">)</font>
+            .adiciona<font color="black">(</font>MENOR<font color="black">)</font>.adiciona<font color="black">(</font>MAIOR<font color="black">)</font>
+            .adiciona<font color="black">(</font>MENOR_OU_IGUAL<font color="black">)</font>.adiciona<font color="black">(</font>MAIOR_OU_IGUAL<font color="black">)</font>
+            .adiciona<font color="black">(</font>DIFERENCA<font color="black">)</font>;
+
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>camposParaModificar<font color="black">(</font><font color="black">)</font>.adiciona<font color="black">(</font>
+            Multifuncional<font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL.original<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+Multifuncional<font color="black">:</font><font color="black">:</font>~Multifuncional<font color="black">(</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+<font color="blue">const</font> Valor Multifuncional<font color="black">:</font><font color="black">:</font>aplica<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> valorA,
+        <font color="blue">const</font> Identificacao<font color="black">&</font> acao, <font color="blue">const</font> Lista<font color="black">&#60;</font><font color="blue">const</font> Valor<font color="black">*</font><font color="black">&#62;</font><font color="black">&</font> valores<font color="black">)</font> <font color="blue">const</font>
+<font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>valores.tamanho<font color="black">(</font><font color="black">)</font> <font color="black">&#62;</font> <font color="maroon">1</font><font color="black">)</font> <font color="black">{</font>
+        AcaoIndisponivelExcecao e;
+        e <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"Multifuncional::aplica:: valor A: "</font> <font color="black">+</font> valorA <font color="black">+</font> <font color="maroon">", ação: "</font>
+                <font color="black">+</font> acao <font color="black">+</font> <font color="maroon">", valores: "</font> <font color="black">+</font> valores 
+                <font color="black">+</font> <font color="maroon">". Um Multifuncional não sabe aplicar um"</font>
+                <font color="maroon">" valor qualquer a mais de um valor ou nenhum valor!"</font>;
+        <font color="blue">throw</font> e;
+    <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>valores.tamanho<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font> <font color="black">{</font>
+        <font color="blue">if</font> <font color="black">(</font>acao <font color="black">=</font><font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>NOT<font color="black">)</font> <font color="black">{</font>
+            <font color="blue">return</font> Valor<font color="black">(</font><font color="black">!</font>valorA.emBool<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+        <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>acao <font color="black">=</font><font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>IGUALDADE<font color="black">)</font> <font color="black">{</font>
+            <font color="blue">return</font> Valor<font color="black">(</font>valorA <font color="black">=</font><font color="black">=</font> Irrelevante<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+        <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>acao <font color="black">=</font><font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>DIFERENCA<font color="black">)</font> <font color="black">{</font>
+            <font color="blue">return</font> Valor<font color="black">(</font>valorA <font color="black">!</font><font color="black">=</font> Irrelevante<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+        <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+            AcaoIndisponivelExcecao e;
+            e <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"Multifuncional::aplica:: valor A: "</font> <font color="black">+</font> valorA <font color="black">+</font> <font color="maroon">", ação: "</font>
+                    <font color="black">+</font> acao <font color="black">+</font> <font color="maroon">". Um Multifuncional não sabe aplicar"</font>
+                    <font color="maroon">" esta ação unária! Só é possível aplicar NOT."</font>;
+            <font color="blue">throw</font> e;
+        <font color="black">}</font>
+    <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+        <font color="blue">const</font> Valor<font color="black">&</font> valorB <font color="black">=</font> <font color="black">*</font><font color="black">(</font>valores<font color="black">[</font><font color="maroon">0</font><font color="black">]</font><font color="black">)</font>;
+
+        <font color="green">// FIXME: otimizar isto aqui utilizando MapaHash</font>
+        <font color="blue">if</font> <font color="black">(</font>acao <font color="black">=</font><font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>OR<font color="black">)</font> <font color="black">{</font>
+            <font color="blue">return</font> Valor<font color="black">(</font>valorA.emBool<font color="black">(</font><font color="black">)</font> <font color="black">|</font><font color="black">|</font> valorB.emBool<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+        <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>acao <font color="black">=</font><font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>AND<font color="black">)</font> <font color="black">{</font>
+            <font color="blue">return</font> Valor<font color="black">(</font>valorA.emBool<font color="black">(</font><font color="black">)</font> <font color="black">&</font><font color="black">&</font> valorB.emBool<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+        <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>acao <font color="black">=</font><font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>DIVIDIDO<font color="black">)</font> <font color="black">{</font>
+            <font color="blue">return</font> Valor<font color="black">(</font>valorA.emDouble<font color="black">(</font><font color="black">)</font> <font color="black">/</font> valorB.emDouble<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+        <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>acao <font color="black">=</font><font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>VEZES<font color="black">)</font> <font color="black">{</font>
+            <font color="blue">return</font> Valor<font color="black">(</font>valorA.emDouble<font color="black">(</font><font color="black">)</font> <font color="black">*</font> valorB.emDouble<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+        <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>acao <font color="black">=</font><font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>MENOS<font color="black">)</font> <font color="black">{</font>
+            <font color="blue">return</font> Valor<font color="black">(</font>valorA.emDouble<font color="black">(</font><font color="black">)</font> <font color="black">-</font>valorB.emDouble<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+        <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>acao <font color="black">=</font><font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>MAIS<font color="black">)</font> <font color="black">{</font>
+            <font color="blue">if</font> <font color="black">(</font>valorA.pareceSerNumero<font color="black">(</font><font color="black">)</font>
+                <font color="black">&</font><font color="black">&</font> valorB.pareceSerNumero<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+            <font color="black">{</font>
+                <font color="blue">return</font> Valor<font color="black">(</font>valorA.emDouble<font color="black">(</font><font color="black">)</font> <font color="black">+</font> valorB.emDouble<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+            <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+                <font color="blue">return</font> Valor<font color="black">(</font>valorA.emString<font color="black">(</font><font color="black">)</font> <font color="black">+</font> valorB.emString<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+            <font color="black">}</font>
+        <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>acao <font color="black">=</font><font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>IGUALDADE<font color="black">)</font> <font color="black">{</font>
+            <font color="blue">return</font> Valor<font color="black">(</font>valorA <font color="black">=</font><font color="black">=</font> valorB<font color="black">)</font>;
+        <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>acao <font color="black">=</font><font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>DIFERENCA<font color="black">)</font> <font color="black">{</font>
+            <font color="blue">return</font> Valor<font color="black">(</font>valorA <font color="black">!</font><font color="black">=</font> valorB<font color="black">)</font>;
+        <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>acao <font color="black">=</font><font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>MENOR<font color="black">)</font> <font color="black">{</font>
+            <font color="blue">return</font> Valor<font color="black">(</font>valorA <font color="black">&#60;</font> valorB<font color="black">)</font>;
+        <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>acao <font color="black">=</font><font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>MAIOR<font color="black">)</font> <font color="black">{</font>
+            <font color="blue">return</font> Valor<font color="black">(</font>valorA <font color="black">&#62;</font> valorB<font color="black">)</font>;
+        <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>acao <font color="black">=</font><font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>MENOR_OU_IGUAL<font color="black">)</font> <font color="black">{</font>
+            <font color="blue">return</font> Valor<font color="black">(</font>valorA <font color="black">&#60;</font><font color="black">=</font> valorB<font color="black">)</font>;
+        <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>acao <font color="black">=</font><font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>MAIOR_OU_IGUAL<font color="black">)</font> <font color="black">{</font>
+            <font color="blue">return</font> Valor<font color="black">(</font>valorA <font color="black">&#62;</font><font color="black">=</font> valorB<font color="black">)</font>;
+        <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+            AcaoIndisponivelExcecao e;
+            e <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"Multifuncional::aplica:: valor A: "</font> <font color="black">+</font> valorA <font color="black">+</font> <font color="maroon">", ação: "</font>
+                    <font color="black">+</font> acao <font color="black">+</font> <font color="maroon">", valor B: "</font> <font color="black">+</font> valorB 
+                    <font color="black">+</font> <font color="maroon">". Um Multifuncional não sabe aplicar esta"</font>
+                    <font color="maroon">" ação binária! Só é possível aplicar ações binárias."</font>;
+            <font color="blue">throw</font> e;
+        <font color="black">}</font>
+    <font color="black">}</font>
+<font color="black">}</font>
+</PRE>
+</BODY>
+</HTML>

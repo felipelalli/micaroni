@@ -1,8 +1,12 @@
 # Temporary files:
 *~
+.bak
 
 # Project files:
 private/
 
 # Compilation result
 deploy/
+build/
+dist/
+*.class

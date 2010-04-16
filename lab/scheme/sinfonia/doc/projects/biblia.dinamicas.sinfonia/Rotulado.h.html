@@ -1,0 +1,88 @@
+<HTML>
+<HEAD>
+<TITLE>
+Rotulado.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: Rotulado.h.html,v $
+ * $Date: 2005/03/22 20:19:06 $
+ * $Revision: 1.42 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_ROTULADO_H__397ECDDC_43DB_4A0C_BCE6_34E012BE03D4__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_ROTULADO_H__397ECDDC_43DB_4A0C_BCE6_34E012BE03D4__INCLUDED_
+
+<font color="blue">#include</font> <font color="maroon">&#60;string&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> std;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/basico/Objeto.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>basico;
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Valor.h"</font>
+
+<font color="blue">namespace</font> biblia <font color="black">{</font>
+ <font color="blue">namespace</font> dinamicas <font color="black">{</font>
+  <font color="blue">namespace</font> sinfonia <font color="black">{</font>
+    <font color="green">/**
+     * Tudo que possui uma identificação, um nome.
+     * &#60;p&#62;
+     * Por geralmente estar associado a algo
+     * que tem um valor semântico complexo,
+     * pode possuir também um comentário.
+     */</font>
+    <font color="blue">class</font> Rotulado<font color="black">:</font> <font color="blue">public</font> Objeto <font color="black">{</font>
+        <font color="blue">private</font><font color="black">:</font>
+            Valor pNome;
+            string pComentario;
+
+        <font color="blue">protected</font><font color="black">:</font>
+            Rotulado<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> nome<font color="black">)</font>;
+
+        <font color="blue">public</font><font color="black">:</font>
+            virtual ~Rotulado<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Muda o nome deste Rotulado.
+             */</font>
+            virtual Rotulado<font color="black">&</font> mudaNome<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> nome<font color="black">)</font>;
+
+            <font color="green">/**
+             * Nome deste Rotulado.
+             */</font>
+            virtual <font color="blue">const</font> Valor<font color="black">&</font> nome<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Retorna o comentário deste Rotulado.
+             */</font>
+            virtual <font color="blue">const</font> string<font color="black">&</font> comentario<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Define um novo comentário para este Rotulado.
+             */</font>
+            virtual Rotulado<font color="black">&</font> defineComentario<font color="black">(</font><font color="blue">const</font> string<font color="black">&</font><font color="black">)</font>;
+
+            <font color="green">// Objeto:</font>
+            <font color="green">/**
+             * Retorna o nome e seu comentário.
+             */</font>
+            virtual string emString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+    <font color="black">}</font>;
+  <font color="black">}</font>
+ <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_ROTULADO_H__397ECDDC_43DB_4A0C_BCE6_34E012BE03D4__INCLUDED_)</font>
+
+</PRE>
+</BODY>
+</HTML>

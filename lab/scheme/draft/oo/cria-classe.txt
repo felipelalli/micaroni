@@ -1,0 +1,103 @@
+(cria-classe
+    (name 'Nome)
+    (of 'T1 'T2 'T3)
+    (extends 'Veículo)
+    (implements 'I1 'I2 'I3)
+
+    (fields
+	'(Boolean x)
+	'(Number y)
+	'(String z)
+	`(List ,(of Number) w))
+
+    (constructor
+	(initialize '(x true) '(y 10) '(z "oi")
+		    `(w ,(new 'List (of 'Number)()) ))
+	(parameters '(Number a) '(String b))
+	(body ...)
+    ) 
+
+    (gets '(x y z w))
+
+    (sets '(x y)) 
+
+    (actions
+	(create-function
+	    (name 'teste)
+	    (return-type 'ClasseW)
+	    (paramters 'a 'b 'c)
+	    (body
+		(put-in lista
+		    (new 'List (of 'String) ()) )
+
+		(put-in result
+		    (call 'lista 'add ("oi")) )
+	    )
+	)
+    )
+
+    (private-actions ...)
+    (protected-actions ...)
+)
+
+; ------------------------------
+
+(let
+    ((e (create-enviroment)))
+
+    (put-in e
+	    (create-package '(br com proj)
+		(depends-of '(br com proj2)))
+    )
+
+    (put-in
+	(get-of e '(br com proj))
+	(create-class ...)
+    )
+)
+
+; ------------------------------
+
+(let
+    ((l (new (get-of
+		(get-of e '(br com proj))
+		'ClasseDentroDoPacote)
+	     (of 'Number) ()
+	)
+      )
+     )
+
+     (body
+	...
+     )
+)
+
+; ------------------------------
+
+(load-basic-types
+    .
+    .
+    .
+	Number
+	String
+	List
+	Vector
+	Map
+)
+
+
+(let ((main-pack (get-of e '(br com principal))))
+     (load-classes
+	(
+	    ('Classe1 (get-of e '(br com proj)))
+	    ('Classe2 (get-of e '(br org fml)))
+	    ('ClasseX main-pack)
+	    ('ClasseY main-pack)
+	    ('ClasseZ main-pack)
+	)
+
+	(body
+	     ...
+	)
+     )
+)

@@ -1,0 +1,12 @@
+body {
+	padding: 10%;
+	text-align: center;
+}
+
+#message {
+	font-family: Arial;
+	font-size: 12pt;	
+	font-weight: bold;
+}
+
+a { font-size: 18pt; }

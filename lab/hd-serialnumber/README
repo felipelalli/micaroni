@@ -1,0 +1,4 @@
+Just a simple  program  in C++ to  Windows to show
+the serial number of the current disk. I used this
+to make a such kind of simple "lock" to avoid copy
+in a private project.

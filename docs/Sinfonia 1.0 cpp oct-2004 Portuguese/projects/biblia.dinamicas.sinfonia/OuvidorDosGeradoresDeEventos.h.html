@@ -1,0 +1,89 @@
+<HTML>
+<HEAD>
+<TITLE>
+OuvidorDosGeradoresDeEventos.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: OuvidorDosGeradoresDeEventos.h.html,v $
+ * $Date: 2005/03/22 20:19:06 $
+ * $Revision: 1.28 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_OUVIDORDOSGERADORESDEEVENTOSESPECIAIS_H__994A05F2_BBD7_4960_BE30_6E6E84412ACB__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_OUVIDORDOSGERADORESDEEVENTOSESPECIAIS_H__994A05F2_BBD7_4960_BE30_6E6E84412ACB__INCLUDED_
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/fluxo/Semaforo.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>fluxo;
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/GeradorDeEventos.h"</font>
+
+<font color="blue">namespace</font> biblia <font color="black">{</font>
+ <font color="blue">namespace</font> dinamicas <font color="black">{</font>
+  <font color="blue">namespace</font> sinfonia <font color="black">{</font>
+    <font color="green">/**
+     * É uma ponte de ligação entre um gerador
+     * de eventos e outro. Tudo que o gerador de eventos
+     * doador gerar será transmitido para o gerador
+     * de eventos receptor. Geralmente é usado para unir
+     * vários geradores de eventos num só, como por exemplo:
+     * &#60;p&#62;
+     * Geradores doadores:
+     * &#60;pre&#62;
+       GeradorA |
+       GeradorB |
+       GeradorC +-----&#62; GeradorReceptor
+       GeradorD |
+     * &#60;/pre&#62;
+     *
+     * @see GeradorDeEventos
+     */</font>
+    <font color="blue">class</font> OuvidorDosGeradoresDeEventos<font color="black">:</font> <font color="blue">public</font> Objeto, <font color="blue">public</font> Executavel <font color="black">{</font>
+        <font color="blue">private</font><font color="black">:</font>
+            GeradorDeEventos<font color="black">*</font> pGeradorReceptor;
+            GeradorDeEventos<font color="black">*</font> pGeradorDoador;
+            <font color="blue">bool</font> pAcabou;
+            <font color="blue">bool</font> pExecutou;
+            Semaforo pEsperaAcabar;
+            Semaforo pEsperaExecutar;
+
+        <font color="blue">public</font><font color="black">:</font>
+            OuvidorDosGeradoresDeEventos<font color="black">(</font>
+                    GeradorDeEventos<font color="black">*</font> receptor,
+                    GeradorDeEventos<font color="black">*</font> doador<font color="black">)</font>;
+
+            virtual ~OuvidorDosGeradoresDeEventos<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">// Executavel:</font>
+
+            <font color="green">/**
+             * Deve ser executado uma vez em Thread.
+             * Fica em modo de espera até que algum evento
+             * do gerador doador ocorra. E caso ocorra,
+             * este o repassa para o Gerador receptor.
+             */</font>
+            virtual Executavel<font color="black">&</font> executa<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Exibe os geradores a que este está relacionado.
+             */</font>
+            virtual string emString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+    <font color="black">}</font>;
+  <font color="black">}</font>
+ <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_OUVIDORDOSGERADORESDEEVENTOSESPECIAIS_H__994A05F2_BBD7_4960_BE30_6E6E84412ACB__INCLUDED_)</font>
+
+</PRE>
+</BODY>
+</HTML>

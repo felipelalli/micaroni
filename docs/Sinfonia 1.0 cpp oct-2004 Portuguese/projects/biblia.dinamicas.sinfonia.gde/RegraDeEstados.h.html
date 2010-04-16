@@ -1,0 +1,79 @@
+<HTML>
+<HEAD>
+<TITLE>
+RegraDeEstados.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: RegraDeEstados.h.html,v $
+ * $Date: 2005/03/22 20:18:48 $
+ * $Revision: 1.16 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_REGRADEESTADOS_H__CB8E6459_B260_4C46_95F9_350F07CC0092__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_REGRADEESTADOS_H__CB8E6459_B260_4C46_95F9_350F07CC0092__INCLUDED_
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/tempo/UniversoDeTempo.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>tempo;
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/GeradorDeEventosEspecial.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia;
+
+<font color="blue">namespace</font> biblia <font color="black">{</font>
+ <font color="blue">namespace</font> dinamicas <font color="black">{</font>
+  <font color="blue">namespace</font> sinfonia <font color="black">{</font>
+   <font color="blue">namespace</font> gde <font color="black">{</font>
+    <font color="green">/**
+     * Cria uma regra entre determinados estados. Os estados
+     * adicionados a esta tem que ser boleanos e somente
+     * um pode estar verdadeiro. Assim, quando um for definido como verdadeiro
+     * este {@link GeradorDeEventosEspecial} gera
+     * os {@link Evento}s para definir os outros
+     * como falso.
+     */</font>
+    <font color="blue">class</font> RegraDeEstados<font color="black">:</font> <font color="blue">public</font> GeradorDeEventosEspecial <font color="black">{</font>
+        <font color="blue">private</font><font color="black">:</font>
+            <font color="blue">const</font> UniversoDeTempo<font color="black">&</font> pTempo;
+
+        <font color="blue">public</font><font color="black">:</font>
+            <font color="green">/**
+             * Cria uma regra de estados.
+             *
+             * @param exclusivosEntreSi Se os estados são exclusivos entre si,
+             *        i. e., se um se tornar verdadeiro, os outros tornar-se-ão
+             *        falsos.
+             */</font>
+            RegraDeEstados<font color="black">(</font><font color="blue">const</font> MediadorDeEstados<font color="black">&</font>,
+                           <font color="blue">const</font> UniversoDeTempo<font color="black">&</font><font color="black">)</font>;
+
+            virtual ~RegraDeEstados<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Adiciona um {@link Estado} a esta regra.
+             */</font>
+            virtual RegraDeEstados<font color="black">&</font> adicionaEstado<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> nomeCompletoDoEstado<font color="black">)</font>;
+
+            <font color="green">/**
+             * Deve ser executado uma vez em Thread.
+             */</font>
+            virtual Executavel<font color="black">&</font> executa<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>;
+   <font color="black">}</font>
+  <font color="black">}</font>
+ <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_REGRADEESTADOS_H__CB8E6459_B260_4C46_95F9_350F07CC0092__INCLUDED_)</font>
+
+</PRE>
+</BODY>
+</HTML>

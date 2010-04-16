@@ -1,0 +1,123 @@
+<HTML>
+<HEAD>
+<TITLE>
+Universo.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: Universo.h.html,v $
+ * $Date: 2005/03/22 20:19:10 $
+ * $Revision: 1.42 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_UNIVERSO_H__FEB0436F_F222_4786_ADED_6899116724E9__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_UNIVERSO_H__FEB0436F_F222_4786_ADED_6899116724E9__INCLUDED_
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/basico/Objeto.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>basico;
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Valor.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/SinfoniaExcecao.h"</font>
+
+<font color="blue">namespace</font> biblia <font color="black">{</font>
+ <font color="blue">namespace</font> dinamicas <font color="black">{</font>
+  <font color="blue">namespace</font> sinfonia <font color="black">{</font>
+    <font color="green">/**
+     * Exceções relacionadas a um Universo.
+     *
+     * @see Universo
+     */</font>
+    <font color="blue">class</font> UniversoExcecao<font color="black">:</font> <font color="blue">public</font> SinfoniaExcecao <font color="black">{</font><font color="black">}</font>;
+
+    <font color="green">/**
+     * É quando um valor não pertence
+     * a um Universo.
+     *
+     * @see Universo
+     */</font>
+    <font color="blue">class</font> ValorForaDeIntervaloExcecao<font color="black">:</font> <font color="blue">public</font> UniversoExcecao <font color="black">{</font><font color="black">}</font>;
+
+    <font color="blue">class</font> Vazio;
+    <font color="blue">class</font> PodeTudo;
+
+    <font color="green">/**
+     * Representa um Universo que pode conter
+     * ou não determinado Valor.
+     *
+     * @see Valor
+     */</font>
+    <font color="blue">class</font> Universo<font color="black">:</font> <font color="blue">public</font> Objeto <font color="black">{</font>
+        <font color="blue">protected</font><font color="black">:</font>
+            Universo<font color="black">(</font><font color="black">)</font>;
+
+        <font color="blue">public</font><font color="black">:</font>
+            <font color="green">/**
+             * Não pode nada.
+             */</font>
+            <font color="blue">static</font> <font color="blue">const</font> Vazio VAZIO;
+
+            <font color="green">/**
+             * Aceita qualquer coisa.
+             */</font>
+            <font color="blue">static</font> <font color="blue">const</font> PodeTudo PODE_TUDO;
+
+            virtual ~Universo<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Verifica se o valor está contido neste Universo.
+             */</font>
+            virtual <font color="blue">const</font> <font color="blue">bool</font> estaContido<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font><font color="black">)</font> <font color="blue">const</font> <font color="black">=</font> <font color="maroon">0</font>;
+
+            <font color="green">/**
+             * Captura o valor correspondente para o uso de apelidos.
+             * Por padrão deve retornar o valor Irrelevante caso
+             * não haja correspondente.
+             */</font>
+            virtual <font color="blue">const</font> Valor<font color="black">&</font> correspondente<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font><font color="black">)</font> <font color="blue">const</font> <font color="black">=</font> <font color="maroon">0</font>;
+    <font color="black">}</font>;
+
+    <font color="green">/**
+     * Um Universo que não contém nada.
+     */</font>
+    <font color="blue">class</font> Vazio<font color="black">:</font> <font color="blue">public</font> Universo <font color="black">{</font>
+            virtual <font color="blue">const</font> <font color="blue">bool</font> estaContido<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+                <font color="blue">return</font> <font color="blue">false</font>;
+            <font color="black">}</font>
+
+            virtual <font color="blue">const</font> Valor<font color="black">&</font> correspondente<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+                <font color="blue">static</font> Irrelevante i;
+                <font color="blue">return</font> i;
+            <font color="black">}</font>
+    <font color="black">}</font>;
+
+    <font color="green">/**
+     * Um Universo que contém qualquer coisa.
+     */</font>
+    <font color="blue">class</font> PodeTudo<font color="black">:</font> <font color="blue">public</font> Universo <font color="black">{</font>
+            virtual <font color="blue">const</font> <font color="blue">bool</font> estaContido<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+                <font color="blue">return</font> <font color="blue">true</font>;
+            <font color="black">}</font>
+
+            virtual <font color="blue">const</font> Valor<font color="black">&</font> correspondente<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+                <font color="blue">static</font> Irrelevante i;
+                <font color="blue">return</font> i;
+            <font color="black">}</font>
+    <font color="black">}</font>;
+  <font color="black">}</font>
+ <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_UNIVERSO_H__FEB0436F_F222_4786_ADED_6899116724E9__INCLUDED_)</font>
+
+</PRE>
+</BODY>
+</HTML>

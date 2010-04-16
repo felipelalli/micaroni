@@ -1,0 +1,87 @@
+<HTML>
+<HEAD>
+<TITLE>
+Multifuncional.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: Multifuncional.h.html,v $
+ * $Date: 2005/03/22 20:19:05 $
+ * $Revision: 1.42 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_MULTIFUNCIONAL_H__594FB0B6_CE4A_4186_A426_9AA7E3F3F278__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_MULTIFUNCIONAL_H__594FB0B6_CE4A_4186_A426_9AA7E3F3F278__INCLUDED_
+
+<font color="blue">#if</font> _MSC_VER <font color="black">&#62;</font> <font color="maroon">1000</font>
+<font color="blue">#pragma</font> once
+<font color="blue">#endif</font> <font color="green">// _MSC_VER &#62; 1000</font>
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/basico/Identificacao.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>basico;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/fluxo/Executavel.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>fluxo;
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Classe.h"</font>
+
+<font color="blue">namespace</font> biblia <font color="black">{</font>
+ <font color="blue">namespace</font> dinamicas <font color="black">{</font>
+  <font color="blue">namespace</font> sinfonia <font color="black">{</font>
+    <font color="green">/**
+     * A classe funcional é uma classe "genérica"
+     * dos tipos primitivos (bool, int, double, string).
+     * Ela sabe aplicar os operadores básicos como
+     * atribuição, not, or, and, divisão,
+     * multiplicação, subtração, adição e comparações.
+     */</font>
+    <font color="blue">class</font> Multifuncional<font color="black">:</font> <font color="blue">public</font> Classe <font color="black">{</font>
+        <font color="blue">public</font><font color="black">:</font>
+            <font color="green">/**
+             * É o nome do campo principal de um {@link Multifuncional}.
+             * Um {@link Multifuncional} pode possuir diversos campos
+             * mas o principal é o que fica em evidência.
+             * É definido como &#60;b&#62;&#42 PRINCIPAL&#60;/b&#62;.
+             */</font>
+            <font color="blue">static</font> Valor CAMPO_PRINCIPAL;
+
+            Multifuncional<font color="black">(</font><font color="black">)</font>;
+            virtual ~Multifuncional<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">// Operações possíveis:</font>
+            <font color="blue">static</font> Identificacao NOT;
+            <font color="blue">static</font> Identificacao OR;
+            <font color="blue">static</font> Identificacao AND;
+            <font color="blue">static</font> Identificacao DIVIDIDO;
+            <font color="blue">static</font> Identificacao VEZES;
+            <font color="blue">static</font> Identificacao MENOS;
+            <font color="blue">static</font> Identificacao MAIS;
+            <font color="blue">static</font> Identificacao IGUALDADE;
+            <font color="blue">static</font> Identificacao DIFERENCA;
+            <font color="blue">static</font> Identificacao MENOR;
+            <font color="blue">static</font> Identificacao MAIOR;
+            <font color="blue">static</font> Identificacao MENOR_OU_IGUAL;
+            <font color="blue">static</font> Identificacao MAIOR_OU_IGUAL;
+
+            <font color="green">// Classe:</font>
+            virtual <font color="blue">const</font> Valor aplica<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> valor,
+                    <font color="blue">const</font> Identificacao<font color="black">&</font> acao, <font color="blue">const</font> Lista<font color="black">&#60;</font><font color="blue">const</font> Valor<font color="black">*</font><font color="black">&#62;</font><font color="black">&</font> valores<font color="black">)</font> <font color="blue">const</font>;
+    <font color="black">}</font>;
+  <font color="black">}</font>
+ <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_MULTIFUNCIONAL_H__594FB0B6_CE4A_4186_A426_9AA7E3F3F278__INCLUDED_)</font>
+
+</PRE>
+</BODY>
+</HTML>

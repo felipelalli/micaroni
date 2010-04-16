@@ -1,0 +1,35 @@
+<HTML>
+<HEAD>
+<TITLE>
+Lock.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: Lock.cpp.html,v $
+ * $Date: 2005/03/22 20:18:54 $
+ * $Revision: 1.22 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/util/Lock.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia<font color="black">:</font><font color="black">:</font>util;
+
+Lock<font color="black">:</font><font color="black">:</font>Lock<font color="black">(</font>Semaforo<font color="black">&</font> s<font color="black">)</font><font color="black">:</font>semaforo<font color="black">(</font>s<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>semaforo.esperar<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+Lock<font color="black">:</font><font color="black">:</font>~Lock<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>semaforo.liberar<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>
