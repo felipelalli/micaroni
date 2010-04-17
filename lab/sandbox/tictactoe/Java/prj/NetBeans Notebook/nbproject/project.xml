@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.ant.freeform</type>
+    <configuration>
+        <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
+            <name>Jogo da Velha</name>
+        </general-data>
+        <general-data xmlns="http://www.netbeans.org/ns/freeform-project/2">
+            <!-- Do not use Project Properties customizer when editing this file manually. -->
+            <name>Jogo da Velha</name>
+            <properties>
+                <property name="ant.script">K:\home\felipelalli\wa\fml\FAC\paradigmas\JogoDaVelha\build.xml</property>
+            </properties>
+            <folders>
+                <source-folder>
+                    <label>K:\home\felipelalli\wa\fml\FAC\paradigmas\JogoDaVelha\src</label>
+                    <location>K:\home\felipelalli\wa\fml\FAC\paradigmas\JogoDaVelha\src</location>
+                </source-folder>
+                <source-folder>
+                    <label>Jogo da Velha</label>
+                    <location>.</location>
+                    <encoding>windows-1252</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>src</label>
+                    <type>java</type>
+                    <location>K:\home\felipelalli\wa\fml\FAC\paradigmas\JogoDaVelha\src</location>
+                    <encoding>windows-1252</encoding>
+                </source-folder>
+            </folders>
+            <ide-actions>
+                <action name="build">
+                    <script>${ant.script}</script>
+                    <target>compila</target>
+                </action>
+                <action name="clean">
+                    <script>${ant.script}</script>
+                    <target>limpatudo</target>
+                </action>
+                <action name="javadoc">
+                    <script>${ant.script}</script>
+                    <target>documenta</target>
+                </action>
+                <action name="run">
+                    <script>${ant.script}</script>
+                    <target>roda</target>
+                </action>
+                <action name="test">
+                    <script>${ant.script}</script>
+                    <target>testa</target>
+                </action>
+                <action name="rebuild">
+                    <script>${ant.script}</script>
+                    <target>limpatudo</target>
+                    <target>compila</target>
+                </action>
+            </ide-actions>
+            <view>
+                <items>
+                    <source-folder style="packages">
+                        <label>src</label>
+                        <location>K:\home\felipelalli\wa\fml\FAC\paradigmas\JogoDaVelha\src</location>
+                    </source-folder>
+                    <source-file>
+                        <location>${ant.script}</location>
+                    </source-file>
+                </items>
+                <context-menu>
+                    <ide-action name="build"/>
+                    <ide-action name="rebuild"/>
+                    <ide-action name="clean"/>
+                    <ide-action name="javadoc"/>
+                    <ide-action name="run"/>
+                    <ide-action name="test"/>
+                </context-menu>
+            </view>
+            <subprojects/>
+        </general-data>
+        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/1">
+            <compilation-unit>
+                <package-root>K:\home\felipelalli\wa\fml\FAC\paradigmas\JogoDaVelha\src</package-root>
+                <classpath mode="compile">K:\home\felipelalli\wa\fml\FAC\paradigmas\JogoDaVelha\deploy\classes</classpath>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+        </java-data>
+    </configuration>
+</project>

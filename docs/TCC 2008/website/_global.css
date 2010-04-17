@@ -1,0 +1,50 @@
+#all { font-family: "trebuchet ms", verdana, sans-serif; font-size: 11pt; color: #033; }
+
+#content { padding-left: 20px; padding-right: 20px; text-align: justify; background: #fff; }
+#content p { }
+
+#rodape { clear:both; font-size: 100%; color: #777; text-align: right; border-top: 0px dashed #ccc;
+          padding-top: 10px; padding-right: 20px;
+          background-image: url(img/sombrinha.png); background-repeat: repeat-x; background-position: top left; }
+
+#separacao { border-bottom: 1px dashed #ccc; clear: both; }
+
+.escrito { font-family: times, serif; font-style: italic; }
+.centralizado { text-align: center; }
+.curto { width:80%; margin: 10px auto; }
+.pequeno { font-size: 80%; }
+.grande { font-size: 150%; }
+.normal { font-size: 11pt; }
+.rascunho { color: #999; text-decoration: line-through; }
+.erro { color: red; font-size: 100%; font-weight: bold; }
+
+.sem-borda { border: none; }
+.li2 { background-image: url(img/bullet2.png); background-repeat: no-repeat; background-position: 5px 2px; }
+.out { background-image: url(img/external.png); background-repeat: no-repeat; padding-right: 15px;
+       background-position: right center; }
+
+body { background: #fff; margin: 0px; padding: 0px; }
+img { border: 0px; }
+h1 { font-size: 200%; font-weight: normal; text-align: center; }
+h2 { font-size: 120%; font-weight: bold; text-align: center; font-style: italic; margin-top: 40px; clear: both; }
+h3 { font-size: 100%; font-weight: bold; font-weight: normal; text-align: center; font-style: normal; margin-top: 30px; clear: both; }
+
+a { text-decoration: none; font-weight: normal; color: #477; border-bottom: 1px dashed #cdf; }
+a:hover { border-bottom: 2px solid #47a; }
+
+#head a { border: none; }
+
+@media print {
+    #head { display: none; }
+    #content { padding: 5px; text-align: justify; }
+    #rodape { display: none; }
+    #rodape2 { color: #ddd; text-align: right; margin: 5px 20px; font-size: 70%; }
+    #content { margin-right: 20px; background: #fff; }
+    
+    .rascunho { display: none }
+    .curto { width:100%; margin: 0px auto; }
+}
+
+@media screen {
+    #rodape2 { display: none; }
+}

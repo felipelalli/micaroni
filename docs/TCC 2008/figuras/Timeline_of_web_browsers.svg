@@ -1,0 +1,1546 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
+"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="2170"
+     height="1730"
+     >
+	<title>Timeline of Web Browsers</title>
+	<desc>
+This timeline displays the releases of major versions of web browsers. 
+It includes version numbers for milestones reached by each browser, and displays the points at which a browser started from another. Source data comes from browser websites, wikipedia articles, archive.org and some other websites.
+
+First version created on June 12, 2007 by ADeveria for Wikipedia.
+
+Changelog available in source.
+	</desc>
+<!--
+
+Changelog
+
+V. 2.0 (June 29, 2007 - by ADeveria) :
+
+- Added browsers:
+	- WorldWideWeb
+	- ViolaWWW
+	- Lynx
+	- Cello
+	- w3m
+	- Gzilla
+	- Dillo
+	- Links
+	- ELinks
+	- Avant Browser
+
+- Added Omniweb V 1.0 marker (must've missed that before)
+- Rearranged timelines to be more or less in order of release
+- Added years to accomodate older browsers, increasing image width
+- Increased height to accomdate additional browsers
+- Added more source URLs
+
+V. 2.5 (July 16, 2007 - by ADeveria):
+
+- Improved code, more use of CSS 
+- Reverted improved code, wikimedia's SVG parser didn't like it. :(
+- Updated through end of June 2007
+- Added alternate names to WWW, Firefox, Maxthon and Avant Browser
+- Added layout engine areas
+- Added more browsers: Flock, SlipKnot, HotJava, Arachne, AOL Browser, Amaya
+	
+V. 2.6 (July 24, 2007 - by ADeveria):	
+
+- Updated Maxthon with V. 2.0
+- Updated Avant Browser with V. 11.5
+- Updated K-Meleon with V. 1.1
+- Updated w3m with V. 0.5.2
+- Added more Lynx version points (supporting 3 char versions)
+- Added layout engine area for Trident, removed dashed lines
+
+V. 2.7 (August 10, 2007 - by ADeveria):
+
+- Updated through end of July 2007
+- Added AMosaic/IBrowser
+- Added AWeb
+- Added NetCaptor
+
+V. 2.71 (September 4, 2007 - by ADeveria):
+
+- Updated through end of August 2007
+
+V. 2.72 (September 10, 2007 - by ADeveria):
+
+- Fixed IBrowse 2.4 size (thanks Ice Ardor!)
+
+V. 2.8 (November 1, 2007 - by ADeveria):
+
+- Updated through end of October 2007
+- Added wikilinks to browser names
+- Added Netscape Navigator 9
+
+V. 2.9 (November 7, 2007 - by Ice Ardor)
+
+- Added Opera Mini 4 release
+
+V. 3.0 (December 3, 2007 - by ADeveria)
+
+- Updated through end of November 2007
+- Fixed Safari name/link mixup
+- Added Safari 3
+- Added Flock 1.0
+- Added Amaya 9.5
+- Changed color for Amaya
+
+V 3.1 (December 28, 2007 - by Ice Ardor)
+- Updated through end of December 2007
+- Ended Netscape branch, as per http://blog.netscape.com/2007/12/28/end-of-support-for-netscape-web-browsers/
+
+V. 3.2 (January 3, 2008 - by ADeveria)
+
+- Added iCab 4.0, changed Webkit area  
+
+V. 3.3 (January 28, 2008 - by ADeveria)
+
+- Updated through end of January 2008
+- Added and expanded Links 2.0
+- Changed color of ELinks
+- Increased image width to include 2008
+
+V. 3.4 (March 31, 2008 - by ADeveria)
+
+- Updated through end of March 2008
+- Fixed and added some Lynx dates (thanks Aluvus!)
+- Added Konqueror 4.0
+- Added arrows to some lines for clarification 
+
+V. 3.5 (June 18, 2008 - by ADeveria)
+
+- Added Opera 9.5 
+- Added older Opera sub versions
+- Added Firefox 3
+
+V. 3.6 (September 5, 2008 - by ADeveria)
+
+- Added Google Chrome 
+- Updated through September 2
+- Added K-Meleon 1.5
+- Moved KHTML/Webkit tree for Epiphany switch
+- Fixed Galeon link
+
+
+Considering to add:
+
+Netsurf
+
+Contiki: development started in Q3 of 2002, 1.0 released in spring 2003, 2.0 released April 2007
+
+Scope (tabbed Trident/Gecko shell) 2.0 (last release) in Jul 2001, 1.0 in Apr 2001, first public alpha version in Feb 2001
+
+Networker (tabbed Trident/Gecko shell) 2.0 version in 2001, 2.5 in 2002, 2.6 in 2002, last release , 2.7 in 2003.130.230.93.16 15:26, 26 July 2007 (UTC)
+
+
+-->
+	
+	
+	
+<!-- 
+Tips for adding version markers:
+
+The "x" value of a new version marker can be gotten as followed:
+
+(year label "x" value) + ((month number) x 10 ) - 5
+
+For example, August 1995:
+240 + (8 * 10) - 5
+= 315
+
+-->
+<defs>
+    <style type="text/css"><![CDATA[
+      text {
+        font-family: "Times", "Times New Roman";
+        text-align: center;
+        color: black;
+      }
+      
+      line {
+      	stroke-linecap:round;
+      	stroke-width:3px;
+      }
+      
+      circle {
+      	stroke-width:2px;
+      	fill: white;
+      }
+      
+      #yearlabels text {
+        font-size: 20px;
+        text-anchor: middle;
+      }
+      
+      #legend text {
+      	font-family: sans-serif;
+      }
+      
+      .browser, .engine {
+      	font-size: 12px;
+      	font-family: sans-serif;
+      }
+      
+      .engine {
+		text-anchor: end;      
+		font-style: italic;
+      }
+      
+      .version {
+      	font-family: sans-serif;
+      	font-size: 14px;
+		text-anchor: middle;
+      }
+      
+      .subversion {
+      	font-family: sans-serif;
+      	font-size: 8px;
+      	color: black;
+      	text-anchor: middle;
+      }
+      
+      a:hover {
+      	text-decoration: underline;
+      }
+      
+    ]]>
+    </style>
+
+     <marker id="Triangle"
+      viewBox="0 0 10 10" refX="5" refY="5" 
+      markerUnits="strokeWidth"
+      markerWidth="6" markerHeight="4"
+      orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="inherit" />
+    </marker>
+
+
+<pattern id="bglines" patternUnits="userSpaceOnUse" width="120" height="100%">
+	<line x1="0" x2="0" y2="100%" stroke="#CCC"  />
+</pattern>
+
+<rect id="longver" width="30" height="20" rx="10" transform="translate(-15 -10)" stroke-width="2" fill="white" />
+
+<!--
+<g id="legend">
+	<rect x="25" y="25" width="380" height="150" fill="#ACF" opacity="0.3" rx="10" />
+	
+	<text dx="10" dy="30" x="25" y="25" style="font-size:20px;">
+		Timeline of Web Browsers
+	</text>
+	
+	<text dx="10" dy="60" x="25" y="25">
+		Version 3.4
+	</text>
+	
+	<text dx="10" dy="100" x="25" y="25">
+		Concept based on "Linux distro timeline"
+	</text>
+	
+	<text dx="10" dy="140" x="25" y="25">
+		Free to modify and spread
+	</text>
+
+
+</g>
+-->
+
+<g id="yearlabels">
+	<text x="-240">1991</text>
+	<text x="-120">1992</text>
+	<text x="0">1993</text>
+	<text x="120">1994</text>
+	<text x="240">1995</text>
+	<text x="360">1996</text>
+	<text x="480">1997</text>
+	<text x="600">1998</text>
+	<text x="720">1999</text>
+	<text x="840">2000</text>
+	<text x="960">2001</text>
+	<text x="1080">2002</text>
+	<text x="1200">2003</text>
+	<text x="1320">2004</text>
+	<text x="1440">2005</text>
+	<text x="1560">2006</text>
+	<text x="1680">2007</text>
+	<text x="1800">2008</text>
+</g>
+
+<g id="www">
+	<a xlink:href="http://en.wikipedia.org/wiki/WorldWideWeb">
+		<text x="-225" y="0" dx="20" dy="-15" class="browser">WorldWideWeb / Nexus</text>
+	</a>
+	<line stroke="#888" x1="-225" x2="120" />
+	<circle stroke="#888" cx="-225" r="10" />
+	<text x="-225" y="0" dy="3" class="subversion">0.1</text>
+
+</g>
+
+<g id="violawww">
+	<a xlink:href="http://en.wikipedia.org/wiki/ViolaWWW">
+		<text x="-75" y="0" dx="20" dy="-15" class="browser">ViolaWWW</text>
+	</a>
+	<!-- Source: http://www.livinginternet.com/w/wi_browse.htm -->
+	<!-- V. 1(?): May, 1992 -->
+	
+	<line stroke="black" x1="-75" x2="135" />
+	<circle stroke="black" cx="-75" r="10" />
+	<text x="-75" y="0" dy="5" class="version">1</text>
+	
+	<!-- Source: http://1997.webhistory.org/www.lists/www-talk.1994q1/0722.html -->
+	<!-- V3.0 (beta) Feb 1994 -->
+	<circle stroke="black" cx="135" r="10" />
+	<text x="135" y="0" dy="5" class="version">3</text>
+</g>
+
+<g id="cello">
+	<a xlink:href="http://en.wikipedia.org/wiki/Cello (web browser)">
+	<text x="55" y="0" dx="20" dy="-15" class="browser">Cello</text>
+	</a>
+	<!-- Source: Cello article on Wikipedia -->
+	<!-- V. (?): June, 1993 -->
+	
+	<line stroke="maroon" x1="55" x2="155" />
+
+	<!-- V. 1.0: April, 1994 -->
+	<circle stroke="maroon" cx="155" r="10" />
+	<text x="155" y="0" dy="5" class="version">1</text>
+</g>
+
+<g id="lynx">
+	<!-- V. 2.0 Final: March, 1993 -->	
+	<!-- Source: http://www.livinginternet.com/w/wi_browse.htm -->
+	<a xlink:href="http://en.wikipedia.org/wiki/Lynx (web browser)">
+		<text x="25" y="0" dx="20" dy="-15" class="browser">Lynx</text>	
+	</a>
+	<line stroke="gold" x1="25" x2="1880" />
+	
+	<circle stroke="gold" cx="25" r="10" />
+	<text x="25" y="0" dy="5" class="version">2</text>
+	
+	<!-- Source: http://1997.webhistory.org/www.lists/www-talk.1994q2/0580.html -->
+	<!-- Lynx 2.3 released: 17 May 1994 -->
+	<circle stroke="gold" cx="165" r="10" />
+	<text x="165" y="0" dy="3" class="subversion">2.3</text>
+
+	
+	<!-- Source: http://www.subir.com/lynx/old-release.html -->
+	<!-- Lynx 2.6 released: September 2, 1996 -->	
+	<circle stroke="gold" cx="445" r="10" />
+	<text x="445" y="0" dy="3" class="subversion">2.6</text>
+	
+	<!-- Source: http://www.subir.com/lynx/old-release.html -->
+	<!-- Lynx 2.7 released: February 15, 1997 -->	
+	<circle stroke="gold" cx="495" r="10" />
+	<text x="495" y="0" dy="3" class="subversion">2.7</text>
+	
+	<!-- Source: http://leb.net/pub/blinux/lynx/index.html -->
+	<!-- Lynx 2.8.0 was released on March 10, 1998 -->
+	<circle stroke="gold" cx="625" r="10" />
+	<text x="625" y="0" dy="3" class="subversion">2.8</text>
+	
+	<!-- Source: http://ftp.iasi.roedu.net/mirrors/lynx.isc.org/lynx-2.8.2/ -->
+	<!-- V2.8.2: June 1, 1999 -->
+	<use x="775" stroke="gold" xlink:href="#longver" />
+	<text x="775" y="0" dy="3" class="subversion">2.8.2</text>
+
+	<!-- Sources: http://web.archive.org/web/*/http://lynx.isc.org/ -->	
+	
+	<!-- V2.8.4: July 17, 2001 -->
+	<use x="1025" stroke="gold" xlink:href="#longver" />
+	<text x="1025" y="0" dy="3" class="subversion">2.8.4</text>
+	
+	<!-- V2.8.5: February 4, 2004 -->
+	<use x="1335" stroke="gold" xlink:href="#longver" />
+	<text x="1335" y="0" dy="3" class="subversion">2.8.5</text>	
+	
+	<!-- Lynx 2.8.6 was released on October 11, 2006 -->
+	<use x="1655" stroke="gold" xlink:href="#longver" />
+	<text x="1655" y="0" dy="3" class="subversion">2.8.6</text>
+	
+	
+	
+</g>
+
+<g id="hotjava">
+	<!-- Started September 16, 1994 -->
+	<!-- Source: http://tqnyc.com/NYC030283/history/outline%20of%20java%20history.doc -->
+	
+	<a xlink:href="http://en.wikipedia.org/wiki/HotJava">
+		<text x="205" y="0" dx="20" dy="-15" class="browser">WebRunner / HotJava</text>	
+	</a>
+	<line stroke="purple" x1="205" x2="775" />
+	<!-- V 1.0 April, 1997 -->
+	<!-- Source: http://home.blarg.net/~jozart/main/article/index.html -->
+	
+	<circle stroke="purple" cx="515" r="10" />
+	<text x="515" y="0" dy="5" class="version">1</text>
+
+	<!-- V 3.0 May, 1999 -->
+	<!-- Source: http://home.blarg.net/~jozart/main/article/index.html -->
+	<circle stroke="purple" cx="765" r="10" />
+	<text x="765" y="0" dy="5" class="version">3</text>
+
+</g>
+
+<g id="links">
+	<!-- V. 0.8 Nov 24, 1999 -->
+	<a xlink:href="http://en.wikipedia.org/wiki/Links (web browser)">
+		<text x="825" y="0" dx="20" dy="-15" class="browser">Links</text>	
+	</a>
+	<line stroke="black" x1="825" x2="1880" />
+	
+	<circle stroke="black" cx="825" r="10" />
+	<text x="825" y="0" dy="3" class="subversion">0.8</text>
+	
+	<!-- V. 0.9 June 27, 2000 -->
+	<circle stroke="black" cx="895" r="10" />
+	<text x="895" y="0" dy="3" class="subversion">0.9</text>
+
+	<!-- V. 2.0 June 10, 2002 -->
+	<!-- Source: http://links.twibright.com/download/ChangeLog -->
+	<circle stroke="black" cx="1135" r="10" />
+	<text x="1135" dy="5" class="version">2</text>
+
+
+</g>
+
+<g id="elinks">
+	<!-- Fork from Links -->
+	<line stroke="#444" x1="1055" y1="-50" x2="1055" />
+	<!-- First release: Oct 06, 2001 -->
+	<a xlink:href="http://en.wikipedia.org/wiki/ELinks">
+		<text x="1055" y="0" dx="20" dy="-15" class="browser">ELinks</text>	
+	</a>
+	<line stroke="#444" x1="1055" x2="1880" />
+	
+	<!-- V. 0.3 March 02, 2002 -->
+	<circle stroke="#444" cx="1105" r="10" />
+	<text x="1105" y="0" dy="3" class="subversion">0.3</text>
+	
+	<!-- V. 0.4 December 24, 2002 -->
+	
+	<!-- V. 0.9 December 24, 2003 -->
+	<circle stroke="#444" cx="1315" r="10" />
+	<text x="1315" y="0" dy="3" class="subversion">0.9</text>
+	
+	<!-- V. 0.10 December 24, 2004 -->
+	<circle stroke="#444" cx="1435" r="10" />
+	<text x="1435" y="0" dy="3" class="subversion">.10</text>
+	
+	<!-- V. 0.11 January 1, 2006 -->
+	<circle stroke="#444" cx="1560" r="10" />
+	<text x="1560" y="0" dy="3" class="subversion">.11</text>
+</g>
+
+<g id="w3m">
+	<!-- Source: http://w3m.sourceforge.net/STORY -->
+	<!-- First release: Early 1995 -->
+	<a xlink:href="http://en.wikipedia.org/wiki/w3m">
+		<text x="250" y="0" dx="20" dy="-15" class="browser">w3m</text>	
+	</a>
+	<line stroke="black" x1="250" x2="1880" />
+
+	<!-- Source: http://www4.ocn.ne.jp/~okabek/eng/w3m.html -->
+	<!-- V. 0.2 March 22, 2001 -->
+	<circle stroke="black" cx="985" r="10" />
+	<text x="985" y="0" dy="3" class="subversion">0.2</text>	
+
+	<!-- V. 0.3 March 5, 2002 -->
+	<!-- Source: http://sourceforge.net/news/?group_id=39518 -->
+	<circle stroke="black" cx="1105" r="10" />
+	<text x="1105" y="0" dy="3" class="subversion">0.3</text>
+
+	<!-- V. 0.4 Feb 23, 2003 -->
+	<circle stroke="black" cx="1215" r="10" />
+	<text x="1215" y="0" dy="3" class="subversion">0.4</text>
+	
+	<!-- V. 0.5 March 22, 2004 -->
+	<circle stroke="black" cx="1315" r="10" />
+	<text x="1315" y="0" dy="3" class="subversion">0.5</text>
+	
+	<!-- V. 0.5.2 May 31, 2007 -->
+	<use xlink:href="#longver" x="1725" stroke="black" />
+	<text x="1725" y="0" dy="3" class="subversion">0.5.2</text>
+</g>
+
+<g id="slipknot">
+	<!-- Source: Wikipedia article on "SlipKnot (web browser)" -->
+	<!-- First release: November 1994 -->
+	<a xlink:href="http://en.wikipedia.org/wiki/SlipKnot (web browser)">
+		<text x="225" y="0" dx="20" dy="-15" class="browser">SlipKnot</text>	
+	</a>
+	<line stroke="green" x1="225" x2="600" />
+	<circle stroke="green" cx="225" r="10" />
+	<text x="225" y="0" dy="5" class="version">1</text>
+	
+	<!-- Source: http://scout.wisc.edu/Projects/PastProjects/NH/95-12/95-12-19/0057.html -->
+	<!-- V. 1.4: December 19, 1995 -->
+	<circle stroke="green" cx="355" r="10" />
+	<text x="355" y="0" dy="3" class="subversion">1.4</text>
+	
+	<!-- Last downloads in 1997 -->
+	<line stroke="green" x1="600" x2="600" y1="-10" y2="10" />
+	
+</g>
+
+<g id="amaya">
+	<a xlink:href="http://en.wikipedia.org/wiki/Amaya (web browser)">
+		<text x="375" y="0" dx="20" dy="-15" class="browser">Tamaya / Amaya</text>
+	</a>
+	<!-- Source: http://opera.inrialpes.fr/Thot/AboutThot.html -->
+	<!-- Started: Early 1996 -->
+	<line stroke="darkgoldenrod" x1="375" x2="1880" />
+	
+	<!-- Source: http://www.w3.org/Amaya/User/New.html -->
+	<!-- V1.0 May 7, 1997 -->
+	<circle stroke="darkgoldenrod" cx="525" r="10" />
+	<text x="525" y="0" dy="5" class="version">1</text>
+
+	<!-- V2.0 May 3, 1999 -->
+	<circle stroke="darkgoldenrod" cx="765" r="10" />
+	<text x="765" y="0" dy="5" class="version">2</text>
+	
+	<!-- V3.0 March 31, 2000 -->
+	<circle stroke="darkgoldenrod" cx="865" r="10" />
+	<text x="865" y="0" dy="5" class="version">3</text>
+	
+	<!-- V4.0 November 10, 2000 -->
+	<circle stroke="darkgoldenrod" cx="945" r="10" />
+	<text x="945" y="0" dy="5" class="version">4</text>
+	
+	<!-- V5.0 July 4, 2001 -->
+	<circle stroke="darkgoldenrod" cx="1025" r="10" />
+	<text x="1025" y="0" dy="5" class="version">5</text>
+	
+	<!-- V6.0 April 23, 2002 -->
+	<circle stroke="darkgoldenrod" cx="1115" r="10" />
+	<text x="1115" y="0" dy="5" class="version">6</text>	
+	
+	<!-- V7.0 December 3, 2002 -->
+	<circle stroke="darkgoldenrod" cx="1195" r="10" />
+	<text x="1195" y="0" dy="5" class="version">7</text>	
+
+	<!-- V8.0 April 23, 2003 -->
+	<circle stroke="darkgoldenrod" cx="1235" r="10" />
+	<text x="1235" y="0" dy="5" class="version">8</text>	
+
+	<!-- V9.0 January 6, 2005 -->
+	<circle stroke="darkgoldenrod" cx="1445" r="10" />
+	<text x="1445" y="0" dy="5" class="version">9</text>
+
+	<!-- V9.5 April 12, 2006 -->
+	<circle stroke="darkgoldenrod" cx="1595" r="10" />
+	<text x="1595" y="0" dy="3" class="subversion">9.5</text>
+
+	<circle stroke="darkgoldenrod" cx="1815" r="10" />
+	<text x="1815" y="0" dy="3" class="subversion">10</text>
+
+</g>
+
+<g id="netcaptor">
+	<a xlink:href="http://en.wikipedia.org/wiki/NetCaptor">
+		<text x="605" y="0" dx="20" dy="-15" class="browser">SimulBrowse / NetCaptor</text>
+	</a>
+
+	<line stroke="blue" x1="605" x2="1705" />	
+	<!-- Source: http://www.livinginternet.com/w/wa_browser_mult.htm -->
+	<!-- Released January 1998 -->
+
+	<circle stroke="blue" cx="605" r="10" />
+	<text x="605" y="0" dy="5" class="version">3</text>		
+
+	<!-- Source: http://www.prweb.com/releases/1999/5/prweb7988.htm -->
+	<!-- Released April 1999 -->
+	<circle stroke="blue" cx="755" r="10" />
+	<text x="755" y="0" dy="5" class="version">5</text>		
+	
+	<!-- Source: http://web.archive.org/web/20000622040622/www.netcaptor.com/article.php?id=63 -->
+	<!-- Released April 6, 2000 -->
+	<circle stroke="blue" cx="875" r="10" />
+	<text x="875" y="0" dy="5" class="version">6</text>		
+	
+	<!-- Released May 21, 2002 -->
+	<circle stroke="blue" cx="1125" r="10" />
+	<text x="1125" y="0" dy="5" class="version">7</text>		
+
+	<!-- Released December, 2003 -->
+	<circle stroke="blue" cx="1315" r="10" />
+	<text x="1315" y="0" dy="3" class="subversion">7.5</text>		
+	
+	<!-- Last date site worked on archive.org: March 2007 -->
+	<line stroke="blue" x1="1705" x2="1705" y1="-10" y2="10" />	
+</g>
+
+<g id="aweb">
+	<!-- Source: http://db0sif.darc.de/cgi-bin/dpcmd?R%20AMIGA%20573 -->
+	<!-- 1.0 Released March 26, 1996 -->
+	<a xlink:href="http://en.wikipedia.org/wiki/AWeb">
+		<text x="385" y="0" dx="20" dy="-15" class="browser">AWeb</text>
+	</a>
+	<line stroke="red" x1="385" x2="1880" />
+
+	<circle stroke="red" cx="385" r="10" />
+	<text x="385" y="0" dy="5" class="version">1</text>	
+
+	<!-- Source: http://web.archive.org/web/19970327154624/www.amitrix.com/aweb-update.html -->
+	<!-- 2.1 released November 1996 -->
+
+	<circle stroke="red" cx="465" r="10" />
+	<text x="465" y="0" dy="3" class="subversion">2.1</text>
+	
+	<!-- Source: http://web.archive.org/web/19971211073836/www.amitrix.com/pr970722.html -->
+	<!-- V3.0 July 22, 1997 -->
+	<circle stroke="red" cx="545" r="10" />
+	<text x="545" y="0" dy="5" class="version">3</text>
+
+	<!-- Source: http://www.amitrix.com/aweb.html-->
+	<!-- V3.4 22 January 2001 -->
+	<circle stroke="red" cx="965" r="10" />
+	<text x="965" y="0" dy="3" class="subversion">3.4</text>
+
+	<!-- Source: http://web.archive.org/web/20050212093946/http://aweb.sunsite.dk/-->
+	<!-- V3.5b June 21 2004 -->
+	<use x="1375" stroke="red" xlink:href="#longver" />
+	<text x="1375" y="0" dy="3" class="subversion">3.5b</text>
+
+	
+</g>
+
+<g id="amosaic">
+	<a xlink:href="http://en.wikipedia.org/wiki/AMosaic">
+		<text x="95" y="0" dx="10" dy="-12" class="browser">AMosaic</text>
+	</a>
+	
+	<!-- Started: October, 1993 -->
+	<!-- Source: http://www.obh.snafu.de/~solon/docs/StatusOld.html -->
+	
+	<line stroke="#D0BF64" x1="95" y1="350" x2="95" />
+
+	<line stroke="#D0BF64" x1="95" x2="1880" />
+	
+	<!-- V 1.0: December, 1993 -->
+	<circle stroke="#D0BF64" cx="115" r="10" />
+	<text x="115" dy="5" class="version">1</text>
+	
+	<!-- Changed to IBrowse: July 1996 -->
+	<!-- Source: http://www.sasg.com/mui/news.html -->
+	<text x="425" dx="10" dy="-12" class="browser">IBrowse</text>
+	<circle stroke="#D0BF64" cx="425" r="10" />
+	<text x="425" dy="5" class="version">1</text>
+
+	<!-- V2.3: January 2003 -->
+	<circle stroke="#D0BF64" cx="1205" r="10" />
+	<text x="1205" dy="3" class="subversion">2.3</text>
+
+	<!-- V2.4: December 2006 -->
+	<circle stroke="#D0BF64" cx="1675" r="10" />
+	<text x="1675" dy="3" class="subversion">2.4</text>	
+</g>
+
+
+
+<g id="mosaic">
+	<a xlink:href="http://en.wikipedia.org/wiki/Mosaic">
+		<text x="25" y="0" dx="20" dy="-15" class="browser">Mosaic</text>
+	</a>
+	<!-- Source: http://www.blooberry.com/indexdot/history/mosaic.htm -->
+
+	<!-- V. 0.1: March, 1993 -->
+	<!-- V. 1.0 Final: November, 1993 -->
+	<line stroke="navy" x1="25" x2="485" />
+	<circle stroke="navy" cx="105" r="10" />
+	<text x="105" y="0" dy="5" class="version">1</text>
+
+	<!-- V. 2.0 A1: Jan, 1994 -->
+	<!-- V. 2.0 Final: Oct, 1995 -->
+	<circle stroke="navy" cx="335" r="10" />
+	<text x="335" y="0" dy="5" class="version">2</text>
+
+	<!-- V. 3.0 December, 1993 -->
+	<circle stroke="navy" cx="480" r="10" />
+	<text x="480" y="0" dy="5" class="version">3</text>
+	
+	<!-- Support ended January, 1997 -->
+	<line stroke="navy" x1="490" y1="10" x2="490" y2="-10" /> 
+
+
+</g>
+
+<g id="arachne">
+	<a xlink:href="http://en.wikipedia.org/wiki/Arachne (web browser)">
+		<text x="475" y="0" dx="10" dy="-12" class="browser">Arachne</text>
+	</a>
+	
+	<line stroke="gray" x1="475" x2="1880" />
+	<!-- V. 1.0b2 December 22, 1996 -->
+	<circle stroke="gray" cx="475" r="10" />
+	<text x="475" y="0" dy="5" class="version">1</text>
+	
+	<!-- V. 1.7 released January 22, 2001 -->
+	<circle stroke="gray" cx="965" r="10" />
+	<text x="965" y="0" dy="3" class="subversion">1.7</text>
+	
+	<!-- 1.9 released April 17, 2006 -->
+	<!-- Source: http://web.archive.org/web/20060426145931/www.cisnet.com/glennmcc/arachne/changes.txt -->
+	<circle stroke="gray" cx="1595" r="10" />
+	<text x="1595" y="0" dy="3" class="subversion">1.9</text>
+
+	
+	
+</g>
+
+<g id="netscape">
+	<a xlink:href="http://en.wikipedia.org/wiki/Netscape Navigator">
+		<text x="215" y="0" dx="10" dy="-12" class="browser">Mosaic Netscape / Netscape Navigator</text>
+	</a>
+	
+	<!-- V. 0.9 Oct. 13, 1994 -->
+	<!-- V. 1.0 December, 1994 -->
+	
+	<line stroke="teal" x1="215" y1="-50" x2="215" />
+
+	<line stroke="teal" x1="215" x2="1155" />
+
+	<circle stroke="teal" cx="215" r="10" />
+	<text x="215" y="0" dy="5" class="version">1</text>
+	
+	<!-- V. 2.0: March, 1996 -->
+	<circle stroke="teal" cx="385" r="10" />
+	<text x="385" y="0" dy="5" class="version">2</text>
+	
+	<!-- V. 3.0: August, 1996 -->
+	<circle stroke="teal" cx="435" r="10" />
+	<text x="435" y="0" dy="5" class="version">3</text>
+	
+	<!-- V. 4.0: June, 1997 -->
+	<circle stroke="teal" cx="535" r="10" />
+	<text x="535" y="0" dy="5" class="version">4</text>
+	
+	<!-- V. 4.5: October, 1998 -->
+	<circle stroke="teal" cx="695" r="10" />
+	<text x="695" y="0" dy="3" class="subversion">4.5</text>	
+
+	<!-- V. 4.8: August, 2002 -->
+	<circle stroke="teal" cx="1155" r="10" />
+	<text x="1155" y="0" dy="3" class="subversion">4.8</text>
+
+	<g id="moznetscape">
+		<a xlink:href="http://en.wikipedia.org/wiki/Netscape 6">
+			<text x="875" y="30" dx="10" dy="-12" class="browser">Netscape</text>
+		</a>
+	
+		<!-- Mozilla-based Netscape -->
+		<line stroke="teal" x1="875" y1="50" x2="875" y2="25" />
+		
+		<!-- April, 2000 -->
+		<line stroke="teal" x1="875" y1="25" x2="1820" y2="25" />	
+
+		<!-- V. 6.0: November, 2000 -->
+		<circle stroke="teal" cx="945" cy="25" r="10" />
+		<text x="945" y="25" dy="5" class="version">6</text>
+		
+		<!-- V. 7.0: August, 2002 -->
+		<circle stroke="teal" cx="1155" cy="25" r="10" />
+		<text x="1155" y="25" dy="5" class="version">7</text>
+		
+	</g>
+	
+	<g id="ffnetscape">
+		<a xlink:href="http://en.wikipedia.org/wiki/Netscape Browser">
+			<text x="1485" y="30" dx="10" dy="-12" class="browser">Netscape Browser</text>
+		</a>
+	
+		<!-- Firefox-based Netscape -->
+<!-- 		<line stroke="teal" x1="1485" y1="25" x2="1485" y2="100" /> -->
+		
+		<path stroke="teal" stroke-width="3px" d="M1485,100 1485,65 1485,25" marker-mid="url(#Triangle)" />
+
+		<!-- Uses Trident from IE too -->
+		<!--
+		<line stroke="teal" x1="1485" y1="-100" x2="1485" y2="25" style="stroke-dasharray: 4, 8;" />
+		-->
+		
+		<!-- V. 8.0: May, 2005 -->
+
+		<circle stroke="teal" cx="1485" cy="25" r="10" />
+		<text x="1485" y="25" dy="5" class="version">8</text>
+
+		<!-- V. 9.0: October 16, 2007 -->
+		<a xlink:href="http://en.wikipedia.org/wiki/Netscape Navigator 9">
+			<!-- Change this position once there's more room -->
+			<text x="1775" y="30" dx="10" dy="15" class="browser">Netscape Navigator</text>
+		</a>
+
+		<circle stroke="teal" cx="1775" cy="25" r="10" />
+		<text x="1775" y="25" dy="5" class="version">9</text>
+		
+		<!-- Support ended March 1, 2008 -->
+		<line stroke="teal" x1="1820" y1="35" x2="1820" y2="15" /> 
+		
+	</g>
+		
+</g>
+
+<g id="mozilla">
+	<!-- Mozilla start: March, 1998 -->
+	<a xlink:href="http://en.wikipedia.org/wiki/Mozilla Application Suite">
+		<text x="625" y="0" dx="10" dy="-12" class="browser">Mozilla</text>
+	</a>
+	
+	<line stroke="maroon" x1="625" y1="-50" x2="625" />
+
+	<line stroke="maroon" x1="625" x2="1595" />
+	
+	<!-- V. 0.6 December 2000 -->
+	<circle stroke="maroon" cx="955" r="10" />
+	<text x="955" y="0" dy="3" class="subversion">0.6</text>
+	
+	<!-- V. 0.7 January 2001 -->
+	
+	<!-- V. 0.8 February 2001 -->
+	
+	<!-- V. 0.9 May 2001 -->
+	
+	<!-- V. 1.0 May. 2002 -->
+	<circle stroke="maroon" cx="1125" r="10" />
+	<text x="1125" y="0" dy="5" class="version">1</text>
+	
+	<!-- V. 1.1 August 2002 -->
+	
+	<!-- V. 1.2 November 2002 -->
+	
+	<!-- V. 1.3	March 2003 -->
+	
+	<!-- V. 1.4	June 2003 -->
+	
+	<!-- V. 1.5	October 2003 -->
+	<circle stroke="maroon" cx="1295" r="10" />
+	<text x="1295" y="0" dy="3" class="subversion">1.5</text>
+	
+	<!-- V. 1.6	January 2004 -->
+	
+	<!-- V. 1.7	June 2004 -->
+	
+	<!-- Ended(?) April 2006 -->
+	<line stroke="maroon" x1="1595" y1="5" x2="1595" y2="-5" /> 
+	
+</g>
+
+
+<g id="flock">
+	<a xlink:href="http://en.wikipedia.org/wiki/Flock (web browser)">
+		<text x="1535" y="0" dx="10" dy="-12" class="browser">Flock</text>
+	</a>
+	
+	<!-- Started October 20, 2005 -->
+	<!-- Source: http://www.techcrunch.com/2005/10/20/flock-is-launching-publicly-today/ -->
+	<line stroke="blue" x1="1535" y1="-50" x2="1535" />
+	<line stroke="blue" x1="1535" x2="1880" />
+
+	<!-- V. 0.5: October 2005 -->
+	<circle stroke="blue" cx="1535" r="10" />
+	<text x="1535" y="0" dy="3" class="subversion">0.5</text>	
+	
+	<!-- V. 0.7: June 13, 2006 -->
+	<!-- Source: http://www.flock.com/node/4500 -->
+	<circle stroke="blue" cx="1615" r="10" />
+	<text x="1615" y="0" dy="3" class="subversion">0.7</text>	
+
+	<!-- V. 1.0: November 3, 2007 -->
+	<!-- Source: http://www.flock.com/node/59720 -->
+	<circle stroke="blue" cx="1790" r="10" />
+	<text x="1790" y="0" dy="5" class="version">1</text>	
+</g>
+
+<g id="galeon">
+	<!-- From Mozilla  -->
+	<!-- V. 0.6: June 2000 -->
+	<a xlink:href="http://en.wikipedia.org/wiki/Galeon">
+		<text x="895" y="0" dx="10" dy="-12" class="browser">Galeon</text>
+	</a>
+	
+	<line stroke="#33485F" x1="895" y1="-250" x2="895" />
+
+	<line stroke="#33485F" x1="895" x2="1880" />
+	
+	<!-- V. 1.0: November 2001 -->
+	<circle stroke="#33485F" cx="1065" r="10" />
+	<text x="1065" y="0" dy="5" class="version">1</text>
+	
+	<!-- V. 2.0: April 2006 -->
+	<circle stroke="#33485F" cx="1595" r="10" />
+	<text x="1595" y="0" dy="5" class="version">2</text>
+
+</g>
+
+<g id="epiphany">
+	<!-- From Galeon  -->
+	<!-- Started: November 2002 -->
+	<a xlink:href="http://en.wikipedia.org/wiki/Epiphany (web browser)">
+		<text x="1185" y="0" dx="10" dy="-12" class="browser">Epiphany</text>
+	</a>
+	
+	<line stroke="#207C00" x1="1185" y1="-50" x2="1185" />
+
+	<line stroke="#207C00" x1="1185" x2="1880" />
+
+	<!-- V. 1.0: September 2003 -->
+	<circle stroke="#207C00" cx="1285" r="10" />
+	<text x="1285" y="0" dy="5" class="version">1</text>
+	
+	<!-- V. 2.14: March 2006 -->
+	<circle stroke="#207C00" cx="1585" r="10" />
+	<text x="1585" y="0" dy="5" class="version">2</text>
+	
+</g>
+
+<g id="kmeleon">
+	<!-- From Mozilla  -->
+
+	<a xlink:href="http://en.wikipedia.org/wiki/K-Meleon">
+		<text x="915" y="0" dx="10" dy="-12" class="browser">K-Meleon</text>
+	</a>
+	
+	<!-- V0.1: August 2000 -->
+	<line stroke="#7EAE50" x1="915" y1="-200" x2="915" />
+
+	<line stroke="#7EAE50" x1="915" x2="1880" />
+	
+	<!-- V0.5: September 2001 -->
+	<circle stroke="#7EAE50" cx="1045" r="10" />
+	<text x="1045" y="0" dy="3" class="subversion">0.5</text>
+	
+	<!-- V0.8: November 2003 -->
+	<circle stroke="#7EAE50" cx="1305" r="10" />
+	<text x="1305" y="0" dy="3" class="subversion">0.8</text>	
+
+	<!-- V1.0: July 2006 -->
+	<circle stroke="#7EAE50" cx="1625" r="10" />
+	<text x="1625" y="0" dy="5" class="version">1</text>	
+
+	<!-- V1.1: May 22 2007 -->
+	<circle stroke="#7EAE50" cx="1725" r="10" />
+	<text x="1725" y="0" dy="3" class="subversion">1.1</text>	
+
+	<!-- V1.5: May 22 2007 -->
+	<circle stroke="#7EAE50" cx="1875" r="10" />
+	<text x="1875" y="0" dy="3" class="subversion">1.5</text>	
+</g>
+
+
+<g id="seamonkey">
+	<!-- V. 1.0: January 2006 -->
+	<a xlink:href="http://en.wikipedia.org/wiki/SeaMonkey">
+		<text x="1565" y="0" dx="20" dy="-5" class="browser">SeaMonkey</text>
+	</a>
+
+	<line stroke="maroon" x1="1565" y1="-25" x2="1565" />
+	
+	<line stroke="maroon" x1="1565" x2="1880" />
+
+	<circle stroke="maroon" cx="1565" r="10" />
+	<text x="1565" dy="5" class="version">1</text>
+	
+</g>
+
+<g id="camino">
+	<a xlink:href="http://en.wikipedia.org/wiki/Camino">
+		<text x="1095" y="0" dx="10" dy="-12" class="browser">Camino</text>
+	</a>
+	
+	<line stroke="#2570CA" x1="1095" y1="-150" x2="1095" />
+	
+	<!-- Started February 2002 -->
+	<line stroke="#2570CA" x1="1095" x2="1880" />
+
+	<!-- V. 0.5: September 2002 -->
+	<circle stroke="#2570CA" cx="1165" r="10" />
+	<text x="1165" dy="3" class="subversion">0.5</text>
+	
+	<!-- V. 1.0: February 2006 -->
+	<circle stroke="#2570CA" cx="1575" r="10" />
+	<text x="1575" dy="5" class="version">1</text>
+	
+	<!-- V. 1.5: June 2007 -->
+	<circle stroke="#2570CA" cx="1735" r="10" />
+	<text x="1735" dy="3" class="subversion">1.5</text>
+	
+</g>
+
+<g id="firefox">
+	<a xlink:href="http://en.wikipedia.org/wiki/Mozilla Firefox">
+		<text x="1165" y="0" dx="10" dy="-12" class="browser">Firefox</text>
+	</a>
+	
+	<!-- Started September 2002 -->
+	<line stroke="orange" x1="1165" y1="-50" x2="1165" />
+
+	<line stroke="orange" x1="1165" x2="1880" />
+	
+	<!-- V. 1.0: November 2004 -->
+	<circle stroke="orange" cx="1425" r="10" />
+	<text x="1425" dy="5" class="version">1</text>
+	
+	<!-- V. 1.5: November 2005 -->
+	<circle stroke="orange" cx="1545" r="10" />
+	<text x="1545" dy="3" class="subversion">1.5</text>
+	
+	<!-- V. 2.0: October 2006 -->
+	<circle stroke="orange" cx="1655" r="10" />
+	<text x="1655" dy="5" class="version">2</text>
+	
+	<!-- V. 3.0: June 2008 -->
+	<circle stroke="orange" cx="1855" r="10" />
+	<text x="1855" dy="5" class="version">3</text>
+	
+</g>
+
+
+<g id="ie">
+	<a xlink:href="http://en.wikipedia.org/wiki/Internet Explorer">
+		<text x="315" y="0" dx="10" dy="-12" class="browser">Internet Explorer</text>
+	</a>
+	
+	<!-- V. 1.0: August, 1995 -->
+	
+	<line stroke="blue" x1="315" y1="50" x2="315" />
+
+	<line stroke="blue" x1="315" x2="1880" />
+
+	<circle stroke="blue" cx="315" r="10" />
+	<text x="315" dy="5" class="version">1</text>
+	
+	<!-- V. 2.0: November, 1995 -->
+	<circle stroke="blue" cx="345" r="10" />
+	<text x="345" dy="5" class="version">2</text>
+
+	<!-- V. 3.0: August, 1996 -->	
+	<circle stroke="blue" cx="435" r="10" />
+	<text x="435" dy="5" class="version">3</text>
+	
+	<!-- V. 4.0: October, 1997 -->	
+	<circle stroke="blue" cx="575" r="10" />
+	<text x="575" dy="5" class="version">4</text>
+	
+	<!-- V. 5.0: March, 1999 -->
+	<circle stroke="blue" cx="745" r="10" />
+	<text x="745" dy="5" class="version">5</text>
+	
+	<!-- V. 5.5: July, 2000 -->
+	<circle stroke="blue" cx="905" r="10" />
+	<text x="905" dy="3" class="subversion">5.5</text>
+	
+	<!-- V. 6.0: October, 2001 -->
+	<circle stroke="blue" cx="1055" r="10" />
+	<text x="1055" dy="5" class="version">6</text>
+	
+	<!-- V. 7.0: October 18, 2006 -->
+	<circle stroke="blue" cx="1655" r="10" />
+	<text x="1655" dy="5" class="version">7</text>
+	
+</g>
+
+<g id="iemac">
+	<a xlink:href="http://en.wikipedia.org/wiki/Internet Explorer for Mac">
+		<text x="365" y="0" dx="10" dy="-12" class="browser">Internet Explorer for Mac</text>
+	</a>
+	<!-- Source: WP Article: "Internet Explorer for Mac" -->
+	
+	<!-- Started: January, 1996 -->
+	<line stroke="#38b6f5" x1="365" y1="250" x2="365" />
+	
+	<line stroke="#38b6f5" x1="365" x2="1555" />
+
+	<!-- V. 2.0: April, 1996 -->
+	<circle stroke="#38b6f5" cx="395" r="10" />
+	<text x="395" dy="5" class="version">2</text>
+
+	<!-- V. 3.0: January, 1997 -->	
+	<circle stroke="#38b6f5" cx="485" r="10" />
+	<text x="485" dy="5" class="version">3</text>
+	
+	<!-- V. 4.0: January, 1998 -->	
+	<circle stroke="#38b6f5" cx="605" r="10" />
+	<text x="605" dy="5" class="version">4</text>
+
+	<!-- V. 5.0: January, 2000 -->
+	<circle stroke="#38b6f5" cx="845" r="10" />
+	<text x="845" dy="5" class="version">5</text>
+
+	<!-- V. 5.2: June, 2002 -->
+	<circle stroke="#38b6f5" cx="1135" r="10" />
+	<text x="1135" dy="3" class="subversion">5.2</text>
+
+	<!-- Support ends: December, 2005 -->
+	<line stroke="#38b6f5" x1="1555" y1="-10" x2="1555" y2="10" />
+	
+
+</g>
+
+<g id="maxthon">
+	<a xlink:href="http://en.wikipedia.org/wiki/Maxthon">
+		<text x="900" y="0" dx="10" dy="-12" class="browser">MyIE / MyIE2 / Maxthon</text>
+	</a>
+	<!-- Source: http://www.maxthon.com -->
+	
+	<!-- Started as MyIE: 2000 -->
+<!--	
+	<line stroke="blue" x1="900" y1="150" x2="900" style="stroke-dasharray: 4, 8;" />
+-->
+
+	<line stroke="blue" x1="900" x2="1880" />
+	
+	<!-- V1.0: September 2004 -->
+	<circle stroke="blue" cx="1405" r="10" />
+	<text x="1405" dy="5" class="version">1</text>
+	
+	<!-- V1.5: September 2005 -->
+	<circle stroke="blue" cx="1525" r="10" />
+	<text x="1525" dy="3" class="subversion">1.5</text>
+	
+	<!-- V1.6: May 24 2007 -->
+	
+	<!-- V2.0: July 23 2007 -->
+	<circle stroke="blue" cx="1745" r="10" />
+	<text x="1745" dy="5" class="version">2</text>
+</g>
+
+<g id="avant">
+	<a xlink:href="http://en.wikipedia.org/wiki/Avant Browser">
+		<text x="1165" y="0" dx="10" dy="-12" class="browser">IEOpera / Avant Browser</text>
+	</a>
+	<!-- Source: http://www.50download.com/software/IE%20Opera.htm (earliest appearance found)-->
+	<!-- V6.5: September 2002 -->
+<!--	
+	<line stroke="blue" x1="1165" y1="100" x2="1165" style="stroke-dasharray: 4, 8;" />
+-->
+
+	<line stroke="blue" x1="1165" x2="1880" />
+	
+	<!-- http://web.archive.org/web/*/http://www.avantbrowser.com -->
+	
+	<!-- V7.0: November 2002 -->
+	<circle stroke="blue" cx="1185" r="10" />
+	<text x="1185" dy="5" class="version">7</text>
+	
+	<!-- V8.0: June 2003 (maybe May?) -->
+	<circle stroke="blue" cx="1255" r="10" />
+	<text x="1255" dy="5" class="version">8</text>
+	
+	<!-- V9.0: February 2004 -->
+	<circle stroke="blue" cx="1335" r="10" />
+	<text x="1335" dy="5" class="version">9</text>
+	
+	<!-- V10: October 15, 2004 -->	
+	<circle stroke="blue" cx="1415" r="10" />
+	<text x="1415" dy="3" class="subversion">10</text>
+	
+	<!-- V11: October 23, 2006 -->	
+	<circle stroke="blue" cx="1555" r="10" />
+	<text x="1555" dy="3" class="subversion">11</text>
+	
+	<!-- Source: http://forum.avantbrowser.com/viewtopic.php?t=19901 -->
+	<!-- V11.5: June 13, 2007 -->	
+	<use x="1735" stroke="blue" xlink:href="#longver" />
+	<text x="1735" dy="3" class="subversion">11.5</text>
+	
+</g>
+
+<g id="aol">
+	<a xlink:href="http://en.wikipedia.org/wiki/AOL Explorer">
+		<text x="1505" y="0" dx="10" dy="-12" class="browser">AOL Browser / AOL Explorer</text>
+	</a>
+	<!-- Source: WP article on "AOL Explorer" -->
+	<!-- V1.0: July 2005 -->
+<!--	
+	<line stroke="blue" x1="1505" y1="50" x2="1505" style="stroke-dasharray: 4, 8;" />
+-->
+
+	<line stroke="blue" x1="1505" x2="1880" />
+	
+	<circle stroke="blue" cx="1505" r="10" />
+	<text x="1505" dy="5" class="version">1</text>	
+	
+	<!-- V1.5: May 2006 -->
+	<circle stroke="blue" cx="1605" r="10" />
+	<text x="1605" dy="3" class="subversion">1.5</text>	
+	
+</g>
+
+<g id="gzilla">
+	<a xlink:href="http://en.wikipedia.org/wiki/Gzilla">
+		<text x="525" y="0" dx="10" dy="-12" class="browser">Gzilla</text>
+	</a>
+	<!-- Source: http://www.levien.com/free/gzilla-tour.html -->
+
+
+	<line stroke="black" x1="525" x2="840" />
+
+	<!-- V 0.0.1 released May 15, 1997 -->		
+	<circle stroke="black" cx="525" r="10" />
+	<text x="525" dy="3" class="subversion">.0.1</text>
+	
+	<!-- Source: http://alumnus.caltech.edu/~jimmc/freesw.html -->
+	<!-- V 0.1.7 released December, 1998 -->	
+	<circle stroke="black" cx="715" r="10" />
+	<text x="715" dy="3" class="subversion">.1.7</text>
+	<line stroke="black" x1="840" y1="-10" x2="840" y2="10" />
+
+	
+</g>
+
+<g id="dillo">
+	<a xlink:href="http://en.wikipedia.org/wiki/Dillo">
+		<text x="835" y="0" dx="10" dy="-12" class="browser">Dillo</text>
+	</a>
+	<!-- Source: http://www.dillo.org/ChangeLog.html -->
+	<line stroke="#A5BAFF" x1="835" y1="-50" x2="835" />
+	
+	<line stroke="#A5BAFF" x1="835" x2="1695" />
+	<!-- V. 0.0.0: December, 1999 -->
+	<circle stroke="#A5BAFF" cx="835" r="10" />
+	<text x="835" dy="5" class="version">0</text>
+
+	<!-- V. 0.1: March 30, 2000 -->
+	<circle stroke="#A5BAFF" cx="865" r="10" />
+	<text x="865" dy="3" class="subversion">0.1</text>
+
+	<!-- V. 0.5: May 10, 2001 -->
+	<circle stroke="#A5BAFF" cx="1005" r="10" />
+	<text x="1005" dy="3" class="subversion">0.5</text>
+	
+	<!-- V. 0.7: Feb 17, 2003 -->
+	<circle stroke="#A5BAFF" cx="1215" r="10" />
+	<text x="1215" dy="3" class="subversion">0.7</text>
+	
+	<!-- V. 0.8: Feb 08, 2004 -->
+	<circle stroke="#A5BAFF" cx="1335" r="10" />
+	<text x="1335" dy="3" class="subversion">0.8</text>
+	
+	<!-- Project frozen: Feb 25, 2007 -->
+	<line stroke="#A5BAFF" x1="1695" y1="-10" x2="1695" y2="10" />
+</g>
+
+<g id="opera">
+	<a xlink:href="http://en.wikipedia.org/wiki/Opera (Internet suite)">
+		<text x="425" y="0" dx="10" dy="-12" class="browser">Opera</text>
+	</a>
+	<!-- Source: WP article "History of the Opera Internet suite" -->
+	
+	<line stroke="#B00" x1="425" x2="1880" />
+	<!-- V. 2.0: July, 1996 -->
+	<circle stroke="#B00" cx="425" r="10" />
+	<text x="425" dy="5" class="version">2</text>
+
+	<!-- V. 3.0: December, 1997 -->
+	<circle stroke="#B00" cx="600" r="10" />
+	<text x="600" dy="5" class="version">3</text>	
+
+	<!-- V. 3.5: November, 1997 -->	
+	<circle stroke="#B00" cx="705" r="10" />
+	<text x="705" dy="3" class="subversion">3.5</text>
+	
+	<!-- V. 4.0: June, 2000 -->
+	<circle stroke="#B00" cx="895" r="10" />
+	<text x="895" dy="5" class="version">4</text>	
+	
+	<!-- V. 5.0: December, 2000 -->
+	<circle stroke="#B00" cx="955" r="10" />
+	<text x="955" dy="5" class="version">5</text>	
+	
+	<!-- V. 6.0: November, 2001 -->
+	<circle stroke="#B00" cx="1065" r="10" />
+	<text x="1065" dy="5" class="version">6</text>	
+	
+	<!-- V. 7.0: January, 2003 -->
+	<circle stroke="#B00" cx="1205" r="10" />
+	<text x="1205" dy="5" class="version">7</text>	
+	
+	<!-- V. 7.5: May 12, 2004 -->
+	<!-- Source: http://www.opera.com/pressreleases/en/2004/05/12/ -->
+	<circle stroke="#B00" cx="1365" r="10" />
+	<text x="1365" dy="3" class="subversion">7.5</text>
+	
+	<!-- V. 8.0: April, 2005 -->
+	<circle stroke="#B00" cx="1475" r="10" />
+	<text x="1475" dy="5" class="version">8</text>	
+	
+	<!-- V. 9.0: June, 2006 -->
+	<circle stroke="#B00" cx="1615" r="10" />
+	<text x="1615" dy="5" class="version">9</text>
+	
+	<!-- V. 9.5: June, 2008 -->
+	<circle stroke="#B00" cx="1855" r="10" />
+	<text x="1855" dy="3" class="subversion">9.5</text>
+
+
+</g>
+
+<g id="operamini">
+	<a xlink:href="http://en.wikipedia.org/wiki/Opera Mini">
+		<text x="1515" y="0" dx="10" dy="-12" class="browser">Opera Mini</text>
+	</a>
+	<line stroke="#B00" x1="1515" y1="-50" x2="1515" />
+	<!-- Started: January, 2003 -->
+	<line stroke="#B00" x1="1515" x2="1880" />
+
+	<!-- V. 1.0: August 10, 2005 -->
+	<circle stroke="#B00" cx="1515" r="10" />
+	<text x="1515" dy="5" class="version">1</text>
+	
+	<!-- V. 2.0: May, 2006 -->
+	<circle stroke="#B00" cx="1605" r="10" />
+	<text x="1605" dy="5" class="version">2</text>
+	
+	<!-- V. 3.0: November 28, 2006 -->
+	<circle stroke="#B00" cx="1665" r="10" />
+	<text x="1665" dy="5" class="version">3</text>
+	
+	<!-- V. 4.0: November 7, 2007 -->
+	<circle stroke="#B00" cx="1795" r="10" />
+	<text x="1795" dy="5" class="version">4</text>
+</g>
+
+<g id="konqueror">
+	<a xlink:href="http://en.wikipedia.org/wiki/Konqueror">
+		<text x="935" y="0" dx="10" dy="-12" class="browser">Konqueror</text>
+	</a>
+	
+	<line stroke="#3E71C6" x1="935" x2="1880" />
+	<!-- V. 2.0 (tied to KDE releases): October, 2000 -->
+	<circle stroke="#3E71C6" cx="935" r="10" />
+	<text x="935" dy="5" class="version">2</text>		
+	
+	<!-- V. 3.0: April, 2002 -->
+	<circle stroke="#3E71C6" cx="1115" r="10" />
+	<text x="1115" dy="5" class="version">3</text>	
+	
+	<!-- V. 3.5: November, 2005 -->
+	<circle stroke="#3E71C6" cx="1545" r="10" />
+	<text x="1545" dy="3" class="subversion">3.5</text>	
+	
+	<!-- V. 4.0: January 11, 2008 -->
+	<!-- http://www.kde.org/announcements/4.0/ -->
+	<circle stroke="#3E71C6" cx="1805" r="10" />
+	<text x="1805" dy="5" class="version">4</text>	
+>	
+	
+</g>
+
+<g id="safari">
+	<a xlink:href="http://en.wikipedia.org/wiki/Safari (web browser)">
+		<text x="1205" y="0" dx="10" dy="-12" class="browser">Safari</text>
+	</a>
+	
+	<!-- Source dates from: http://en.wikipedia.org/wiki/Safari_(web_browser) -->
+	
+	<line stroke="#888" x1="1205" y1="-150" x2="1205" />
+	<!-- Started: January, 2003 -->
+	<line stroke="#888" x1="1205" x2="1880" />
+
+	<!-- V. 1.0: June, 2003 -->
+	<circle stroke="#888" cx="1255" r="10" />
+	<text x="1255" dy="5" class="version">1</text>
+	
+	<!-- V. 2.0: April, 2005 -->
+	<circle stroke="#888" cx="1475" r="10" />
+	<text x="1475" dy="5" class="version">2</text>		
+
+	<!-- V. 3.0: October 26, 2007 -->
+	<!-- Note: This is the date the Mac version went final -->
+	<circle stroke="#888" cx="1775" r="10" />
+	<text x="1775" dy="5" class="version">3</text>
+
+</g>
+
+<g id="omniweb">
+	<a xlink:href="http://en.wikipedia.org/wiki/OmniWeb">
+		<text x="265" y="0" dx="10" dy="-12" class="browser">OmniWeb</text>
+	</a>
+	<line stroke="green" x1="265" x2="1880" />
+	
+	<!-- V1.0: March, 1995 -->
+	<circle stroke="green" cx="265" r="10" />
+	<text x="265" dy="5" class="version">1</text>	
+
+	<!-- V2.0: February(?) 1996 -->
+	<circle stroke="green" cx="375" r="10" />
+	<text x="375" dy="5" class="version">2</text>	
+
+	<!-- V3.0: February 1999 -->
+	<circle stroke="green" cx="735" r="10" />
+	<text x="735" dy="5" class="version">3</text>	
+
+	<!-- V4.0: May 2001 -->
+	<circle stroke="green" cx="1005" r="10" />
+	<text x="1005" dy="5" class="version">4</text>	
+
+
+		<!-- Adopts webkit: February 2003 -->
+		<path stroke="green" stroke-width="3px" d="M1215,-50 1215,-25 1215,0" marker-mid="url(#Triangle)" />
+
+
+	<!-- V5.0: August 2004 -->
+	<circle stroke="green" cx="1395" r="10" />
+	<text x="1395" dy="5" class="version">5</text>
+	
+	<!-- V5.5: September 2006 -->
+	<circle stroke="green" cx="1645" r="10" />
+	<text x="1645" dy="3" class="subversion">5.5</text>
+</g>
+
+<g id="shiira">
+	<a xlink:href="http://en.wikipedia.org/wiki/Shiira">
+		<text x="1475" y="0" dx="10" dy="-12" class="browser">Shiira</text>
+	</a>
+	
+<!-- 	<line stroke="purple" x1="1475" y1="100" x2="1475" /> -->
+	
+	<line stroke="purple" x1="1475" x2="1880" />
+	
+	<!-- V1.0: April, 2005 -->
+	<circle stroke="purple" cx="1475" r="10" />
+	<text x="1475" dy="5" class="version">1</text>	
+
+	<!-- V2.0: April, 2007 -->
+	<circle stroke="purple" cx="1715" r="10" />
+	<text x="1715" dy="5" class="version">2</text>	
+</g>
+
+<g id="chrome">
+	<a xlink:href="http://en.wikipedia.org/wiki/Google_Chrome">
+		<text x="1780" y="0" dx="10" dy="-12" class="browser">Google Chrome</text>
+	</a>
+	
+<!-- 	<line stroke="purple" x1="1475" y1="100" x2="1475" /> -->
+	
+	<line stroke="#7d753d" x1="1885" x2="1880" />
+	
+	<!-- V0.2: September 2, 2008 -->
+	<circle stroke="#7d753d" cx="1885" r="10" />
+	<text x="1885" dy="3" class="subversion">0.2</text>	
+
+</g>
+
+<g id="icab">
+	<a xlink:href="http://en.wikipedia.org/wiki/iCab">
+		<text x="735" y="0" dx="10" dy="-12" class="browser">iCab</text>
+	</a>
+	
+	<line stroke="#afa302" x1="735" x2="1880" />
+	<!-- V. 1.0: February, 1999 -->
+	<circle stroke="#afa302" cx="735" r="10" />
+	<text x="735" dy="5" class="version">1</text>
+
+	<!-- V. 2.0: May, 2000 -->
+	<circle stroke="#afa302" cx="885" r="10" />
+	<text x="885" dy="5" class="version">2</text>	
+	
+	<!-- V. 2.5: May, 2001 -->
+	<circle stroke="#afa302" cx="1005" r="10" />
+	<text x="1005" dy="3" class="subversion">2.5</text>	
+	
+	<!-- V. 3.0: August, 2006 -->
+	<circle stroke="#afa302" cx="1635" r="10" />
+	<text x="1635" dy="5" class="version">3</text>	
+	
+		<!-- Adopts webkit: December 2007 -->
+<!-- 		<line stroke="#afa302" x1="1790" y1="-150" x2="1790" /> -->
+	<path stroke="#afa302" stroke-width="3px" d="M1790,-100 1790,-75 1790,0" marker-mid="url(#Triangle)" />
+	
+	<!-- V. 4.0: January 1, 2008 -->
+	<!-- Source: http://www.icab.de/news.html -->
+	<circle stroke="#afa302" cx="1805" r="10" />
+	<text x="1805" dy="5" class="version">4</text>	
+	
+</g>
+
+<g id="mosaictree">
+	<polygon points="590,175 1880,175 1880,500 1730,530 1485,530 1200,450 625,450 575,400" fill="blue" opacity="0.1" />
+	<text x="580" y="285" dy="30" class="engine">
+		Based on <a xlink:href="http://en.wikipedia.org/wiki/Trident (layout engine)">Trident layout engine</a>:
+	</text>
+
+
+	<polygon points="625,550 875,510 1155,510 1165,510 1880,510 1880,860 875,860" fill="maroon" opacity="0.1" />
+	<text x="625" y="550" dy="30" class="engine">
+		Based on <a xlink:href="http://en.wikipedia.org/wiki/Gecko (layout engine)">Gecko layout engine</a>:
+	</text>
+
+	<use y="450" xlink:href="#mosaic" />
+	<use y="500" xlink:href="#netscape" />
+	<use y="750" xlink:href="#kmeleon" />
+	<use y="850" xlink:href="#epiphany" />
+	<use y="800" xlink:href="#galeon" />
+	<use y="550" xlink:href="#mozilla" />
+	<use y="650" xlink:href="#flock" />
+	<use y="700" xlink:href="#camino" />
+	<use y="600" xlink:href="#firefox" />
+	<use y="575" xlink:href="#seamonkey" />
+	<use y="250" xlink:href="#maxthon" />
+	<use y="200" xlink:href="#netcaptor" />
+	<use y="300" xlink:href="#avant" />
+	<use y="350" xlink:href="#aol" />
+	<use y="150" xlink:href="#iemac" />
+	<use y="100" xlink:href="#amosaic" />
+	<use y="400" xlink:href="#ie" />
+</g>
+
+<g id="konqtree">
+
+	<polygon points="935,900 950,900 1830,890 1860,840 1880,840 1880,1180 1780,1180 1760,1120 1215,1120" transform="translate(0,-300)" fill="#3E71C6" opacity="0.1" />
+	<text x="935" y="600" dy="30" class="engine">
+		Based on <a xlink:href="http://en.wikipedia.org/wiki/KHTML">KHTML</a> / <a xlink:href="http://en.wikipedia.org/wiki/WebKit">WebKit layout engine</a>:
+	</text>
+
+	<use y="600" xlink:href="#konqueror" />
+	<use y="700" xlink:href="#shiira" />
+	<use y="650" xlink:href="#chrome" />
+	<use y="750" xlink:href="#safari" />
+	<use y="800" xlink:href="#omniweb" />
+	<use y="850" xlink:href="#icab" />
+
+</g>
+
+<g id="content">
+	<use x="60" y="20" xlink:href="#yearlabels" />
+	<use x="60" y="100%" transform="translate(0 -20)" xlink:href="#yearlabels" />
+
+	
+	<use y="550" xlink:href="#www" />
+	<use y="600" xlink:href="#violawww" />
+	<use y="60" xlink:href="#lynx" />
+	<use y="0" xlink:href="#mosaictree" />
+	<use y="300" xlink:href="#konqtree" />
+	<use y="800" xlink:href="#hotjava" />
+	<use y="850" xlink:href="#slipknot" />
+	<use y="1200" xlink:href="#w3m" />
+	<use y="1250" xlink:href="#amaya" />	
+	<use y="1300" xlink:href="#opera" />
+	<use y="1350" xlink:href="#operamini" />
+	<use y="1400" xlink:href="#arachne" />
+	<use y="1450" xlink:href="#aweb" />
+	<use y="700" xlink:href="#cello" />
+	<use y="1500" xlink:href="#links" />
+	<use y="1550" xlink:href="#elinks" />
+	<use y="1600" xlink:href="#gzilla" />	
+	<use y="1650" xlink:href="#dillo" />	
+</g>
+
+
+</defs>
+
+<rect x="0" y="0" height="100%" width="100%" style="fill:url(#bglines)" />
+<use x="240" y="0" xlink:href="#content" />
+<!--<use x="20" y="700" xlink:href="#legend" />-->
+<use xlink:href="#arrow-up" x="50" y="50" />
+
+</svg>

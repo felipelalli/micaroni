@@ -1,0 +1,5 @@
+Obs.: o número das páginas citadas **são do PDF** e NÃO coincidem com os números impressos.
+
+- A página nº 2 está em branca no PDF, mas ela NÃO deve ser incluída no encadernamento final
+- A ficha catalográfica deve ser impressa (ou xerocada) no VERSO da folha de rosto. A folha de rosto é a pág. 3 do PDF.
+- Imprimir colorido as páginas: 14, 25, 31, 36, 38, 41, 58 até 69.

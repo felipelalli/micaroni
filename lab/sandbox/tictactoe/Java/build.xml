@@ -1,0 +1,138 @@
+<!--
+	Arquivo ANT Build do Jogo da Velha.
+	Anhanguera Educacional - FAC maio/2008 (c) Todos os direitos reservados.
+-->
+
+<project name="Jogo da Velha" default="ajuda" basedir=".">
+	<description>
+		Arquivo Ant Build do projeto Jogo da Velha.
+	</description>
+
+        <tstamp/>
+        
+	<property name="versao" value="1.0"/>
+	<property name="projeto" value="Jogo da Velha"/>
+        <property name="nomesimples" value="jogodavelha"/>
+
+        <property name="pacote" value="br.edu.unianhanguera.cc.jogodavelha"/>
+	<property name="principal" value="${pacote}.Principal"/>
+        <property name="principalteste" value="${pacote}.PrincipalTeste"/>
+        <property name="nomearquivo" value="${nomesimples}-${versao}"/>
+        <property name="nomearquivostamp" value="${nomesimples}-${versao}-${DSTAMP}-${TSTAMP}"/>             
+
+	<property name="src" value="src"/>
+	<property name="deploy" value="deploy"/>
+	<property name="classes" value="deploy/classes"/>
+	<property name="arquivo" value="deploy/arquivo"/>
+	<property name="release" value="deploy/release"/>
+	<property name="doc" value="doc/api/javadoc"/>
+	<property name="tempdir" value="temp"/>
+        <property name="lib" value="lib/jar"/>
+	<property name="bin" value="bin"/>
+ 
+        <property name="classpath" value="${deploy};${lib};.;${java.class.path};${classes};${lib}/logging-log4j-1.3alpha-6"/>
+
+	<target name="inicializa">
+
+	</target>
+
+	<target name="ajuda">
+		<echo message="Digite ant -projecthelp para ajuda."/>
+	</target>
+	
+	<target name="limpa" depends="inicializa" description="Deleta classes compiladas.">
+		<delete dir="${classes}"/>
+                <delete dir="${tempdir}"/>
+	</target>
+
+	<target name="limpatudo" depends="inicializa" description="Limpa tudo que pode ter sido gerado.">
+		<delete dir="${deploy}"/>
+		<delete dir="${doc}"/>
+		<mkdir dir="${deploy}"/>
+	</target>
+
+	<target name="compila" depends="inicializa" description="Compila o projeto.">
+		<!-- <splash imageurl="URL_DE_LOGO_DO_PROJETO"/> -->
+		<mkdir dir="${deploy}"/>
+		<mkdir dir="${classes}"/>
+
+		<javac srcdir="${src}" classpath="${classpath}" destdir="${classes}"/>
+		<jar jarfile="${deploy}/${nomearquivo}.jar" basedir="${classes}"
+                    excludes="**/**Teste**"
+                >
+		    <manifest>
+		     	<attribute name="Built-By" value="${user.name}"/>
+		     	<attribute name="Main-Class" value="${principal}"/>
+    		    </manifest>
+		</jar>		
+	</target>
+
+	<target name="compilatudo" depends="limpa,compila"
+                description="Limpa e compila o projeto (pode demorar)."/>
+
+	<target name="roda" depends="compila" description="Roda o projeto.">
+            <echo message="Início da execução."/>
+        	
+            <java fork="true" jar="${deploy}/${nomearquivo}.jar"
+                    classpath="${classpath}"
+            />
+                
+            <echo message="Fim da execução."/>
+	</target>
+
+        <target name="testa" depends="compila" description="Testa o projeto.">
+                <echo message="Início do teste."/>
+                <java classname="${principalteste}" classpath="${classpath}"/>
+                <echo message="Fim do teste."/>
+        </target>
+
+	<target name="documenta" depends="compila" description="Documenta o projeto.">
+		<mkdir dir="${doc}"/>
+		<javadoc sourcepath="${src}" destdir="${doc}" classpath="${classpath}"
+			author="true" version="true" use="true"
+			packagenames="*"
+                        doctitle="${projeto} API"
+                        windowtitle="${projeto} API"
+                />
+	</target>
+
+        <target name="release" depends="compila,documenta" description="Gera um release, sem arquivar. Prefira usar 'dist'">
+  		<delete dir="${release}"/>
+                <mkdir dir="${release}"/>
+
+		<copy file="${deploy}/${nomearquivo}.jar"
+		      tofile="${release}/${nomearquivostamp}.jar"
+                />                        
+
+                <checksum file="${release}/${nomearquivostamp}.jar"/>
+
+                <copy todir="${release}/api">
+                    <fileset dir="${doc}"/>
+                </copy>        
+        </target>
+        
+        <target name="arquiva" depends="release" description="Arquiva o release. Prefira usar 'dist'">
+            <mkdir dir="${arquivo}"/>
+
+            <zip zipfile="${arquivo}/${nomearquivostamp}.zip"
+                 basedir="${release}"
+                 comment="${projeto} ${versao} - Relativo ao ${nomearquivostamp}."
+            />
+
+            <checksum file="${arquivo}/${nomearquivostamp}.zip"/>
+        </target>
+
+	<target name="dist" depends="release,arquiva" description="Gera uma nova distribuicao."/>
+
+        <target name="zipatudo" depends="release" description="Zipa o projeto todo em temp, exceto o deploy/arquivo.">
+            <mkdir dir="${tempdir}"/>
+
+            <zip zipfile="${tempdir}/${nomearquivostamp}-all.zip"
+                 basedir="."
+                 excludes="deploy/arquivo/**, temp/**"
+                 comment="${projeto} ${versao} - Todo o projeto zipado, inclusive com o fonte e com o build.xml"                 
+            />
+
+        </target>
+
+</project>
