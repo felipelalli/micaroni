@@ -1,0 +1,73 @@
+body {
+    background-color: white;
+    color: #000011;
+    border-color: silver;
+    border-width: 2px;
+    border-style: solid;
+    font-family: Times New Roman;
+    margin: 2px;
+    padding: 1cm;
+    text-align: justify;
+}
+
+hr.dir {
+    height: 38px;
+    color: transparent;
+    border-color: transparent;
+    background: url(res/hr-dir.gif) no-repeat scroll right;
+}
+
+hr {
+    height: 35px;
+    color: transparent;
+    border-color: transparent;
+    background: url(res/hr.gif) no-repeat scroll center;
+}
+
+.quebra-pagina {
+    page-break-before: always;
+}
+
+.versalete {font-variant: small-caps}
+
+.extra {
+    border: dashed thin;
+    font-size: small;
+    background-color: #FCFCFC;
+    margin: 0cm; padding: .5cm;
+}
+
+.nota {
+    color: gray;
+    font-size: small;
+    font-style: italic;
+}
+
+.dica {
+    border: dotted thin;
+    padding: 10px;
+    background-color: #FFFFEF;
+}
+
+.destaque {color: blue}
+
+.dedicatoria {
+    padding-top: 2cm;
+    padding-bottom: 2cm;
+    text-align: right;
+    font-size: small;
+    color: gray;
+ }
+
+div#canto-direito-embaixo {
+    position: fixed;
+    right:10;
+    bottom:2;
+    display:block;
+}
+
+@media print {
+    div#canto-direito-embaixo {
+        display: none;
+    }
+}

@@ -1,0 +1,55 @@
+table {
+    margin: .5cm;
+    background-color: #F3F3F3;
+}
+
+td {
+    font-size: small;
+    font-style: italic;
+}
+
+body {
+    /*background-color: #FCFFFC;*/
+    background-color: white;
+    color: #000011;
+    /*border-color: #00AA00;*/
+    border-color: silver;
+    border-width: 3px;
+    border-style: solid;
+    font-family: Times New Roman;
+    margin: 4px;
+    padding: 5%;
+    text-align: justify;
+}
+
+.versalete {font-variant: small-caps}
+
+.extra {
+    border: dashed thin;
+    font-size: small;
+    background-color: #FCFCFC;
+    margin: 0cm; padding: .5cm;
+}
+
+.nota {
+    color: gray;
+    font-size: small;
+    font-style: italic;
+}
+
+.dica {
+    border: dotted thin;
+    padding: 10px;
+    background-color: #FFFFEF;
+}
+
+.destaque {color: blue}
+
+.dedicatoria {
+    padding-top: 2cm;
+    padding-bottom: 2cm;
+    text-align: right;
+    font-size: small;
+    color: gray;
+ }
+ 
