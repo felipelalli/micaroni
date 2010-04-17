@@ -1,0 +1,41 @@
+# Substitua as variáveis e depois apague este comentário:
+# - NOME_DO_PROJETO
+# - MES
+# - ANO
+# - PRE_REQ_1
+# - PRE_REQ_2
+# - RECOMENDACAO_1
+# - RECOMENDACAO_2
+
+# NOME_DA_EMPRESA, MES/ANO (c) Todos os direitos reservados.
+# Projeto NOME_DO_PROJETO
+
+[Pré-requisitos]
+- PRE_REQ_1
+- PRE_REQ_2
+
+[Recomendável]
+- RECOMENDACAO_1
+- RECOMENDACAO_2
+
+[Sobre a compilação]
+- Para ajuda digite ant -projecthelp
+
+[Conteúdo]
+
+- Definição da relação das classes e definição do NOME_DO_PROJETO
+doc/definições/principal/
+
+...
+Os diretórios do projeto são:
+. bin - executáveis e dlls dinâmicas (deve ficar no PATH)
+. deploy - resultados das compilações
+. doc - documentações relacionadas
+. lib - bibliotecas externas (deve ficar no CLASSPATH)
+. prj - áreas de trabalho dos projetos
+. src - código-fonte subdividido nas linguagens em questão
+. etc - etc, como sons, arquivos de configuração etc.
+
+...
+Considerações importantes:
+- nenhuma por enquanto
