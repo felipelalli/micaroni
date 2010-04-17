@@ -1,0 +1,229 @@
+<HTML>
+<HEAD>
+<TITLE>
+Timer.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: Timer.h.html,v $
+ * $Date: 2005/03/22 20:18:51 $
+ * $Revision: 1.21 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_TIMER_H__1B515308_806D_491B_B1EB_3C75D8484F68__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_TIMER_H__1B515308_806D_491B_B1EB_3C75D8484F68__INCLUDED_
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/mais/allegro/Allegro.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>mais<font color="black">:</font><font color="black">:</font>allegro;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/basico/Identificacao.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>basico;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/tempo/Intervalo.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>tempo;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/tempo/unidades/Segundo.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>tempo<font color="black">:</font><font color="black">:</font>unidades;
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Estado.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/SinfoniaExcecao.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/GeradorDeEventosEspecial.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia;
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/util/Lock.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia<font color="black">:</font><font color="black">:</font>util;
+
+<font color="blue">namespace</font> biblia <font color="black">{</font>
+ <font color="blue">namespace</font> dinamicas <font color="black">{</font>
+  <font color="blue">namespace</font> sinfonia <font color="black">{</font>
+   <font color="blue">namespace</font> gde <font color="black">{</font>
+    <font color="green">/**
+     * Exceções relativas ao Timer.
+     */</font>
+    <font color="blue">class</font> TimerExcecao<font color="black">:</font> <font color="blue">public</font> SinfoniaExcecao <font color="black">{</font><font color="black">}</font>;
+
+    <font color="green">/**
+     * Quando, por algum motivo, não foi possível criar o timer
+     * em questão.
+     */</font>
+    <font color="blue">class</font> ImpossivelCriarTimerExcecao<font color="black">:</font> <font color="blue">public</font> TimerExcecao <font color="black">{</font><font color="black">}</font>;
+
+    <font color="green">/* CPPDOC_BEGIN_EXCLUDE */</font>
+    <font color="blue">void</font> timer<font color="black">(</font><font color="blue">void</font><font color="black">*</font> t<font color="black">)</font>;
+    <font color="green">/* CPPDOC_END_EXCLUDE */</font>
+
+    <font color="green">/**
+     * É um Timer que lança um Evento que soma um (+1)
+     * a um Estado relacionado que é um contador de quantas vezes
+     * esse timer foi disparado. Pode estar em loop ou
+     * pode parar quando for disparado uma única vez.
+     * &#60;p&#62;
+     * Os campos do {@link Estado} a que esta classe é
+     * relacionada são:
+     * &#60;br&#62;&#60;ul&#62;
+     * &#60;li&#62;&#60;b&#62;(campo principal)&#60;/b&#62; - quantas vezes esse
+     *     timer foi disparado. Inicia com 0 e o tempo total em execução em
+     *     milionésimos de segundo pode ser calculado multiplicando este campo
+     *     pelos campos &#60;i&#62;em milionesimos de segundo&#60;/i&#62;
+     *     e &#60;i&#62;intervalo&#60;/i&#62;.
+     * &#60;li&#62;&#60;b&#62;em milionésimos de segundo&#60;/b&#62; - relação da
+     *     unidade do intervalo deste timer para milionésimos de segundo.
+     *     O intervalo total em milionésimos de segundo deste timer
+     *     é esse campo vezes (×) o campo &#60;i&#62;intervalo&#60;/i&#62;.
+     * &#60;li&#62;&#60;b&#62;intervalo&#60;/b&#62; - um número que define o intervalo
+     *     que este timer será disparado. O intervalo total em
+     *     milionésimos de segundo é esse campo vezes
+     *     (×) o campo &#60;i&#62;em milionesimos de segundo&#60;/i&#62;.
+     * &#60;li&#62;&#60;b&#62;unidade&#60;/b&#62; (opcional) - uma string definindo o nome da unidade. Não
+     *     deve ser usado para cálculos, é um valor meramente ilustrativo. Para
+     *     calcular o intervalo total em milionésimos de segundo use o campo
+     *     &#60;i&#62;em milionesimos de segundo&#60;/i&#62; e &#60;i&#62;intervalo&#60;/i&#62;.
+     * &#60;li&#62;&#60;b&#62;loop&#60;/b&#62; - define se este timer está em loop ou não. Em loop
+     *     ele gera um {@link Evento} que soma 1 no campo principal
+     *     toda vez que passar o intervalo definido.
+     *     Caso contrário, este pára logo após completar o intervalo.
+     * &#60;li&#62;&#60;b&#62;iniciado&#60;/b&#62; - se este timer está em andamento ou não. Fica
+     *     verdadeiro toda vez que inicia e falso quando pára. Para iniciar
+     *     o Timer, é necessário lançar um {@link Evento} que o modifique
+     *     para verdadeiro, e para pará-lo um que o modifique para falso.
+     * &#60;li&#62;&#60;b&#62;pausado&#60;/b&#62; - se este timer está pausado ou não. &#60;b&#62;função
+     *     ainda não implementada!&#60;/b&#62;
+     * &#60;li&#62;&#60;b&#62;lança evento&#60;/b&#62; - verdadeiro se este timer
+     *     deve lançar um evento para cada campo modificado ou falso caso
+     *     o {@link Estado} seja modificado diretamente sem que seja disparado
+     *     evento para a Sinfonia. Definir como falso pode otimizar bastante
+     *     o processamento da Sinfonia porém limita bastante o uso dos recursos
+     *     de {@link Evento}s da Sinfonia.
+     * &#60;/ul&#62;
+     */</font>
+    <font color="blue">class</font> Timer<font color="black">:</font> <font color="blue">public</font> GeradorDeEventosEspecial <font color="black">{</font>
+        <font color="blue">friend</font> <font color="blue">void</font> timer<font color="black">(</font><font color="blue">void</font><font color="black">*</font><font color="black">)</font>;
+
+        <font color="blue">private</font><font color="black">:</font>
+            Estado<font color="black">*</font> pEstado;
+            <font color="blue">const</font> UniversoDeTempo<font color="black">&</font> pUniverso;
+            <font color="blue">int</font> pQuantasVezes;
+            Intervalo pIntervalo;
+            <font color="blue">bool</font> pLancaEvento;
+            <font color="blue">bool</font> pEmLoop;
+            <font color="blue">bool</font> pIniciado;
+            <font color="blue">bool</font> pEncerrou;
+            <font color="blue">bool</font> pPausado;
+            <font color="blue">bool</font> pIniciaParado;
+            Semaforo pSemaTimer;
+
+            <font color="blue">class</font> UnidadeGenerica<font color="black">:</font> <font color="blue">public</font> UnidadeDeTempo <font color="black">{</font>
+                <font color="blue">public</font><font color="black">:</font>
+                    UnidadeGenerica<font color="black">(</font><font color="blue">double</font> milionesimosDeSegundo<font color="black">)</font>
+                        <font color="black">:</font>UnidadeDeTempo<font color="black">(</font>milionesimosDeSegundo<font color="black">)</font>
+                    <font color="black">{</font><font color="black">}</font>
+
+                    UnidadeGenerica<font color="black">(</font><font color="blue">double</font> milionesimosDeSegundo,
+                                    <font color="blue">const</font> Identificacao<font color="black">&</font> nome<font color="black">)</font>
+                        <font color="black">:</font>UnidadeDeTempo<font color="black">(</font>milionesimosDeSegundo, nome.emString<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+                    <font color="black">{</font><font color="black">}</font>
+            <font color="black">}</font>;
+
+            Timer<font color="black">&</font> defineEventosQueTrata<font color="black">(</font><font color="black">)</font>;
+
+        <font color="blue">protected</font><font color="black">:</font>
+            <font color="green">/**
+             * Pára de executar este timer.
+             */</font>
+            virtual Timer<font color="black">&</font> para<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Inicia a execução deste timer.
+             */</font>
+            virtual Timer<font color="black">&</font> inicia<font color="black">(</font><font color="black">)</font>;
+
+        <font color="blue">public</font><font color="black">:</font>
+            <font color="green">/**
+             * Cria um Timer diretamente relacionado a um
+             * {@link Estado} passado como parâmetro. Esse
+             * {@link Estado} deve ser da classe {@link Multifuncional}
+             * e possuir os campos definidos na documentação principal
+             * desta classe, &#60;b&#62;com os valores iniciais já preenchidos&#60;/b&#62;.
+             * &#60;p&#62;
+             * O {@link Estado} passado é automaticamente definido como
+             * &#60;b&#62;externo&#60;/b&#62; caso o campo &#60;b&#62;lança evento&#60;/b&#62; seja falso.
+             * Este timer deve ser {@link #executa executado}
+             * uma vez em thread para funcionar.
+             *
+             * @throws ImpossivelCriarTimerExcecao É invocado quando
+             *         não há informação suficiente para criar o Timer.
+             */</font>
+            Timer<font color="black">(</font><font color="blue">const</font> UniversoDeTempo<font color="black">&</font>, <font color="blue">const</font> MediadorDeEstados<font color="black">&</font>,
+                  Estado<font color="black">*</font> estadoRelacionado<font color="black">)</font>;
+
+            <font color="green">/**
+             * Cria um Timer diretamente relacionado a um
+             * {@link Estado} passado como parâmetro. Esse
+             * {@link Estado} deve ser da classe {@link Multifuncional}
+             * e possuir os campos definidos na documentação principal
+             * desta classe, &#60;b&#62;com os valores iniciais não necessariamente
+             * preenchidos&#60;/b&#62;. Este construtor fica encarregado de definir
+             * esses campos através dos parâmetros passados. &#60;i&#62;Obs.:
+             * Eles serão sobrescritos caso já tenham sido definidos.&#60;/i&#62;
+             * &#60;p&#62;
+             * O {@link Estado} passado é automaticamente definido como
+             * &#60;b&#62;externo&#60;/b&#62; caso o campo &#60;b&#62;lança evento&#60;/b&#62; seja falso.
+             * Este timer deve ser {@link #executa executado}
+             * uma vez em thread para funcionar.
+             */</font>
+            Timer<font color="black">(</font><font color="blue">const</font> UniversoDeTempo<font color="black">&</font>, <font color="blue">const</font> MediadorDeEstados<font color="black">&</font>,
+                  Estado<font color="black">*</font> estadoRelacionado,
+                  <font color="blue">const</font> Intervalo<font color="black">&</font>, <font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font> lancaEvento,
+                  <font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font> emLoop, <font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font> iniciaParado <font color="black">=</font> <font color="blue">true</font><font color="black">)</font>;
+
+            virtual ~Timer<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">// Consulta:</font>
+            <font color="blue">const</font> Intervalo<font color="black">&</font> intervalo<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Indica se este Timer lança evento ou não. Se não
+             * lança, o {@link #estadoRelacionado Estado a este relacionado}
+             * é considerado externo.
+             */</font>
+            <font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font> lancaEvento<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font> emLoop<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+            <font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font> iniciado<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+            <font color="blue">const</font> <font color="blue">bool</font> parado<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+            <font color="blue">const</font> <font color="blue">bool</font> emAndamento<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+            <font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font> pausado<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+            <font color="blue">const</font> <font color="blue">int</font><font color="black">&</font> quantasVezes<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+            <font color="blue">const</font> Estado<font color="black">&</font> estadoRelacionado<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">// Executavel:</font>
+            <font color="green">/**
+             * Deve ser executado uma única vez em Thread.
+             * Fica esperando algum {@link Evento} que corresponda
+             * com o {@link Estado} deste relacionado e toma
+             * as devidas providências.
+             */</font>
+            virtual Executavel<font color="black">&</font> executa<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">// Objeto:</font>
+            virtual string emString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+    <font color="black">}</font>;
+   <font color="black">}</font>
+  <font color="black">}</font>
+ <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_TIMER_H__1B515308_806D_491B_B1EB_3C75D8484F68__INCLUDED_)</font>
+
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,320 @@
+<HTML>
+<HEAD>
+<TITLE>
+Valor.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: Valor.cpp.html,v $
+ * $Date: 2005/03/22 20:19:10 $
+ * $Revision: 1.42 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * MÛdulo: biblia.dinamicas.sinfonia-dev
+ * MÛdulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Valor.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia;
+
+<font color="blue">int</font> Valor<font color="black">:</font><font color="black">:</font>IRRELEVANTE <font color="black">=</font> <font color="maroon">-1</font>;
+<font color="blue">int</font> Valor<font color="black">:</font><font color="black">:</font>DESCONHECIDO <font color="black">=</font> <font color="maroon">0</font>;
+<font color="blue">int</font> Valor<font color="black">:</font><font color="black">:</font>BOOL <font color="black">=</font> <font color="maroon">1</font>;
+<font color="blue">int</font> Valor<font color="black">:</font><font color="black">:</font>DOUBLE <font color="black">=</font> <font color="maroon">2</font>;
+<font color="blue">int</font> Valor<font color="black">:</font><font color="black">:</font>STRING <font color="black">=</font> <font color="maroon">4</font>;
+string Valor<font color="black">:</font><font color="black">:</font>VERDADEIRO <font color="black">=</font> <font color="maroon">"V"</font>;
+string Valor<font color="black">:</font><font color="black">:</font>FALSO <font color="black">=</font> <font color="maroon">"F"</font>;
+
+Valor<font color="black">:</font><font color="black">:</font>Valor<font color="black">(</font><font color="black">)</font><font color="black">:</font>Informacao<font color="black">(</font><font color="black">)</font>, pTipoParaComparacao<font color="black">(</font>Valor<font color="black">:</font><font color="black">:</font>IRRELEVANTE<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+Valor<font color="black">:</font><font color="black">:</font>Valor<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> v<font color="black">)</font> <font color="black">{</font>
+    <font color="black">*</font><font color="blue">this</font> <font color="black">=</font> v;
+<font color="black">}</font>
+
+Valor<font color="black">:</font><font color="black">:</font>Valor<font color="black">(</font><font color="blue">const</font> string<font color="black">&</font> original, <font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font> literal<font color="black">)</font>
+    <font color="black">:</font>Informacao<font color="black">(</font><font color="black">)</font>, pTipoParaComparacao<font color="black">(</font>Valor<font color="black">:</font><font color="black">:</font>DESCONHECIDO<font color="black">)</font>, pOriginal<font color="black">(</font>original<font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificado <font color="black">=</font> <font color="black">(</font><font color="black">(</font>literal <font color="black">|</font><font color="black">|</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pOriginal.compare<font color="black">(</font>Valor<font color="black">:</font><font color="black">:</font>VERDADEIRO<font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font>
+            <font color="black">|</font><font color="black">|</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pOriginal.compare<font color="black">(</font>Valor<font color="black">:</font><font color="black">:</font>FALSO<font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+            ? <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pOriginal <font color="black">:</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>modifica<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pOriginal<font color="black">)</font><font color="black">)</font>;
+
+    <font color="blue">if</font> <font color="black">(</font>literal<font color="black">)</font> <font color="black">{</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTipoParaComparacao <font color="black">=</font> Valor<font color="black">:</font><font color="black">:</font>STRING;
+    <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>determinaTipo<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>definiu<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="green">// FIXME: Como em C++ faz para chamar outro construtor da mesma classe?</font>
+Valor<font color="black">:</font><font color="black">:</font>Valor<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> original, <font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font> literal<font color="black">)</font>
+    <font color="black">:</font>Informacao<font color="black">(</font><font color="black">)</font>, pTipoParaComparacao<font color="black">(</font>Valor<font color="black">:</font><font color="black">:</font>DESCONHECIDO<font color="black">)</font>, pOriginal<font color="black">(</font>string<font color="black">(</font>original<font color="black">)</font><font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificado <font color="black">=</font> <font color="black">(</font><font color="black">(</font>literal <font color="black">|</font><font color="black">|</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pOriginal.compare<font color="black">(</font>Valor<font color="black">:</font><font color="black">:</font>VERDADEIRO<font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font>
+            <font color="black">|</font><font color="black">|</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pOriginal.compare<font color="black">(</font>Valor<font color="black">:</font><font color="black">:</font>FALSO<font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>
+            ? <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pOriginal <font color="black">:</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>modifica<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pOriginal<font color="black">)</font><font color="black">)</font>;
+
+    <font color="blue">if</font> <font color="black">(</font>literal<font color="black">)</font> <font color="black">{</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTipoParaComparacao <font color="black">=</font> Valor<font color="black">:</font><font color="black">:</font>STRING;
+    <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>determinaTipo<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>definiu<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+Valor<font color="black">:</font><font color="black">:</font>Valor<font color="black">(</font><font color="blue">const</font> <font color="blue">int</font><font color="black">&</font> original<font color="black">)</font><font color="black">:</font>Informacao<font color="black">(</font><font color="black">)</font>, pTipoParaComparacao<font color="black">(</font>Valor<font color="black">:</font><font color="black">:</font>DOUBLE<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pOriginal <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificado <font color="black">=</font> Inteiro<font color="black">(</font>original<font color="black">)</font>.emString<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>definiu<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+Valor<font color="black">:</font><font color="black">:</font>Valor<font color="black">(</font><font color="blue">const</font> <font color="blue">double</font><font color="black">&</font> original<font color="black">)</font><font color="black">:</font>Informacao<font color="black">(</font><font color="black">)</font>, pTipoParaComparacao<font color="black">(</font>Valor<font color="black">:</font><font color="black">:</font>DOUBLE<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pOriginal <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificado <font color="black">=</font> Flutuante<font color="black">(</font>original<font color="black">)</font>.emString<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>definiu<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+Valor<font color="black">:</font><font color="black">:</font>Valor<font color="black">(</font><font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font> original<font color="black">)</font><font color="black">:</font>Informacao<font color="black">(</font><font color="black">)</font>, pTipoParaComparacao<font color="black">(</font>Valor<font color="black">:</font><font color="black">:</font>BOOL<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pOriginal <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificado <font color="black">=</font> original?Valor<font color="black">:</font><font color="black">:</font>VERDADEIRO<font color="black">:</font>Valor<font color="black">:</font><font color="black">:</font>FALSO;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>definiu<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+Valor<font color="black">:</font><font color="black">:</font>~Valor<font color="black">(</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+<font color="blue">const</font> string Valor<font color="black">:</font><font color="black">:</font>modifica<font color="black">(</font><font color="blue">const</font> string<font color="black">&</font> s<font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">static</font> string acentos   <font color="black">=</font> <font color="maroon">"„√·¡‚¬‰ƒ‡¿È…Í ÎÀË»ÌÕÓŒÔœÏÃı’Û”Ù‘ˆ÷Ú“˙⁄˚€¸‹˘ŸÁ«˝›,_\t"</font>;
+    <font color="blue">static</font> string semAcento <font color="black">=</font> <font color="maroon">"aaaaaaaaaaeeeeeeeeiiiiiiiioooooooooouuuuuuuuccyy.  "</font>;
+    string retorno<font color="black">(</font>s<font color="black">)</font>;
+
+    <font color="blue">for</font> <font color="black">(</font><font color="blue">unsigned</font> <font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> s.size<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+        <font color="blue">bool</font> achou <font color="black">=</font> <font color="blue">false</font>;
+        <font color="blue">unsigned</font> <font color="blue">int</font> j <font color="black">=</font> <font color="maroon">0</font>;
+
+        <font color="blue">for</font> <font color="black">(</font>; j <font color="black">&#60;</font> acentos.size<font color="black">(</font><font color="black">)</font> <font color="black">&</font><font color="black">&</font> <font color="black">!</font>achou; j<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+            <font color="blue">if</font> <font color="black">(</font>s<font color="black">[</font>i<font color="black">]</font> <font color="black">=</font><font color="black">=</font> acentos<font color="black">[</font>j<font color="black">]</font><font color="black">)</font> <font color="black">{</font>
+                achou <font color="black">=</font> <font color="blue">true</font>;
+            <font color="black">}</font>
+        <font color="black">}</font>
+
+        j<font color="black">-</font><font color="black">-</font>;
+
+        <font color="blue">if</font> <font color="black">(</font>achou<font color="black">)</font> <font color="black">{</font>
+            <font color="green">//char msg[200];</font>
+            <font color="green">//sprintf(msg, "--- trocando [%d]'%c' por [%d]'%c'", i, retorno[i], j, semAcento[j]);</font>
+            <font color="green">//Debug::msg(INFO, string() + msg);</font>
+
+            retorno<font color="black">[</font>i<font color="black">]</font> <font color="black">=</font> semAcento<font color="black">[</font>j<font color="black">]</font>;
+        <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+            retorno<font color="black">[</font>i<font color="black">]</font> <font color="black">=</font> tolower<font color="black">(</font>s<font color="black">[</font>i<font color="black">]</font><font color="black">)</font>;
+        <font color="black">}</font>
+    <font color="black">}</font>
+
+    <font color="green">// FIXME: tem que dar o "trim", mas acho q em c++ tem q implementar mesmo</font>
+
+    <font color="blue">return</font> retorno;
+<font color="black">}</font>
+
+<font color="blue">const</font> <font color="blue">int</font> Valor<font color="black">:</font><font color="black">:</font>determinaTipo<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="green">// determinando o tipo para fazer a comparaÁ„o</font>
+    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTipoParaComparacao <font color="black">=</font><font color="black">=</font> Valor<font color="black">:</font><font color="black">:</font>DESCONHECIDO<font color="black">)</font> <font color="black">{</font>
+        <font color="blue">if</font> <font color="black">(</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificado.compare<font color="black">(</font>Valor<font color="black">:</font><font color="black">:</font>VERDADEIRO<font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font>
+            <font color="black">|</font><font color="black">|</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificado.compare<font color="black">(</font>Valor<font color="black">:</font><font color="black">:</font>FALSO<font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font><font color="black">)</font>
+        <font color="black">{</font>
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTipoParaComparacao <font color="black">=</font> Valor<font color="black">:</font><font color="black">:</font>BOOL;
+        <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTipoParaComparacao <font color="black">=</font> Valor<font color="black">:</font><font color="black">:</font>DOUBLE;
+
+            <font color="blue">for</font> <font color="black">(</font><font color="blue">unsigned</font> <font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificado.size<font color="black">(</font><font color="black">)</font>
+                    <font color="black">&</font><font color="black">&</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTipoParaComparacao <font color="black">=</font><font color="black">=</font> Valor<font color="black">:</font><font color="black">:</font>DOUBLE; i<font color="black">+</font><font color="black">+</font><font color="black">)</font>
+            <font color="black">{</font>
+                <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>isdigit<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificado<font color="black">[</font>i<font color="black">]</font><font color="black">)</font>
+                    <font color="black">&</font><font color="black">&</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificado<font color="black">[</font>i<font color="black">]</font> <font color="black">!</font><font color="black">=</font> <font color="maroon">'.'</font>
+                    <font color="black">&</font><font color="black">&</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificado<font color="black">[</font>i<font color="black">]</font> <font color="black">!</font><font color="black">=</font> <font color="maroon">'-'</font><font color="black">)</font>
+                <font color="black">{</font>
+                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTipoParaComparacao <font color="black">=</font> Valor<font color="black">:</font><font color="black">:</font>STRING;
+                <font color="black">}</font>
+            <font color="black">}</font>
+        <font color="black">}</font>
+    <font color="black">}</font>
+
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTipoParaComparacao;
+<font color="black">}</font>
+
+Valor<font color="black">&</font> Valor<font color="black">:</font><font color="black">:</font>adicionaApelido<font color="black">(</font><font color="blue">const</font> string<font color="black">&</font> apelido<font color="black">)</font> <font color="black">{</font>
+    <font color="green">//this-&#62;verificaSeInformacaoEstaDefinidaAntesDeRetornarOValor();</font>
+    <font color="blue">const</font> string apelidoModificado <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>modifica<font color="black">(</font>apelido<font color="black">)</font>;
+
+    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pApelidos.existe<font color="black">(</font>apelidoModificado<font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>WARN, <font color="maroon">"Valor::adicionaApelido: '"</font> <font color="black">+</font> apelido <font color="black">+</font> <font color="maroon">"' j· foi adicionado!"</font><font color="black">)</font>;
+    <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pApelidos.insere<font color="black">(</font>apelidoModificado, <font color="blue">true</font><font color="black">)</font>;
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pListaDeApelidos.adiciona<font color="black">(</font>apelidoModificado<font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+<font color="blue">const</font> Lista<font color="black">&#60;</font>string<font color="black">&#62;</font><font color="black">&</font> Valor<font color="black">:</font><font color="black">:</font>apelidos<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pListaDeApelidos;
+<font color="black">}</font>
+
+<font color="blue">const</font> string<font color="black">&</font> Valor<font color="black">:</font><font color="black">:</font>valor<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>verificaSeInformacaoEstaDefinidaAntesDeRetornarOValor<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificado;
+<font color="black">}</font>
+
+<font color="blue">const</font> string<font color="black">&</font> Valor<font color="black">:</font><font color="black">:</font>original<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>verificaSeInformacaoEstaDefinidaAntesDeRetornarOValor<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pOriginal;
+<font color="black">}</font>
+
+<font color="blue">const</font> <font color="blue">int</font> Valor<font color="black">:</font><font color="black">:</font>emInt<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>verificaSeInformacaoEstaDefinidaAntesDeRetornarOValor<font color="black">(</font><font color="black">)</font>;
+    <font color="green">//return Inteiro::valorDe(this-&#62;pOriginal).valor();</font>
+    <font color="blue">return</font> atoi<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pOriginal.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+string Valor<font color="black">:</font><font color="black">:</font>emString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">const</font> <font color="blue">double</font> Valor<font color="black">:</font><font color="black">:</font>emDouble<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>verificaSeInformacaoEstaDefinidaAntesDeRetornarOValor<font color="black">(</font><font color="black">)</font>;
+
+    <font color="green">// FIXME: atualizar para Flutuante::valorDe na prÛx. atualizaÁ„o da biblioteca BÌblia</font>
+    <font color="blue">return</font> atof<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pOriginal.c_str<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">const</font> <font color="blue">bool</font> Valor<font color="black">:</font><font color="black">:</font>emBool<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>verificaSeInformacaoEstaDefinidaAntesDeRetornarOValor<font color="black">(</font><font color="black">)</font>;
+
+    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pOriginal.compare<font color="black">(</font>Valor<font color="black">:</font><font color="black">:</font>VERDADEIRO<font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font> <font color="black">{</font>
+        <font color="blue">return</font> <font color="blue">true</font>;
+    <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+        <font color="blue">return</font> <font color="blue">false</font>;
+    <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">const</font> <font color="blue">bool</font> Valor<font color="black">:</font><font color="black">:</font>pareceSerBoleano<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTipoParaComparacao <font color="black">=</font><font color="black">=</font> Valor<font color="black">:</font><font color="black">:</font>BOOL<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">const</font> <font color="blue">bool</font> Valor<font color="black">:</font><font color="black">:</font>pareceSerNumero<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTipoParaComparacao <font color="black">=</font><font color="black">=</font> Valor<font color="black">:</font><font color="black">:</font>DOUBLE<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">const</font> <font color="blue">bool</font> Valor<font color="black">:</font><font color="black">:</font>pareceSerString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTipoParaComparacao <font color="black">=</font><font color="black">=</font> Valor<font color="black">:</font><font color="black">:</font>STRING<font color="black">)</font>;
+<font color="black">}</font>
+
+string Valor<font color="black">:</font><font color="black">:</font>geraStringUnicaECompleta<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    string retorno <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pOriginal <font color="black">+</font> <font color="maroon">":"</font> <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificado;
+
+    <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pListaDeApelidos.tamanho<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+        retorno <font color="black">+</font><font color="black">=</font> <font color="maroon">":"</font> <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pListaDeApelidos<font color="black">[</font>i<font color="black">]</font>;
+    <font color="black">}</font>
+
+    <font color="blue">return</font> retorno;
+<font color="black">}</font>
+
+<font color="blue">const</font> <font color="blue">bool</font> Valor<font color="black">:</font><font color="black">:</font>menorQue<font color="black">(</font><font color="blue">const</font> Comparavel<font color="black">&</font> alheio<font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    try <font color="black">{</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>verificaSeInformacaoEstaDefinidaAntesDeRetornarOValor<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font> <font color="blue">catch</font> <font color="black">(</font>InformacaoNaoDefinidaExcecao inde<font color="black">)</font> <font color="black">{</font>
+        inde <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">" + this: "</font> <font color="black">+</font> <font color="black">*</font><font color="blue">this</font>;
+        <font color="blue">throw</font> inde;
+    <font color="black">}</font>
+
+    <font color="blue">const</font> Valor<font color="black">&</font> valor <font color="black">=</font> dynamic_cast<font color="black">&#60;</font><font color="blue">const</font> Valor<font color="black">&</font><font color="black">&#62;</font><font color="black">(</font>alheio<font color="black">)</font>;
+
+    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pareceSerBoleano<font color="black">(</font><font color="black">)</font> <font color="black">&</font><font color="black">&</font> valor.pareceSerBoleano<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        <font color="blue">return</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>emBool<font color="black">(</font><font color="black">)</font> <font color="black">&</font><font color="black">&</font> valor.emBool<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pareceSerNumero<font color="black">(</font><font color="black">)</font> <font color="black">&</font><font color="black">&</font> valor.pareceSerNumero<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>emDouble<font color="black">(</font><font color="black">)</font> <font color="black">&#60;</font> valor.emDouble<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+        <font color="blue">if</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pareceSerString<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+            Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>ERRO, string<font color="black">(</font><font color="black">)</font> <font color="black">+</font> <font color="maroon">"Erro interno: Verificar funÁ„o const bool"</font>
+                    <font color="black">+</font> <font color="maroon">" Valor::menorQue(const Comparavel& alheio) const"</font><font color="black">)</font>;
+        <font color="black">}</font>
+
+        <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificado.compare<font color="black">(</font>valor.pModificado<font color="black">)</font> <font color="black">&#60;</font> <font color="maroon">0</font>;
+    <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">const</font> <font color="blue">bool</font> Valor<font color="black">:</font><font color="black">:</font>igual<font color="black">(</font><font color="blue">const</font> Igualavel<font color="black">&</font> alheio<font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">const</font> Valor<font color="black">&</font> valor <font color="black">=</font> dynamic_cast<font color="black">&#60;</font><font color="blue">const</font> Valor<font color="black">&</font><font color="black">&#62;</font><font color="black">(</font>alheio<font color="black">)</font>;
+    <font color="blue">bool</font> retorno;
+
+    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>indefinida<font color="black">(</font><font color="black">)</font> <font color="black">&</font><font color="black">&</font> valor.indefinida<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        retorno <font color="black">=</font> <font color="blue">true</font>;
+    <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>indefinida<font color="black">(</font><font color="black">)</font> <font color="black">|</font><font color="black">|</font> valor.indefinida<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        retorno <font color="black">=</font> <font color="blue">false</font>;
+    <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pareceSerNumero<font color="black">(</font><font color="black">)</font> <font color="black">&</font><font color="black">&</font> valor.pareceSerNumero<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        retorno <font color="black">=</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>emDouble<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> valor.emDouble<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pareceSerBoleano<font color="black">(</font><font color="black">)</font> <font color="black">&</font><font color="black">&</font> valor.pareceSerBoleano<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        retorno <font color="black">=</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>emBool<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> valor.emBool<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+        retorno <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificado.compare<font color="black">(</font>valor.pModificado<font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font>;
+
+        <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>retorno <font color="black">&</font><font color="black">&</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pApelidos.tamanho<font color="black">(</font><font color="black">)</font> <font color="black">&#62;</font> <font color="maroon">0</font>
+            <font color="black">&</font><font color="black">&</font> valor.pApelidos.tamanho<font color="black">(</font><font color="black">)</font> <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+        <font color="black">{</font>
+            Lista<font color="black">&#60;</font>Identificacao<font color="black">&#62;</font><font color="black">*</font> chaves <font color="black">=</font> valor.pApelidos.chaves<font color="black">(</font><font color="black">)</font>;
+            Lista<font color="black">&#60;</font>Identificacao<font color="black">&#62;</font><font color="black">&</font> c <font color="black">=</font> <font color="black">*</font>chaves;
+
+            <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> c.tamanho<font color="black">(</font><font color="black">)</font> <font color="black">|</font><font color="black">|</font> retorno; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+                <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pApelidos.existe<font color="black">(</font>c<font color="black">[</font>i<font color="black">]</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pApelidos<font color="black">[</font>c<font color="black">[</font>i<font color="black">]</font><font color="black">]</font><font color="black">)</font> <font color="black">{</font>
+                        retorno <font color="black">=</font> <font color="blue">true</font>;
+                    <font color="black">}</font>
+                <font color="black">}</font>
+            <font color="black">}</font>
+
+            <font color="blue">delete</font> chaves;
+        <font color="black">}</font>
+    <font color="black">}</font>
+
+    <font color="blue">return</font> retorno;
+<font color="black">}</font>
+
+<font color="blue">const</font> <font color="blue">bool</font> Valor<font color="black">:</font><font color="black">:</font>identico<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> valor<font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>indefinida<font color="black">(</font><font color="black">)</font> <font color="black">&</font><font color="black">&</font> valor.indefinida<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        <font color="blue">return</font> <font color="blue">true</font>;
+    <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>indefinida<font color="black">(</font><font color="black">)</font> <font color="black">|</font><font color="black">|</font> valor.indefinida<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        <font color="blue">return</font> <font color="blue">false</font>;
+    <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+        <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pOriginal.compare<font color="black">(</font>valor.pOriginal<font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font>;
+    <font color="black">}</font>
+<font color="black">}</font>
+
+Objeto<font color="black">*</font> Valor<font color="black">:</font><font color="black">:</font>geraCopia<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">new</font> Valor<font color="black">(</font><font color="black">*</font><font color="blue">this</font><font color="black">)</font>;
+<font color="black">}</font>
+
+Copiavel<font color="black">&</font> Valor<font color="black">:</font><font color="black">:</font>copiaEmSi<font color="black">(</font><font color="blue">const</font> Copiavel<font color="black">&</font> alheio<font color="black">)</font> <font color="black">{</font>
+<font color="green">//  Debug::msg(INFO, "--- vai copiar");</font>
+    <font color="blue">const</font> Valor<font color="black">&</font> valor <font color="black">=</font> dynamic_cast<font color="black">&#60;</font><font color="blue">const</font> Valor<font color="black">&</font><font color="black">&#62;</font><font color="black">(</font>alheio<font color="black">)</font>;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pOriginal <font color="black">=</font> valor.pOriginal;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificado <font color="black">=</font> valor.pModificado;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pApelidos <font color="black">=</font> valor.pApelidos;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTipoParaComparacao <font color="black">=</font> valor.pTipoParaComparacao;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pListaDeApelidos <font color="black">=</font> valor.pListaDeApelidos;
+
+    <font color="blue">if</font> <font color="black">(</font>valor.indefinida<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>indefine<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>definiu<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+<font color="green">//  Debug::msg(INFO, "--- copiou");</font>
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

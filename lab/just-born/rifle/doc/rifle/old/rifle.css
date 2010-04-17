@@ -1,0 +1,145 @@
+div#corpo {
+    background-color: white;
+    color: #000011;
+    border-color: silver;
+    border-width: 2px;
+    border-style: solid;
+    font-family: Arial;
+    margin: 2px;
+    padding: 1cm;
+    text-align: justify;
+}
+
+hr.dir {
+    /*height: 38px;*/
+    color: transparent;
+    border-color: transparent;
+    /*background: url(res/hr.gif) no-repeat scroll right;*/
+}
+
+hr {
+    height: 4px;
+    border-color: transparent;
+    border-bottom: 1px dashed #BBBBBB;
+}
+
+a:link {
+
+}
+
+a:visited {
+
+}
+
+a:hover {
+    background: #FFFFAA;
+}
+
+hr.marcador {
+    height: 156px;
+    background: url(res/marcador.jpg) no-repeat scroll left;
+}
+
+hr.rodape {
+    color: black;
+    border-color: black;
+    height: 1px;
+}
+
+.quebra-pagina {
+    page-break-before: always;
+    color: transparent;
+    border-color: transparent;    
+}
+
+.versalete {
+    font-variant: small-caps;
+    font-family: Times New Roman;
+}
+
+h1.subtitulo {
+    font-family: Times New Roman;
+}
+
+.extra {
+    border: dashed thin;
+    font-size: small;
+    background-color: #FCFCFC;
+    margin: 0cm; padding: .5cm;
+}
+
+.revisar {
+    color: gray;
+    text-decoration: line-through;
+}
+
+.nota {
+    color: gray;
+    font-size: small;
+    font-style: italic;
+}
+
+.dica {
+    border: dotted thin;
+    padding: 10px;
+    background-color: #FFFFEF;
+}
+
+.destaque {
+    padding:5pt;
+    margin-left:1em;
+    margin-bottom:1em;
+    border: 1px dashed;
+    background-color:#ffffc0;
+}
+
+code {
+    color: blue;
+    font-size: 12pt;    
+    text-align: left;
+}
+
+.dedicatoria {
+    padding-top: 2cm;
+    padding-bottom: 2cm;
+    text-align: right;
+    font-size: smaller;
+    color: gray;
+    font-family: Times New Roman;
+}
+ 
+.robo {
+   color: #CC0000;
+}
+
+.user {
+   color: #0000CC;
+}
+
+.cpu {
+   color: #007700;
+}
+
+div#canto-direito-embaixo {
+    position: fixed;
+    right:10;
+    bottom:2;
+    display:block;
+}
+
+@media print {
+    div#canto-direito-embaixo {
+        display: none;
+    }
+
+    div#corpo {
+        background-color: white;
+        color: black;
+        border-color: transparent;
+        border-width: 0px;
+        border-style: solid;
+        margin: 0px;
+        padding: 0cm;
+        text-align: justify;
+    }
+}

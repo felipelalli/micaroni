@@ -1,0 +1,133 @@
+<HTML>
+<HEAD>
+<TITLE>
+Classe.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: Classe.h.html,v $
+ * $Date: 2005/03/22 20:18:55 $
+ * $Revision: 1.42 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_CLASSE_H__81E5C6F7_F587_4826_87F3_7B62205B5699__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_CLASSE_H__81E5C6F7_F587_4826_87F3_7B62205B5699__INCLUDED_
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/basico/Identificacao.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>basico;
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Rotulado.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/SinfoniaExcecao.h"</font>
+
+<font color="blue">namespace</font> biblia <font color="black">{</font>
+ <font color="blue">namespace</font> dinamicas <font color="black">{</font>
+  <font color="blue">namespace</font> sinfonia <font color="black">{</font>
+    <font color="green">/** 
+     * Exceções relativas à Classe.
+     *
+     * @see Classe
+     */</font>
+    <font color="blue">class</font> ClasseExcecao<font color="black">:</font> <font color="blue">public</font> SinfoniaExcecao <font color="black">{</font><font color="black">}</font>;
+
+    <font color="green">/** 
+     * Quando uma ação não está disponível
+     * numa Classe qualquer.
+     *
+     * @see Classe
+     */</font>
+    <font color="blue">class</font> AcaoIndisponivelExcecao<font color="black">:</font> <font color="blue">public</font> ClasseExcecao <font color="black">{</font><font color="black">}</font>;
+
+    <font color="green">/**
+     * É a idéia de uma "classe" bem simplificada,
+     * que consiste em possíveis ações que podem ser aplicadas em
+     * valores (da classe Valor, que é bem versátil e simples).
+     * &#60;p&#62;
+     * Obs.: Por Valor ser uma classe simples (sem a possibilidade de
+     * composição de valores) e esta classe trabalhar somente
+     * com valores (e não composto de valores) esta é
+     * limitada apenas a esse nível básico.
+     *
+     * @todo No futuro, fazer com que esta classe e a
+     *       Estado trabalhem com Informações e
+     *       não somente Valor.
+     *
+     * @see Valor
+     * @see Multifuncional
+     */</font>
+    <font color="blue">class</font> Classe<font color="black">:</font> <font color="blue">public</font> Rotulado <font color="black">{</font> 
+        <font color="blue">private</font><font color="black">:</font>
+            Lista<font color="black">&#60;</font>Identificacao<font color="black">&#62;</font> pAcoesPossiveis;
+            Lista<font color="black">&#60;</font>Identificacao<font color="black">&#62;</font> pCampos;
+
+        <font color="blue">protected</font><font color="black">:</font>
+            Classe<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> nome<font color="black">)</font>;
+
+            <font color="green">/**
+             * Lista o nome das ações que esta classe sabe aplicar.
+             * &#60;i&#62;Deve ser atualizado pela classe
+             * filha.&#60;/i&#62;
+             */</font>
+            Lista<font color="black">&#60;</font>Identificacao<font color="black">&#62;</font><font color="black">&</font> acoes<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Lista o nome dos campos que esta classe tem.
+             * &#60;i&#62;Deve ser atualizado pela classe
+             * filha.&#60;/i&#62;
+             */</font>
+            Lista<font color="black">&#60;</font>Identificacao<font color="black">&#62;</font><font color="black">&</font> camposParaModificar<font color="black">(</font><font color="black">)</font>;
+
+        <font color="blue">public</font><font color="black">:</font>
+            virtual ~Classe<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * @throws AcaoIndisponivelExcecao
+             */</font>
+            virtual <font color="blue">const</font> Valor aplica<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> valorA,
+                    <font color="blue">const</font> Identificacao<font color="black">&</font> acao, <font color="blue">const</font> Valor<font color="black">&</font> valorB <font color="black">=</font> Irrelevante<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="blue">const</font>
+            <font color="black">{</font>
+                <font color="blue">const</font> Valor<font color="black">*</font> novoValor <font color="black">=</font> <font color="black">(</font><font color="blue">const</font> Valor<font color="black">*</font><font color="black">)</font> valorB.geraCopia<font color="black">(</font><font color="black">)</font>;
+                Lista<font color="black">&#60;</font><font color="blue">const</font> Valor<font color="black">*</font><font color="black">&#62;</font> valores;
+
+                <font color="blue">if</font> <font color="black">(</font>valorB <font color="black">!</font><font color="black">=</font> Irrelevante<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                    valores.adiciona<font color="black">(</font>novoValor<font color="black">)</font>;
+                <font color="black">}</font>
+
+                Valor retorno<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>aplica<font color="black">(</font>valorA, acao, valores<font color="black">)</font><font color="black">)</font>;
+                <font color="blue">delete</font> novoValor;
+                <font color="blue">return</font> retorno;
+            <font color="black">}</font>
+
+            <font color="green">/**
+             * @throws AcaoIndisponivelExcecao
+             */</font>
+            virtual <font color="blue">const</font> Valor aplica<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> valor,
+                    <font color="blue">const</font> Identificacao<font color="black">&</font> acao, <font color="blue">const</font> Lista<font color="black">&#60;</font><font color="blue">const</font> Valor<font color="black">*</font><font color="black">&#62;</font><font color="black">&</font> valores<font color="black">)</font> <font color="blue">const</font> <font color="black">=</font> <font color="maroon">0</font>;
+
+            <font color="green">/**
+             * Retorna uma lista de ações possíveis desta classe.
+             */</font>
+            virtual <font color="blue">const</font> Lista<font color="black">&#60;</font>Identificacao<font color="black">&#62;</font><font color="black">&</font> acoesPossiveis<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Retorna uma lista dos nomes dos campos que existem nessa classe.
+             */</font>
+            virtual <font color="blue">const</font> Lista<font color="black">&#60;</font>Identificacao<font color="black">&#62;</font><font color="black">&</font> campos<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+    <font color="black">}</font>;
+  <font color="black">}</font>
+ <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_CLASSE_H__81E5C6F7_F587_4826_87F3_7B62205B5699__INCLUDED_)</font>
+
+</PRE>
+</BODY>
+</HTML>

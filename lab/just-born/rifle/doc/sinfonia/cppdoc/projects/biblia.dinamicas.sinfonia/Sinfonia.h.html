@@ -1,0 +1,291 @@
+<HTML>
+<HEAD>
+<TITLE>
+Sinfonia.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: Sinfonia.h.html,v $
+ * $Date: 2005/03/22 20:19:08 $
+ * $Revision: 1.42 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_SINFONIA_H__F620F6CB_039E_4BB4_B2BD_52154D013071__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_SINFONIA_H__F620F6CB_039E_4BB4_B2BD_52154D013071__INCLUDED_
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/basico/Objeto.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>basico;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/util/Debug.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/util/Lixeira.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>util;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/tempo/Cronometro.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/tempo/UniversoDeTempo.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>tempo;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/fluxo/Thread.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/fluxo/Semaforo.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/fluxo/Executavel.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>fluxo;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/armazenamento/volatil/primitivos/Inteiro.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>armazenamento<font color="black">:</font><font color="black">:</font>volatil<font color="black">:</font><font color="black">:</font>primitivos;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/armazenamento/volatil/carcacas/Lista.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/armazenamento/volatil/carcacas/MapaHash.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>armazenamento<font color="black">:</font><font color="black">:</font>volatil<font color="black">:</font><font color="black">:</font>carcacas;
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Concretizador.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/MediadorDeEstados.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/ModificadorDeEstado.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/GeradorDeEventosEspecial.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/GeradorDeEventosDependente.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/OuvidorDosGeradoresDeEventos.h"</font>
+
+<font color="blue">namespace</font> biblia <font color="black">{</font>
+ <font color="blue">namespace</font> dinamicas <font color="black">{</font>
+  <font color="blue">namespace</font> sinfonia <font color="black">{</font>
+    <font color="green">/**
+     * &#60;p&#62;&#60;b&#62;&#60;font size=+1&#62;Classe Principal.&#60;/font&#62;&#60;/b&#62;
+     * &#60;p&#62;
+     * Realiza a {@link GeradorDeEventosDependente mudança}
+     * e a {@link Concretizador execução} de determinados
+     * {@link MediadorDeEstados estados}.
+     *
+     * @version $Revision: 1.42 $, $Date: 2005/03/22 20:19:08 $ (GMT-3)
+     * @author &#60;a href="mailto:lalli@ages.com.br?subject=$RCSfile: Sinfonia.h.html,v $"&#62;Felipe Micaroni Lalli&#60;/a&#62;
+     * @author modificado por $Author: felipelalli $
+     *
+     * @see Genesis
+     * @see Estado
+     * @see Evento
+     * @see MediadorDeEstados
+     * @see Concretizador
+     * @see RegraDeEstados
+     * @see GeradorDeEventosDependente
+     * @see GeradorDeEventosEspecial
+     * @see ScriptDinamica
+     */</font>
+    <font color="blue">class</font> Sinfonia<font color="black">:</font> <font color="blue">public</font> GeradorDeEventos <font color="black">{</font>
+        <font color="blue">private</font><font color="black">:</font>
+            MediadorDeEstados pEstados;
+            GeradorDeEventosDependente pDependentes; <font color="green">// é um GeradorDeEventos</font>
+            Concretizador<font color="black">*</font> pConcretizador; <font color="green">// é um GeradorDeEventos</font>
+            MapaHash<font color="black">&#60;</font>Lista<font color="black">&#60;</font>GeradorDeEventosEspecial<font color="black">*</font><font color="black">&#62;</font> <font color="black">&#62;</font> pGeradoresPontuais;
+            Lista<font color="black">&#60;</font>GeradorDeEventosEspecial<font color="black">*</font><font color="black">&#62;</font> pGeradores;
+            Lista<font color="black">&#60;</font>Thread<font color="black">*</font><font color="black">&#62;</font> pThreads;
+            Lista<font color="black">&#60;</font>string<font color="black">&#62;</font> pNomeThreads;
+
+            Cronometro pQuantoTempoExecutando;
+            Semaforo pEsperarAcabar;
+            Semaforo pEsperarExecutar;
+            <font color="blue">const</font> UniversoDeTempo<font color="black">&</font> pTempo;
+            <font color="blue">bool</font> pExecutou;
+
+            Lixeira pLixo;
+            Lixeira pLixoThreads;
+            Lixeira pLixoOuvidores;
+
+            <font color="green">/**
+             * Proibido.
+             */</font>
+            Sinfonia<font color="black">(</font><font color="blue">const</font> Sinfonia<font color="black">&</font> s<font color="black">)</font>
+                <font color="black">:</font>GeradorDeEventos<font color="black">(</font>pEstados, <font color="blue">true</font><font color="black">)</font>,
+                 pEstados<font color="black">(</font>s.pTempo<font color="black">)</font>,
+                 pDependentes<font color="black">(</font>pEstados<font color="black">)</font>,
+                 pConcretizador<font color="black">(</font>NULL<font color="black">)</font>, pGeradores<font color="black">(</font><font color="black">)</font>,
+                 pLixo<font color="black">(</font><font color="black">)</font>, pQuantoTempoExecutando<font color="black">(</font>s.pTempo, <font color="blue">false</font><font color="black">)</font>,
+                 pThreads<font color="black">(</font><font color="black">)</font>, pEsperarAcabar<font color="black">(</font><font color="maroon">1</font><font color="black">)</font>,
+                 pEsperarExecutar<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>, pTempo<font color="black">(</font>s.pTempo<font color="black">)</font>
+            <font color="black">{</font><font color="black">}</font>
+
+            <font color="green">// Procedimentos:</font>
+
+            virtual Sinfonia<font color="black">&</font> inicializa<font color="black">(</font><font color="black">)</font>;
+
+        <font color="blue">protected</font><font color="black">:</font>
+            <font color="green">/**
+             * Pega para si a responsabilidade de deletar
+             * o {@link GeradorDeEventos} passado.
+             */</font>
+            virtual Sinfonia<font color="black">&</font> adicionaGeradorDeEventos<font color="black">(</font>GeradorDeEventos<font color="black">*</font> ge<font color="black">)</font>;
+
+            <font color="green">/**
+             * {@link GeradorDeEventosDependente Dinâmica}
+             * da Sinfonia.
+             *
+             * @see GeradorDeEventosDependente
+             */</font>
+            virtual GeradorDeEventosDependente<font color="black">&</font> dinamicaParaModificar<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * {@link Concretizador} da Sinfonia.
+             *
+             * @see Concretizador
+             */</font>
+            virtual Concretizador<font color="black">&</font> concretizador<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * {@link Estado}s da Sinfonia.
+             *
+             * @see MediadorDeEstados
+             */</font>
+            virtual MediadorDeEstados<font color="black">&</font> estadosParaModificar<font color="black">(</font><font color="black">)</font>;
+
+        <font color="blue">public</font><font color="black">:</font>
+            <font color="green">// Estados Reservados</font>
+
+            <font color="green">/**
+             * Nome do Estado reservado que indica
+             * que a Sinfonia está ligada, definido como
+             * &#60;b&#62;Sinfonia.Reservados.ligada&#60;/b&#62;.
+             */</font>
+            <font color="blue">static</font> <font color="blue">const</font> Valor LIGADA;
+
+            <font color="green">// Construtor / Destrutor</font>
+
+            <font color="green">/**
+             * Cria uma Sinfonia vazia, ela deve
+             * ser definida pelas funções
+             * {@link #adicionaGeradorDeEventosEspecial},
+             * {@link #adicionaResultado},
+             * {@link #adicionaSituacao}
+             * e {@link #adicionaEstado}.
+             */</font>
+            Sinfonia<font color="black">(</font><font color="blue">const</font> UniversoDeTempo<font color="black">&</font> u<font color="black">)</font>;
+            virtual ~Sinfonia<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">// Funções de definição</font>
+
+            <font color="green">/**
+             * Adiciona algum {@link GeradorDeEventosEspecial}
+             * que captura os {@link Evento}s da Sinfonia e manda
+             * pro Software realizar alguma coisa, podendo gerar
+             * ainda Eventos para a Sinfonia. &#60;b&#62;Importante:
+             * por padrão, a Sinfonia não executará esses
+             * {@link GeradorDeEventosEspecial
+             * geradores especiais}, eles deverão ser executados externamente
+             * de alguma forma. Se quiser que a Sinfonia o execute uma vez em thread
+             * você deve passar "true" no parâmetro "executarUmaVezEmThread".&#60;/b&#62;
+             *
+             * @param gee Esta classe pegará para si a responsabilidade
+             *          de deletar o {@link GeradorDeEventosEspecial
+             *          gerador de eventos especial} passado.
+             *
+             * @see GeradorDeEventosEpecial
+             */</font>
+            virtual Sinfonia<font color="black">&</font> adicionaGeradorDeEventosEspecial<font color="black">(</font>
+                    GeradorDeEventosEspecial<font color="black">*</font> gee,
+                    <font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font> executarUmaVezEmThread <font color="black">=</font> <font color="blue">false</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Adiciona uma {@link Situacao Situação} ao
+             * {@link GeradorDeEventosDependente} atrelado
+             * à Sinfonia.
+             *
+             * @param s Esta classe pegará para si a responsabilidade
+             *          de deletar a situação passada.
+             *
+             * @see GeradorDeEventosDependente#adicionaSituacao
+             * @see Situacao
+             */</font>
+            virtual Sinfonia<font color="black">&</font> adicionaSituacao<font color="black">(</font><font color="blue">const</font> Situacao<font color="black">*</font> s<font color="black">)</font>;
+
+            <font color="green">/**
+             * Adiciona algum {@link Resultado}
+             * que será executado sempre que a {@link Situacao situação}
+             * atrelada a {@link Resultado ele} ocorrer.
+             *
+             * @param r Esta classe pegará para si a responsabilidade
+             *          de deletar o {@link Resultado} passado.
+             *
+             * @see Concretizador#adiciona
+             * @see Resultado
+             */</font>
+            virtual Sinfonia<font color="black">&</font> adicionaResultado<font color="black">(</font>Resultado<font color="black">*</font> r<font color="black">)</font>;
+
+            <font color="green">/**
+             * Adiciona um {@link Estado}
+             * no {@link MediadorDeEstados}
+             * desta Sinfonia.
+             *
+             * @param e Esta classe pegará para si a responsabilidade
+             *          de deletar o {@link Estado} passado.
+             *
+             * @see MediadorDeEstados#adicionaEstado
+             * @see Estado
+             */</font>
+            virtual Sinfonia<font color="black">&</font> adicionaEstado<font color="black">(</font>Estado<font color="black">*</font> e<font color="black">)</font>;
+
+            <font color="green">/**
+             * Utiliza os recursos internos para fazer rodar
+             * um executável passado uma vez em {@link Thread}.
+             * Cuidado para não chamar essa função duas vezes, se você
+             * passar &#60;b&#62;true&#60;/b&#62; no parâmetro &#60;b&#62;executarUmaVezEmThread&#60;/b&#62;
+             * na função {@link #adicionaGeradorDeEventosEspecial}
+             * esta função já será chamada automaticamente.
+             *
+             * @see #adicionaGeradorDeEventosEspecial
+             */</font>
+            virtual Sinfonia<font color="black">&</font> fazRodarUmaVezEmThread<font color="black">(</font>
+                    Executavel<font color="black">&</font> e, <font color="blue">const</font> string<font color="black">&</font> nome<font color="black">)</font>;
+
+            <font color="green">// Funções de uso</font>
+
+            <font color="green">/**
+             * {@link Estado}s da Sinfonia.
+             *
+             * @see MediadorDeEstados
+             */</font>
+            virtual <font color="blue">const</font> MediadorDeEstados<font color="black">&</font> estados<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * {@link GeradorDeEventosDependente Dinâmica}
+             * da Sinfonia.
+             *
+             * @see GeradorDeEventosDependente
+             */</font>
+            virtual <font color="blue">const</font> GeradorDeEventosDependente<font color="black">&</font> dinamica<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">// Executavel:</font>
+            <font color="green">/**
+             * Inicia todo o processo da Sinfonia. Fica executando
+             * em loop enquanto o estado reservado {@link #LIGADA}
+             * for verdadeiro.
+             * &#60;p&#62;
+             *     1. {@link GeradorDeEventosEspecial
+             *         recebe de geradores de eventos especiais}
+             * &#60;br&#62;2. {@link GeradorDeEventosDependente dinâmica dos estados}
+             * &#60;br&#62;3. {@link MediadorDeEstados mediador de estado}
+             * &#60;br&#62;4. {@link GeradorDeEventosEspecial manda para
+             *         geradores de eventos especiais}
+             * &#60;br&#62;5. {@link Concretizador concretizador}
+             */</font>
+            virtual Executavel<font color="black">&</font> executa<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">// Objeto:</font>
+            <font color="green">/**
+             * Retorna o momento que esta Sinfonia foi
+             * criada, todos os estados e todos as situações.
+             */</font>
+            virtual string emString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+    <font color="black">}</font>;
+  <font color="black">}</font>
+ <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_SINFONIA_H__F620F6CB_039E_4BB4_B2BD_52154D013071__INCLUDED_)</font>
+
+</PRE>
+</BODY>
+</HTML>

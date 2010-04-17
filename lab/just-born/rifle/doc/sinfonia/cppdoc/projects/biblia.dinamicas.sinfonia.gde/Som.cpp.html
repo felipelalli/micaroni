@@ -1,0 +1,254 @@
+<HTML>
+<HEAD>
+<TITLE>
+Som.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: Som.cpp.html,v $
+ * $Date: 2005/03/22 20:18:49 $
+ * $Revision: 1.6 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/gde/Som.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia<font color="black">:</font><font color="black">:</font>gde;
+
+SomBiblia<font color="black">:</font><font color="black">:</font>SomBiblia<font color="black">(</font><font color="blue">const</font> MediadorDeEstados<font color="black">&</font> mde,
+         ResultadoSonoro<font color="black">&</font> resultadoSonoro,
+         CarregadorDeSom<font color="black">&</font> carregadorDeSom,
+         <font color="blue">const</font> UniversoDeTempo<font color="black">&</font> tempo,
+         Estado<font color="black">*</font> e<font color="black">)</font>
+
+    <font color="black">:</font>GeradorDeEventosEspecial<font color="black">(</font>mde<font color="black">)</font>, 
+     pCarregadorDeSom <font color="black">(</font>carregadorDeSom<font color="black">)</font>,
+     pResultadoSonoro<font color="black">(</font>resultadoSonoro<font color="black">)</font>,
+     pTempo <font color="black">(</font>tempo<font color="black">)</font>,
+     pEstado<font color="black">(</font>e<font color="black">)</font>, pSomRelacionado<font color="black">(</font><font color="maroon">"???"</font><font color="black">)</font>,
+     pGeradorDeEventosParaSomEmThread<font color="black">(</font>pGeradorDeEventosParaSom<font color="black">)</font>
+
+<font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGeradorDeEventosParaSom.defineThis<font color="black">(</font><font color="blue">this</font><font color="black">)</font>;
+
+    <font color="blue">bool</font> impossivelCriar <font color="black">=</font> <font color="blue">false</font>;
+    ImpossivelCriarSomBibliaExcecao icabe;
+
+    try <font color="black">{</font>
+        <font color="blue">if</font> <font color="black">(</font>e<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>.indefinida<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+            impossivelCriar <font color="black">=</font> <font color="blue">true</font>;
+            icabe <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"Valor Indefinido! "</font>;
+        <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSomRelacionado <font color="black">=</font> e<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>.emString<font color="black">(</font><font color="black">)</font>;
+
+            <font color="blue">if</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pCarregadorDeSom.jaCarregado<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSomRelacionado<font color="black">)</font><font color="black">)</font>
+            <font color="black">{</font>
+                impossivelCriar <font color="black">=</font> <font color="blue">true</font>;
+                icabe <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"Som não existe!"</font>;
+            <font color="black">}</font>
+        <font color="black">}</font>
+    <font color="black">}</font> <font color="blue">catch</font> <font color="black">(</font><font color="blue">const</font> Excecao<font color="black">&</font> cie<font color="black">)</font> <font color="black">{</font>
+        impossivelCriar <font color="black">=</font> <font color="blue">true</font>;
+        icabe <font color="black">&#60;</font><font color="black">&#60;</font> cie <font color="black">+</font> <font color="maroon">" - "</font>;
+    <font color="black">}</font>
+
+    <font color="blue">if</font> <font color="black">(</font>impossivelCriar<font color="black">)</font> <font color="black">{</font>
+        icabe <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"Erro na criação da SomBiblia relativa ao Estado '"</font> <font color="black">+</font> <font color="black">*</font>e
+                <font color="black">+</font> <font color="maroon">"'. Campo PRINCIPAL obrigatório / o som "</font>
+                <font color="black">+</font> <font color="maroon">"'"</font> <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSomRelacionado <font color="black">+</font> <font color="maroon">"' deve estar"</font>
+                <font color="black">+</font> <font color="maroon">" previamente criado. This: "</font> <font color="black">+</font> <font color="black">*</font><font color="blue">this</font>;
+
+        <font color="blue">throw</font> icabe;
+    <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+        
+        <font color="blue">bool</font> tocando <font color="black">=</font> <font color="blue">false</font>;
+        <font color="blue">int</font>  volume <font color="black">=</font> <font color="maroon">100</font>;
+        <font color="blue">int</font>  prioridade <font color="black">=</font> <font color="maroon">-1</font>;
+        <font color="blue">bool</font> emLoop <font color="black">=</font> <font color="blue">false</font>;
+        <font color="blue">bool</font> paralelo <font color="black">=</font> <font color="blue">true</font>;
+
+        try <font color="black">{</font>
+            tocando <font color="black">=</font> e<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"tocando"</font><font color="black">)</font>.emBool<font color="black">(</font><font color="black">)</font>;
+        <font color="black">}</font> <font color="blue">catch</font> <font color="black">(</font><font color="blue">const</font> Excecao<font color="black">&</font><font color="black">)</font> <font color="black">{</font>              
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font>tocando,<font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>tempo<font color="black">(</font><font color="black">)</font>, <font color="maroon">"tocando"</font><font color="black">)</font>;
+        <font color="black">}</font>
+
+        try <font color="black">{</font>
+            volume <font color="black">=</font> e<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"volume"</font><font color="black">)</font>.emInt<font color="black">(</font><font color="black">)</font>;
+        <font color="black">}</font> <font color="blue">catch</font> <font color="black">(</font><font color="blue">const</font> Excecao<font color="black">&</font><font color="black">)</font> <font color="black">{</font>              
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font>volume,<font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>tempo<font color="black">(</font><font color="black">)</font>, <font color="maroon">"volume"</font><font color="black">)</font>;
+        <font color="black">}</font>
+
+        try <font color="black">{</font>
+            prioridade <font color="black">=</font> e<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"prioridade"</font><font color="black">)</font>.emInt<font color="black">(</font><font color="black">)</font>;
+        <font color="black">}</font> <font color="blue">catch</font> <font color="black">(</font><font color="blue">const</font> Excecao<font color="black">&</font><font color="black">)</font> <font color="black">{</font>              
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font>prioridade,<font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>tempo<font color="black">(</font><font color="black">)</font>, <font color="maroon">"prioridade"</font><font color="black">)</font>;
+        <font color="black">}</font>
+
+        try <font color="black">{</font>
+            emLoop <font color="black">=</font> e<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"loop"</font><font color="black">)</font>.emBool<font color="black">(</font><font color="black">)</font>;
+        <font color="black">}</font> <font color="blue">catch</font> <font color="black">(</font><font color="blue">const</font> Excecao<font color="black">&</font><font color="black">)</font> <font color="black">{</font>              
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font>emLoop,<font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>tempo<font color="black">(</font><font color="black">)</font>, <font color="maroon">"loop"</font><font color="black">)</font>;
+        <font color="black">}</font>
+
+        try <font color="black">{</font>
+            paralelo <font color="black">=</font> e<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"paralelo"</font><font color="black">)</font>.emBool<font color="black">(</font><font color="black">)</font>;
+        <font color="black">}</font> <font color="blue">catch</font> <font color="black">(</font><font color="blue">const</font> Excecao<font color="black">&</font><font color="black">)</font> <font color="black">{</font>              
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font>paralelo,<font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>tempo<font color="black">(</font><font color="black">)</font>, <font color="maroon">"paralelo"</font><font color="black">)</font>;
+        <font color="black">}</font>
+        
+        
+        <font color="blue">if</font> <font color="black">(</font>tocando<font color="black">)</font><font color="black">{</font>
+
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pResultadoSonoro.toca<font color="black">(</font>
+                ComponenteSonoro<font color="black">(</font>
+                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pCarregadorDeSom.som<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSomRelacionado<font color="black">)</font>,
+                    volume,
+                    prioridade,
+                    emLoop,
+                    paralelo
+                <font color="black">)</font>
+            <font color="black">)</font>;      
+        <font color="black">}</font>
+    <font color="black">}</font>
+
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGeradorDeEventosParaSomEmThread.start<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>modificaEventosQueTrata<font color="black">(</font><font color="black">)</font>.adiciona<font color="black">(</font>
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+SomBiblia<font color="black">:</font><font color="black">:</font>~SomBiblia<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGeradorDeEventosParaSom.termina<font color="black">(</font><font color="black">)</font>;
+
+    <font color="blue">while</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGeradorDeEventosParaSom.terminou<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        Thread<font color="black">:</font><font color="black">:</font>sleep<font color="black">(</font>Intervalo<font color="black">(</font><font color="maroon">10</font>, Milissegundo<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>
+<font color="black">}</font>
+
+Som<font color="black">&</font> SomBiblia<font color="black">:</font><font color="black">:</font>somRelacionado<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pCarregadorDeSom.som <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSomRelacionado<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">const</font> string<font color="black">&</font> SomBiblia<font color="black">:</font><font color="black">:</font>nomeDoSomRelacionado<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSomRelacionado;
+<font color="black">}</font>
+
+<font color="blue">const</font> UniversoDeTempo<font color="black">&</font> SomBiblia<font color="black">:</font><font color="black">:</font>tempo<font color="black">(</font><font color="black">)</font><font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTempo;
+<font color="black">}</font>
+
+string SomBiblia<font color="black">:</font><font color="black">:</font>emString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="maroon">"Som("</font> <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>nomeDoSomRelacionado<font color="black">(</font><font color="black">)</font> <font color="black">+</font> <font color="maroon">")("</font>
+            <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>somRelacionado<font color="black">(</font><font color="black">)</font> <font color="black">+</font> <font color="maroon">")"</font>;
+<font color="black">}</font>
+
+Executavel<font color="black">&</font> SomBiblia<font color="black">:</font><font color="black">:</font>executa<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">while</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>encerrou<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        <font color="blue">const</font> Evento<font color="black">*</font> e <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>esperaAteQueVenhaEvento<font color="black">(</font><font color="black">)</font>;
+
+        <font color="blue">if</font> <font color="black">(</font>e <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font> <font color="black">{</font>
+            <font color="blue">if</font> <font color="black">(</font>e<font color="black">-</font><font color="black">&#62;</font>modificaEstadoDiretamente<font color="black">(</font><font color="black">)</font>
+                <font color="black">&</font><font color="black">&</font> <font color="black">(</font>e<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>
+            <font color="black">{</font>
+                Valor campo <font color="black">=</font> e<font color="black">-</font><font color="black">&#62;</font>modificador<font color="black">(</font><font color="black">)</font>.campo<font color="black">(</font><font color="black">)</font>;
+
+                <font color="blue">if</font> <font color="black">(</font>campo <font color="black">=</font><font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL<font color="black">)</font> <font color="black">{</font>
+
+                    Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>WARN, <font color="maroon">"SomBiblia::executa::"</font>
+                            <font color="maroon">" Ao tentar mudar de '"</font>
+                            <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>nomeDoSomRelacionado<font color="black">(</font><font color="black">)</font>
+                            <font color="black">+</font> <font color="maroon">"' para '"</font>
+                            <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>
+                            <font color="black">+</font> <font color="maroon">" não é possível mudar o nome do"</font>
+                            <font color="maroon">" som relacionada! Corrija isto"</font>
+                            <font color="maroon">" o mais rápido possível porque"</font>
+                            <font color="maroon">" o nome do Estado ficou desatualizado!"</font><font color="black">)</font>;
+
+                <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>campo <font color="black">=</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"tocando"</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                    
+                    <font color="blue">if</font> <font color="black">(</font>e<font color="black">-</font><font color="black">&#62;</font>modificador<font color="black">(</font><font color="black">)</font>.parametros<font color="black">(</font><font color="black">)</font><font color="black">[</font><font color="maroon">0</font><font color="black">]</font>.valorAlvo<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> Valor<font color="black">(</font><font color="blue">true</font><font color="black">)</font><font color="black">)</font><font color="black">{</font>
+
+                        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pResultadoSonoro.toca<font color="black">(</font>
+                            ComponenteSonoro<font color="black">(</font>
+                                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pCarregadorDeSom.som<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSomRelacionado<font color="black">)</font>,
+                                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"volume"</font><font color="black">)</font>.emInt<font color="black">(</font><font color="black">)</font>,
+                                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"prioridade"</font><font color="black">)</font>.emInt<font color="black">(</font><font color="black">)</font>,
+                                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"loop"</font><font color="black">)</font>.emBool<font color="black">(</font><font color="black">)</font>,
+                                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"paralelo"</font><font color="black">)</font>.emBool<font color="black">(</font><font color="black">)</font>
+                            <font color="black">)</font>
+                        <font color="black">)</font>;  
+                    <font color="black">}</font>
+                <font color="black">}</font>
+            <font color="black">}</font>
+
+            <font color="blue">delete</font> e;
+        <font color="black">}</font>
+    <font color="black">}</font>
+
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+SomBiblia<font color="black">:</font><font color="black">:</font>GeraEventosParaSom
+        <font color="black">:</font><font color="black">:</font>GeraEventosParaSom<font color="black">(</font><font color="black">)</font>
+    <font color="black">:</font>pSomBiblia<font color="black">(</font>NULL<font color="black">)</font>, pTerminou<font color="black">(</font><font color="blue">false</font><font color="black">)</font>,
+     pTermina<font color="black">(</font><font color="blue">false</font><font color="black">)</font>, pTocandoAnterior<font color="black">(</font><font color="blue">false</font><font color="black">)</font>
+<font color="black">{</font><font color="black">}</font>
+
+Executavel<font color="black">&</font> SomBiblia<font color="black">:</font><font color="black">:</font>GeraEventosParaSom<font color="black">:</font><font color="black">:</font>executa<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTocandoAnterior <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSomBiblia<font color="black">-</font><font color="black">&#62;</font>somRelacionado<font color="black">(</font><font color="black">)</font>.tocando<font color="black">(</font><font color="black">)</font>;
+
+    <font color="blue">while</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTermina<font color="black">)</font> <font color="black">{</font>
+
+        <font color="blue">bool</font> tocandoAtual <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSomBiblia<font color="black">-</font><font color="black">&#62;</font>somRelacionado<font color="black">(</font><font color="black">)</font>.tocando<font color="black">(</font><font color="black">)</font>;
+        
+        <font color="blue">if</font> <font color="black">(</font><font color="black">(</font>tocandoAtual<font color="black">=</font><font color="black">=</font><font color="blue">false</font><font color="black">)</font> <font color="black">&</font><font color="black">&</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTocandoAnterior<font color="black">=</font><font color="black">=</font><font color="blue">true</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+
+            <font color="green">// Lança evento que terminou</font>
+            SomBiblia<font color="black">&</font> a <font color="black">=</font> <font color="black">*</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSomBiblia<font color="black">)</font>;
+
+            ModificadorDeEstado mde<font color="black">(</font>a.pEstado<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+            mde.adicionaParametro<font color="black">(</font>Valor<font color="black">(</font><font color="blue">false</font><font color="black">)</font><font color="black">)</font>;
+
+            mde.defineCampo<font color="black">(</font><font color="maroon">"tocando"</font><font color="black">)</font>;
+            Evento deixaDeEstarIniciado<font color="black">(</font>a.pEstado<font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font>, mde<font color="black">)</font>;
+            deixaDeEstarIniciado.grupo<font color="black">(</font>a.pEstado<font color="black">-</font><font color="black">&#62;</font>grupo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+            Evento<font color="black">*</font> disparado <font color="black">=</font> deixaDeEstarIniciado.dispara<font color="black">(</font>a.tempo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+            disparado<font color="black">-</font><font color="black">&#62;</font>especial<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+            a.gera<font color="black">(</font>disparado<font color="black">)</font>;
+        <font color="black">}</font>
+
+        Thread<font color="black">:</font><font color="black">:</font>sleep<font color="black">(</font>Intervalo<font color="black">(</font><font color="maroon">10</font>, Milissegundo<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTocandoAnterior <font color="black">=</font> tocandoAtual;
+    <font color="black">}</font>
+
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTerminou <font color="black">=</font> <font color="blue">true</font>;
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+SomBiblia<font color="black">:</font><font color="black">:</font>GeraEventosParaSom<font color="black">&</font> SomBiblia
+        <font color="black">:</font><font color="black">:</font>GeraEventosParaSom<font color="black">:</font><font color="black">:</font>termina<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTermina <font color="black">=</font> <font color="blue">true</font>;
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+<font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font> SomBiblia<font color="black">:</font><font color="black">:</font>GeraEventosParaSom<font color="black">:</font><font color="black">:</font>terminou<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTerminou;
+<font color="black">}</font>
+
+<font color="blue">void</font> SomBiblia<font color="black">:</font><font color="black">:</font>GeraEventosParaSom<font color="black">:</font><font color="black">:</font>defineThis<font color="black">(</font>SomBiblia<font color="black">*</font> ab<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSomBiblia <font color="black">=</font> ab;
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

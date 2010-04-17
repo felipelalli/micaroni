@@ -1,0 +1,142 @@
+<HTML>
+<HEAD>
+<TITLE>
+ScriptDinamica.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: ScriptDinamica.h.html,v $
+ * $Date: 2005/03/22 20:19:07 $
+ * $Revision: 1.42 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_SCRIPTDINAMICA_H__C77D642D_870E_47CA_A896_F980F0711069__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_SCRIPTDINAMICA_H__C77D642D_870E_47CA_A896_F980F0711069__INCLUDED_
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/gde/Timer.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/gde/Animacao.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/gde/Som.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/gde/MouseBiblia.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/gde/AreaClicavel.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia<font color="black">:</font><font color="black">:</font>gde;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/basico/Objeto.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>basico;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/util/Lixeira.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>util;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/fluxo/Executavel.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/fluxo/Conclusivo.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>fluxo;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/armazenamento/volatil/xml/NoXML.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/armazenamento/volatil/xml/GrupoXML.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/armazenamento/volatil/xml/CampoValor.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/armazenamento/volatil/xml/GrupoNo.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/armazenamento/volatil/xml/ArquivoXML.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>armazenamento<font color="black">:</font><font color="black">:</font>volatil<font color="black">:</font><font color="black">:</font>xml;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/armazenamento/volatil/carcacas/MapaHash.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>armazenamento<font color="black">:</font><font color="black">:</font>volatil<font color="black">:</font><font color="black">:</font>carcacas;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/mais/xerces/NoXMLXerces.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/mais/xerces/ArquivoXMLXerces.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>mais<font color="black">:</font><font color="black">:</font>xerces;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/io/som/ResultadoSonoro.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/io/som/CarregadorDeSom.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>io<font color="black">:</font><font color="black">:</font>som;
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Genesis.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/EstadoDependente.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/CondicaoImpl.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/CondicaoComposta.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/CondicaoModificadora.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/CondicaoDeComparacao.h"</font>
+
+<font color="blue">namespace</font> biblia <font color="black">{</font>
+ <font color="blue">namespace</font> dinamicas <font color="black">{</font>
+  <font color="blue">namespace</font> sinfonia <font color="black">{</font>
+    <font color="green">/**
+     * Gera uma Sinfonia definindo os estados e dinâmica a partir de
+     * um arquivo XML gerado pelo software auxiliar &#60;code&#62;SinfoniaScripCreator&#60;/code&#62;.
+     * Consulte a documentação específica desse software para mais detalhes
+     * de como gerar esse arquivo.
+     *
+     * @see Genesis
+     * @see Sinfonia
+     * @see Estado
+     * @see GeradorDeEventosDependente
+     */</font>
+    <font color="blue">class</font> ScriptDinamica<font color="black">:</font> <font color="blue">public</font> Genesis <font color="black">{</font>
+        <font color="blue">private</font><font color="black">:</font>
+            <font color="blue">const</font> UniversoDeTempo<font color="black">&</font> pTempo;
+            ResultadoSonoro<font color="black">&</font> pResultadoSonoro;
+            CarregadorDeSom<font color="black">&</font> pCarregadorDeSom;
+            BasicoVisual<font color="black">&</font> pVisual;
+            Sinfonia<font color="black">*</font> pSinfonia;
+            string pArquivo;
+            Lista<font color="black">&#60;</font>string<font color="black">&#62;</font> pGrupo;
+            MapaHash<font color="black">&#60;</font>Evento<font color="black">*</font><font color="black">&#62;</font> pEventos;
+            MapaHash<font color="black">&#60;</font>string<font color="black">&#62;</font> pAtributo;
+            MapaHash<font color="black">&#60;</font>string<font color="black">&#62;</font> pParametro;
+            MapaHash<font color="black">&#60;</font>Estado<font color="black">*</font><font color="black">&#62;</font> pEstados;
+            MapaHash<font color="black">&#60;</font>Estado<font color="black">*</font><font color="black">&#62;</font> pEstadosAtuais;
+            Lixeira pLixo;
+
+            <font color="blue">bool</font> carregaEstados<font color="black">(</font>string arquivo<font color="black">)</font>;
+            <font color="blue">void</font> percorreGruposParaEstados<font color="black">(</font>NoXML<font color="black">*</font> no<font color="black">)</font>;
+            <font color="blue">void</font> percorreGruposParaEventos<font color="black">(</font>NoXML<font color="black">*</font> no<font color="black">)</font>;
+            <font color="blue">void</font> percorreGruposParaDinamica<font color="black">(</font>NoXML<font color="black">*</font> no<font color="black">)</font>;
+
+            <font color="green">/** o retorno não deve ser deletado externamente */</font>
+            Estado<font color="black">*</font> carregaEstadoDependente<font color="black">(</font>NoXML<font color="black">*</font> noEstado,
+                    string<font color="black">&</font> atributoParaAtualizar, string<font color="black">&</font> nomeParaAtualizar<font color="black">)</font>;
+
+            <font color="green">/** o retorno deve ser deletado externamente */</font>
+            Condicao<font color="black">*</font> carregaCondicao<font color="black">(</font>NoXML<font color="black">*</font> noCondicao,
+                                      Lista<font color="black">&#60;</font>string<font color="black">&#62;</font><font color="black">&</font> estadosRelacionados,
+                                      string nomeDaSituacao<font color="black">)</font>;
+
+            <font color="blue">const</font> string grupo<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+        <font color="blue">protected</font><font color="black">:</font>
+            virtual <font color="blue">const</font> Sinfonia<font color="black">&</font> sinfonia<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+            virtual Sinfonia<font color="black">&</font> sinfonia<font color="black">(</font><font color="black">)</font>;
+
+        <font color="blue">public</font><font color="black">:</font>
+            <font color="green">/**
+             * Deve ser passado uma Sinfonia pré-criada.
+             */</font>
+            ScriptDinamica<font color="black">(</font><font color="blue">const</font> string<font color="black">&</font> caminhoDoArquivo, 
+                           BasicoVisual<font color="black">&</font>,
+                           ResultadoSonoro<font color="black">&</font> resultadoSonoro,
+                           CarregadorDeSom<font color="black">&</font> carregadorDeSom<font color="black">)</font>;
+
+            virtual ~ScriptDinamica<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Inicia todo o processo de leitura
+             * do arquivo.
+             */</font>
+            virtual Sinfonia<font color="black">*</font> geraSinfonia<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>;
+  <font color="black">}</font>
+ <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_SCRIPTDINAMICA_H__C77D642D_870E_47CA_A896_F980F0711069__INCLUDED_)</font>
+
+</PRE>
+</BODY>
+</HTML>

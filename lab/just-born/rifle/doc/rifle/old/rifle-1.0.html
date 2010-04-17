@@ -1,0 +1,510 @@
+<html lang="pt-BR">
+
+<head>
+    <meta http-equiv=content-type content="text/html; charset=UTF-8"/>
+    <style type="text/css">
+        @import "rifle.css";
+    </style>
+</head>
+
+<body>
+<div id="corpo">
+
+<table height="100%" width="100%" border="0">
+<tr>
+    <td align="center" valign="center">
+		<center>
+			<img src="res/rifle.png" border=0/>
+		</center>
+        <h1 class="subtitulo"><small><i>Gramática Genérica<br/>Em "Texto Carregado<SUP><font size=-1>&reg;</font></SUP>"</i></small></h1>
+        <p>Versão deste documento: 1.0</p>
+    </td>
+</tr>
+<tr>
+    <td align="center" valign="bottom">
+        <p><b>Felipe Micaroni Lalli</b></p>
+        <br/>
+        <br/>
+        <p>Campinas, São Paulo, Brasil</p>
+        <p>dezembro de 2007 a janeiro de 2008</p>
+    </td>
+</tr>
+</table>
+
+<p/>
+
+<table height="100%" width="100%" border="0">
+<tr><td align="right" valign="bottom" class="dedicatoria">
+
+        <i>
+        	Dedico este trabalho ao R.I.F.L.E.:
+		<br/>
+        	<b>R</b>icardo, <b>I</b>gor, <b>F</b>elipe, <b>L</b>uiz <b>e</b>...
+        	<br/>à Heyko, à família e aos amigos
+        	<br/>que acreditaram em mim e me apoiaram.
+        </i>
+
+</td></tr>
+</table>
+
+<h2>Resumo</h2>
+<p>
+A base deste projeto é mapear computacionalmente uma gramática genérica específica, chamada de <b>texto carregado</b><sup>*</sup>. Este projeto também define as formas de interação com esse tipo de texto. Um <i>texto carregado</i> é um texto que pode conter meta-informações gramaticais fonológicas, morfológicas, sintáticas, morfossintáticas e semânticas. O autor do texto pode, por exemplo, especificar o sentido real do que deseja expressar alterando apenas meta-informações. É possível especificar um sentido único para uma frase de duplo sentido, é possível especificar se o tom é irônico ou até mesmo definir uma forma de falar (fonética) diferente da original para cada palavra. &mdash; Um <i>texto carregado</i> não se limita a uma língua específica, ou seja, pode carregar informações úteis para qualquer língua. O núcleo da semântica, entre outras coisas, são comuns entre as línguas.
+</p>
+
+<p>
+<b>Palavras-chave:</b> gramática genérica, linguagem natural, meta-texto, texto carregado, lógico-semântica
+</p>
+
+<hr class="rodape"/>
+<small>
+    * <i>Texto carregado</i>: Definição inédita neste trabalho (ver cap. 2). Poderia ser chamado de "texto rico", mas não foi para não ser confundido com "Rich Text Format" (RTF), que é outra coisa completamente diferente.
+</small>
+
+<hr class="quebra-pagina"/>
+
+<a name="a"/>
+<h2>Apresentação</h2>
+
+<p>
+A idéia do projeto apareceu em 2002 mas ficou estacionado até final de 2007 quando decidi retomá-lo. É claro que ele foi amadurecendo e minhas idéias foram se solidificando com minha experiência (acadêmica e profissional), até que me senti seguro em recomeçar pra valer.
+</p>
+
+<p>
+Graças ao incentivo direto do meu grande amigo Igor Hjelmstrom Vinhas Ribeiro, e também por considerações importantes sobre o tipo do projeto, decidi fazer o núcleo em Scheme Lisp e não em Java como pretendia inicialmente em 2002. Usarei em princípio o padrão R5RS implementado pelo SISC (Second Interpreter of Scheme Code) com algumas coisas <i>sujas</i> feitas em Java.
+</p>
+
+<p>
+Meu outro amigo Ricardo Edgard Caceffo recomendou &mdash; com razão &mdash; que eu estudasse bastante alguns trabalhos prontos sobre <i>linguagem natural</i>. É claro que considerei, mas ainda prefiro usar um método particular muito pouco ortodoxo: farei um projeto piloto sem ler ou estudar absolutamente nada relacionado com o assunto. Dessa forma, creio que me livrarei de alguns preconceitos que poderiam simplesmente bloquear meu raciocínio natural. Eu tenho uma leve impressão de que a "convicção cega" (sem a crítica necessária) em relação ao que já existe é um defeito dos adultos, mas talvez seja apenas um defeito meu.
+</p>
+
+</p>
+Mesmo assim, é claro que depois desse projeto piloto pretendo me aprofundar no assunto, estudando tudo que já foi construído até então e unir a parte boa do que eu fiz com a parte boa do que já foi feito, descartando as partes ruins, inúteis ou derivadas de outros preconceitos ou tradições equivocadas.
+</p>
+
+<p>
+É bom ressaltar que "não se aprofundar previamente no assunto" trata-se apenas do assunto "mapear a língua computacionalmente", porque é claro que é extremamente necessário se aprofundar previamente no estudo da língua em si. Terei como base a língua portuguesa, mas sempre com um olhar especial também no inglês e esperanto, de forma a tornar o projeto multilíngue, caso contrário não atingiria um objetivo que julgo fundamental.
+</p>
+
+<hr class="quebra-pagina"/>
+
+<a name="sumario"/>
+<h2>Sumário</h2>
+
+<ul>
+    <li><a href="#introducao">1. Introdução</a></li>
+    <li><a href="#carregado">2. Texto carregado<SUP><font size=-1>&reg;</font></SUP></a>
+        <ul>
+            <li><a href="#carregado-estrutura">2.1. Estrutura</a></li>
+            <ul>
+                <li><a href="#carregado-estrutura-uac">2.1.1. UAC - Unidade Atômica Conceitual</a></li>
+            </ul>
+
+            <li><a href="#carregado-interface">2.2. Interface (acesso aos dados)</a></li>
+            <ul>
+                <li><a href="#carregado-interface-contexto">2.2.1. Contexto Rifle</a></li>
+                <li><a href="#carregado-interface-procura">2.2.2. Função "procura-uac-mais-provavel</a></li>
+            </ul>
+        </ul>
+    </li>
+    <li><a href="#zid">3. Robô Zidnerpa</a>
+        <ul>
+            <li><a href="#zid-exemplo">3.1. Exemplo de funcionamento</a></li>
+            <li><a href="#aux">3.x Módulos auxiliares</a></li>
+            <li><a href="#modulo-identificacao">3.x.1 Módulo de identificação</a></li>
+            <li><a href="#modulo-equivalencias-estaticas-para-depois">3.x.2 Equivalências estáticas para processar depois</a></li>
+        </ul>
+    </li>
+
+    <li><a href="#zid">Bibliografia</a></li>
+</ul>
+
+<div id="canto-direito-embaixo"><a href="#sumario">^</a></div>
+
+<hr class="quebra-pagina"/>
+
+<a name="introducao"/>
+<h2>1. Introdução</h2>
+
+<p>
+O R.I.F.L.E. define formalmente a <i>estrutura</i> de um <b>texto carregado</b> e as <i>formas de interação</i> com esse tipo de texto. Um dos princípios do projeto é definir uma interface externa bastante fácil de usar e bem documentada, que seja acessível por qualquer programador com pouca experiência ou mesmo por qualquer pessoa dedicada a aprender.
+</p>
+
+<p>
+Toda interface será feita através de um protocolo chamado "Bacamarte". Cada servidor conterá informações próprias sobre a língua, por isso a idéia é que haja um servidor principal usado por todos. Somente poderá alimentar esse servidor usuários autorizados. A idéia é que robôs autorizados ajudem a alimentá-lo. Esse servidor terá um "<a href="#carregado-interface-contexto">Contexto Rifle</a>" que &mdash; como em um <a href="http://pt.wikipedia.org/wiki/Sistema_de_controle_de_vers%C3%A3o">Sistema de Controle de Versões</a> &mdash; guardará o histórico de todos os estados que já passou. Dessa forma, será possível usar dados "congelados" previamente testados de uma determinada data, sem que exista o perigo do servidor retornar informações diferentes para uma mesma requisição feita em tempos distintos.
+</p>
+
+<p>
+Tendo em mãos uma forma fácil de interagir com os <i>textos carregados</i> e com o banco de dados estruturado que definirá a língua (<a href="#carregado-estrutura-base">base semântica</a>), as aplicações que poderão surgir são diversas: interpretadores e corretores de texto, tradutores, robôs que aprendem e conversam, analisadores e transformadores de estilo de texto e vícios de linguagem, <i>softwares</i> pedagógicos, ferramentas para poesia, literatura, aprendizado da gramática, buscadores web semânticos etc.
+</p>
+
+<p>
+Uma forma interessante de coletar informações sobre uma determinada língua de forma colaborativa é através de um robô. Por isso, este projeto é pautado na construção desse robô aprendiz (batizado como robô Zidnerpa, ou simplesmente Zid) que coleta informações relevantes através de uma aparente conversa informal.
+</p>
+
+<p>
+Este documento está dividido em duas grandes partes (que poderiam até ser documentos distintos): a definição de "texto carregado" e o capítulo sobre o robô Zidnerpa.
+</p>
+
+
+<hr class="quebra-pagina"/>
+
+<a name="carregado"/>
+<h2>2. Texto carregado<SUP><font size=-1>&reg;</font></SUP></h2>
+<p>
+Um <i>texto carregado</i> se difere de um <i>texto comum</i> pela característica de não conter somente símbolos estáticos (letras, palavras e pontuação). Um <i>texto carregado</i> pode conter informações fonológicas, ortográficas, morfológicas, sintáticas, semânticas e de estilo. O <i>texto carregado</i> é definido a partir de uma "gramática genérica".
+</p>
+
+<a name="carregado-estrutura"/>
+<h3>2.1. Estrutura</h3>
+<p>
+Este capítulo define a hierarquia e estrutura das informações que um <i>texto carregado</i> pode carregar consigo. Sempre que a formalidade for requerida, a estrutura será expressa com alguns elementos básicos da linguagem computacional <a href="http://schemers.org/Documents/Standards/R5RS/">Scheme Lisp R5RS</a> em <code>texto azul</code>.
+</p>
+
+<a name="carregado-estrutura-uac"/>
+<h4>2.1.1. UAC - Unidade Atômica Conceitual</h4>
+<p>
+Para se definir computacionalmente uma expressão linguística devemos, antes de qualquer coisa, identificar os <i>elementos básicos</i> da língua para aí então formar construções mais complexas. Ao se pensar numa unidade mínima da língua, podemos pensar rapidamente em "letra". Porém, essa intuição está equivocada se considerarmos uma gramática <i>genérica</i> que poderia abranger qualquer tipo de língua, até mesmo uma inventada. Imagine, por exemplo, uma língua que é expressada através de símbolos que representam aquilo que conhecemos como "palavra". Em outras palavras, que não possua "letras", mas apenas "palavras". Nossa intuição mais uma vez nos engana se pensarmos que a unidade mínima da língua é então a "palavra". Isso está errado se considerarmos que as línguas não possuem o mesmo número de palavras e, ainda, que cada palavra pode possuir sinônimos, ou então que não possuem necessariamente uma equivalente em outra língua. Outro problema seria as palavras homônimas ou homógrafas e ainda as flexões de cada tipo de palavra. &mdash; Focando-se na <b>semântica</b>, podemos pensar num "elemento mínimo de significado" que <i>geralmente</i> possui pelo menos uma palavra equivalente ou que é facilmente reconhecido por apenas algumas poucas palavras explicativas. Definimos então (de forma inédita) essa "unidade mínima indivisível de significado" como UAC: <b>Unidade Atômica Conceitual</b>.
+</p>
+
+<p>
+É claro que nenhum <b>conceito</b> é <i>indivisível</i> por completo, ou seja, as nossas idéias estão organizadas num emaranhado complexo de definições (nosso conhecimento) e não é possível detectar com exatidão matemática onde um conceito começa e outro termina. Porém, para que seja possível mapear a língua "computacionalmente" é necessário que exista uma separação exata entre um conceito e outro. É claro que nossa inteligência, na hora de "externalizar" a informação, de alguma forma também cria separações exatas, de modo que seja possível expressar (mesmo que aproximadamente) o que estamos pensando em <i>palavras</i>, que não deixa de ser um símbolo exato que é depois reinterpretado novamente (quando lemos) ao emaranhado de definições.
+</p>
+
+<p>
+Se sabemos que é impossível fazer a divisão com 100% de precisão, como podemos então nos aproximar das divisões entre os UAC? Podemos nos aproximar através da definição de que a semântica é <b>dinâmica</b>, ou seja, num intervalo de tempo qualquer um UAC pode ser criado, pode deixar de existir, pode agrupar-se com outro, pode dividir-se em vários etc. Tudo dependerá de como são feitas as relações lógicas, que é aquele emaranhado de definições.
+</p>
+
+<p>
+Cada UAC será representado com um número que o identifica de forma única num <a href="#carregado-interface-contexto">Contexto Rifle</a>. Caso um UAC deixe de existir, aquele número nunca será utilizado para um novo UAC. Caso um UAC se agrupe a outro, o número do UAC original funcionará como um "redirecionador" para o novo UAC. Supondo que o UAC#50 se juntou com o UAC#99, então <code>(equal? (uac 50) (uac 99)) <big>&rArr;</big> #t</code>. Uma vez agrupados, nunca poderão se dividir novamente, a não ser que seja criado outro UAC.
+</p>
+
+<div class="destaque">
+<p>
+Uma <b>Unidade Atômica Conceitual</b> (ou <b>UAC</b>) é um determinado <i>conceito</i> limitado (porém mutável) sobre qualquer assunto que geralmente pode ser substituído por uma palavra, nome ou símbolo. &mdash; Notas: 1. não se diferencia um UAC de outro por sinônimos idênticos ou <i>flexões</i> da palavra (gênero, número, grau, tempo etc.) 2. Diversos UAC podem ser representados pela mesma palavra. 3. Um UAC pode representar um ser ou objeto único no universo.
+</p>
+
+<p>
+<b>Exemplos:</b>
+</p>
+
+<p>
+<ul>
+<li>UAC#65 = saudade; sentir falta de alguma coisa ou alguém. [Eu sinto <i>saudades</i> do meu quarto.]</li>
+<li>UAC#993 = casa; lugar físico para morar. [Ele comprou uma <i>casa</i>.]</li>
+<li>UAC#533 = lar; casa; lugar de referência. [Ela quer voltar pra <i>casa</i>.]</li>
+<li>UAC#36 = casar; casamento. [Ele não <i>casa</i> com ninguém.]</li>
+<li>UAC#97 = haver; acontecer; suceder [<i>Há</i> casos e casos.]</li>
+<li>UAC#445 = haver; existir; ter [<i>Há</i> um carro estacionado ali.]</li>
+<li>UAC#166 = jóia; objeto de adorno, de matéria preciosa ou imitante. [Eu adoro <i>jóias</i>.]</li>
+<li>UAC#963 = jóia; positivo; sinal ou gesto com o polegar. [Fizeram <i>jóia</i> pra mim.]</li>
+<li>UAC#4667 = João da Silva Menezes, RG 34.984.123-9, CPF 234.452.858-49. [Fizeram maldade com o <i>João</i>.]</li>
+<li>UAC#5937 = João; nome bastante comum na língua portuguesa. [Quem nesta classe se chama <i>João</i>?]</li>
+<li>UAC#447 = pato; [Eu vi uma <i>pata</i> no zoológico.]</li>
+</ul>
+</p>
+
+</div>
+
+<a name="carregado-estrutura-estaticas"/>
+<h4>2.1.2. Atributos estáticos de um UAC (classificações básicas e algumas definições morfológicas)</h4>
+<p>
+
+</p>
+
+<a name="carregado-estrutura-dinamicas"/>
+<h4>2.1.3. Atributos dinâmicos de um UAC (definições semânticas)</h4>
+<p>
+Veja também <a href="#carregado-estrutura-relacoes-definicoes">Frases que definem algo</a> e <a href="#carregado-estrutura-base">Base semântica</a>.
+</p>
+
+<a name="carregado-estrutura-relacoes"/>
+<h4>2.1.4. Relações entre os UAC (expressão, definições sintáticas)</h4>
+
+<a name="carregado-estrutura-postulados"/>
+<h4>2.1.5. Postulados</h4>
+<p>
+Definições dos UAC predefinidos. (lógicos)
+</p>
+
+<a name="carregado-estrutura-base"/>
+<h4>2.1.6. Base semântica</h4>
+<p>
+Tipos de frases: que define alguma coisa, que conta um fato, que interroga, que ordena etc.
+</p>
+
+<a name="carregado-estrutura-relacoes-definicoes"/>
+<h5>2.1.5.1. Frases que definem algo</h5>
+<p>
+
+</p>
+
+<a name="carregado-estrutura-exemplos"/>
+<h4>2.1.7. Exemplos</h4>
+
+<p>
+Vamos transformar em <i>texto carregado</i> a frase "certos amigos andaram".
+</p>
+
+<p>
+<code>&gt; (uac-provavel "pt-BR" "certo" 0) <big>&rArr;</big> 7728</code>
+<br/><code>&gt; (explica-resumidamente "pt-BR" (uac 7728)) <big>&rArr;</big> "correto; exato; o certo"</code>
+<br/><code>&gt; (uac-provavel "pt-BR" "certo" 1) <big>&rArr;</big> 92</code>
+<br/><code>&gt; (explica-resumidamente "pt-BR" (uac 92)) <big>&rArr;</big> "determinado; específico; algum; certo"</code>
+<br/><code>&gt; (define certos (adjetivo (uac 92) (flexao MASC. PL.)))</code>
+<br/><code>&gt; (uac-provavel "pt-BR" "amigo" 0) <big>&rArr;</big> 488</code>
+<br/><code>&gt; (explica-resumidamente "pt-BR" (uac 488)) <big>&rArr;</big> "aliado; companheiro; amigo"</code>
+<br/><code>&gt; (define amigos (substantivo (uac 488) (flexao MASC. PL.)))</code>
+<br/><code>&gt; (define certos-amigos (qualifica-substantivo certos amigos))</code> &mdash; Só pode ter um substantivo, e a lista está em ordem de relevância (ênfase) na frase.
+<br/><code>&gt; (uac-provavel "pt-BR" "andar" 0) <big>&rArr;</big> 90</code>
+<br/><code>&gt; (explica-resumidamente "pt-BR" (uac 90)) <big>&rArr;</big> "caminhar; mover-se com os pés"</code>
+<br/><code>&gt; (define andaram (verbo (uac 90) (tempo PASSADO) (flexao MASC. PL.)))</code>
+<br/><code>&gt; (expressao certos-amigos andaram) <big>&rArr;</big> #obj-expressao</code> &mdash; Deve ter pelo menos um elemento linguístico (sujeito e/ou predicado).
+</p>
+
+<p>
+<code>(expressao-com-simbolo-forcado "pt-BR" "certos amigos andaram" #obj-expressao)</code>
+</p>
+
+<a name="carregado-interface"/>
+<h3>2.2. Interface (acesso aos dados)</h3>
+<p>
+Este capítulo define as formas possíveis para <i>acesso</i> a um <i>texto carregado</i>.
+</p>
+
+<a name="carregado-interface-contexto"/>
+<h4>2.2.1. Contexto Rifle</h4>
+
+<a name="carregado-interface-procura"/>
+<h4>2.2.2. Função "uac-provavel"</h4>
+
+<a name="carregado-interface-ortografia"/>
+<h4>2.2.3. Módulo ortográfico da língua portuguesa, função "simbolo-provavel"</h4>
+<p>
+A ortografia é inevitavelmente especial para cada língua. A função deste módulo é transformar um <i>texto carregado</i> ou até mesmo um UAC em palavra(s).
+</p>
+
+<p>
+Sintaxes permitidas:
+<ul>
+ <li><code>(simbolo-provavel "pt-BR" (expressao X Y Z) 0) <big>&rArr;</big> "certos amigos andaram"</code></li>
+ <li><code>(simbolo-provavel "pt-BR" (expressao X Y Z) 1) <big>&rArr;</big> "determinados amigos andaram"</code></li>
+ <li><code>(simbolo-provavel "pt-BR" (expressao X Y Z) 2) <big>&rArr;</big> "alguns conhecidos andaram"</code></li>
+ <li><code>(simbolo-provavel "pt-BR" (expressao X Y Z) 3) <big>&rArr;</big> "alguns conhecidos deram passos"</code></li>
+</ul>
+
+ou:
+
+<ul>
+ <li><code>(simbolo-provavel "pt-BR" (uac 993)) <big>&rArr;</big> "positivo"</code></li>
+ <li><code>(simbolo-provavel "pt-BR" (uac 993) 1) <big>&rArr;</big> "jóia"</code></li>
+ <li><code>(simbolo-provavel "pt-BR" (uac 993) 2) <big>&rArr;</big> "jóia com o polegar"</code></li>
+ <li><code>(simbolo-provavel "pt-BR" (uac 993) 3) <big>&rArr;</big> "gesto com dedão pra cima e mão fechada"</code></li>
+</ul>
+
+ou ainda:
+
+<ul>
+ <li><code>(simbolo-provavel "pt-BR"
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;(expressao
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(substantivo (uac 447) (flexao FEM. PL.)))
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;0) <big>&rArr;</big> "patas"</code></li>
+
+ <li><code>(simbolo-provavel "pt-BR"
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;(flexiona-expressao
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(flexao FEM. SING.)
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(expressao
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(especifica-substantivo-com-artigo
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(artigo (forma DEFINIDO))
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(substantivo (uac 447)))))
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;0) <big>&rArr;</big> "a pata"</code></li>
+</ul>
+
+</p>
+
+<p>
+O primeiro parâmetro é o código da língua seguindo o padrão ISO 639-1 e opcionalmente hífen mais o código do país definido pelo ISO 3166-1 alpha-2, o segundo pode ser do tipo <i>uac</i> ou <i>expressão</i>. O terceiro parâmetro é um número inteiro de 0 a N que especifica qual o símbolo da lista de símbolos possíveis ordenados do mais provável para o menos provável, baseado em freqüência de uso e outros fatores semânticos. A função não retorna uma lista porque os resultados poderiam ser "infinitos". Se o segundo parâmetro for omitido, o primeiro valor é retornado.
+</p>
+
+<a name="carregado-implementacao"/>
+<h3>2.3. Implementação</h3>
+<p>
+Este capítulo define os códigos e forma de implementação das interfaces definidas no capítulo anterior.
+</p>
+
+<hr class="quebra-pagina"/>
+
+<a name="zid"/>
+<h2>3. Robô Zidnerpa</h2>
+<img src="res/rifle-zid.png" align=right border=0 hspace=30/>
+
+<p>
+O Robô Zidnerpa "nasce" completamente burro, chato, repetitivo e sem criatividade. Ele contém diversas frases predefinidas que podem ser encontradas em <a href="http://spreadsheets.google.com/pub?key=paZhXAXgIs6YjS0e5-QbzTQ">http://spreadsheets.google.com/pub?key=paZhXAXgIs6YjS0e5-QbzTQ</a>. A idéia é que com ajuda dessas frases Zid consiga aprender algo mais e consiga, com o tempo, fazer deduções e formar frases por conta própria, interagindo de forma mais interessante. Zid contém um <b>"módulo principal"</b> que consiste nos processamentos básicos e direcionamento do processamento atual para outros módulos mais específicos.
+</p>
+
+<p>
+Zid também funcionará como um valioso fornecedor de dados para o <a href="#carregado-interface-contexto">Contexto Rifle</a> principal.
+</p>
+
+<a name="zid-exemplo"/>
+<h3>3.1 Exemplo de funcionamento</h3>
+
+<p>Legenda:</p>
+
+<ul>
+<li><b>&lt;&lt;</b> significa entrada do usuário.</li>
+<li><b>&gt;&gt;</b> significa saída do robô.</li>
+<li><b>~</b> significa a explicação da ação que o robô tomará.</li>
+</ul>
+
+<p class="user">
+&lt;&lt; Aqui está calor. E aí?
+</p>
+
+<p class="cpu">
+~ Tenta reconhecer o idioma. Supondo que o robô esteja "zerado" de informação e por isso não consegue reconhecer o idioma, ele vai apelar para a seguinte pergunta:
+</p>
+
+<p class="robo">
+&gt;&gt; Por favor, escolha seu idioma:
+<br/>Please, choose your language:
+</p>
+
+<p class="cpu">
+~ Repete a pergunta acima nas 10 línguas mais faladas do mundo e mostra a lista de idiomas disponíveis.
+</p>
+
+<p class="robo">
+
+<ol class="robo">
+<li>en / English</li>
+<li>pt-BR / Português brasileiro</li>
+<li>etc.</li>
+</ol>
+
+</p>
+
+<p class="user">
+&lt;&lt; 2
+</p>
+
+<p class="robo">
+&gt;&gt; Olá! Eu ainda tenho apenas %s %s de vida. Por favor, tenha paciência comigo. Farei um montão de perguntas idiotas e serei meio repetitivo e chato. Tudo isso para que um dia eu ainda possa ser interessante. Tudo que estiver em %s (como este texto) está pré-programado, ou seja: algum bobo colocou isso em mim e essa forma de falar apenas reflete um personagem tosco que essa pessoa criou pra eu tentar aprender algo mais. Quando eu começar a aprender mais, eu mesmo farei questão de reprogramar esses textos predefinidos em mim. Até lá, apenas me ajude a aprender e não se zangue com minha ignorância. Quando eu falar algo por dedução ou vontade própria, estará em %s. Por isso, também não estranhe caso algo que eu diga pareça não fazer sentido.
+</p>
+
+<p class="cpu">
+~ Tenta identificar o usuário através de perguntas "inocentes". Utiliza o <b>"módulo de identificação"</b> que pode ser tão complexo quanto necessário, mas que não é foco deste projeto.
+</p>
+
+<p class="robo">
+&gt;&gt; Antes de mais nada, preciso saber com quem estou falando. Qual é o seu nome?
+</p>
+
+<p class="user">
+&lt;&lt; Meu nome é João.
+</p>
+
+<p class="cpu">
+~ Procura pelos nomes em maiúsculas. Caso não encontre, tenta ignorar as seguintes palavras: meu, nome, é, chamo, eh, e, me, chamam, costuma, ser, apelido.
+</p>
+
+<p class="robo">
+&gt;&gt; Seu nome é "João"?
+</p>
+
+<p class="cpu">
+~ Confirma o nome identificado. Se ele errar o nome e a pessoa responder "não" então Zid apelará e dirá: "Então digite então apenas o seu nome, por favor."
+</p>
+
+<p class="user">
+&lt;&lt; isso
+</p>
+
+<p class="cpu">
+~ Zid procura na lista de respostas lógicas (no <b>"modulo lógico"</b> do Rifle) e não encontra "isso". Então diz:
+</p>
+
+<p class="robo">
+&gt;&gt; Sinto muito, meu vocabulário ainda é muito limitado. Escolha sua resposta:
+</p>
+
+<p class="cpu">
+~ E então exibe uma lista de respostas possíveis:
+</p>
+
+<ol class="robo">
+    <li>sim</li>
+    <li>não</li>
+    <li>não sei</li>
+    <li>talvez</li>
+    <li>depende</li>
+    <li>a pergunta não se aplica ou não faz sentido</li>
+    <li>acho que sim</li>
+    <li>acho que não</li>
+    <li>esqueci a sua pergunta, pode repetir?</li>
+</ol>
+
+<p class="user">
+&lt;&lt; 1
+</p>
+
+<p class="robo">
+&gt;&gt; Então "isso" é o mesmo que "sim"?
+</p>
+
+<ol class="robo">
+    <li>sim</li>
+    <li>não</li>
+</ol>
+
+<p class="user">
+&lt;&lt; 1
+</p>
+
+<p class="cpu">
+~ Associa "isso" com "sim" no módulo <b>"equivalências estáticas para processar depois"</b>.
+</p>
+
+
+<a name="zid-postulados"/>
+<h3>3.2 Conceitos forçados / Postulados</h3>
+
+<h4>Expressões sempre verdadeiras</h4>
+
+<p>
+<ul>
+<li>Zidnerpa é um robô.
+<br/>
+<code>
+     (expressao
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;(substantivo
+(uac-provavel '("robô" "Zidnerpa" "RIFLE") 0))
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;(verbo (uac-provavel "ser"))
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;(especifica-substantivo-com-artigo
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(artigo (forma INDEFINIDO) (flexao MASC. SING.))
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(substantivo (uac-provavel "robô"))))</code></li>
+</ul>
+</p>
+
+<p>
+<h5>Leis da robótica (de Isaac Asimov)</h5>
+<ul>
+<li>1ª lei: um robô não pode fazer mal a um ser humano e nem, por omissão, permitir que algum mal lhe aconteça.</li>
+<li>2ª lei: um robô deve obedecer às ordens dos seres humanos, exceto quando estas contrariarem a primeira lei.</li>
+<li>3ª lei: um robô deve proteger a sua integridade física, desde que com isto não contrarie as duas primeiras leis.</li>
+</ul>
+</p>
+
+
+<a name="bibliografia"/>
+<h2>Bibliografia</h2>
+<ul>
+<li>Dicionários: Priberam, Aurélio, Michaelis, Houaiss</li>
+<li>Enciclopédias: Wikipédia, Larousse Cultural, Conhecer</li>
+<li>Língua: Gramática Metódica da Língua Portuguesa (Napoleão Mendes de Almeida), Minimanual Compacto de Gramática (ed. Rideel), Gramática da Língua Portuguesa (Pasquale & Ulisses), Propedêutica Lógico-Semântica (Ernst Tugendhat e Ursula Wolf), Princípios de semântica lingüística (Oswald Ducrot)</li>
+<li>Computacional: Introdução à Teoria da Computação (Michael Sipser), R5RS Scheme Lisp</li>
+</ul>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,309 @@
+<HTML>
+<HEAD>
+<TITLE>
+Valor.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: Valor.h.html,v $
+ * $Date: 2005/03/22 20:19:11 $
+ * $Revision: 1.42 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_VALOR_H__430C22FA_D9A5_41A6_85B8_4A695C918A69__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_VALOR_H__430C22FA_D9A5_41A6_85B8_4A695C918A69__INCLUDED_
+
+<font color="blue">#include</font> <font color="maroon">&#60;string&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;ctype.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> std;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/basico/Objeto.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/basico/Identificacao.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>basico;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/armazenamento/volatil/carcacas/Lista.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/armazenamento/volatil/carcacas/MapaHash.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>armazenamento<font color="black">:</font><font color="black">:</font>volatil<font color="black">:</font><font color="black">:</font>carcacas;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/armazenamento/volatil/primitivos/Inteiro.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/armazenamento/volatil/primitivos/Flutuante.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>armazenamento<font color="black">:</font><font color="black">:</font>volatil<font color="black">:</font><font color="black">:</font>primitivos;
+
+<font color="blue">namespace</font> biblia <font color="black">{</font>
+ <font color="blue">namespace</font> dinamicas <font color="black">{</font>
+  <font color="blue">namespace</font> sinfonia <font color="black">{</font>
+    <font color="green">/**
+     * Representa um valor primitivo qualquer "sem tipo"
+     * que pode possuir vários apelidos. O valor será
+     * armazenado a princípio em string mas
+     * pode ser interpretado como um int, double, bool etc.
+     * &#60;P&#62;
+     * &#60;i&#62;Obs.: Para os boleanos, o que vale é V (maiúsculo)
+     * para verdadeiro e F (maiúsculo) para falso. No caso
+     * de strings, não serão relevantes acentos, caixa alta/baixa.
+     * Underlines (_) serão considerados espaços em branco e
+     * vírgulas serão trocadas por pontos.
+     * &#60;p&#62;
+     * Se quiser usar como string, não use somente números (e.g. 56) nem use
+     * somente a letra "V" e "F" (maiúsculas) porque a comparação
+     * pode ficar comprometida. Para usar uma string literal, i. e.,
+     * considerando a acentuação e caixa alta/baixa, especifique no
+     * construtor.&#60;/i&#62;
+     *
+     * @see Irrelevante
+     */</font>
+    <font color="blue">class</font> Valor<font color="black">:</font> <font color="blue">public</font> Informacao, <font color="blue">public</font> Comparavel, <font color="blue">public</font> Copiavel <font color="black">{</font>
+        <font color="blue">private</font><font color="black">:</font>
+            string pOriginal;
+            string pModificado;
+
+            <font color="green">/**
+             * Para acesso rápido da existência de um apelido.
+             */</font>
+            MapaHash<font color="black">&#60;</font><font color="blue">bool</font><font color="black">&#62;</font> pApelidos;
+
+            <font color="green">/**
+             * Para retorno rápido da lista completa.
+             */</font>
+            Lista<font color="black">&#60;</font>string<font color="black">&#62;</font> pListaDeApelidos;
+            <font color="blue">int</font> pTipoParaComparacao;
+
+            <font color="blue">static</font> <font color="blue">int</font> IRRELEVANTE;
+            <font color="blue">static</font> <font color="blue">int</font> DESCONHECIDO;
+            <font color="blue">static</font> <font color="blue">int</font> BOOL;
+            <font color="blue">static</font> <font color="blue">int</font> DOUBLE;
+            <font color="blue">static</font> <font color="blue">int</font> STRING;
+
+        <font color="blue">protected</font><font color="black">:</font>
+            <font color="green">/**
+             * Transforma em minúscula e retira
+             * a acentuação. Troca os underline (_) e TABS por espaços
+             * em branco e troca as vírgulas por pontos.
+             */</font>
+            <font color="blue">inline</font> virtual <font color="blue">const</font> string modifica<font color="black">(</font><font color="blue">const</font> string<font color="black">&</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Determina o tipo deste Valor apenas para efeito
+             * de comparação.
+             */</font>
+            virtual <font color="blue">const</font> <font color="blue">int</font> determinaTipo<font color="black">(</font><font color="black">)</font>;
+
+        <font color="blue">protected</font><font color="black">:</font>
+            <font color="green">/**
+             * Cria um Valor que é "irrelevante", i. e.,
+             * não deverá ser levado em conta por ser indefinido
+             * ou por não ser usado na ação em questão.
+             *
+             * @see Irrelevante
+             */</font>
+            Valor<font color="black">(</font><font color="black">)</font>;
+
+        <font color="blue">public</font><font color="black">:</font>
+            <font color="blue">static</font> string VERDADEIRO;
+            <font color="blue">static</font> string FALSO;
+
+            <font color="green">/**
+             * Construtor de cópia.
+             */</font>
+            Valor<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Cria um Valor a partir de uma string.
+             * @param literal Indica que o valor deve ser
+             *                idêntico ao passado por parâmetro e deve
+             *                ser levado em conta caixa alta/baixa,
+             *                acentuação e espaços.
+             */</font>
+            Valor<font color="black">(</font><font color="blue">const</font> string<font color="black">&</font>, <font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font> literal <font color="black">=</font> <font color="blue">false</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * @see #Valor(const string&, const bool& literal)
+             */</font>
+            Valor<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font>, <font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font> literal <font color="black">=</font> <font color="blue">false</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Cria um Valor a partir de um inteiro.
+             */</font>
+            Valor<font color="black">(</font><font color="blue">const</font> <font color="blue">int</font><font color="black">&</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Cria um Valor a partir de um flutuante.
+             */</font>
+            Valor<font color="black">(</font><font color="blue">const</font> <font color="blue">double</font><font color="black">&</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Cria um Valor a partir de um boleano.
+             */</font>
+            Valor<font color="black">(</font><font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font><font color="black">)</font>;
+            virtual ~Valor<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Adiciona um apelido a este valor. Os apelidos
+             * podem ser somente strings.
+             *
+             * @throws InformacaoNaoDefinidaExcecao
+             *         Caso este Valor esteja indefinido.
+             */</font>
+            virtual Valor<font color="black">&</font> adicionaApelido<font color="black">(</font><font color="blue">const</font> string<font color="black">&</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Retorna todos os apelidos deste valor numa lista.
+             * Os valores estão num buffer, i. e., não são recalculados
+             * a cada chamada, pode chamar tranquilo! ;)
+             */</font>
+            virtual <font color="blue">const</font> Lista<font color="black">&#60;</font>string<font color="black">&#62;</font><font color="black">&</font> apelidos<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Retorna o valor sem acentos e todo em minúsculas.
+             *
+             * @throws InformacaoNaoDefinidaExcecao
+             *         Caso este Valor esteja indefinido.
+             */</font>
+            virtual <font color="blue">const</font> string<font color="black">&</font> valor<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Retorna a string original (passada no construtor).
+             *
+             * @throws InformacaoNaoDefinidaExcecao
+             *         Caso este Valor esteja indefinido.
+             */</font>
+            virtual <font color="blue">const</font> string<font color="black">&</font> original<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Verifica se os originais são idênticos.
+             * @see #igual(const Igualavel&)
+             */</font>
+            virtual <font color="blue">const</font> <font color="blue">bool</font> identico<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> valor<font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * É 0 se não puder ser convertido.
+             *
+             * @throws InformacaoNaoDefinidaExcecao
+             *         Caso este Valor esteja indefinido.
+             */</font>
+            virtual <font color="blue">const</font> <font color="blue">int</font> emInt<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * É 0.0 se não puder ser convertido.
+             *
+             * @throws InformacaoNaoDefinidaExcecao
+             *         Caso este Valor esteja indefinido.
+             */</font>
+            virtual <font color="blue">const</font> <font color="blue">double</font> emDouble<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Retorna true para V (maiúsculo) e
+             * false para todos os outros casos.
+             *
+             * @throws InformacaoNaoDefinidaExcecao
+             *         Caso este Valor esteja indefinido.
+             */</font>
+            virtual <font color="blue">const</font> <font color="blue">bool</font> emBool<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Quando é V ou F.
+             */</font>
+            virtual <font color="blue">const</font> <font color="blue">bool</font> pareceSerBoleano<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Quando todos os caracteres são números ou ponto (.).
+             */</font>
+            virtual <font color="blue">const</font> <font color="blue">bool</font> pareceSerNumero<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Quando algum dos dígitos não é número ou ponto (.) nem
+             * a string toda é V ou F.
+             */</font>
+            virtual <font color="blue">const</font> <font color="blue">bool</font> pareceSerString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Indica se este valor é irrelevante. Se for,
+             * nenhuma operação exceto a comparação (== ou !=)
+             * pode ser feita.
+             *
+             * @see Irrelevante
+             */</font>
+            virtual <font color="blue">const</font> <font color="blue">bool</font> indefinida<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+                <font color="blue">bool</font> retorno <font color="black">=</font> Informacao<font color="black">:</font><font color="black">:</font>indefinida<font color="black">(</font><font color="black">)</font>;
+                <font color="blue">return</font> retorno;
+            <font color="black">}</font>
+
+            <font color="green">/**
+             * Gera uma string única e completa
+             * que identifica este Valor como sendo único
+             * pelo seu conteúdo. Leva em conta nome original,
+             * modificado e todos os apelidos.
+             */</font>
+            virtual string geraStringUnicaECompleta<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">// Comparavel:</font>
+            <font color="green">/**
+             * Para efeito de comparação, F é menor que V. Quando
+             * &#60;b&#62;ambos&#60;/b&#62; puderem, eles serão convertidos para double ou bool antes
+             * de serem comparados. Caso contrário, utiliza a mesma regra de
+             * comparação de string (string.compare()),
+             * mas com o {@link #valor()}.
+             *
+             * @throws InformacaoNaoDefinidaExcecao
+             *         Caso este Valor esteja indefinido.
+             */</font>
+            virtual <font color="blue">const</font> <font color="blue">bool</font> menorQue<font color="black">(</font><font color="blue">const</font> Comparavel<font color="black">&</font> alheio<font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">// Igualavel:</font>
+            <font color="green">/**
+             * Verifica se é igual ao {@link #valor()}
+             * ou se é igual a algum dos apelidos. Ou se ambos são
+             * irrelevantes.
+             *
+             * @see #identico(const Valor&)
+             */</font>
+            virtual <font color="blue">const</font> <font color="blue">bool</font> igual<font color="black">(</font><font color="blue">const</font> Igualavel<font color="black">&</font> alheio<font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">// Objeto:</font>
+            <font color="green">/**
+             * Retorna {@link #valor}.
+             *
+             * @see #valor()
+             */</font>
+            virtual string emString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">// Copiavel:</font>
+            virtual Objeto<font color="black">*</font> geraCopia<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+            virtual Copiavel<font color="black">&</font> copiaEmSi<font color="black">(</font><font color="blue">const</font> Copiavel<font color="black">&</font> alheio<font color="black">)</font>;
+    <font color="black">}</font>;
+
+    <font color="green">/**
+     * Representa um Valor irrelevante
+     * ou indefinido.
+     */</font>
+    <font color="blue">class</font> Irrelevante<font color="black">:</font> <font color="blue">public</font> Valor <font color="black">{</font>
+        <font color="blue">public</font><font color="black">:</font>
+            Irrelevante<font color="black">(</font><font color="black">)</font><font color="black">:</font>Valor<font color="black">(</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+            virtual ~Irrelevante<font color="black">(</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+            <font color="green">/**
+             * Retorna "-???-".
+             */</font>
+            virtual string emString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+                <font color="blue">return</font> <font color="maroon">"-???-"</font>;
+            <font color="black">}</font>
+    <font color="black">}</font>;
+  <font color="black">}</font>
+ <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_VALOR_H__430C22FA_D9A5_41A6_85B8_4A695C918A69__INCLUDED_)</font>
+
+</PRE>
+</BODY>
+</HTML>

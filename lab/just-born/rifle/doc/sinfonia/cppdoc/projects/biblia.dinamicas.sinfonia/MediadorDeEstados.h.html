@@ -1,0 +1,260 @@
+<HTML>
+<HEAD>
+<TITLE>
+MediadorDeEstados.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: MediadorDeEstados.h.html,v $
+ * $Date: 2005/03/22 20:19:03 $
+ * $Revision: 1.42 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_MEDIADORDEESTADOS_H__B20075BF_99EE_49C6_91CD_E138D36B75EB__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_MEDIADORDEESTADOS_H__B20075BF_99EE_49C6_91CD_E138D36B75EB__INCLUDED_
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/basico/Objeto.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>basico;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/util/Lixeira.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>util;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/tempo/Momento.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/tempo/UniversoDeTempo.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>tempo;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/armazenamento/volatil/carcacas/MapaHash.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>armazenamento<font color="black">:</font><font color="black">:</font>volatil<font color="black">:</font><font color="black">:</font>carcacas;
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Estado.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Evento.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/EstadoDependente.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/SinfoniaExcecao.h"</font>
+
+<font color="blue">namespace</font> biblia <font color="black">{</font>
+ <font color="blue">namespace</font> dinamicas <font color="black">{</font>
+  <font color="blue">namespace</font> sinfonia <font color="black">{</font>
+    <font color="green">/**
+     * Exceções relativas ao MediadorDeEstados.
+     *
+     * @see MediadorDeEstados
+     */</font>
+    <font color="blue">class</font> MediadorDeEstadosExcecao<font color="black">:</font> <font color="blue">public</font> SinfoniaExcecao <font color="black">{</font><font color="black">}</font>;
+
+    <font color="green">/**
+     * Quando se tenta acessar um Estado inexistente
+     * no MediadorDeEstados.
+     *
+     * @see MediadorDeEstados
+     */</font>
+    <font color="blue">class</font> EstadoInexistenteExcecao<font color="black">:</font> <font color="blue">public</font> MediadorDeEstadosExcecao <font color="black">{</font><font color="black">}</font>;
+
+    <font color="green">/**
+     * É quem cuida dos Estados. Os Estados são acessados
+     * através deste MediadorDeEstados que só permite acesso somente-leitura
+     * ou permite também que seja enviado algum Evento para
+     * que este possa modificar os Estados, garantindo assim que
+     * exista um Evento nesse processo de mudança.
+     *
+     * @see Estado
+     * @see Evento
+     * @see Sinfonia
+     */</font>
+    <font color="blue">class</font> MediadorDeEstados<font color="black">:</font> <font color="blue">public</font> Objeto <font color="black">{</font>
+        <font color="blue">private</font><font color="black">:</font>
+            mutable MapaHash<font color="black">&#60;</font>Estado<font color="black">*</font><font color="black">&#62;</font> pEstados;
+            mutable MapaHash<font color="black">&#60;</font>Estado<font color="black">*</font><font color="black">&#62;</font> pConstantes;
+            Lista<font color="black">&#60;</font>Identificacao<font color="black">&#62;</font> pNomeEstados;
+            <font color="blue">const</font> UniversoDeTempo<font color="black">&</font> pUniverso;
+            mutable Lixeira pLixo;
+            MapaHash<font color="black">&#60;</font><font color="blue">bool</font><font color="black">&#62;</font> pJaExibiuEsteErro;
+            MapaHash<font color="black">&#60;</font><font color="blue">bool</font><font color="black">&#62;</font> pJaExibiuEsteErro2;
+
+        <font color="blue">public</font><font color="black">:</font>
+            <font color="green">/**
+             * Nome usado para definir o estado do evento atual.
+             * @see #estadoDoEventoAtual
+             */</font>
+            <font color="blue">static</font> Valor ESTADO_DO_EVENTO_ATUAL;
+
+            <font color="green">/**
+             * O UniversoDeTempo passado deve "sobreviver" enquanto
+             * este não "morre".
+             */</font>
+            MediadorDeEstados<font color="black">(</font><font color="blue">const</font> UniversoDeTempo<font color="black">&</font><font color="black">)</font>;
+            virtual ~MediadorDeEstados<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">// Deve ser feito logo após a criação, definições iniciais:</font>
+
+            <font color="green">/**
+             * Adiciona um {@link Estado} a este MediadorDeEstados. Não é possível
+             * adicionar Estado cujo nome completo já tenha sido adicionado.
+             * Por padrão, pega para si a responsabilidade de deletar o Estado.
+             *
+             * @throws ChaveJaExistenteExcecao Caso o {@link Estado} passado
+             *         já tenha sido adicionado anteriormente.
+             */</font>
+            virtual MediadorDeEstados<font color="black">&</font> adicionaEstado<font color="black">(</font>
+                    Estado<font color="black">*</font>, <font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font> ficaResponsavelPelaDelecao <font color="black">=</font> <font color="blue">true</font><font color="black">)</font>;
+
+            <font color="green">// Acesso ao Estado</font>
+
+            <font color="green">/**
+             * Retorna o nome de todos os Estados.
+             *
+             * @see #estado
+             */</font>
+            virtual <font color="blue">const</font> Lista<font color="black">&#60;</font>Identificacao<font color="black">&#62;</font><font color="black">&</font> nomeDeTodosEstados<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Obtém acesso somente-leitura de um Estado.
+             *
+             * @see #nomeDeTodosEstados
+             */</font>
+            virtual <font color="blue">const</font> Estado<font color="black">&</font> estado<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> nomeCompleto<font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Verifica se existe algum Estado criado com o nome
+             * passado como parâmetro.
+             */</font>
+            virtual <font color="blue">const</font> <font color="blue">bool</font> existeEstado<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> nomeCompleto<font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Cria um {@link EstadoDependente} que não deve ser deletado externamente.
+             * @see EstadoDependente#EstadoDependente
+             */</font>
+            virtual EstadoDependente<font color="black">*</font> criaEstadoDependente<font color="black">(</font>
+                    <font color="blue">const</font> Estado<font color="black">*</font> baseadoEm, <font color="blue">const</font> Valor<font color="black">&</font> campo
+                        <font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL<font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Obtém um Estado constante de valor fixo passado como
+             * parâmetro, geralmente usado para fazer comparações constantes
+             * como [estado] = 56. No caso, 56 seria um Estado constante
+             * de valor 56.
+             * &#60;p&#62;
+             * Veja alternativa para valores constantes
+             * em {@link EstadoAlvo#constante}. Essa alternativa
+             * não é válida para Estados dependentes.
+             */</font>
+            virtual <font color="blue">const</font> Estado<font color="black">&</font> estadoConstante<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> valorDoEstado<font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Retorna uma referência para o local que ficará
+             * o Estado do último Evento aplicado a este
+             * MediadorDeEstados. Esse Estado sempre conterá os
+             * mesmos campos e valores do Estado que será
+             * modificado pelo Evento em questão. &#60;b&#62;É uma
+             * prévia do que aconteceria com o Estado após
+             * a aplicação do Evento passado na função
+             * {@link #defineEstadoDoEventoAtual}.&#60;/b&#62;
+             * &#60;p&#62;
+             * Um exemplo real:
+             *&#60;pre&#62;
+    &lt;ação do usuário&gt;
+        & ![Cartelas.girando]
+        & ![meio da jogada]
+        & [preparado para jogar]
+        & (&#60;b&#62;&lt;ação do usuário&gt;&#60;/b&#62; = jogar
+           | &#60;b&#62;&lt;ação do usuário&gt;&#60;/b&#62; = bola extra
+           | &#60;b&#62;&lt;ação do usuário&gt;&#60;/b&#62; = super turbo
+           | [tipo da jogada] = turbo
+           | ([Botoes.super turbo] = pressionado
+              & [tipo da jogada] = super turbo))
+        -&#62; &lt;pode jogar&gt;(V)
+               &#60;/pre&#62;
+                No exemplo, esta função seria o &#60;ação do usuário&#62;
+                que está dentro da condição.
+             *
+             * &#60;br&#62;&#60;i&#62;
+             * Obs.: Suporte a mais de um campo
+             * ainda não implementado. Só usa o principal por enquanto.
+             * &#60;br&#62;
+             * Obs.2: O nome será sempre {@link MediadorDeEstados#ESTADO_DO_EVENTO_ATUAL}
+             * + a string do nome em questão.
+             * &#60;/i&#62;
+             *
+             * @see #defineEstadoDoEventoAtual
+             */</font>
+            virtual <font color="blue">const</font> Estado<font color="black">&</font> estadoDoEventoAtual<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> nomeCompleto<font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Simula um Estado que pode ser lido pela função
+             * {@link #estadoDoEventoAtual} de acordo com o {@link Evento}
+             * passado.
+             *
+             * @see #estadoDoEventoAtual
+             */</font>
+            virtual MediadorDeEstados<font color="black">&</font> defineEstadoDoEventoAtual<font color="black">(</font><font color="blue">const</font> Evento<font color="black">&</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Só é possível aplicar Eventos que não são intermediários,
+             * ou seja, modificam diretamente um Estado. Os Eventos intermediários
+             * serão ignorados. --- Eventos que não estão disparados também
+             * não podem ser aplicados, porém nesse caso a exceção
+             * EventoNaoDisparadoExcecao é lançada. Eventos que modificam
+             * estados que não existem serão ignorados porém um warn será
+             * lançado ao sistema.
+             *
+             * @throws EventoNaoDisparadoExcecao
+             */</font>
+            virtual MediadorDeEstados<font color="black">&</font> aplica<font color="black">(</font><font color="blue">const</font> Evento<font color="black">&</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Retorna o UniversoDeTempo associado a este
+             * MediadorDeEstados.
+             */</font>
+            virtual <font color="blue">inline</font> <font color="blue">const</font> UniversoDeTempo<font color="black">&</font> universo<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+    <font color="black">}</font>;
+  <font color="black">}</font>
+ <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_MEDIADORDEESTADOS_H__B20075BF_99EE_49C6_91CD_E138D36B75EB__INCLUDED_)</font>
+
+<font color="green">/*
+                         ,: . I: ,  . .                       
+                           ..X##+   .  .                      
+                        . : Y#. #:..  .                       
+                          .Y#  .=#:  .                        
+                      . ..I#, .. ;#...                        
+                     ... I#  .    =#. .         ..      . .   
+                   .  . t# . .  .  +#=            .       . ..
+          .     .  . . t#   ,        #,..    ., .=.;tIVM#=.   
+         .  . .    . .tW ..,:;+ItYXIIR#YXWMRRBBWBWBXI=;#X. . .
+        .  . :;IYXW#RR##W##BXVIiI+t+=,t#  .. .        #Y     .
+        ####WBIt=t,.;#.   . .      ..  =#: ..  .  ..:#:  .  . 
+        ,#.   ..   =#..  .  .        .  =#; .. ..  Y#  .      
+         :#=    . i#:. .  ..      . . .  i#: .    MW ,        
+         .;#= .  +#=  .. .       .      ..=#. . .#V .  .      
+        .. ,#+. .#+  ..          . .  , .. Y# .:#= ...        
+          .. #=;#=    ,            .      . Y#t#, . . .       
+         .  ..W#:                    . ..    ##   ,.  ..      
+        .. , :##; . ,                      .#I+#..  . .       
+        . ...#=:#=   ..            .    , ,#i  Y#.     ,      
+        .. .#+  .#i .                 .  +#+ .. ;# . .,       
+        . :#= .  ,#I , .          . .   Y#, ..  .I#.. ..      
+         .#=   ..  #+. . .   .. .   . .WW  .  ,.  V# .        
+ .,  ,   #:.     .  #I     .       . ,#t           t#.. .     
+.  .. ,R##RBWMMBBMRYY#XYYVXYXVY+=;t.;#V;==;;;:;:;,:.R#.,      
+     . ;:.::,.;;;.==;,#I.;;=::iYYI+##+itYVRBMWMBMMW#VBi       
+. .      .    .  .    :#t   .    .YR   .         .     ,      
+       . , .     . ...  #I   ... WB ..         .. .  .        
+     .            .. .   #I ,  :#Y .. :    .     .            
+       .. .  .  .   .  .. #I..+#; .   .        .     .        
+           .   . .  .      #It#      . .           .  .       
+                         :  WX.    .                          
+                          . . ..           
+*/</font>
+</PRE>
+</BODY>
+</HTML>

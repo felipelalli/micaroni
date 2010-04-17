@@ -1,0 +1,120 @@
+(define palavras-quantidade (make-hash-table 'equal))
+(define palavra-atual "")
+(define linha "")
+(define precisa-parar #f)
+(define chaves '())
+(define contador 0)
+
+(define status
+  (lambda ()
+    (display "palavras lidas: ")
+    (display contador)
+    (display #\newline)
+    
+    (display "palavras diferentes: ")
+    (display (hash-table-count palavras-quantidade))
+    (display #\newline)))
+    
+
+(define stop
+  (lambda () (set! precisa-parar #t)))
+
+(define le-linha
+  (lambda (port)
+    (if (not (eof-object? port))
+        (if (not precisa-parar)
+            (begin
+              (set! linha (read-line port))
+              (if (> (string-length linha) 0) (le-caracter linha 0))
+              (le-linha port)
+            )))))
+
+(define le-caracter
+  (lambda (str k)
+    (processa (string-ref str k))
+      (if (< k (- (string-length str) 1))
+          (le-caracter str (+ 1 k)))))
+
+(define soma
+  (lambda (palavra)
+    (if (> (string-length palavra) 0)
+        (begin
+          (hash-table-put! palavras-quantidade palavra
+                           (+ 1 (hash-table-get palavras-quantidade palavra 0)))
+          
+          (if (= (hash-table-get palavras-quantidade palavra) 1)
+              (set! chaves (append chaves (list palavra))))
+          
+          (set! contador (+ 1 contador)) ))))
+
+; converte uma string tipo "abc" em uma assoc list, tipo "((10 . #t) (20 . #t) (30 . #t))"
+; o número 10, 20 e 30 seriam o código de a, b e c.
+(define str->assoc
+  (lambda (st)
+    (letrec
+        (
+         (lista '())
+
+         (ch->assoc
+          (lambda (ch)
+            `(,(char->integer ch) . #t)))
+
+         (str->assoc-ls
+          (lambda (str)
+            (str->assoc-k str 0)
+            lista))
+
+         (str->assoc-k
+          (lambda (str k)
+            (set! lista (append lista (list (ch->assoc (string-ref str k)))))
+            (if (< k (- (string-length str) 1))
+                (str->assoc-k str (+ 1 k)))))
+         )
+
+      (str->assoc-ls st))))
+
+(define letras
+  (make-immutable-hash-table
+     (str->assoc (string-append
+          "abcdefghijklmnopqrstuvwxyz"
+          "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+          "áàâãäéèêëẽíìîïóòôõöúùûũü"
+          "ÁÁÂÃÄÉÈÊËÊÍÌÎÏÓÒÔÕÖÚÙÛŨÜ"
+          "çÇñÑ-"))
+   ))
+
+(define processa
+  (lambda (ch)
+    (if (hash-table-get letras (char->integer ch) #f)
+        (set! palavra-atual (string-append palavra-atual (string ch)))
+        (begin
+          (soma (string-downcase palavra-atual))
+          (set! palavra-atual "")))))
+
+(define exibe-resultado
+  (lambda (lista)
+    (if (not (eq? lista '()))
+        (let*
+            (
+             (elemento (car lista))
+             (qtd (hash-table-get palavras-quantidade elemento -1))
+             )
+
+          (if (> qtd 500)
+              (begin
+                (display elemento)
+                (display " ")
+                (display qtd)
+                (display #\newline)))
+
+          (exibe-resultado (cdr lista))))))
+  
+(define start
+  (lambda ()
+    (begin
+      (call-with-input-file
+          "/home/felipelalli/wa/fml/trunk/rifle-dev/db/ptwiki-20080116-pages-articles.xml"
+        le-linha)
+
+      (exibe-resultado chaves)
+)))

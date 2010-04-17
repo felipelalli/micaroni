@@ -1,0 +1,113 @@
+<HTML>
+<HEAD>
+<TITLE>
+GenesisTeste.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: GenesisTeste.cpp.html,v $
+ * $Date: 2005/03/22 20:18:52 $
+ * $Revision: 1.28 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/miniaplicacao/GenesisTeste.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia<font color="black">:</font><font color="black">:</font>miniaplicacao;
+
+GenesisTeste<font color="black">:</font><font color="black">:</font>GenesisTeste<font color="black">(</font><font color="blue">const</font> BasicoVisual<font color="black">&</font> bv<font color="black">)</font><font color="black">:</font>pVisual<font color="black">(</font>bv<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+GenesisTeste<font color="black">:</font><font color="black">:</font>~GenesisTeste<font color="black">(</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+Sinfonia<font color="black">*</font> GenesisTeste<font color="black">:</font><font color="black">:</font>geraSinfonia<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>inicia<font color="black">(</font><font color="black">)</font>;
+    Sinfonia<font color="black">*</font> s <font color="black">=</font> <font color="blue">new</font> Sinfonia<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pVisual.tempo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">const</font> MediadorDeEstados<font color="black">&</font> mediadorDeEstados <font color="black">=</font> s<font color="black">-</font><font color="black">&#62;</font>estados<font color="black">(</font><font color="black">)</font>;
+
+    <font color="green">// Criando situação que se apertar CTRL+ALT+DEL sai da Sinfonia</font>
+    <font color="black">{</font>
+        <font color="green">// Criando os Estados</font>
+        Estado<font color="black">*</font> tecla51 <font color="black">=</font> <font color="blue">new</font> Estado<font color="black">(</font><font color="maroon">"Sinfonia.Reservados.Teclas.tecla51"</font><font color="black">)</font>;
+        Estado<font color="black">*</font> tecla107 <font color="black">=</font> <font color="blue">new</font> Estado<font color="black">(</font><font color="maroon">"Sinfonia.Reservados.Teclas.tecla107"</font><font color="black">)</font>;
+        Estado<font color="black">*</font> tecla105 <font color="black">=</font> <font color="blue">new</font> Estado<font color="black">(</font><font color="maroon">"Sinfonia.Reservados.Teclas.tecla105"</font><font color="black">)</font>;
+
+        <font color="green">// Inicializando</font>
+        tecla51<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font><font color="blue">false</font>, <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pVisual.tempo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+        tecla107<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font><font color="blue">false</font>, <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pVisual.tempo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+        tecla105<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font><font color="blue">false</font>, <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pVisual.tempo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+        <font color="green">// Adicionando-os na Sinfonia</font>
+        s<font color="black">-</font><font color="black">&#62;</font>adicionaEstado<font color="black">(</font>tecla51<font color="black">)</font>;
+        s<font color="black">-</font><font color="black">&#62;</font>adicionaEstado<font color="black">(</font>tecla107<font color="black">)</font>;
+        s<font color="black">-</font><font color="black">&#62;</font>adicionaEstado<font color="black">(</font>tecla105<font color="black">)</font>;
+
+        <font color="green">// Criando Situação</font>
+        Situacao<font color="black">*</font> controlAltDel <font color="black">=</font> <font color="blue">new</font> Situacao<font color="black">(</font><font color="black">)</font>;
+
+        <font color="green">// Eventos que a validam</font>
+        Evento control<font color="black">(</font><font color="maroon">"Sinfonia.Reservados.Teclas.tecla51"</font>, ModificadorDeEstado<font color="black">(</font>
+                <font color="maroon">"Sinfonia.Reservados.Teclas.tecla51"</font><font color="black">)</font>.adicionaParametro<font color="black">(</font>
+                        Valor<font color="black">(</font><font color="maroon">"V"</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+
+        controlAltDel<font color="black">-</font><font color="black">&#62;</font>adicionaEvento<font color="black">(</font>control<font color="black">)</font>;
+        Evento alt<font color="black">(</font><font color="maroon">"Sinfonia.Reservados.Teclas.tecla107"</font>, ModificadorDeEstado<font color="black">(</font>
+                <font color="maroon">"Sinfonia.Reservados.Teclas.tecla107"</font><font color="black">)</font>.adicionaParametro<font color="black">(</font>
+                        Valor<font color="black">(</font><font color="maroon">"V"</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+
+        controlAltDel<font color="black">-</font><font color="black">&#62;</font>adicionaEvento<font color="black">(</font>alt<font color="black">)</font>;
+        Evento del<font color="black">(</font><font color="maroon">"Sinfonia.Reservados.Teclas.tecla105"</font>, ModificadorDeEstado<font color="black">(</font>
+                <font color="maroon">"Sinfonia.Reservados.Teclas.tecla105"</font><font color="black">)</font>.adicionaParametro<font color="black">(</font>
+                        Valor<font color="black">(</font><font color="maroon">"V"</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+
+        controlAltDel<font color="black">-</font><font color="black">&#62;</font>adicionaEvento<font color="black">(</font>del<font color="black">)</font>;
+
+        <font color="green">// Criando Condição da Situação</font>
+        CondicaoDeComparacao controlPressionado<font color="black">(</font>
+                EstadoAlvo<font color="black">(</font><font color="black">(</font><font color="blue">const</font> Estado<font color="black">*</font><font color="black">)</font> <font color="black">&</font> s<font color="black">-</font><font color="black">&#62;</font>estados<font color="black">(</font><font color="black">)</font>
+                .estadoDoEventoAtual<font color="black">(</font><font color="maroon">"Sinfonia.Reservados.Teclas.tecla51"</font><font color="black">)</font><font color="black">)</font>,
+                <font color="maroon">"="</font>, Valor<font color="black">(</font><font color="maroon">"V"</font><font color="black">)</font><font color="black">)</font>;
+
+        CondicaoDeComparacao altPressionado<font color="black">(</font>
+                EstadoAlvo<font color="black">(</font><font color="black">(</font><font color="blue">const</font> Estado<font color="black">*</font><font color="black">)</font> <font color="black">&</font> s<font color="black">-</font><font color="black">&#62;</font>estados<font color="black">(</font><font color="black">)</font>
+                .estadoDoEventoAtual<font color="black">(</font><font color="maroon">"Sinfonia.Reservados.Teclas.tecla107"</font><font color="black">)</font><font color="black">)</font>,
+                <font color="maroon">"="</font>, Valor<font color="black">(</font><font color="maroon">"V"</font><font color="black">)</font><font color="black">)</font>;
+
+        CondicaoDeComparacao delPressionado<font color="black">(</font>
+                EstadoAlvo<font color="black">(</font><font color="black">(</font><font color="blue">const</font> Estado<font color="black">*</font><font color="black">)</font> <font color="black">&</font> s<font color="black">-</font><font color="black">&#62;</font>estados<font color="black">(</font><font color="black">)</font>
+                .estadoDoEventoAtual<font color="black">(</font><font color="maroon">"Sinfonia.Reservados.Teclas.tecla105"</font><font color="black">)</font><font color="black">)</font>,
+                <font color="maroon">"="</font>, Valor<font color="black">(</font><font color="maroon">"V"</font><font color="black">)</font><font color="black">)</font>;
+
+        CondicaoComposta cc<font color="black">(</font>controlPressionado<font color="black">)</font>;
+        cc.adiciona<font color="black">(</font>AND, altPressionado<font color="black">)</font>;
+        cc.adiciona<font color="black">(</font>AND, delPressionado<font color="black">)</font>;
+
+        controlAltDel<font color="black">-</font><font color="black">&#62;</font>defineCondicao<font color="black">(</font>cc<font color="black">)</font>;
+
+        <font color="green">// Evento que gerará</font>
+        Valor nome<font color="black">(</font>Sinfonia<font color="black">:</font><font color="black">:</font>LIGADA<font color="black">)</font>;
+        nome.adicionaApelido<font color="black">(</font><font color="maroon">"ctrl+alt+F5, deixa de estar"</font><font color="black">)</font>;
+        ModificadorDeEstado mde<font color="black">(</font>nome<font color="black">)</font>;
+        mde.adicionaParametro<font color="black">(</font>Valor<font color="black">(</font><font color="blue">false</font><font color="black">)</font><font color="black">)</font>;
+        Evento e<font color="black">(</font>nome, mde<font color="black">)</font>;
+
+        controlAltDel<font color="black">-</font><font color="black">&#62;</font>adicionaEventoQueGera<font color="black">(</font>e<font color="black">)</font>;
+
+        <font color="green">// Adicionando Situação à Sinfonia</font>
+        s<font color="black">-</font><font color="black">&#62;</font>adicionaSituacao<font color="black">(</font>controlAltDel<font color="black">)</font>;
+    <font color="black">}</font>
+    
+<font color="green">//  Debug::msg(INFO, "--- saiu geraSinfonia");</font>
+
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>conclui<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">return</font> s;
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

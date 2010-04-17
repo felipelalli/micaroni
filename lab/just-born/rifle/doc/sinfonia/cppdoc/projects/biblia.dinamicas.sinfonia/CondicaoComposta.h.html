@@ -1,0 +1,103 @@
+<HTML>
+<HEAD>
+<TITLE>
+CondicaoComposta.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: CondicaoComposta.h.html,v $
+ * $Date: 2005/03/22 20:18:56 $
+ * $Revision: 1.41 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_CONDICAOCOMPOSTA_H__72CD1EDD_E0C2_4FC4_966B_5FCDFD74EF90__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_CONDICAOCOMPOSTA_H__72CD1EDD_E0C2_4FC4_966B_5FCDFD74EF90__INCLUDED_
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/basico/Objeto.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>basico;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/util/Lixeira.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>util;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/armazenamento/volatil/carcacas/Lista.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>armazenamento<font color="black">:</font><font color="black">:</font>volatil<font color="black">:</font><font color="black">:</font>carcacas;
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Condicao.h"</font>
+
+<font color="blue">namespace</font> biblia <font color="black">{</font>
+ <font color="blue">namespace</font> dinamicas <font color="black">{</font>
+  <font color="blue">namespace</font> sinfonia <font color="black">{</font>
+    <font color="green">/**
+     * Representa as possibilidades:
+     * AND (e), OR (ou), XOR (ou exclusivo) ou EQ (igual).
+     */</font>
+    <font color="blue">enum</font> Ligacao <font color="black">{</font>AND, OR, XOR, EQ, DIF<font color="black">}</font>;
+
+    <font color="green">/**
+     * Uma Condicao que é composta de uma ou mais
+     * Condicoes unidas por uma Ligacao.
+     *
+     * @see Ligacao
+     * @see Condicao
+     */</font>
+    <font color="blue">class</font> CondicaoComposta<font color="black">:</font> <font color="blue">public</font> Condicao <font color="black">{</font>
+        <font color="blue">private</font><font color="black">:</font>
+            Lixeira pLixo;
+            Lista<font color="black">&#60;</font>Ligacao<font color="black">&#62;</font> pLigacoes;
+            Lista<font color="black">&#60;</font>Condicao<font color="black">*</font><font color="black">&#62;</font> pCondicoes;
+
+            CondicaoComposta<font color="black">(</font><font color="black">)</font>;
+
+        <font color="blue">public</font><font color="black">:</font>
+            <font color="green">/**
+             * Cria uma CondicaoComposta a partir
+             * de uma primeira.
+             * &#60;p&#62;
+             * &#60;i&#62;Cuidado: este construtor
+             * pode confundir com o de cópia, portanto,
+             * para copiar, use apenas a função {@link #geraCopia()}.&#60;/i&#62;
+             */</font>
+            CondicaoComposta<font color="black">(</font><font color="blue">const</font> Condicao<font color="black">&</font> primeiraCondicao<font color="black">)</font>;
+
+            virtual ~CondicaoComposta<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Adiciona uma Condicao a esta CondicaoComposta.
+             *
+             * Obs.: Pega para si a responsabilidade
+             * de excluir a condição passada.
+             */</font>
+            virtual CondicaoComposta<font color="black">&</font> adiciona<font color="black">(</font>
+                    <font color="blue">const</font> Ligacao<font color="black">&</font> ligacao, <font color="blue">const</font> Condicao<font color="black">&</font><font color="black">)</font>;
+
+            <font color="green">// Condicao:</font>
+            virtual <font color="blue">bool</font> verdadeira<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">// Copiavel:</font>
+            virtual Objeto<font color="black">*</font> geraCopia<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+            virtual Copiavel<font color="black">&</font> copiaEmSi<font color="black">(</font><font color="blue">const</font> Copiavel<font color="black">&</font> alheio<font color="black">)</font>;
+
+            <font color="green">// Objeto:</font>
+            <font color="green">/**
+             * Retorna &#60;b&#62;&#60;code&#62;(cond1 OPERADOR cond2)&#60;/code&#62;&#60;/b&#62;.
+             */</font>
+            virtual string emString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+    <font color="black">}</font>;
+  <font color="black">}</font>
+ <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_CONDICAOCOMPOSTA_H__72CD1EDD_E0C2_4FC4_966B_5FCDFD74EF90__INCLUDED_)</font>
+
+</PRE>
+</BODY>
+</HTML>

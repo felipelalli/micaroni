@@ -1,0 +1,187 @@
+<HTML>
+<HEAD>
+<TITLE>
+CondicaoDeComparacao.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: CondicaoDeComparacao.cpp.html,v $
+ * $Date: 2005/03/22 20:18:56 $
+ * $Revision: 1.41 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/CondicaoDeComparacao.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia;
+
+CondicaoDeComparacao<font color="black">:</font><font color="black">:</font>CondicaoDeComparacao<font color="black">(</font>
+        <font color="blue">const</font> EstadoAlvo<font color="black">&</font> estado1,
+        <font color="blue">const</font> Identificacao<font color="black">&</font> operacao,
+        <font color="blue">const</font> EstadoAlvo<font color="black">&</font> estado2<font color="black">)</font>
+    <font color="black">:</font>pEstado1<font color="black">(</font>estado1<font color="black">)</font>, pEstado2<font color="black">(</font>estado2<font color="black">)</font>,
+     pOperador<font color="black">(</font>operacao<font color="black">)</font>
+<font color="black">{</font><font color="black">}</font>
+
+CondicaoDeComparacao<font color="black">:</font><font color="black">:</font>CondicaoDeComparacao<font color="black">(</font><font color="blue">const</font> CondicaoDeComparacao<font color="black">&</font> cdc<font color="black">)</font>
+    <font color="black">:</font>pEstado1<font color="black">(</font>cdc.pEstado1<font color="black">)</font>, pEstado2<font color="black">(</font>cdc.pEstado2<font color="black">)</font>,
+     pOperador<font color="black">(</font>cdc.pOperador<font color="black">)</font>
+<font color="black">{</font><font color="black">}</font>
+
+CondicaoDeComparacao<font color="black">:</font><font color="black">:</font>~CondicaoDeComparacao<font color="black">(</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+<font color="blue">bool</font> CondicaoDeComparacao<font color="black">:</font><font color="black">:</font>verdadeira<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+<font color="green">//  Debug::msg(INFO, "--- vai executar: " + string(</font>
+<font color="green">//          this-&#62;pEstado1-&#62;valor(this-&#62;pCampo1)</font>
+<font color="green">//          .indefinida()?"&#60;&#60;IND&#62;&#62;":this-&#62;pEstado1-&#62;valor(this-&#62;pCampo1).emString())</font>
+<font color="green">//          + " " + this-&#62;pOperador + " " + string(</font>
+<font color="green">//          this-&#62;pEstado2-&#62;valor(this-&#62;pCampo2)</font>
+<font color="green">//          .indefinida()?"&#60;&#60;IND&#62;&#62;":this-&#62;pEstado2-&#62;valor(this-&#62;pCampo2).emString()));</font>
+
+    Valor novoValor<font color="black">(</font>Irrelevante<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">bool</font> impossivelComparar <font color="black">=</font> <font color="blue">false</font>;
+
+    try <font color="black">{</font>
+        Estado<font color="black">*</font> estado1;
+        Estado<font color="black">*</font> estado2;
+        <font color="blue">bool</font> deletar1 <font color="black">=</font> <font color="blue">false</font>, deletar2 <font color="black">=</font> <font color="blue">false</font>;
+
+        <font color="blue">if</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado1.constante<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+            estado1 <font color="black">=</font> <font color="black">(</font>Estado<font color="black">*</font><font color="black">)</font> <font color="black">&</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado1.estado<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+        <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+            deletar1 <font color="black">=</font> <font color="blue">true</font>;
+            estado1 <font color="black">=</font> <font color="blue">new</font> Estado<font color="black">(</font><font color="maroon">"&temp1"</font><font color="black">)</font>;
+            estado1<font color="black">-</font><font color="black">&#62;</font>defineComoConstante<font color="black">(</font><font color="black">)</font>;
+            estado1<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado1.valorAlvo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+        <font color="black">}</font>
+
+        <font color="blue">if</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado2.constante<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+            estado2 <font color="black">=</font> <font color="black">(</font>Estado<font color="black">*</font><font color="black">)</font> <font color="black">&</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado2.estado<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+        <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+            deletar2 <font color="black">=</font> <font color="blue">true</font>;
+            estado2 <font color="black">=</font> <font color="blue">new</font> Estado<font color="black">(</font><font color="maroon">"&temp2"</font><font color="black">)</font>;
+            estado2<font color="black">-</font><font color="black">&#62;</font>defineComoConstante<font color="black">(</font><font color="black">)</font>;
+            estado2<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado2.valorAlvo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+        <font color="black">}</font>
+
+        novoValor <font color="black">=</font> estado1<font color="black">-</font><font color="black">&#62;</font>executa<font color="black">(</font>
+                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pOperador, estado2<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado2.campoAlvo<font color="black">(</font><font color="black">)</font><font color="black">)</font>,
+                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado1.campoAlvo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+        <font color="blue">if</font> <font color="black">(</font>deletar1<font color="black">)</font> <font color="black">{</font>
+            <font color="blue">delete</font> estado1;
+        <font color="black">}</font>
+
+        <font color="blue">if</font> <font color="black">(</font>deletar2<font color="black">)</font> <font color="black">{</font>
+            <font color="blue">delete</font> estado2;
+        <font color="black">}</font>
+
+    <font color="black">}</font> <font color="blue">catch</font><font color="black">(</font><font color="blue">const</font> InformacaoNaoDefinidaExcecao<font color="black">&</font><font color="black">)</font> <font color="black">{</font>
+        Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>ERRO, <font color="maroon">"CondicaoDeComparacao::verdadeira()::"</font>
+                <font color="maroon">" há valor indefinido!"</font><font color="black">)</font>;
+
+        impossivelComparar <font color="black">=</font> <font color="blue">true</font>;
+    <font color="black">}</font> <font color="blue">catch</font><font color="black">(</font><font color="blue">const</font> CampoInexistenteExcecao<font color="black">&</font><font color="black">)</font> <font color="black">{</font>
+        Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>ERRO, <font color="maroon">"CondicaoDeComparacao::verdadeira()::"</font>
+                <font color="maroon">" há campo inválido!"</font><font color="black">)</font>;
+
+        impossivelComparar <font color="black">=</font> <font color="blue">true</font>;
+    <font color="black">}</font>
+
+<font color="green">//  Debug::msg(INFO, "--- resultado: " + novoValor);</font>
+
+    <font color="blue">if</font> <font color="black">(</font>novoValor.indefinida<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        impossivelComparar <font color="black">=</font> <font color="blue">true</font>;
+    <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>novoValor.pareceSerBoleano<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>ERRO, <font color="maroon">"CondicaoDeComparacao::verdadeira()::"</font>
+                <font color="maroon">" o resultado não é boleano!"</font><font color="black">)</font>;
+
+        impossivelComparar <font color="black">=</font> <font color="blue">true</font>;
+    <font color="black">}</font>
+
+    <font color="blue">if</font> <font color="black">(</font>impossivelComparar<font color="black">)</font> <font color="black">{</font>
+        ImpossivelCompararExcecao e;
+        e <font color="black">&#60;</font><font color="black">&#60;</font> string<font color="black">(</font><font color="black">)</font> <font color="black">+</font> <font color="maroon">"CondicaoDeComparacao::verdadeira() O resultado de: "</font>
+                <font color="black">+</font> <font color="black">*</font><font color="blue">this</font> <font color="black">+</font> <font color="maroon">" não é um valor boleano! Resultado: "</font>
+                <font color="black">+</font> string<font color="black">(</font>novoValor.indefinida<font color="black">(</font><font color="black">)</font>
+                    ?<font color="maroon">"&#60;&#60;INDEFINIDO&#62;&#62;"</font><font color="black">:</font>novoValor.emString<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+                <font color="black">+</font> <font color="maroon">". Verifique qual é o problema desta condição. Pode"</font>
+                <font color="maroon">" ser um campo indefinido ou a referência de um campo"</font>
+                <font color="maroon">" que não existe no Estado apontado."</font>;
+
+        <font color="blue">throw</font> e;
+    <font color="black">}</font>
+
+    <font color="blue">return</font> novoValor.emBool<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+Objeto<font color="black">*</font> CondicaoDeComparacao<font color="black">:</font><font color="black">:</font>geraCopia<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">new</font> CondicaoDeComparacao<font color="black">(</font><font color="black">*</font><font color="blue">this</font><font color="black">)</font>;
+<font color="black">}</font>
+
+Copiavel<font color="black">&</font> CondicaoDeComparacao<font color="black">:</font><font color="black">:</font>copiaEmSi<font color="black">(</font><font color="blue">const</font> Copiavel<font color="black">&</font> alheio<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">const</font> CondicaoDeComparacao<font color="black">&</font> cdc
+            <font color="black">=</font> dynamic_cast<font color="black">&#60;</font><font color="blue">const</font> CondicaoDeComparacao<font color="black">&</font><font color="black">&#62;</font><font color="black">(</font>alheio<font color="black">)</font>;
+
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado1 <font color="black">=</font> cdc.pEstado1;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado2 <font color="black">=</font> cdc.pEstado2;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pOperador <font color="black">=</font> cdc.pOperador;
+
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+string CondicaoDeComparacao<font color="black">:</font><font color="black">:</font>emString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    string retorno;
+
+    Valor v1<font color="black">(</font>Irrelevante<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    Valor v2<font color="black">(</font>Irrelevante<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+    try <font color="black">{</font>
+        v1 <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado1.valorAlvo<font color="black">(</font><font color="black">)</font>;
+
+        <font color="blue">if</font> <font color="black">(</font>v1.indefinida<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+            v1 <font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"&#60;&#60;indefinido&#62;&#62;"</font><font color="black">)</font>;
+        <font color="black">}</font>
+    <font color="black">}</font> <font color="blue">catch</font><font color="black">(</font><font color="blue">const</font> CampoInexistenteExcecao<font color="black">&</font><font color="black">)</font> <font color="black">{</font>
+        v1 <font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"&#60;&#60;campo '"</font> <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado1.campoAlvo<font color="black">(</font><font color="black">)</font> <font color="black">+</font> <font color="maroon">"' indefinido&#62;&#62;"</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    try <font color="black">{</font>
+        v2 <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado2.valorAlvo<font color="black">(</font><font color="black">)</font>;
+
+        <font color="blue">if</font> <font color="black">(</font>v2.indefinida<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+            v2 <font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"&#60;&#60;indefinido&#62;&#62;"</font><font color="black">)</font>;
+        <font color="black">}</font>
+    <font color="black">}</font> <font color="blue">catch</font><font color="black">(</font><font color="blue">const</font> CampoInexistenteExcecao<font color="black">&</font><font color="black">)</font> <font color="black">{</font>
+        v2 <font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"&#60;&#60;campo '"</font> <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado2.campoAlvo<font color="black">(</font><font color="black">)</font> <font color="black">+</font> <font color="maroon">"' indefinido&#62;&#62;"</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    retorno <font color="black">=</font> string<font color="black">(</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado1.constante<font color="black">(</font><font color="black">)</font>?<font color="blue">true</font>
+                    <font color="black">:</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado1.estado<font color="black">(</font><font color="black">)</font>.constante<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+                    ?<font color="maroon">""</font><font color="black">:</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado1.estado<font color="black">(</font><font color="black">)</font>.nome<font color="black">(</font><font color="black">)</font>.emString<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+            <font color="black">+</font> string<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado1.campoAlvo<font color="black">(</font><font color="black">)</font>
+            <font color="black">=</font><font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL?<font color="maroon">""</font><font color="black">:</font><font color="maroon">"."</font>
+                <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado1.campoAlvo<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+            <font color="black">+</font> <font color="maroon">"("</font> <font color="black">+</font> v1 <font color="black">+</font> <font color="maroon">") "</font>
+            <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pOperador <font color="black">+</font> <font color="maroon">" "</font>
+            <font color="black">+</font> string<font color="black">(</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado2.constante<font color="black">(</font><font color="black">)</font>?<font color="blue">true</font>
+                    <font color="black">:</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado2.estado<font color="black">(</font><font color="black">)</font>.constante<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+                    ?<font color="maroon">""</font><font color="black">:</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado2.estado<font color="black">(</font><font color="black">)</font>.nome<font color="black">(</font><font color="black">)</font>.emString<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+            <font color="black">+</font> string<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado2.campoAlvo<font color="black">(</font><font color="black">)</font>
+            <font color="black">=</font><font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL?<font color="maroon">""</font><font color="black">:</font><font color="maroon">"."</font>
+                <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado2.campoAlvo<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+            <font color="black">+</font> <font color="maroon">"("</font> <font color="black">+</font> v2 <font color="black">+</font> <font color="maroon">")"</font>;
+
+    <font color="blue">return</font> retorno;
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

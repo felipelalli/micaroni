@@ -1,0 +1,267 @@
+<html lang="pt-BR">
+
+<head>
+    <meta http-equiv=content-type content="text/html; charset=UTF-8"/>
+
+    <title>Nível 0 (RIFLE)</title>
+
+    <style type="text/css">
+        @import "rifle.css";
+    </style>
+</head>
+
+<body>
+<div id="corpo">
+
+<table height="100%" width="100%" border="0">
+<tr>
+    <td align="center" valign="center">
+
+            <h1 class="subtitulo">Nível 0</h1>
+
+        <p>Versão deste documento: 1.0</p>
+    </td>
+</tr>
+<tr>
+    <td align="center" valign="bottom">
+        <p><b>Felipe Micaroni Lalli</b></p>
+        <br/>
+        <br/>
+        <p>Campinas, São Paulo, Brasil</p>
+        <p>dezembro de 2007 a <span class="revisar">abril de 2008</span></p>
+    </td>
+</tr>
+</table>
+
+<p/>
+
+<hr class="quebra-pagina"/>
+
+<a name="nivel1"></a>
+<h2>1. Definição detalhada do nível 0</h2>
+
+<h3>1.1. Nível 0a</h3>
+<p>
+	Consiste basicamente numa cadeia de caracteres (string), definida pelo padrão <a href="http://pt.wikipedia.org/wiki/UTF-8">UTF-8</a>.
+</p>
+
+<h4>1.1.1. Interface</h4>
+
+<hr/>
+
+<p>
+	<b><code>(nivel0a? &lsaquo;obj&rsaquo;)</code></b>
+</p>
+
+<p>
+Verifica se o <code>&lsaquo;obj&rsaquo;</code> é do tipo nivel0a. Se a entrada for uma string qualquer, o resultado deve ser <code>#f</code>.
+</p>
+
+<hr/>
+
+<p>
+     <b><code>(string->nivel0a &lsaquo;string&rsaquo;)</code></b>
+<br/><b><code>(nivel0a->string &lsaquo;obj-nivel0a&rsaquo;)</code></b>
+</p>
+
+<p>
+	Converte uma string num objeto de nível 0a e vice-versa.
+
+	<ul>
+		<li><code>&lsaquo;string&rsaquo;</code> é uma string qualquer, como por exemplo <code>""</code> ou <code>"isto é uma frase"</code>.</li>
+		<li><code>&lsaquo;obj-nivel0a&rsaquo;</code> é um objeto que satisfaz a condição <code>(nivel0a? &lsaquo;obj-nivel0a&rsaquo;)</code>.</li>
+	</ul>
+
+	Se o tipo recebido no parâmetro não for o esperado, as funções devem retornar <code>#f</code>.
+</p>
+
+<p>
+<i>Teste:</i>
+	<ul>
+		<li><code>(nivel0a->string (string->nivel0a "esta frase")) <big>&rArr;</big> "esta frase"</code></li>
+		<li><code>(string->nivel0a 10) <big>&rArr;</big> #f</code></li>
+	</ul>
+
+</p>
+
+<hr/>
+
+<h4>1.1.2. Implementação possível</h4>
+<p>
+	<ul>
+		<li><b><code><a href="../../src/mzscheme/rifle/nivel0/nivel0a.ss">rifle/nivel0/nivel0a.ss</a></code></b></li>
+		<li>Dependente de:</li>
+			<ul>
+				<li><code><a href="../../src/mzscheme/little-type/little-type.ss">little-type/little-type.ss</a></code></li>
+				<ul>
+					<li><code><a href="http://schemers.org/Documents/Standards/R5RS/">R5RS</a> <small>'(define-syntax syntax-rules list car cdr if not pair? eq? load #f)</small></code></li>
+				</ul>
+			</ul>
+	</ul>
+</p>
+
+<h3>1.2. Nível 0b</h3>
+<p>
+Consiste basicamente numa string <a href="http://pt.wikipedia.org/wiki/UTF-8">UTF-8</a> com os símbolos do <a href="http://pt.wikipedia.org/wiki/Alfabeto_fon%C3%A9tico_internacional">Alfabeto fonético internacional (AFI ou IPA)</a>. Ver tabela em <a href="http://www.theiling.de/ipa/cxs.html">Unicode to CXS Mapping</a> para saber o código Unicode do símbolo.
+</p>
+
+<h4>1.2.1. Interface</h4>
+
+<hr/>
+
+<p>
+	<b><code>(simbolo-IPA? &lsaquo;caractere&rsaquo;)</code></b>
+</p>
+
+<p>
+Verifica se o caractere passado como parâmetro é algum símbolo válido do IPA.
+</p>
+
+<hr/>
+
+<p>
+	<b><code>(string-IPA? &lsaquo;string&rsaquo;)</code></b>
+</p>
+
+<p>
+Verifica se cada caractere da string passada como parâmetro corresponde à condição de <code>(simbolo-IPA? &lsaquo;caractere&rsaquo;)</code>. Uma string vazia retorna <code>#t</code>.
+</p>
+
+<hr/>
+
+<p>
+	<b><code>(nivel0b? &lsaquo;obj&rsaquo;)</code></b>
+</p>
+
+<p>
+Verifica se o <code>&lsaquo;obj&rsaquo;</code> é do tipo nivel0b. Se a entrada for uma string qualquer, o resultado deve ser <code>#f</code>.
+</p>
+
+<hr/>
+
+<p>
+     <b><code>(string->nivel0b &lsaquo;string&rsaquo;)</code></b>
+<br/><b><code>(nivel0b->string &lsaquo;obj-nivel0b&rsaquo;)</code></b>
+</p>
+
+<p>
+	Converte uma string num objeto de nível 0b e vice-versa.
+
+	<ul>
+		<li><code>&lsaquo;string&rsaquo;</code> deve ser uma string que satisfaz a condição <code>(string-IPA? &lsaquo;string&rsaquo;)</code>.</li>
+		<li><code>&lsaquo;obj-nivel0b&rsaquo;</code> é um objeto que satisfaz a condição <code>(nivel0b? &lsaquo;obj-nivel0b&rsaquo;)</code>.</li>
+	</ul>
+
+	Se o tipo recebido no parâmetro não for o esperado, as funções devem retornar <code>#f</code>.
+</p>
+
+<hr/>
+
+<h4>1.2.2. Implementação possível</h4>
+<p>
+	<ul>
+		<li><b><code><a href="../../src/mzscheme/rifle/nivel0/nivel0b.ss">rifle/nivel0/nivel0b.ss</a></code></b></li>
+		<li>Dependente de:</li>
+			<ul>
+				<li><code><a href="../../src/mzscheme/rifle/nivel0/ipa.dat">rifle/nivel0/ipa.dat</a></code></li>
+				<li><code><a href="../../src/mzscheme/util/table-true.ss">util/table-true.ss</a></code></li>
+				<li><code><a href="../../src/mzscheme/little-type/little-type.ss">little-type/little-type.ss</a></code></li>
+				<ul>
+					<li><code><a href="http://www.plt-scheme.org/software/mzscheme/">MzScheme</a> <small>'(make-immutable-hash-table hash-table-get)</small></code></li>
+					<ul>
+						<li><code><a href="http://schemers.org/Documents/Standards/R5RS/">R5RS</a> <small>'(define-syntax syntax-rules list car cdr if not pair? eq? define lambda letrec let null? string-append char? = and #t #f string-ref substring load)</small></code></li>
+					</ul>
+				</ul>
+			</ul>
+	</ul>
+</p>
+
+<h3>1.3. Nível 0 (0a + 0b)</h3>
+<p>
+O nível 0 consiste num par contendo um objeto do nível 0a e um objeto do nível 0b. É possível que um objeto do nível 0 possua apenas o nível 0a ou apenas o nível 0b. Pode ser também que um objeto do nível 0 não possua nenhum subnível associado, sendo considerado então um objeto "vazio".
+</p>
+
+<h4>1.3.1. Interface</h4>
+
+<hr/>
+
+<p>
+	<b><code>(nivel0? &lsaquo;obj&rsaquo;)</code></b>
+</p>
+
+<p>
+Verifica se o <code>&lsaquo;obj&rsaquo;</code> é do tipo nivel0. Se a entrada for um par, o resultado deve ser <code>#f</code>. Se a entrada for algum objeto do tipo nivel0a ou nivel0b, o resultado também deve ser <code>#f</code>.
+</p>
+
+<hr/>
+
+<p>
+	<b><code>(cria-nivel0 &lsaquo;obj-nivel0a&rsaquo; &lsaquo;obj-nivel0b&rsaquo;)</code></b>
+</p>
+
+<p>
+Cria e retorna um objeto no nível 0 com base em um do nível 0a e outro do nível 0b. Se o parâmetro não corresponder com o esperado a função retorna <code>#f</code>. O <code>&lsaquo;obj-nivel0a&rsaquo;</code> deve ser um objeto do nível 0a ou <code>#f</code> caso ele esteja ausente. O <code>&lsaquo;obj-nivel0b&rsaquo;</code> deve ser um objeto do nível 0b ou <code>#f</code> caso ele esteja ausente. A função pode ser invocada desta forma: <code>(cria-nivel0 #f #f)</code> caso o nível 0 não possua nenhum subnível.
+</p>
+
+<hr/>
+
+<p>
+	 <b><code>(contem-nivel0a? &lsaquo;obj-nivel0&rsaquo;)</code></b>
+<br/><b><code>(contem-nivel0b? &lsaquo;obj-nivel0&rsaquo;)</code></b>
+</p>
+
+<p>
+Retorna <code>#f</code> caso o nível 0 passado como parâmetro não contenha nenhum objeto do nível 0a (ou 0b) associado e <code>#t</code> caso contrário. Também retorna <code>#f</code> caso o objeto passado como parâmetro não for do tipo esperado.
+</p>
+
+<hr/>
+
+<p>
+	 <b><code>(acessa-nivel0a &lsaquo;obj-nivel0&rsaquo;)</code></b>
+<br/><b><code>(acessa-nivel0b &lsaquo;obj-nivel0&rsaquo;)</code></b>
+</p>
+
+<p>
+Retorna o objeto de nível 0a (ou nível 0b) que o objeto de nível 0 passado como parâmetro contém. Retorna <code>#f</code> caso não contenha objeto do nível 0a (ou nível 0b) ou caso o objeto passado como parâmetro não seja do tipo nível 0.
+</p>
+
+<hr/>
+
+<p>
+	 <b><code>(define-nivel0a! &lsaquo;obj-nivel0&rsaquo; &lsaquo;obj-nivel0a&rsaquo;)</code></b>
+<br/><b><code>(define-nivel0b! &lsaquo;obj-nivel0&rsaquo; &lsaquo;obj-nivel0b&rsaquo;)</code></b>
+</p>
+
+<p>
+Redefine o objeto de nível 0a (ou nível 0b) que o objeto de nível 0 passado como parâmetro contém. Retorna <code>#f</code> caso os objetos passados como parâmetro não sejam dos tipos esperados ou <code>#t</code> se foi redefinido com sucesso.
+</p>
+
+<hr/>
+
+<h4>1.3.2. Implementação possível</h4>
+<p>
+	<ul>
+		<li><b><code><a href="../../src/mzscheme/rifle/nivel0/nivel0.ss">rifle/nivel0/nivel0.ss</a></code></b></li>
+		<li>Dependente de:</li>
+			<ul>
+				<li><code><a href="../../src/mzscheme/rifle/nivel0/nivel0a.ss">rifle/nivel0/nivel0a.ss</a></code></li>
+				<li><code><a href="../../src/mzscheme/rifle/nivel0/nivel0b.ss">rifle/nivel0/nivel0b.ss</a></code></li>
+				<ul>
+					<li><code><a href="../../src/mzscheme/rifle/nivel0/ipa.dat">rifle/nivel0/ipa.dat</a></code></li>
+					<li><code><a href="../../src/mzscheme/util/table-true.ss">util/table-true.ss</a></code></li>
+					<li><code><a href="../../src/mzscheme/little-type/little-type.ss">little-type/little-type.ss</a></code></li>
+					<ul>
+						<li><code><a href="http://www.plt-scheme.org/software/mzscheme/">MzScheme</a> <small>'(make-immutable-hash-table hash-table-get)</small></code></li>
+						<ul>
+							<li><code><a href="http://schemers.org/Documents/Standards/R5RS/">R5RS</a> <small>'(define-syntax syntax-rules list car cdr if not pair? eq? define lambda letrec let null? string-append char? = and #t #f string-ref substring load)</small></code></li>
+						</ul>
+					</ul>
+				</ul>
+			</ul>
+	</ul>
+</p>
+
+
+</div>
+</body>
+</html>

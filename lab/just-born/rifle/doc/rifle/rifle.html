@@ -1,0 +1,337 @@
+<html lang="pt-BR">
+
+<head>
+    <meta http-equiv=content-type content="text/html; charset=UTF-8"/>
+
+    <title>RIFLE</title>
+
+    <style type="text/css">
+        @import "rifle.css";
+    </style>
+</head>
+
+<body>
+<div id="corpo">
+
+<table height="100%" width="100%" border="0">
+<tr>
+    <td align="center" valign="center">
+		<center>
+			<img src="res/rifle.png" border=0/>
+		</center>
+
+            <h1 class="subtitulo"><small><i>Definição e mecanismos de manipulação<br/>a um Texto Carregado<SUP><font size=-1>&reg;</font></SUP></i></small></h1>
+
+        <p>Versão deste documento: 2.0</p>
+    </td>
+</tr>
+<tr>
+    <td align="center" valign="bottom">
+        <p><b>Felipe Micaroni Lalli</b></p>
+        <br/>
+        <br/>
+        <p>Campinas, São Paulo, Brasil</p>
+        <p>dezembro de 2007 a <span class="revisar">abril de 2008</span></p>
+    </td>
+</tr>
+</table>
+
+<p/>
+
+<table height="100%" width="100%" border="0">
+<tr><td align="right" valign="bottom" class="dedicatoria">
+
+        <i>
+        	Dedico este trabalho ao R.I.F.L.E.:
+		<br/>
+        	<b>R</b>icardo, <b>I</b>gor, <b>F</b>elipe, <b>L</b>uiz <b>e</b>...
+        	<br/>à Heyko, à família e aos amigos.
+        </i>
+
+</td></tr>
+</table>
+
+<h2>Resumo</h2>
+<p>
+A base deste projeto é aproximar (nos dois sentidos) o universo exato da <a href="http://pt.wikipedia.org/wiki/Linguagem_de_programa%C3%A7%C3%A3o">linguagem computacional</a> ao universo da <a href="http://pt.wikipedia.org/wiki/L%C3%ADngua_natural">linguagem natural</a>, ou seja, a linguagem humana expressada através da organização de símbolos (<a href="http://pt.wikipedia.org/wiki/Gram%C3%A1tica">que são próprios de cada língua</a>). Essa aproximação é feita através de mecanismos de manipulação a - e da definição de - um Texto Carregado<SUP><font size=-1>&reg;</font></SUP> (§ 2). Este projeto também define a base de construção de um robô (Zidnerpa) capaz de prover dados importantes para auxiliar a manipulação de <i>textos carregados</i> e a conversão de níveis (§ 2.1.2). &mdash; Um <i>texto carregado</i> possui meta-informações que podem definir a função morfossintática dos elementos da frase e também significados de forma aproximada.
+</p>
+
+<p>
+<b>Palavras-chave:</b> gramática genérica, linguagem natural, meta-texto, texto carregado, lógico-semântica
+</p>
+
+<hr class="quebra-pagina"/>
+
+<a name="a"></a>
+<h2>Apresentação</h2>
+
+<p>
+A idéia do projeto apareceu em 2002 com alguns esboços que ficaram estacionados até o final de 2007 quando decidi retomar tudo. É claro que o projeto foi amadurecendo e minhas idéias foram tomando corpo com minha experiência acadêmica e profissional, até que me senti seguro em recomeçar pra valer.
+</p>
+
+<p>
+Graças ao incentivo do meu grande amigo Igor Hjelmstrom Vinhas Ribeiro, e também por considerações importantes sobre o tipo do projeto, decidi fazer o núcleo em <a href="http://pt.wikipedia.org/wiki/Scheme">Scheme Lisp</a> e não em <a href="http://pt.wikipedia.org/wiki/Java_(linguagem_de_programa%C3%A7%C3%A3o)">Java</a> como pretendia inicialmente em 2002. Usarei na grande maioria das vezes o padrão <a href="http://schemers.org/Documents/Standards/R5RS/">R5RS</a> e algumas coisas em <a href="http://www.plt-scheme.org/software/mzscheme/">PLT MzScheme</a>. É possível que seja utilizado também a implementação <a href="http://sisc-scheme.org/">SISC (Second Interpreter of Scheme Code)</a> com algumas coisas <i>sujas</i> feitas em Java.
+</p>
+
+<p>
+A linguagem Scheme foi escolhida basicamente por ter uma base <a href="http://www.ccs.neu.edu/home/dorai/t-y-scheme/t-y-scheme.html">muito simples de aprender</a> (linguagem enxuta) e tem uma sintaxe básica muito coerente e uniforme. Por exemplo: <code>(a 2 3 4)</code> é a chamada da função "a" com três parâmetros: 2, 3 e 4. <code>(list 1 2 3 4)</code> é uma lista com 4 elementos de 1 a 4. <code>(lambda (a b) (+ a b))</code> retorna uma função que soma dois valores.
+</p>
+
+<p>Além disso, a característica de <a href="http://pt.wikipedia.org/wiki/Programa%C3%A7%C3%A3o_funcional">paradigma funcional</a> possui duas características que julgo fundamentais para uma definição de solução computacional exata: 1. não ter efeito colateral e 2. a mesma entrada <i>sempre</i> produz a mesma saída. (ESCREVER: POREM IMPLEMENTACOES NAO SAO 100% FUNCIONAIS)</p>
+
+<hr class="quebra-pagina"/>
+
+<a name="sumario"></a>
+<h2>Sumário</h2>
+
+<ul class="revisar">
+    <li><a href="#introducao">1. Introdução</a></li>
+    <li><a href="#carregado">2. Texto carregado<SUP><font size=-1>&reg;</font></SUP></a>
+        <ul>
+            <li><a href="#carregado-estrutura">2.1. Estrutura</a></li>
+            <ul>
+                <li><a href="#carregado-estrutura-uac">2.1.1. UAC - Unidade Atômica Conceitual</a></li>
+            </ul>
+
+            <li><a href="#carregado-interface">2.2. Interface (acesso aos dados)</a></li>
+            <ul>
+                <li><a href="#carregado-interface-contexto">2.2.1. Contexto Rifle</a></li>
+                <li><a href="#carregado-interface-procura">2.2.2. Função "procura-uac-mais-provavel</a></li>
+            </ul>
+        </ul>
+    </li>
+    <li><a href="#zid">3. Robô Zidnerpa</a>
+        <ul>
+            <li><a href="#zid-exemplo">3.1. Exemplo de funcionamento</a></li>
+            <li><a href="#aux">3.x Módulos auxiliares</a></li>
+            <li><a href="#modulo-identificacao">3.x.1 Módulo de identificação</a></li>
+            <li><a href="#modulo-equivalencias-estaticas-para-depois">3.x.2 Equivalências estáticas para processar depois</a></li>
+        </ul>
+    </li>
+
+    <li><a href="#zid">Bibliografia</a></li>
+</ul>
+
+<div id="canto-direito-embaixo"><a href="#sumario">^</a></div>
+
+<hr class="quebra-pagina"/>
+
+<a name="introducao"></a>
+<h2>1. Introdução</h2>
+
+<p>
+Este documento define de forma precisa a <i>estrutura</i> de um <b>texto carregado</b> e as <i>formas de interação</i> com esse tipo de texto. Um dos objetivos do projeto é definir uma interface externa bastante fácil de usar e bem documentada (alto nível de abstração), que seja acessível por qualquer programador com pouca experiência ou mesmo por qualquer pessoa dedicada a aprender.
+</p>
+
+<p>
+Toda interface será feita através de um protocolo chamado "Bacamarte". Cada servidor conterá informações próprias sobre a língua, por isso a idéia é que haja um servidor principal usado por todos. Somente poderá alimentar esse servidor usuários autorizados. A idéia é que robôs autorizados ajudem a alimentá-lo. Esse servidor terá um "<a href="#carregado-interface-contexto">Contexto Rifle</a>" que &mdash; como em um <a href="http://pt.wikipedia.org/wiki/Sistema_de_controle_de_vers%C3%A3o">Sistema de Controle de Versões</a> &mdash; guardará o histórico de todos os estados que já passou. Dessa forma, será possível usar dados "congelados" previamente testados de uma determinada data, sem que exista o perigo do servidor retornar informações diferentes para uma mesma requisição feita em tempos distintos.
+</p>
+
+<p>
+Tendo em mãos uma forma fácil de interagir com os <i>textos carregados</i> e com o banco de dados estruturado que definirá a língua (<a href="#carregado-estrutura-base">base semântica</a>), as aplicações que poderão surgir são diversas: interpretadores e corretores de texto, tradutores, robôs que aprendem e conversam, analisadores e transformadores de estilo de texto e vícios de linguagem, <i>softwares</i> pedagógicos, ferramentas para poesia, literatura, aprendizado da gramática, buscadores web semânticos etc. (V. § 2.1.3. para sugestões de aplicações práticas).
+</p>
+
+<p>
+Uma forma interessante de coletar informações sobre uma determinada língua de forma colaborativa é através de um robô. Por isso, este projeto é pautado na construção desse robô aprendiz (batizado como robô Zidnerpa, ou simplesmente Zid) que coleta informações relevantes através de uma aparente conversa informal.
+</p>
+
+<p>
+Este documento está dividido em duas grandes partes: a definição de "texto carregado" (§ 2) e o funcionamento do robô Zidnerpa (§ 3).
+</p>
+
+<hr class="quebra-pagina"/>
+
+<a name="carregado"></a>
+<h2>2. Texto carregado<SUP><font size=-1>&reg;</font></SUP></h2>
+<p>
+Um <i>texto carregado</i> se difere de um <i>texto comum</i> pela característica de não conter somente símbolos estáticos (letras, palavras ou pontuação). Um <i>texto carregado</i> pode conter informações fonológicas, ortográficas, morfológicas, sintáticas, semânticas e de estilo. O <i>texto carregado</i> é definido em <b>três</b> níveis (0, 1 e 2) definidos nos capítulos seguintes.
+</p>
+
+<a name="niveis"></a>
+<h3>2.1. Definição conceitual dos níveis</h3>
+
+<a name="visao-geral-niveis"></a>
+<h4>2.1.1. Visão geral dos níveis</h4>
+
+<p>
+<ul>
+    <li><b>Nível 0:</b> O "nível 0" é o conjunto do nível 0a e 0b, ou apenas um deles. O nível 0 como um todo trata da interface livre final ao receptor.
+        <ul>
+        <li><b>a) Texto estático</b> - texto comum composto de uma sequência de símbolos. Tomemos como exemplo: <code>"Um gato verde possui uma bola vermelha."</code><sup>1</sup> Esse tipo de texto não possui nenhuma meta-informação e a interpretação fica totalmente a critério de quem a lê. Evidentemente esse tipo de texto só pode ser compreendido por quem é capaz de converter os símbolos em algo que possui algum <i>sentido lógico</i>. No caso do exemplo, o leitor que compreende a língua portuguesa perceberá (pela experiência natural) que se trata de uma frase contando um fato, real ou imaginário e <i>provavelmente</i> processará aproximadamente da seguinte forma: <code>"gato"</code> associará ao animal <a href="http://pt.wikipedia.org/wiki/Gato">gato</a>, o <code>"um"</code> diz que é um gato específico mas não conhecido ou único. O <code>"verde"</code> dirá que se trata de um "gato <a href="http://pt.wikipedia.org/wiki/Verde">verde</a>", provavelmente bastante raro, pintado ou imaginário. O <code>"possui"</code> ele vai interpretar que o gato tem algo em seu poder nesse momento e finalmente <code>"bola"</code> associará com o objeto <a href="http://pt.wikipedia.org/wiki/Bola">bola</a>. A palavra <code>"vermelha"</code> caracteriza a bola numa cor específica (<a href="http://pt.wikipedia.org/wiki/Vermelho">o vermelho</a>) e o <code>"uma"</code> diz que é uma bola específica, porém não conhecida ou única. &mdash; Após a intepretação de sentido, o leitor poderá reagir de diversas maneiras: poderá descartar a informação por saber que se trata apenas de um exemplo; poderá simplesmente acreditar ou duvidar; poderá investigar buscando outras fontes; poderá também imaginar ou ainda reagir de qualquer outra forma que desejar.
+        </li>
+
+        <li><b>b) Representação fonética</b> - Contém a forma como o texto estático deve ser representado sonoramente<sup>2</sup>.
+        </li>
+    </ul>
+    </li>
+    <li><b>Nível 1: Gramática específica</b> - é o mapeamento computacional da gramática de uma determinada língua<sup>3</sup>, como o português ou inglês, por exemplo. Em relação à <i>fonética</i> e <i>ortografia</i>, esse nível divide-as em duas partes: a <b>formal</b> (definidas por dicionários conceituados) e a <b>informal</b> (símbolos alternativos para a ortografia formal). Dentro da parte "informal" ainda podem ser subdivididos (ou classificados) em <a href="http://pt.wikipedia.org/wiki/Dialeto">dialetos</a> ou <a href="http://pt.wikipedia.org/wiki/Tribo">tribos</a>. A definição exata desse nível &mdash; com exceção da parte informal &mdash; é complexa e mutável, porém finita e segue um padrão bem definido num determinado momento (pois, mesmo sendo mais estável, a gramática formal ainda pode se modificar). No caso deste projeto, será definido a estrutura básica da <a href="http://pt.wikipedia.org/wiki/L%C3%ADngua_portuguesa">Língua Portuguesa</a> seguindo o padrão da <a href="http://pt.wikipedia.org/w/index.php?title=Especial:Fontes_de_livros&isbn=8502054309">Gramática Metódica da Língua Portuguesa de Napoleão Mendes de Almeida (45ª edição 2005, ISBN: 850205430-9)</a> chamado daqui pra frente de <b>GMLP</b>. Será também definido a estrutura básica da língua artificial <a href="http://pt.wikipedia.org/wiki/Esperanto">Esperanto</a> seguindo o padrão especificado pela <a href="http://paginas.terra.com.br/arte/alls/ag_grama.htm">ALLS</a>. &mdash; Este nível trata de <i>palavras</i> (símbolo e não <i>termo</i>), <i>estilos</i> e <i>vícios de linguagem</i>, mas não se aprofunda na semântica. &mdash; Em relação às <i>palavras</i> e suas classificações morfológicas, evidentemente não haverá <b>todas</b> cadastradas inicialmente, sendo que esse cadastro dependerá da interação com o usuário e da boa fé de quem fornecer as informações.</li>
+
+    <li><b>Nível 2: Expressão genérica aproximada</b> - é uma forma de expressão pautada em símbolos exatos independente de particularidades da língua. Essa expressão pode ou não ter sentido lógico e pode ou não ter alguma finalidade específica, como por exemplo: o relato de um fato verídico, a narração de uma história fictícia por mero entretenimento, a comunicação de algo a alguém, um pedido, uma definição, uma comunicação pública, uma reflexão geral etc.  O <i>sentido</i> que se quer expressar nunca será exato, será sempre uma <i>aproximação</i>. O <i>sentido real</i> da expressão é propriedade exclusiva<sup>4</sup> de quem a expressa, sendo que as vezes pode ser impossível representá-la em forma de símbolos (mesmo de forma aproximada). De forma análoga, a <i>interpretação final</i> é propriedade exclusiva de quem analisa a expressão. &mdash; Este nível depende de uma <a href="#carregado-estrutura-base">base semântica</a> que é continuamente mutável e infinita. &mdash; O grau de detalhamento de um mesmo <i>sentido</i> que se queira expressar pode variar dependendo do número de informações que sejam passadas quando a expressão é formalizada. Os mais detalhados resultarão em menos possibilidades que os mais gerais ao passar para o nível 1.
+</li>
+
+</ul>
+
+    <hr class="rodape"/>
+    <p class="nota">
+    <sup>1</sup> Neste projeto, os símbolos serão caracteres no padrão <a href="http://pt.wikipedia.org/wiki/UTF-8">UTF-8</a>.
+    </p>
+
+    <p class="nota">
+    <sup>2</sup> A definição fonética é baseada no <a href="http://pt.wikipedia.org/wiki/Alfabeto_fon%C3%A9tico_internacional">Alfabeto Fonético Internacional, ou em inglês International Phonetic Alphabet (IPA)</a>.
+    </p>
+
+    <p class="nota">
+    <sup>3</sup> Uma gramática específica será - neste projeto - associada a alguma língua pelo símbolo definido no padrão <a href="http://pt.wikipedia.org/wiki/ISO_639">ISO 639-1</a> e opcionalmente hífen mais o código do país definido pelo <a href="http://pt.wikipedia.org/wiki/ISO_3166-1">ISO 3166-1 alpha-2</a> (por exemplo: "en-US", "it", "fr", "pt-BR").
+    </p>
+    <p class="nota">
+    <sup>4</sup> <b>Exclusiva</b> neste contexto significa que pertence unicamente e não é acessível por outros.
+    </p>
+
+</p>
+
+<a name="conversores-entre-niveis"></a>
+<h4>2.1.2. Visão geral de possíveis conversores entre os níveis</h4>
+
+<h5>2.1.2.1. Conversores para nível inferior</h5>
+
+<p>
+<ul>
+    <li><b>Nível 1 para o 0</b> - A transformação do nível 1 para o 0a deve ser <b>1 para 1</b>, ou seja: um texto carregado em nível 1 pode gerar apenas uma forma em nível 0. Essa transformação depende unicamente da base gramatical que é exata, finita e uma vez definida, mudará muito pouco ou nada ao longo do tempo. &mdash; a transformação pode ser incompleta ou indefinida caso a base gramatical não esteja definida de forma completa. Nesse caso, a conversão dependerá de novos dados externos para completar a base gramatical. A maior dificuldade fica na definição das palavras, tanto pela quantidade expressiva das <i>formais</i> como também pela inconstância das <i>informais</i> e as novidades dos neologimos. &mdash; A construção do nível 0b pode ser feita manualmente ou de forma automática com o auxílio de alguma ferramenta específica. O nível 1 pode ou não conter informações específicas sobre dialetos.
+    </li>
+
+    <li><b>Nível 2 para o 1</b> - A transformação do nível 2 para o 1 é <b>1 para N</b> e pode mudar consideravelmente em um tempo curto. A transformação depende basicamente de três fatores: <b>1.</b> da base semântica definida até o momento, <b>2.</b> do grau de detalhamento da expressão e <b>3.</b> da estrutura semântica predefinida. &mdash; Se bem planejado, é esperado que a estrutura semântica mude pouco ou nada ao longo do tempo e não dependa de fatores externos. O grau de detalhamento da expressão é definido no momento em que ela é construída. Porém, a base semântica depende do conhecimento adquirido e das conclusões feitas até o momento. Por isso, um <i>sentido aproximado</i> (nível 2) pode gerar muitas possibilidades de expessão no nível 1 ou 0.
+
+    </li>
+</ul>
+</p>
+
+<h5>2.1.2.2. Conversores para nível superior</h5>
+
+<p>
+<ul>
+    <li><b>Nível 0 para o 1</b> - A conversão do nível 0 para o 1 deve ser feita manualmente (ou seja, com análise sintática e a escrita no formato do nível 1) ou com a ajuda de alguma ferramenta auxiliar. Apesar da relação ser <b>1 para N</b>, um mesmo texto em nível 0 não pode gerar muitas alternativas em nível 1. As diferenças ficarão limitadas basicamente na diferença de classificação de palavras homônimas. &mdash; A eficiência de uma possível ferramenta auxiliar dependerá da base gramatical, da base ortográfica e fonética, além da própria capacidade de análise. &mdash; Um texto escrito de forma coloquial ou informal pode dificultar muito uma possível transformação automática para o nível 1.</li>
+
+    <li><b>Nível 1 para o 2</b> - A transformação do nível 1 para o 2 (ou mesmo diretamente do nível 0 para 2) é <b>1 para N</b> e deve ser feita manualmente (ou seja, com a interpretação específica do texto e a escrita no formato do nível 2) ou com a ajuda de alguma ferramenta auxiliar, que dependerá de interação do usuário ou aproximação por estatística, pois uma mesma estrutura gramatical pode representar coisas diferentes (frases irônicas ou com duplo sentido, por exemplo).</li>
+</ul>
+</p>
+<a name="utilidade-dos-niveis"></a>
+<h4>2.1.3. Sugestão de utilidade prática dos níveis e seus conversores</h4>
+
+
+<h5>2.1.3.1. Nível 0</h5>
+<p>
+Um texto no nível 0 pode ser útil em:
+
+<ul>
+    <li><b>Referência para transformar no nível 1 ou 2</b> - Analisando manualmente ou através de alguma ferramenta, um texto estático (nível 0a) e sua fonética (0b) pode ser uma boa referência inicial para se chegar ao nível 1 ou 2. Ver § 2.1.2.2.</li>
+
+    <li><b>Editor de texto</b> - Para diferenciar palavras homófonas (quando o nível 0a está definido) e homógrafas (quando o nível 0b está definido).</li>
+
+    <li><b>Ferramentas para cegos</b> - Que transforma um texto em som, porém depende da implementação de um conversor do nível 0a para o 0b. Estando o nível 0b definido, dependerá também de um conversor do padrão <a href="http://pt.wikipedia.org/wiki/Alfabeto_fon%C3%A9tico_internacional">IPA</a> para som.</li>
+
+    <li><b>Ferramentas para ortoépia, fonética descritiva e histórica</b> - <i>Softwares</i> educativos ou profissionais sobre ortoépia, parte da gramática que aborda a pronúncia correta. Sobre fonética descritiva: estudo dos sons da voz humana (GMLP §26) ou sobre fonética histórica: estudo da pronúncia através dos tempos (GMLP §27).
+    </li>
+</ul>
+</p>
+
+<h5>2.1.3.2. Nível 1</h5>
+<p>
+Um texto no nível 1 pode ser útil em:
+
+<ul>
+    <li><b>Referência para transformar no nível 2</b> - Analisando manualmente ou através de alguma ferramenta, que pode utilizar algum padrão de conversão da estrutura gramatical específica da língua para a estrutura genérica. Ver § 2.1.2.2.
+    </li>
+
+    <li><b>Referência para transformar no nível 0</b> - Ver § 2.1.2.1.
+    </li>
+
+    <li><b>Editor de texto</b> - Possibilidade de se embutir informações (mesmo que manualmente) morfológicas e sintáticas num texto.
+    </li>
+
+    <li><b>Analisador e corretor da estrutura do texto</b> - Análise da estrutura e sua consistência. Sugestões para melhoria do texto ou identificação de incongruência gramatical.
+    </li>
+
+    <li><b>Ferramentas de mudança de estilo e vícios de linguagem</b> - Com informações morfológicas e sintáticas e uma base de estilos definida é possível modificar ou identificar estilos do texto ou vícios de linguagens.
+    </li>
+
+    <li><b>Gerador aleatório de frases (humor)</b> - Com uma base gramatical é possível gerar frases com estruturas válidas, mesmo que sem sentido. Gerar frases aleatórias pode ser um entretenimento interessante quando os parâmetros são específicos de uma determinada tribo, sociedade ou um grupo de amigos.
+    </li>
+
+    <li><b>Flexionador de palavras</b> - Dada uma palavra (ou radical) seria possível flexioná-la de acordo com as possibilidades de sua classe morfológica. Seria possível conjugar verbos ou transformar de masculino singular para feminino plural, por exemplo.
+    </li>
+
+    <li><b>Ferramentas simples para poesias</b> - Contagem de sílabas, identificação de sílabas tônicas, sugestões para rimas, identificação de rimas pobres e ricas, freqüencia do uso das palavras etc.
+    </li>
+</ul>
+
+</p>
+
+<h5>2.1.3.3. Nível 2</h5>
+<p>
+Um texto no nível 2 pode ser útil em:
+
+<ul>
+    <li><b>Referência para transformar no nível 1 (ou 0)</b> - Ver § 2.1.2.1.
+    </li>
+
+    <li><b>Robôs matemáticos</b> - Robôs capazes de fazer relações lógicas e tirar conclusões a partir delas. Esse tipo de robô pode ser útil para para rechear a base gramatical e a base semântica. Pode também identificar contradições numa frase, pode identificar o nível de confiabilidade de uma pessoa (ou emissor de informação) baseado no número de contradições. Pode responder perguntas que são conclusões a partir de premissas. Pode ser útil para atendimento automatizado em lojas virtuais, pode ser usado como calculadora ou uma enciclopédia interativa. Pode também ser útil num jogo de adivinhação (ver <a href="http://www.20q.net/">20q.net</a>, por exemplo).
+    </li>
+
+    <li><b>Robôs para conversar</b> -
+Possibilidade do uso do domínio da linguagem (Rifle) com redes neurais e princípios de inteligência artificial. Robôs com sentimento ou que simplesmente imitam o comportamento humano podem ser úteis para entretenimento (simples conversa) ou mesmo um atendimento automatizado.
+    </li>
+
+    <li><b>Ferramentas avançadas para textos e poesias</b> - Além das ferramentas sugeridas no § 2.1.3.2., seria possível uma ferramenta para sugestão de rimas considerando os significados das palavras, por exemplo. Num editor de texto poderia ser sugerido sinônimos ou mesmo expressões que substituem uma palavra. Ferramentas para resumo de textos, preservando o sentido inicial. Encontrar contradições num texto.
+    </li>
+
+    <li><b>Buscador web semântico</b> - Atualmente (fev/2008) os buscadores são baseados em palavras-chave e não levam em conta o <i>significado</i> do assunto. Utilizando o Rifle será possível buscar um assunto sem que flexões, nomes próprios ou palavras homógrafas atrapalhem a busca.
+    </li>
+
+    <li><b>Editor de texto carregado</b> - Será possível fazer um editor de texto que aceita informações morfossintáticas ou informações sobre o significado dos elementos escritos. Dessa forma, um texto escrito assim poderá ser mais facilmente convertido para uma outra língua (ver § 2.1.2.1) ou poderá ser interpretado de forma mais precisa por quem o lê.
+    </li>
+
+    <li><b>Resumo de textos</b> - Com acesso ao significado do texto, é possível criar ferramentas que tentam resumir o texto, preservando elementos básicos, excluindo frases redundantes ou repetidas.
+    </li>
+
+    <li><b>Analisador da qualidade de um texto</b> - Será possível detectar falhas num texto, encontrando o número de contradições, detectar postulados, incongruências lógicas, erros gramaticais etc.
+    </li>
+
+</ul>
+
+</p>
+
+<h3>2.2. Definição detalhada dos níveis</h3>
+
+<a name="nivel1"></a>
+<h4>2.2.1. Definição detalhada do nível 0</h4>
+
+<ul>
+	<li><a href="nivel0.html">Ver documento <b>Nivel 0</b></a>.</li>
+</ul>
+
+<a name="zid"></a>
+<h2>3. Robô Zidnerpa</h2>
+
+<ul>
+	<li><a href="zidnerpa.html">Ver documento <b>Zidnerpa</b></a>.</li>
+</ul>
+
+
+<a name="bibliografia"></a>
+<h2>Bibliografia</h2>
+<ul>
+<li>Dicionários: Priberam, Aurélio, Michaelis, Houaiss</li>
+<li>Enciclopédias: Wikipédia, Larousse Cultural, Conhecer</li>
+<li>Língua: Gramática Metódica da Língua Portuguesa (Napoleão Mendes de Almeida), Minimanual Compacto de Gramática (ed. Rideel), Gramática da Língua Portuguesa (Pasquale & Ulisses), Propedêutica Lógico-Semântica (Ernst Tugendhat e Ursula Wolf), Princípios de semântica lingüística (Oswald Ducrot)</li>
+<li>Computacional: Introdução à Teoria da Computação (Michael Sipser), R5RS Scheme Lisp</li>
+</ul>
+
+<h3>Sites consultados</h3>
+<ul>
+	<li><a href="http://www.radames.manosso.nom.br/gramatica/niveis.htm">Gramática descritiva: Níveis de análise lingüística</a> (em 27/jan/2008)</li>
+</ul>
+
+
+</div>
+</body>
+</html>

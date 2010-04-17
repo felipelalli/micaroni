@@ -1,0 +1,288 @@
+<HTML>
+<HEAD>
+<TITLE>
+GeradorDeEventosDependente.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: GeradorDeEventosDependente.cpp.html,v $
+ * $Date: 2005/03/22 20:19:01 $
+ * $Revision: 1.42 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/GeradorDeEventosDependente.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia;
+
+GeradorDeEventosDependente<font color="black">:</font><font color="black">:</font>GeradorDeEventosDependente<font color="black">(</font><font color="blue">const</font> MediadorDeEstados<font color="black">&</font> mde<font color="black">)</font>
+        <font color="black">:</font>GeradorDeEventos<font color="black">(</font>mde, <font color="blue">true</font><font color="black">)</font>, pEventosEmEspera<font color="black">(</font><font color="black">)</font>,
+         pSituacoes<font color="black">(</font><font color="black">)</font>, pLixo<font color="black">(</font><font color="black">)</font>, pControle<font color="black">(</font><font color="maroon">1</font><font color="black">)</font>,
+         pContadorParaQuandoNomeJaExiste<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font><font color="black">}</font>
+
+GeradorDeEventosDependente<font color="black">:</font><font color="black">:</font>~GeradorDeEventosDependente<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pControle.esperar<font color="black">(</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">const</font> <font color="blue">bool</font> GeradorDeEventosDependente<font color="black">:</font><font color="black">:</font>validaRecursivamente<font color="black">(</font><font color="blue">const</font> Situacao<font color="black">&</font> s<font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+<font color="green">//  Debug::msg(INFO, "--- vai validar!");</font>
+    
+    <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> k <font color="black">=</font> <font color="maroon">0</font>; k <font color="black">&#60;</font> s.seAcontecerUmDessesEventos<font color="black">(</font><font color="black">)</font>.tamanho<font color="black">(</font><font color="black">)</font>; k<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+        string id <font color="black">=</font> s.seAcontecerUmDessesEventos<font color="black">(</font><font color="black">)</font><font color="black">[</font>k<font color="black">]</font><font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font>;
+
+        <font color="blue">if</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEventosParaChecagem.existe<font color="black">(</font>id<font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEventosParaChecagem.insere<font color="black">(</font>id, Lista<font color="black">&#60;</font><font color="blue">const</font> Evento<font color="black">*</font><font color="black">&#62;</font><font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+        <font color="black">}</font>
+
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEventosParaChecagem<font color="black">[</font>id<font color="black">]</font>.adiciona<font color="black">(</font>
+                <font color="black">(</font>Evento<font color="black">*</font><font color="black">)</font> s.seAcontecerUmDessesEventos<font color="black">(</font><font color="black">)</font><font color="black">[</font>k<font color="black">]</font><font color="black">-</font><font color="black">&#62;</font>geraCopia<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+<font color="green">//      Debug::msg(INFO, "--- adicionando em 'eventos para chegagem': "</font>
+<font color="green">//              + *((Evento*) s.seAcontecerUmDessesEventos()[k]));</font>
+    <font color="black">}</font>
+
+    <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> o <font color="black">=</font> <font color="maroon">0</font>; o <font color="black">&#60;</font> <font color="maroon">2</font>; o<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+<font color="green">//      Debug::msg(INFO, "--- validando: " + Inteiro(o));</font>
+
+        <font color="blue">const</font> Lista<font color="black">&#60;</font><font color="blue">const</font> Evento<font color="black">*</font><font color="black">&#62;</font><font color="black">&</font> oQueGera
+                <font color="black">=</font> <font color="black">(</font>o <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font>?s.oQueGera<font color="black">(</font><font color="black">)</font><font color="black">:</font>s.oQueGeraSenao<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+<font color="green">//      Debug::msg(INFO, "--- antes do for");</font>
+        <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> oQueGera.tamanho<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+<font color="green">//          Debug::msg(INFO, "--- tamanho: " + Inteiro(oQueGera.tamanho()));</font>
+<font color="green">//          Debug::msg(INFO, "--- o que gera[" + Inteiro(i) + "]=" + *(oQueGera[i]));</font>
+
+            string id <font color="black">=</font> oQueGera<font color="black">[</font>i<font color="black">]</font><font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font>;
+
+            <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEventosParaChecagem.existe<font color="black">(</font>id<font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+<font color="green">//              Debug::msg(INFO, "--- id: " + id + " existe!!");</font>
+
+<font color="green">//              Debug::msg(INFO, "--- eventos para checagem tem "</font>
+<font color="green">//                      + Inteiro(this-&#62;pEventosParaChecagem[id].tamanho()) + " elementos.");</font>
+
+                <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> w <font color="black">=</font> <font color="maroon">0</font>; w <font color="black">&#60;</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEventosParaChecagem<font color="black">[</font>id<font color="black">]</font>.tamanho<font color="black">(</font><font color="black">)</font>; w<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+<font color="green">//                  Debug::msg(INFO, "--- validacao: evento " + *(this-&#62;pEventosParaChecagem[id][w])</font>
+<font color="green">//                          + " é igual a " + *(oQueGera[i]) + "???");</font>
+
+                    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEventosParaChecagem<font color="black">[</font>id<font color="black">]</font><font color="black">[</font>w<font color="black">]</font><font color="black">-</font><font color="black">&#62;</font>igual<font color="black">(</font><font color="black">*</font><font color="black">(</font>oQueGera<font color="black">[</font>i<font color="black">]</font><font color="black">)</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                        <font color="green">// Encontrou alguém no histórico.</font>
+<font color="green">//                      Debug::msg(INFO, "--- encontrou alguem no historico");</font>
+                        <font color="blue">return</font> <font color="blue">false</font>;
+                    <font color="black">}</font>
+                <font color="black">}</font>
+            <font color="black">}</font>
+
+            <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSituacoes.existe<font color="black">(</font>id<font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+<font color="green">//              Debug::msg(INFO, "--- existe situação para o id " + id);</font>
+
+                Lista<font color="black">&#60;</font><font color="blue">const</font> Situacao<font color="black">*</font><font color="black">&#62;</font><font color="black">*</font> situacoes <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSituacoes<font color="black">[</font>id<font color="black">]</font>;
+
+                <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> w <font color="black">=</font> <font color="maroon">0</font>; w <font color="black">&#60;</font> situacoes<font color="black">-</font><font color="black">&#62;</font>tamanho<font color="black">(</font><font color="black">)</font>; w<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+                    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font> <font color="black">(</font><font color="black">*</font>situacoes<font color="black">)</font><font color="black">[</font>w<font color="black">]</font><font color="black">-</font><font color="black">&#62;</font>mesmaInstancia<font color="black">(</font><font color="black">&</font>s<font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+<font color="green">//                      Debug::msg(INFO, "--- validando recursivamente: " + *(*situacoes)[w]);</font>
+                        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>validaRecursivamente<font color="black">(</font><font color="black">*</font><font color="black">(</font><font color="black">*</font>situacoes<font color="black">)</font><font color="black">[</font>w<font color="black">]</font><font color="black">)</font>;
+                    <font color="black">}</font>
+                <font color="black">}</font>
+            <font color="black">}</font>
+        <font color="black">}</font>
+
+<font color="green">//      Debug::msg(INFO, "--- após o for");</font>
+    <font color="black">}</font>
+
+    <font color="green">// Não encontrou ninguém no histórico</font>
+    <font color="blue">return</font> <font color="blue">true</font>;
+<font color="black">}</font>
+
+<font color="blue">const</font> <font color="blue">bool</font> GeradorDeEventosDependente<font color="black">:</font><font color="black">:</font>valida<font color="black">(</font><font color="blue">const</font> Situacao<font color="black">&</font> s<font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">true</font>;
+
+<font color="green">//  FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME </font>
+<font color="green">//      FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME </font>
+<font color="green">//      FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME </font>
+<font color="green">//      FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME </font>
+
+<font color="green">//  Debug::msg(INFO, "--- vai validar");</font>
+
+    <font color="blue">bool</font> retorno <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>validaRecursivamente<font color="black">(</font>s<font color="black">)</font>;
+
+    <font color="green">// Apagando histórico:</font>
+    Lista<font color="black">&#60;</font>Lista<font color="black">&#60;</font><font color="blue">const</font> Evento<font color="black">*</font><font color="black">&#62;</font> <font color="black">&#62;</font><font color="black">*</font> lista <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEventosParaChecagem.valores<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEventosParaChecagem.limpa<font color="black">(</font><font color="black">)</font>;
+
+    <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> lista<font color="black">-</font><font color="black">&#62;</font>tamanho<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+        <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> w <font color="black">=</font> <font color="maroon">0</font>; w <font color="black">&#60;</font> <font color="black">(</font><font color="black">*</font>lista<font color="black">)</font><font color="black">[</font>i<font color="black">]</font>.tamanho<font color="black">(</font><font color="black">)</font>; w<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+            <font color="blue">delete</font> <font color="black">(</font><font color="black">*</font>lista<font color="black">)</font><font color="black">[</font>i<font color="black">]</font><font color="black">[</font>w<font color="black">]</font>;
+        <font color="black">}</font>
+    <font color="black">}</font>
+
+    <font color="blue">delete</font> lista;
+
+<font color="green">//  Debug::msg(INFO, "--- validou");</font>
+
+    <font color="blue">return</font> retorno;
+<font color="black">}</font>
+
+GeradorDeEventosDependente<font color="black">&</font> GeradorDeEventosDependente
+        <font color="black">:</font><font color="black">:</font>adicionaSituacao<font color="black">(</font><font color="blue">const</font> Situacao<font color="black">*</font> s<font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>s <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font> <font color="black">{</font>
+<font color="green">//      Debug::msg(INFO, "--- vai validar");</font>
+
+        <font color="blue">if</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>valida<font color="black">(</font><font color="black">*</font>s<font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+<font color="green">//          Debug::msg(INFO, "--- vai exibir");</font>
+            Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>WARN, <font color="maroon">"A Situação '"</font> <font color="black">+</font> <font color="black">*</font>s <font color="black">+</font> <font color="maroon">"' pode fazer com que a Sinfonia"</font>
+                    <font color="maroon">" entre em loop! Verifique cada elemento que ela gera."</font><font color="black">)</font>;
+        <font color="black">}</font>
+
+        <font color="blue">const</font> Lista<font color="black">&#60;</font><font color="blue">const</font> Evento<font color="black">*</font><font color="black">&#62;</font><font color="black">&</font> relacionados <font color="black">=</font> s<font color="black">-</font><font color="black">&#62;</font>seAcontecerUmDessesEventos<font color="black">(</font><font color="black">)</font>;
+
+<font color="green">//      Debug::msg(INFO, "--- vai adicionar situacao: " + *s);</font>
+
+        <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> relacionados.tamanho<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+            string id <font color="black">=</font> relacionados<font color="black">[</font>i<font color="black">]</font><font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font>;
+<font color="green">//          Debug::msg(INFO, "--- id: " + id);</font>
+
+            <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSituacoes.existe<font color="black">(</font>id<font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSituacoes<font color="black">[</font>id<font color="black">]</font><font color="black">-</font><font color="black">&#62;</font>adiciona<font color="black">(</font>s<font color="black">)</font>;
+<font color="green">//              Debug::msg(INFO, "--- GeradorDeEventosDependente::adicionaSituacao:: ja existia "</font>
+<font color="green">//                      + id + "... Adicionando na lista! ;)");</font>
+            <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+                Lista<font color="black">&#60;</font><font color="blue">const</font> Situacao<font color="black">*</font><font color="black">&#62;</font><font color="black">*</font> novaLista <font color="black">=</font> <font color="blue">new</font> Lista<font color="black">&#60;</font><font color="blue">const</font> Situacao<font color="black">*</font><font color="black">&#62;</font><font color="black">(</font><font color="black">)</font>;
+                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pLixo.adiciona<font color="black">(</font>novaLista<font color="black">)</font>;
+                novaLista<font color="black">-</font><font color="black">&#62;</font>adiciona<font color="black">(</font>s<font color="black">)</font>;
+                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSituacoes.insere<font color="black">(</font>id, novaLista<font color="black">)</font>;
+            <font color="black">}</font>
+        <font color="black">}</font>
+
+        <font color="green">// Para consulta externa:</font>
+        string nome;
+
+        <font color="blue">if</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSituacoesParaConsultaExterna.existe<font color="black">(</font>s<font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+            nome <font color="black">=</font> s<font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font>;
+        <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+            <font color="blue">if</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pContadorParaQuandoNomeJaExiste.existe<font color="black">(</font>s<font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pContadorParaQuandoNomeJaExiste.insere<font color="black">(</font>s<font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font>, <font color="maroon">1</font><font color="black">)</font>;
+            <font color="black">}</font>
+
+            <font color="blue">int</font><font color="black">&</font> valor <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pContadorParaQuandoNomeJaExiste<font color="black">[</font>s<font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font><font color="black">]</font>;
+            valor<font color="black">+</font><font color="black">+</font>;
+            nome <font color="black">=</font> s<font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font> <font color="black">+</font> <font color="maroon">" "</font> <font color="black">+</font> Inteiro<font color="black">(</font>valor<font color="black">)</font>;
+        <font color="black">}</font>
+
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSituacoesParaConsultaExterna.insere<font color="black">(</font>nome, s<font color="black">)</font>;
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pNomeDasSituacoes.adiciona<font color="black">(</font>nome<font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+<font color="blue">const</font> Lista<font color="black">&#60;</font>Identificacao<font color="black">&#62;</font><font color="black">&</font> GeradorDeEventosDependente
+        <font color="black">:</font><font color="black">:</font>nomeDeTodasSituacoes<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>
+<font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pNomeDasSituacoes;
+<font color="black">}</font>
+
+<font color="blue">const</font> Situacao<font color="black">&</font> GeradorDeEventosDependente
+        <font color="black">:</font><font color="black">:</font>situacao<font color="black">(</font><font color="blue">const</font> Identificacao<font color="black">&</font> nome<font color="black">)</font> <font color="blue">const</font>
+<font color="black">{</font>
+    <font color="blue">return</font> <font color="black">*</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSituacoesParaConsultaExterna<font color="black">[</font>nome<font color="black">]</font><font color="black">)</font>;
+<font color="black">}</font>
+
+GeradorDeEventosDependente<font color="black">&</font> GeradorDeEventosDependente
+        <font color="black">:</font><font color="black">:</font>aconteceu<font color="black">(</font><font color="blue">const</font> Evento<font color="black">&</font> e<font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>e.disparado<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        Debug<font color="black">:</font><font color="black">:</font>sair<font color="black">(</font><font color="maroon">"GeradorDeEventos::aconteceu:: o Evento "</font>
+                <font color="maroon">"passado deve estar disparado!! Evento: "</font> <font color="black">+</font> e<font color="black">)</font>;
+    <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEventosEmEspera.adiciona<font color="black">(</font><font color="black">(</font><font color="blue">const</font> Evento<font color="black">*</font><font color="black">)</font> <font color="black">&</font>e<font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+<font color="green">// Executavel:</font>
+
+Executavel<font color="black">&</font> GeradorDeEventosDependente<font color="black">:</font><font color="black">:</font>executa<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="green">// essa função não pode ser executada ao mesmo tempo</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pControle.esperar<font color="black">(</font><font color="black">)</font>;
+    Lista<font color="black">&#60;</font>Evento<font color="black">*</font><font color="black">&#62;</font> eventosGerados;
+
+    <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEventosEmEspera.tamanho<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+        <font color="blue">const</font> Evento<font color="black">&</font> e <font color="black">=</font> <font color="black">*</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEventosEmEspera<font color="black">[</font>i<font color="black">]</font><font color="black">)</font>;
+        <font color="blue">const</font> string id <font color="black">=</font> e.nomeCompleto<font color="black">(</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font>;
+        <font color="blue">const</font> UniversoDeTempo<font color="black">&</font> tempo <font color="black">=</font> e.momentoDoDisparo<font color="black">(</font><font color="black">)</font>.universo<font color="black">(</font><font color="black">)</font>;
+
+<font color="green">//      Debug::msg(INFO, "--- evento recebido pela dinamica: " + e);</font>
+
+        <font color="blue">if</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSituacoes.existe<font color="black">(</font>id<font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+<font color="blue">#ifdef</font> _DEBUG
+            <font color="blue">if</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pJaExibiuEsteErro.existe<font color="black">(</font>id<font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>INFO, <font color="maroon">"GeradorDeEventosDependente::executa()::"</font>
+                    <font color="maroon">" ignorando evento: "</font> <font color="black">+</font> e<font color="black">)</font>;
+
+                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pJaExibiuEsteErro.insere<font color="black">(</font>id, <font color="blue">true</font><font color="black">)</font>;
+            <font color="black">}</font>
+<font color="blue">#endif</font>
+        <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+<font color="green">//          Debug::msg(INFO, "--- id: " + id + " existe!!!");</font>
+
+            <font color="blue">const</font> Lista<font color="black">&#60;</font><font color="blue">const</font> Situacao<font color="black">*</font><font color="black">&#62;</font><font color="black">&</font> situacoes <font color="black">=</font> <font color="black">*</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pSituacoes<font color="black">[</font>id<font color="black">]</font><font color="black">)</font>;
+
+            <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> j <font color="black">=</font> <font color="maroon">0</font>; j <font color="black">&#60;</font> situacoes.tamanho<font color="black">(</font><font color="black">)</font>; j<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+                <font color="blue">const</font> Situacao<font color="black">&</font> situacao <font color="black">=</font> <font color="black">*</font><font color="black">(</font>situacoes<font color="black">[</font>j<font color="black">]</font><font color="black">)</font>;
+<font color="green">//              Debug::msg(WARN, "--- situacao: " + situacao);</font>
+<font color="green">//              Debug::msg(WARN, "--- evento: " + e);</font>
+
+                <font color="blue">if</font> <font color="black">(</font>situacao.eventoCorresponde<font color="black">(</font>e<font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+<font color="green">//                  Debug::msg(WARN, "--- evento corresponde!");</font>
+
+                    <font color="blue">if</font> <font color="black">(</font>situacao.condicaoVerdadeira<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+<font color="green">//                      Debug::msg(WARN, "--- condicao verdadeira!");</font>
+
+                        <font color="blue">const</font> Lista<font color="black">&#60;</font><font color="blue">const</font> Evento<font color="black">*</font><font color="black">&#62;</font><font color="black">&</font> oQueGera <font color="black">=</font> situacao.oQueGera<font color="black">(</font><font color="black">)</font>;
+
+                        <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> w <font color="black">=</font> <font color="maroon">0</font>; w <font color="black">&#60;</font> oQueGera.tamanho<font color="black">(</font><font color="black">)</font>; w<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+<font color="green">//                          Debug::msg(WARN, "--- vai disparar: " + *(oQueGera[w]));</font>
+                            eventosGerados.adiciona<font color="black">(</font>oQueGera<font color="black">[</font>w<font color="black">]</font><font color="black">-</font><font color="black">&#62;</font>dispara<font color="black">(</font>tempo<font color="black">)</font><font color="black">)</font>;
+                        <font color="black">}</font>
+                    <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+<font color="green">//                      Debug::msg(INFO, "--- condicao falsa!");</font>
+
+                        <font color="blue">const</font> Lista<font color="black">&#60;</font><font color="blue">const</font> Evento<font color="black">*</font><font color="black">&#62;</font><font color="black">&</font> oQueGeraSenao
+                                <font color="black">=</font> situacao.oQueGeraSenao<font color="black">(</font><font color="black">)</font>;
+
+                        <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> w <font color="black">=</font> <font color="maroon">0</font>; w <font color="black">&#60;</font> oQueGeraSenao.tamanho<font color="black">(</font><font color="black">)</font>; w<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+<font color="green">//                          Debug::msg(INFO, "--- vai disparar (senão): "</font>
+<font color="green">//                                  + *(oQueGeraSenao[w]));</font>
+
+                            eventosGerados.adiciona<font color="black">(</font>oQueGeraSenao<font color="black">[</font>w<font color="black">]</font><font color="black">-</font><font color="black">&#62;</font>dispara<font color="black">(</font>tempo<font color="black">)</font><font color="black">)</font>;
+                        <font color="black">}</font>
+                    <font color="black">}</font>
+                <font color="black">}</font>
+            <font color="black">}</font>
+        <font color="black">}</font>
+    <font color="black">}</font>
+
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEventosEmEspera.limpa<font color="black">(</font><font color="black">)</font>;
+
+    <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> p <font color="black">=</font> <font color="maroon">0</font>; p <font color="black">&#60;</font> eventosGerados.tamanho<font color="black">(</font><font color="black">)</font>; p<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+<font color="green">//      Debug::msg(INFO, "--- manda gerar: " + *(eventosGerados[p]));</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>gera<font color="black">(</font>eventosGerados<font color="black">[</font>p<font color="black">]</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pControle.liberar<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

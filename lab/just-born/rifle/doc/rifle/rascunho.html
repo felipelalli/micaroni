@@ -1,0 +1,222 @@
+<html lang="pt-BR">
+
+<head>
+    <meta http-equiv=content-type content="text/html; charset=UTF-8"/>
+
+    <title>Rascunho (RIFLE)</title>
+
+    <style type="text/css">
+        @import "rifle.css";
+    </style>
+</head>
+
+<body>
+<div id="corpo">
+
+<table height="100%" width="100%" border="0">
+<tr>
+    <td align="center" valign="center">
+            <h1 class="subtitulo">Rascunho</h1>
+
+        <p>Versão deste documento: 1.0</p>
+    </td>
+</tr>
+<tr>
+    <td align="center" valign="bottom">
+        <p><b>Felipe Micaroni Lalli</b></p>
+        <br/>
+        <br/>
+        <p>Campinas, São Paulo, Brasil</p>
+        <p>dezembro de 2007 a <span class="revisar">abril de 2008</span></p>
+    </td>
+</tr>
+</table>
+
+<p/>
+
+<a name="carregado-estrutura"></a>
+<h3>X.X. Estrutura</h3>
+<p>
+Este capítulo define a hierarquia e estrutura das informações que um <i>texto carregado</i> pode carregar consigo. Sempre que a formalidade for requerida, a estrutura será expressa com alguns elementos básicos da linguagem computacional <a href="http://schemers.org/Documents/Standards/R5RS/">Scheme Lisp R5RS</a> em <code>texto azul</code>.
+</p>
+
+<a name="carregado-estrutura-uac"></a>
+<h4>2.1.1. UAC - Unidade Atômica Conceitual</h4>
+<p>
+Para se definir computacionalmente uma expressão linguística devemos, antes de qualquer coisa, identificar os <i>elementos básicos</i> da língua para aí então formar construções mais complexas. Ao se pensar numa unidade mínima da língua, podemos pensar rapidamente em "letra". Porém, essa intuição está equivocada se considerarmos uma gramática <i>genérica</i> que poderia abranger qualquer tipo de língua, até mesmo uma inventada. Imagine, por exemplo, uma língua que é expressada através de símbolos que representam aquilo que conhecemos como "palavra". Em outras palavras, que não possua "letras", mas apenas "palavras". Nossa intuição mais uma vez nos engana se pensarmos que a unidade mínima da língua é então a "palavra". Isso está errado se considerarmos que as línguas não possuem o mesmo número de palavras e, ainda, que cada palavra pode possuir sinônimos, ou então que não possuem necessariamente uma equivalente em outra língua. Outro problema seria as palavras homônimas ou homógrafas e ainda as flexões de cada tipo de palavra. &mdash; Focando-se na <b>semântica</b>, podemos pensar num "elemento mínimo de significado" que <i>geralmente</i> possui pelo menos uma palavra equivalente ou que é facilmente reconhecido por apenas algumas poucas palavras explicativas. Definimos então (de forma inédita) essa "unidade mínima indivisível de significado" como UAC: <b>Unidade Atômica Conceitual</b>.
+</p>
+
+<p>
+É claro que nenhum <b>conceito</b> é <i>indivisível</i> por completo, ou seja, as nossas idéias estão organizadas num emaranhado complexo de definições (nosso conhecimento) e não é possível detectar com exatidão matemática onde um conceito começa e outro termina. Porém, para que seja possível mapear a língua "computacionalmente" é necessário que exista uma separação exata entre um conceito e outro. É claro que nossa inteligência, na hora de "externalizar" a informação, de alguma forma também cria separações exatas, de modo que seja possível expressar (mesmo que aproximadamente) o que estamos pensando em <i>palavras</i>, que não deixa de ser um símbolo exato que é depois reinterpretado novamente (quando lemos) ao emaranhado de definições.
+</p>
+
+<p>
+Se sabemos que é impossível fazer a divisão com 100% de precisão, como podemos então nos aproximar das divisões entre os UAC? Podemos nos aproximar através da definição de que a semântica é <b>dinâmica</b>, ou seja, num intervalo de tempo qualquer um UAC pode ser criado, pode deixar de existir, pode agrupar-se com outro, pode dividir-se em vários etc. Tudo dependerá de como são feitas as relações lógicas, que é aquele emaranhado de definições.
+</p>
+
+<p>
+Cada UAC será representado com um número que o identifica de forma única num <a href="#carregado-interface-contexto">Contexto Rifle</a>. Caso um UAC deixe de existir, aquele número nunca será utilizado para um novo UAC. Caso um UAC se agrupe a outro, o número do UAC original funcionará como um "redirecionador" para o novo UAC. Supondo que o UAC#50 se juntou com o UAC#99, então <code>(equal? (uac 50) (uac 99)) <big>&rArr;</big> #t</code>. Uma vez agrupados, nunca poderão se dividir novamente, a não ser que seja criado outro UAC.
+</p>
+
+<div class="destaque">
+<p>
+Uma <b>Unidade Atômica Conceitual</b> (ou <b>UAC</b>) é um determinado <i>conceito</i> limitado (porém mutável) sobre qualquer assunto que geralmente pode ser substituído por uma palavra, nome ou símbolo. &mdash; Notas: 1. não se diferencia um UAC de outro por sinônimos idênticos ou <i>flexões</i> da palavra (gênero, número, grau, tempo etc.) 2. Diversos UAC podem ser representados pela mesma palavra. 3. Um UAC pode representar um ser ou objeto único no universo.
+</p>
+
+<p>
+<b>Exemplos:</b>
+</p>
+
+<p>
+<ul>
+<li>UAC#65 = saudade; sentir falta de alguma coisa ou alguém. [Eu sinto <i>saudades</i> do meu quarto.]</li>
+<li>UAC#993 = casa; lugar físico para morar. [Ele comprou uma <i>casa</i>.]</li>
+<li>UAC#533 = lar; casa; lugar de referência. [Ela quer voltar pra <i>casa</i>.]</li>
+<li>UAC#36 = casar; casamento. [Ele não <i>casa</i> com ninguém.]</li>
+<li>UAC#97 = haver; acontecer; suceder [<i>Há</i> casos e casos.]</li>
+<li>UAC#445 = haver; existir; ter [<i>Há</i> um carro estacionado ali.]</li>
+<li>UAC#166 = jóia; objeto de adorno, de matéria preciosa ou imitante. [Eu adoro <i>jóias</i>.]</li>
+<li>UAC#963 = jóia; positivo; sinal ou gesto com o polegar. [Fizeram <i>jóia</i> pra mim.]</li>
+<li>UAC#4667 = João da Silva Menezes, RG 34.984.123-9, CPF 234.452.858-49. [Fizeram maldade com o <i>João</i>.]</li>
+<li>UAC#5937 = João; nome bastante comum na língua portuguesa. [Quem nesta classe se chama <i>João</i>?]</li>
+<li>UAC#447 = pato; [Eu vi uma <i>pata</i> no zoológico.]</li>
+</ul>
+</p>
+
+</div>
+
+<a name="carregado-estrutura-estaticas"></a>
+<h4>2.1.2. Atributos estáticos de um UAC (classificações básicas e algumas definições morfológicas)</h4>
+<p>
+
+</p>
+
+<a name="carregado-estrutura-dinamicas"></a>
+<h4>2.1.3. Atributos dinâmicos de um UAC (definições semânticas)</h4>
+<p>
+Veja também <a href="#carregado-estrutura-relacoes-definicoes">Frases que definem algo</a> e <a href="#carregado-estrutura-base">Base semântica</a>.
+</p>
+
+<a name="carregado-estrutura-relacoes"></a>
+<h4>2.1.4. Relações entre os UAC (expressão, definições sintáticas)</h4>
+
+<a name="carregado-estrutura-postulados"></a>
+<h4>2.1.5. Postulados</h4>
+<p>
+Definições dos UAC predefinidos. (lógicos)
+</p>
+
+<a name="carregado-estrutura-base"></a>
+<h4>2.1.6. Base semântica</h4>
+<p>
+Tipos de frases: que define alguma coisa, que conta um fato, que interroga, que ordena etc.
+</p>
+
+<a name="carregado-estrutura-relacoes-definicoes"></a>
+<h5>2.1.5.1. Frases que definem algo</h5>
+<p>
+
+</p>
+
+<a name="carregado-estrutura-exemplos"></a>
+<h4>2.1.7. Exemplos</h4>
+
+<p>
+Vamos transformar em <i>texto carregado</i> a frase "certos amigos andaram".
+</p>
+
+<p>
+<code>&gt; (uac-provavel "pt-BR" "certo" 0) <big>&rArr;</big> 7728</code>
+<br/><code>&gt; (explica-resumidamente "pt-BR" (uac 7728)) <big>&rArr;</big> "correto; exato; o certo"</code>
+<br/><code>&gt; (uac-provavel "pt-BR" "certo" 1) <big>&rArr;</big> 92</code>
+<br/><code>&gt; (explica-resumidamente "pt-BR" (uac 92)) <big>&rArr;</big> "determinado; específico; algum; certo"</code>
+<br/><code>&gt; (define certos (adjetivo (uac 92) (flexao MASC. PL.)))</code>
+<br/><code>&gt; (uac-provavel "pt-BR" "amigo" 0) <big>&rArr;</big> 488</code>
+<br/><code>&gt; (explica-resumidamente "pt-BR" (uac 488)) <big>&rArr;</big> "aliado; companheiro; amigo"</code>
+<br/><code>&gt; (define amigos (substantivo (uac 488) (flexao MASC. PL.)))</code>
+<br/><code>&gt; (define certos-amigos (qualifica-substantivo certos amigos))</code> &mdash; Só pode ter um substantivo, e a lista está em ordem de relevância (ênfase) na frase.
+<br/><code>&gt; (uac-provavel "pt-BR" "andar" 0) <big>&rArr;</big> 90</code>
+<br/><code>&gt; (explica-resumidamente "pt-BR" (uac 90)) <big>&rArr;</big> "caminhar; mover-se com os pés"</code>
+<br/><code>&gt; (define andaram (verbo (uac 90) (tempo PASSADO) (flexao MASC. PL.)))</code>
+<br/><code>&gt; (expressao certos-amigos andaram) <big>&rArr;</big> #obj-expressao</code> &mdash; Deve ter pelo menos um elemento linguístico (sujeito e/ou predicado).
+</p>
+
+<p>
+<code>(expressao-com-simbolo-forcado "pt-BR" "certos amigos andaram" #obj-expressao)</code>
+</p>
+
+<a name="carregado-interface"></a>
+<h3>2.2. Interface (acesso aos dados)</h3>
+<p>
+Este capítulo define as formas possíveis para <i>acesso</i> a um <i>texto carregado</i>.
+</p>
+
+<a name="carregado-interface-contexto"></a>
+<h4>2.2.1. Contexto Rifle</h4>
+
+<a name="carregado-interface-procura"></a>
+<h4>2.2.2. Função "uac-provavel"</h4>
+
+<a name="carregado-interface-ortografia"></a>
+<h4>2.2.3. Módulo ortográfico da língua portuguesa, função "simbolo-provavel"</h4>
+<p>
+A ortografia é inevitavelmente especial para cada língua. A função deste módulo é transformar um <i>texto carregado</i> ou até mesmo um UAC em palavra(s).
+</p>
+
+<p>
+Sintaxes permitidas:
+<ul>
+ <li><code>(simbolo-provavel "pt-BR" (expressao X Y Z) 0) <big>&rArr;</big> "certos amigos andaram"</code></li>
+ <li><code>(simbolo-provavel "pt-BR" (expressao X Y Z) 1) <big>&rArr;</big> "determinados amigos andaram"</code></li>
+ <li><code>(simbolo-provavel "pt-BR" (expressao X Y Z) 2) <big>&rArr;</big> "alguns conhecidos andaram"</code></li>
+ <li><code>(simbolo-provavel "pt-BR" (expressao X Y Z) 3) <big>&rArr;</big> "alguns conhecidos deram passos"</code></li>
+</ul>
+
+ou:
+
+<ul>
+ <li><code>(simbolo-provavel "pt-BR" (uac 993)) <big>&rArr;</big> "positivo"</code></li>
+ <li><code>(simbolo-provavel "pt-BR" (uac 993) 1) <big>&rArr;</big> "jóia"</code></li>
+ <li><code>(simbolo-provavel "pt-BR" (uac 993) 2) <big>&rArr;</big> "jóia com o polegar"</code></li>
+ <li><code>(simbolo-provavel "pt-BR" (uac 993) 3) <big>&rArr;</big> "gesto com dedão pra cima e mão fechada"</code></li>
+</ul>
+
+ou ainda:
+
+<ul>
+ <li><code>(simbolo-provavel "pt-BR"
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;(expressao
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(substantivo (uac 447) (flexao FEM. PL.)))
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;0) <big>&rArr;</big> "patas"</code></li>
+
+ <li><code>(simbolo-provavel "pt-BR"
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;(flexiona-expressao
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(flexao FEM. SING.)
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(expressao
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(especifica-substantivo-com-artigo
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(artigo (forma DEFINIDO))
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(substantivo (uac 447)))))
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;0) <big>&rArr;</big> "a pata"</code></li>
+</ul>
+
+</p>
+
+<p>
+O primeiro parâmetro é o código da língua seguindo o padrão ISO 639-1 e opcionalmente hífen mais o código do país definido pelo ISO 3166-1 alpha-2, o segundo pode ser do tipo <i>uac</i> ou <i>expressão</i>. O terceiro parâmetro é um número inteiro de 0 a N que especifica qual o símbolo da lista de símbolos possíveis ordenados do mais provável para o menos provável, baseado em freqüência de uso e outros fatores semânticos. A função não retorna uma lista porque os resultados poderiam ser "infinitos". Se o segundo parâmetro for omitido, o primeiro valor é retornado.
+</p>
+
+<a name="carregado-implementacao"></a>
+<h3>2.3. Implementação</h3>
+<p>
+Este capítulo define os códigos e forma de implementação das interfaces definidas no capítulo anterior.
+</p>
+
+<hr class="quebra-pagina"/>
+
+
+
+
+
+</div>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<HTML>
+<HEAD>
+<TITLE>
+CondicaoModificadora.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: CondicaoModificadora.h.html,v $
+ * $Date: 2005/03/22 20:18:58 $
+ * $Revision: 1.41 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_CONDICAOMODIFICADORA_H__B0BDA12B_148C_45A4_AD3E_5C85981A50AE__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_CONDICAOMODIFICADORA_H__B0BDA12B_148C_45A4_AD3E_5C85981A50AE__INCLUDED_
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/basico/Objeto.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>basico;
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Condicao.h"</font>
+
+<font color="blue">namespace</font> biblia <font color="black">{</font>
+ <font color="blue">namespace</font> dinamicas <font color="black">{</font>
+  <font color="blue">namespace</font> sinfonia <font color="black">{</font>
+    <font color="green">/**
+     * Modifica uma Condição, aplicando um "NOT". Se
+     * ela for verdadeira, ela se torna falsa e vice-versa.
+     */</font>
+    <font color="blue">class</font> CondicaoModificadora<font color="black">:</font> <font color="blue">public</font> Condicao <font color="black">{</font>
+        <font color="blue">private</font><font color="black">:</font>
+            Condicao<font color="black">*</font> pCondicao;
+
+        <font color="blue">public</font><font color="black">:</font>
+            CondicaoModificadora<font color="black">(</font><font color="blue">const</font> Condicao<font color="black">&</font><font color="black">)</font>;
+            virtual ~CondicaoModificadora<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Retorna o oposto do que foi
+             * passado no construtor.
+             */</font>
+            virtual <font color="blue">bool</font> verdadeira<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">// Objeto:</font>
+            virtual string emString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">// Copiavel:</font>
+            virtual Objeto<font color="black">*</font> geraCopia<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+            virtual Copiavel<font color="black">&</font> copiaEmSi<font color="black">(</font><font color="blue">const</font> Copiavel<font color="black">&</font> alheio<font color="black">)</font>;
+    <font color="black">}</font>;
+  <font color="black">}</font>
+ <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_CONDICAOMODIFICADORA_H__B0BDA12B_148C_45A4_AD3E_5C85981A50AE__INCLUDED_)</font>
+
+</PRE>
+</BODY>
+</HTML>

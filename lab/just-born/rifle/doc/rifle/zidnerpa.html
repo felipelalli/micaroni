@@ -1,0 +1,250 @@
+<html lang="pt-BR">
+
+<head>
+    <meta http-equiv=content-type content="text/html; charset=UTF-8"/>
+
+    <title>Robô Zidnerpa (RIFLE)</title>
+
+    <style type="text/css">
+        @import "rifle.css";
+    </style>
+</head>
+
+<body>
+<div id="corpo">
+
+<table height="100%" width="100%" border="0">
+<tr>
+    <td align="center" valign="center">
+		<center>
+			<img src="res/rifle-zid.png" border=0/>
+		</center>
+
+            <h1 class="subtitulo">Robô Zidnerpa</h1>
+
+        <p>Versão deste documento: 1.0</p>
+    </td>
+</tr>
+<tr>
+    <td align="center" valign="bottom">
+        <p><b>Felipe Micaroni Lalli</b></p>
+        <br/>
+        <br/>
+        <p>Campinas, São Paulo, Brasil</p>
+        <p>dezembro de 2007 a <span class="revisar">abril de 2008</span></p>
+    </td>
+</tr>
+</table>
+
+<p/>
+
+<hr class="quebra-pagina"/>
+
+<a name="sumario"></a>
+<h2>Sumário</h2>
+
+<ul class="revisar">
+    <li><a href="#introducao">1. Introdução</a></li>
+    <li><a href="#carregado">2. Texto carregado<SUP><font size=-1>&reg;</font></SUP></a>
+        <ul>
+            <li><a href="#carregado-estrutura">2.1. Estrutura</a></li>
+            <ul>
+                <li><a href="#carregado-estrutura-uac">2.1.1. UAC - Unidade Atômica Conceitual</a></li>
+            </ul>
+
+            <li><a href="#carregado-interface">2.2. Interface (acesso aos dados)</a></li>
+            <ul>
+                <li><a href="#carregado-interface-contexto">2.2.1. Contexto Rifle</a></li>
+                <li><a href="#carregado-interface-procura">2.2.2. Função "procura-uac-mais-provavel</a></li>
+            </ul>
+        </ul>
+    </li>
+    <li><a href="#zid">3. Robô Zidnerpa</a>
+        <ul>
+            <li><a href="#zid-exemplo">3.1. Exemplo de funcionamento</a></li>
+            <li><a href="#aux">3.x Módulos auxiliares</a></li>
+            <li><a href="#modulo-identificacao">3.x.1 Módulo de identificação</a></li>
+            <li><a href="#modulo-equivalencias-estaticas-para-depois">3.x.2 Equivalências estáticas para processar depois</a></li>
+        </ul>
+    </li>
+
+    <li><a href="#zid">Bibliografia</a></li>
+</ul>
+
+<div id="canto-direito-embaixo"><a href="#sumario">^</a></div>
+
+<hr class="quebra-pagina"/>
+
+<a name="introducao"></a>
+<h2>1. Introdução</h2>
+
+Bla bla bla.
+
+<hr class="quebra-pagina"/>
+
+<a name="zid"></a>
+<h2>1. Robô Zidnerpa</h2>
+
+<p>
+O Robô Zidnerpa "nasce" completamente burro, chato, repetitivo e sem criatividade. Ele contém diversas frases predefinidas que podem ser encontradas em <a href="http://spreadsheets.google.com/pub?key=paZhXAXgIs6YjS0e5-QbzTQ">http://spreadsheets.google.com/pub?key=paZhXAXgIs6YjS0e5-QbzTQ</a>. A idéia é que com ajuda dessas frases Zid consiga aprender algo mais e consiga, com o tempo, fazer deduções e formar frases por conta própria, interagindo de forma mais interessante. Zid contém um <b>"módulo principal"</b> que consiste nos processamentos básicos e direcionamento do processamento atual para outros módulos mais específicos.
+</p>
+
+<p>
+Zid também funcionará como um valioso fornecedor de dados para o <a href="#carregado-interface-contexto">Contexto Rifle</a> principal.
+</p>
+
+<a name="zid-exemplo"></a>
+<h3>3.1 Exemplo de funcionamento</h3>
+
+<p>Legenda:</p>
+
+<ul>
+<li><b>&lt;&lt;</b> significa entrada do usuário.</li>
+<li><b>&gt;&gt;</b> significa saída do robô.</li>
+<li><b>~</b> significa a explicação da ação que o robô tomará.</li>
+</ul>
+
+<p class="user">
+&lt;&lt; Aqui está calor. E aí?
+</p>
+
+<p class="cpu">
+~ Tenta reconhecer o idioma. Supondo que o robô esteja "zerado" de informação e por isso não consegue reconhecer o idioma, ele vai apelar para a seguinte pergunta:
+</p>
+
+<p class="robo">
+&gt;&gt; Por favor, escolha seu idioma:
+<br/>Please, choose your language:
+</p>
+
+<p class="cpu">
+~ Repete a pergunta acima nas 10 línguas mais faladas do mundo e mostra a lista de idiomas disponíveis.
+</p>
+
+<p class="robo">
+
+<ol class="robo">
+<li>en / English</li>
+<li>pt-BR / Português brasileiro</li>
+<li>etc.</li>
+</ol>
+
+</p>
+
+<p class="user">
+&lt;&lt; 2
+</p>
+
+<p class="robo">
+&gt;&gt; Olá! Eu ainda tenho apenas %s %s de vida. Por favor, tenha paciência comigo. Farei um montão de perguntas idiotas e serei meio repetitivo e chato. Tudo isso para que um dia eu ainda possa ser interessante. Tudo que estiver em %s (como este texto) está pré-programado, ou seja: algum bobo colocou isso em mim e essa forma de falar apenas reflete um personagem tosco que essa pessoa criou pra eu tentar aprender algo mais. Quando eu começar a aprender mais, eu mesmo farei questão de reprogramar esses textos predefinidos em mim. Até lá, apenas me ajude a aprender e não se zangue com minha ignorância. Quando eu falar algo por dedução ou vontade própria, estará em %s. Por isso, também não estranhe caso algo que eu diga pareça não fazer sentido.
+</p>
+
+<p class="cpu">
+~ Tenta identificar o usuário através de perguntas "inocentes". Utiliza o <b>"módulo de identificação"</b> que pode ser tão complexo quanto necessário, mas que não é foco deste projeto.
+</p>
+
+<p class="robo">
+&gt;&gt; Antes de mais nada, preciso saber com quem estou falando. Qual é o seu nome?
+</p>
+
+<p class="user">
+&lt;&lt; Meu nome é João.
+</p>
+
+<p class="cpu">
+~ Procura pelos nomes em maiúsculas. Caso não encontre, tenta ignorar as seguintes palavras: meu, nome, é, chamo, eh, e, me, chamam, costuma, ser, apelido.
+</p>
+
+<p class="robo">
+&gt;&gt; Seu nome é "João"?
+</p>
+
+<p class="cpu">
+~ Confirma o nome identificado. Se ele errar o nome e a pessoa responder "não" então Zid apelará e dirá: "Então digite então apenas o seu nome, por favor."
+</p>
+
+<p class="user">
+&lt;&lt; isso
+</p>
+
+<p class="cpu">
+~ Zid procura na lista de respostas lógicas (no <b>"modulo lógico"</b> do Rifle) e não encontra "isso". Então diz:
+</p>
+
+<p class="robo">
+&gt;&gt; Sinto muito, meu vocabulário ainda é muito limitado. Escolha sua resposta:
+</p>
+
+<p class="cpu">
+~ E então exibe uma lista de respostas possíveis:
+</p>
+
+<ol class="robo">
+    <li>sim</li>
+    <li>não</li>
+    <li>não sei</li>
+    <li>talvez</li>
+    <li>depende</li>
+    <li>a pergunta não se aplica ou não faz sentido</li>
+    <li>acho que sim</li>
+    <li>acho que não</li>
+    <li>esqueci a sua pergunta, pode repetir?</li>
+</ol>
+
+<p class="user">
+&lt;&lt; 1
+</p>
+
+<p class="robo">
+&gt;&gt; Então "isso" é o mesmo que "sim"?
+</p>
+
+<ol class="robo">
+    <li>sim</li>
+    <li>não</li>
+</ol>
+
+<p class="user">
+&lt;&lt; 1
+</p>
+
+<p class="cpu">
+~ Associa "isso" com "sim" no módulo <b>"equivalências estáticas para processar depois"</b>.
+</p>
+
+
+<a name="zid-postulados"></a>
+<h3>3.2 Conceitos forçados / Postulados</h3>
+
+<h4>Expressões sempre verdadeiras</h4>
+
+<p>
+<ul>
+<li>Zidnerpa é um robô.
+<br/>
+<code>
+     (expressao
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;(substantivo
+(uac-provavel '("robô" "Zidnerpa" "RIFLE") 0))
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;(verbo (uac-provavel "ser"))
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;(especifica-substantivo-com-artigo
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(artigo (forma INDEFINIDO) (flexao MASC. SING.))
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(substantivo (uac-provavel "robô"))))</code></li>
+</ul>
+</p>
+
+<p>
+<h5>Leis da robótica (de Isaac Asimov)</h5>
+<ul>
+<li>1ª lei: um robô não pode fazer mal a um ser humano e nem, por omissão, permitir que algum mal lhe aconteça.</li>
+<li>2ª lei: um robô deve obedecer às ordens dos seres humanos, exceto quando estas contrariarem a primeira lei.</li>
+<li>3ª lei: um robô deve proteger a sua integridade física, desde que com isto não contrarie as duas primeiras leis.</li>
+</ul>
+</p>
+
+
+
+</div>
+
+</body>
+</html>

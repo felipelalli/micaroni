@@ -1,0 +1,77 @@
+<HTML>
+<HEAD>
+<TITLE>
+CondicaoImpl.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: CondicaoImpl.h.html,v $
+ * $Date: 2005/03/22 20:18:57 $
+ * $Revision: 1.41 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_CONDICAOIMPL_H__E5BDC843_9538_4510_8551_236BF14659A7__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_CONDICAOIMPL_H__E5BDC843_9538_4510_8551_236BF14659A7__INCLUDED_
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Condicao.h"</font>
+
+<font color="blue">namespace</font> biblia <font color="black">{</font>
+ <font color="blue">namespace</font> dinamicas <font color="black">{</font>
+  <font color="blue">namespace</font> sinfonia <font color="black">{</font>
+    <font color="green">/**
+     * É uma Condição implementada, ou seja,
+     * carrega consigo um boleano que pode ser definido
+     * como verdadeiro ou falso.
+     * &#60;p&#62;
+     * &#60;i&#62;Obs.: Esta classe poderia se chamar "Boleana",
+     * por isso existe um typedef dela como "Boleana"&#60;/i&#62;
+     */</font>
+    <font color="blue">class</font> CondicaoImpl<font color="black">:</font> <font color="blue">public</font> Condicao <font color="black">{</font>
+        <font color="blue">private</font><font color="black">:</font>
+            <font color="blue">bool</font> pB;
+
+        <font color="blue">public</font><font color="black">:</font>
+            CondicaoImpl<font color="black">(</font><font color="blue">bool</font> b<font color="black">)</font><font color="black">:</font>pB<font color="black">(</font>b<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+            virtual ~CondicaoImpl<font color="black">(</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+            <font color="green">// Condicao:</font>
+            virtual <font color="blue">bool</font> verdadeira<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+                <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pB;
+            <font color="black">}</font>
+
+            <font color="green">// Copiavel:</font>
+            virtual Objeto<font color="black">*</font> geraCopia<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+                <font color="blue">return</font> <font color="blue">new</font> CondicaoImpl<font color="black">(</font><font color="black">*</font><font color="blue">this</font><font color="black">)</font>;
+            <font color="black">}</font>
+
+            virtual Copiavel<font color="black">&</font> copiaEmSi<font color="black">(</font><font color="blue">const</font> Copiavel<font color="black">&</font> alheio<font color="black">)</font> <font color="black">{</font>
+                <font color="blue">const</font> CondicaoImpl<font color="black">&</font> ci <font color="black">=</font> dynamic_cast<font color="black">&#60;</font><font color="blue">const</font> CondicaoImpl<font color="black">&</font><font color="black">&#62;</font><font color="black">(</font>alheio<font color="black">)</font>;
+                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pB <font color="black">=</font> ci.pB;
+                <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+            <font color="black">}</font>
+    <font color="black">}</font>;
+
+    <font color="green">/**
+     * Apelido para uma CondicaoImpl.
+     *
+     * @see CondicaoImpl
+     */</font>
+    <font color="blue">typedef</font> CondicaoImpl Boleana;
+  <font color="black">}</font>
+ <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_CONDICAOIMPL_H__E5BDC843_9538_4510_8551_236BF14659A7__INCLUDED_)</font>
+
+</PRE>
+</BODY>
+</HTML>

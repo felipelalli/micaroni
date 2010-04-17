@@ -1,0 +1,33 @@
+; Retorna uma lista de números que representam
+; o Unicode de cada caractere suportado pelo IPA
+; definido em:
+; http://www.theiling.de/ipa/cxs.html
+
+(letrec
+  ((expande ; (expande 10 20) => '(10 11 12 .. 20)
+    (lambda (min max)
+      (if (>= min max)
+          (list min)
+          (append (list min) (expande (+ 1 min) max))))))
+  (append
+   (list 230 231 240 248) ; C1 Controls and Latin-1 Supplement
+   (list 32 46 124) ; C0 Controls and Basic Latin
+   (expande 97 102) (expande 104 122)
+   (list 295 331 339) ; Latin Extended-A
+   (list 384 421 427 429 443); Latin Extended-B
+   (expande 448 451)
+   (expande 592 669) ; IPA Extensions
+   (expande 671 685)
+   (expande 688 690) ; Spacing Modifier Letters
+   (expande 695 696) (list 700 704)
+   (expande 711 713) (expande 716 728) (list 730)
+   (expande 732 734) (expande 736 737) (expande 740 745) (list 748)
+   (expande 768 772) ; Combining Diacritical Marks
+   (list 774 776) (expande 778 781) (list 783)
+   (expande 792 794) (expande 796 802) (expande 804 805)
+   (expande 808 812) (expande 815 816) (list 820)
+   (expande 825 829) (list 865)
+   (list 946 952 967) ; Greek and Coptic   
+   (list 8214 8255 8319 8593 8595 8599 8600) ; General Punctuation
+   )
+)
