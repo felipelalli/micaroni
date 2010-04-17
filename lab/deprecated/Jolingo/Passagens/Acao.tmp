@@ -1,0 +1,182 @@
+import java.lang.String;
+import java.lang.Object;
+import java.io.File;
+import java.io.RandomAccessFile;
+import java.io.IOException;
+
+class AcaoErro extends Exception {}
+class AcaoErroArquivo extends IOException {}
+class AcaoErroArquivoLeitura extends AcaoErroArquivo {}
+class AcaoErroArquivoExtencao extends AcaoErroArquivo {}
+
+class Acao
+{
+  // Constantes:
+  public static String EXTENCAO = new String("ato");
+
+  // Dados privados:
+  private String cMsg = new String();
+  private boolean cSucesso = false;
+  private Object cRetorno = null;
+  private String cComando;
+
+  // Construtores:
+  public Acao()
+  {
+    cComando = new String();
+  }
+
+  public Acao(String comando)
+  {
+    cComando = new String(comando);  
+  }
+
+  public Acao(File arq)
+   throws
+    AcaoErroArquivoLeitura,
+     AcaoErroArquivoExtencao
+  {
+    cComando = converte(arq);
+  }
+
+  // Fun‡äes de classe:
+  public static Acao executa(String comando)
+  {
+    Acao temp = new Acao(comando);
+    return temp.executa();
+  }
+
+  public static String converte(File arq)
+   throws
+    AcaoErroArquivoLeitura,
+     AcaoErroArquivoExtencao
+  {
+    String retorno = new String();
+
+    if (!arq.exists() || arq.isDirectory() || !arq.canRead())
+      throw new AcaoErroArquivoLeitura();
+    else
+      if (!arq.getName().toLowerCase().endsWith(EXTENCAO))
+        throw new AcaoErroArquivoExtencao();
+      else
+        {
+          try
+          {
+            RandomAccessFile arquivo = new RandomAccessFile(arq, "r");
+            long tamanho = arquivo.length();
+   
+            while(arquivo.getFilePointer() < tamanho)
+              retorno += arquivo.readLine();
+
+            arquivo.close();
+          }
+          catch(IOException e)
+          {
+            throw new AcaoErroArquivoLeitura();
+          }
+        }
+
+    return retorno;
+  }
+
+  // Verifica‡äes:
+  public String msg()
+  {
+    return new String(cMsg);
+  }
+
+  public String comando()
+  {
+    return new String(cComando);
+  }
+
+  public Object retorno()
+  {
+    return cRetorno;
+  }
+
+  // Defini‡äes:
+  public Acao msg(String novaMsg)
+  {
+    cMsg = new String(novaMsg);
+    return this;
+  }
+
+  public Acao comando(String novoComando)
+  {
+    cComando = new String(novoComando);
+    return this;
+  }
+
+  public Acao deuCerto()
+  {
+    cSucesso = true;
+    return this;
+  }
+
+  public Acao deuErrado()
+  {
+    cSucesso = false;
+    return this;
+  }
+
+  public Acao retorno(Object novoRetorno)
+  {
+    cRetorno = novoRetorno;
+    return this;
+  }
+
+  // Fun‡äes:
+  public Acao executa()
+  {
+    cRetorno = executaRecursivo(0);
+    return this;
+  }
+
+  private int formaString(String retorno, int posicao)
+  {
+    retorno = new String();
+
+    while(cComando.charAt(posicao) != '\"')
+      retorno += cComando.charAt(posicao++);
+
+    return posicao;
+  }
+
+  private int formaComando(String retorno, int posicao)
+  {
+    retorno = new String();
+
+    if (Character.isDigit(cComando.charAt(posicao)))
+    {
+      while(Character.isDigit(cComando.charAt(posicao)))
+        retorno += cComando.charAt(posicao++);
+    }
+    else
+      retorno += cComando.charAt(posicao++);
+
+    return posicao;
+  }
+
+  private Object executaRecursivo(int posicao)
+  {
+    String comandoAtual = new String();
+    posicao = formaComando(comandoAtual, posicao);
+    Object retorno = new Object();
+
+    if (comandoAtual == " ")
+      return executaRecursivo(++posicao);
+
+    else
+
+    if (comandoAtual != "\0")
+      return executaRecursivo(++posicao);
+
+    else
+
+    if (comandoAtual == "
+
+    else
+      return retorno;
+  }
+}

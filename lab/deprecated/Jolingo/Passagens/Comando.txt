@@ -1,0 +1,22 @@
+(PAR1, PAR2, PAR3)         (LLO)
+ ^     ^     ^              ^^^-->objeto
+ |     |     |              ||          
+ |     |     |              ||-->o quà?
+ |     |     |              |
+ |     |     ->objeto       |->faz o quà?
+ |     |
+ |     |->argumento ou objeto
+ |
+ |->comando
+                           Poss°veis: 
+                           (LLO)
+                           (LO)
+         
+
+
+  Ex.: come bala Jo∆o da Silva {Felipe?4424?2323} (LLO)
+       pula Jo∆o da Silva {Felipe?23233?232}      (LO)
+
+
+                 se o comando pedido n∆o for encontrado, ele
+                 enviar† a msg para todos

@@ -1,0 +1,62 @@
+Jolingo Protocolo 3.0  (JP3)
+
+cliente -> servidor:
+
+(se comando pede argumento)
+  comando argumento quem {dono}
+(senÆo)
+  comando quem {dono}
+(se nÆo precisa do quem)
+  comando * {dono}
+
+ser  enviado para o interpretador de comandos no formato:
+(com, arg, quem, dono)
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+servidor -> cliente:
+
+:resposta                     | ir  para o c“nsole
+msg:mensagem de alguem{quem}  | ir  para a regiÆo de mensagens
+erro:mensagem de erro         | ir  para a barra de status
+exibe:{objeto jolingo}        | exibe o jolingo no espa‡o reservado
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+COMANDOS DO CLIENTE -> SERVIDOR:
+(quem = nome do jolingo alvo [destino])
+---------------------------------+-----+-------------------------------------
+-= A€åES =-                      : Arg : Coment rio:
+                                 :     :
+cria <{OBJETO_JOLINGO}> *        | SIM | Cliente passar  o objeto pronto
+mata <quem>                      | NÇO | Assassina um jolingo
+enterra <quem>                   | NÇO | Faz um jolingo morto desaparecer
+doa <pessoa> <quem>              | SIM | Doa um jolingo para outra pessoa
+entrega <bab > <quem>            | SIM | Entra para uma bab  virtual
+liberta <quem>                   | NÇO | D  liberdade
+tomaposse <quem>                 | NÇO | Toma a posse de um liberto
+pega <bab > <quem>               | SIM | Pega um jolingo da bab 
+come <comida> <quem>             | SIM | D  comida para o jolingo
+bebe <bebida> <quem>             | SIM | D  bebida para o jolingo
+pula <quem>                      | NÇO | Faz um jolingo pular
+medico <quem>                    | NÇO | Leva um jolingo ao m‚dico
+brinca <quem>                    | NÇO | Brinca com um jolingo
+banho <quem>                     | NÇO | D  banho a um jolingo
+estuda <quem>                    | NÇO | D  estudo a um jolingo
+bate <quem>                      | NÇO | Bate para que ele fique bonzinho
+desafia <quem/origem> <quem>     | SIM | Desafia um jolingo … luta
+cruza <quem/origem> <quem>       | SIM | Requisita um pedido de cruzamento
+aceita <oque> <quem>             | SIM | Aceita um pedido de luta ou cruzam.
+ms <mensagem> *                  | SIM | Manda uma mensagem p/ todos
+---------------------------------+-----+-------------------------------------
+-= VERIFICA€åES =-               :     :
+                                 :     :
+ve <quem>                        | NÇO | Vˆ detalhadamente / Exibe no espa‡o
+olha <quem>                      | NÇO | D  uma olhadinha / Exibe no espa‡o
+problemas <quem>                 | NÇO | Lista os problemas / Exibe no espa‡o
+aparencia <quem>                 | NÇO | Mostra os itens gen‚ticos / Exibe tb.
+historico *                      | NÇO | Lista o que todos j  fizeram
+ls *                             | NÇO | Lista todos os bixos  
+babas *                          | NÇO | Lista todas as bab s virtuais
+comida *                         | NÇO | Lista as comidas dispon¡veis
+ajuda *                          | NÇO | Lista os comandos
