@@ -12,7 +12,7 @@ import java.util.Set;
  */
 class DictionaryEasyFS extends DataFS implements DictionaryEasy {
 
-  DictionaryEasyFS(FileSystemEasyDB fs,String id) {
+  DictionaryEasyFS(FileSystemEasyDB fs, String id) {
     super(fs, id);
 
     // Lê
