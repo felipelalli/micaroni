@@ -161,7 +161,6 @@
                 author="true" version="true" use="true"
                 packagenames="*" doctitle="${project} ${version} API"
                 charset="UTF-8"
-                overview="${etc.doc}/cover.html"
                 windowtitle="${project} ${version} API"
         />
 

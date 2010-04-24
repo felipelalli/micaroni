@@ -1,4 +1,4 @@
-package br.eti.fml.wonderfulstates;
+package br.eti.fml.basic;
 
 /**
  * Just a pair.

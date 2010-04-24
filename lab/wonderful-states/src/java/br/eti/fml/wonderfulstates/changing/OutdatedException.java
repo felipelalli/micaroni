@@ -1,4 +1,4 @@
-package br.eti.fml.wonderfulstates.mutable;
+package br.eti.fml.wonderfulstates.changing;
 
 import br.eti.fml.wonderfulstates.*;
 

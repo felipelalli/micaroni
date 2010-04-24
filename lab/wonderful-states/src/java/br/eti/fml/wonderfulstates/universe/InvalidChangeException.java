@@ -3,8 +3,8 @@ package br.eti.fml.wonderfulstates.universe;
 import br.eti.fml.wonderfulstates.*;
 
 /**
- * It happens when a {@link MutableState} try to do some
- * inconsistent change according to some {@link Universe}.
+ * It happens when a {@link br.eti.fml.wonderfulstates.mutable.MutableState}
+ * try to do some inconsistent change according to some {@link Universe}.
  * When it happens you need to make another choice.
  *
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)

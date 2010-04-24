@@ -1,5 +1,6 @@
 package br.eti.fml.wonderfulstates;
 
+import br.eti.fml.basic.Pair;
 import br.eti.fml.wonderfulstates.universe.Universe;
 
 /**
@@ -32,13 +33,11 @@ public abstract class State<T extends Object, U extends Universe<T>> {
      * By default any read-function needs to wait the value
      * become {@link #isUnreacheableYet() reacheable}. The methods
      * {@link #isBroken()}, {@link #isFrozen()}, {@link #isFuzzy()},
-     * {@link #getValuimport java.util.concurrent.TimeoutException;e()}, {@link #getValueInTheTime()} and
+     * {@link #getValue()}, {@link #getValueInTheTime()} and
      * {@link #isBeforeTheFirstValue()} can block for a undetermined
      * time if the timeout is defined to zero. This value doesn't need to be
      * very accurate and it means the maximum time in milis that you'll have
      * to wait to retrieve some value.
-     * 
-     * @param timeout in millis
      */
     public abstract long getDefaultTimeout();
 
@@ -89,8 +88,8 @@ public abstract class State<T extends Object, U extends Universe<T>> {
     public abstract boolean isBeforeTheFirstValue() throws TimeoutException, InterruptedException;
 
     /**
-     * Accesses its {@link Universe}. It never returns <code>null</code>, even the
-     * universe is a {@link Any generic universe}.
+     * Accesses its {@link Universe}. It <b>never</b> returns <code>null</code>,
+     * even the universe is {@link br.eti.fml.wonderfulstates.universe.Any}.
      */
     public abstract U getUniverse();
 

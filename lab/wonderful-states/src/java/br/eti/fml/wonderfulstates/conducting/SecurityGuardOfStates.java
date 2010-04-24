@@ -1,7 +1,10 @@
 package br.eti.fml.wonderfulstates.conducting;
 
-import br.eti.fml.wonderfulstates.*;
-import br.eti.fml.wonderfulstates.mutable.MutableState;
+import br.eti.fml.basic.Pair;
+import br.eti.fml.wonderfulstates.State;
+import br.eti.fml.wonderfulstates.TimeoutException;
+import br.eti.fml.wonderfulstates.changing.Event;
+import br.eti.fml.wonderfulstates.changing.MutableState;
 
 /**
  * The first layer between the {@link State}s and the world.
@@ -20,7 +23,7 @@ public abstract class SecurityGuardOfStates {
      * you will only get a change if you have the <b>right</b>
      * <i>previous value</i>.
      *
-     * @see #getAndBlockStateToChangeForAWhile(java.lang.String)
+     * @see #getAndBlockStateToChange(java.lang.String)
      */
     public abstract MutableState getStateToChange(String stateUID);
 
@@ -46,7 +49,7 @@ public abstract class SecurityGuardOfStates {
      * expect so much.
      * </p>
      * 
-     * @see #unblockState(br.eti.fml.wonderfulstates.Key)
+     * @see #unblockState(br.eti.fml.wonderfulstates.conducting.Key)
      * @see #getStateToChange(java.lang.String) 
      */
     public abstract Pair<Key, MutableState>

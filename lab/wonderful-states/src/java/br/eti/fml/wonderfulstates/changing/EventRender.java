@@ -1,4 +1,4 @@
-package br.eti.fml.wonderfulstates.mutable;
+package br.eti.fml.wonderfulstates.changing;
 
 import  br.eti.fml.wonderfulstates.TimeoutException;
 
@@ -9,11 +9,11 @@ import  br.eti.fml.wonderfulstates.TimeoutException;
  *
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
-public interface EventRender<T extends Object> extends Event {
+public abstract class EventRender<T extends Object> extends Event {
     /**
      * Render this event based on a previous value.
      *
-     * @TimeoutException If
+     * @throws TimeoutException If it takes too long to render.
      */
-    T render(T previousValue) throws TimeoutException;
+    public abstract T render(T previousValue) throws TimeoutException;
 }
