@@ -1,7 +1,7 @@
 package br.eti.fml.wonderfulstates;
 
 /**
- * A pair.
+ * Just a pair.
  * 
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */

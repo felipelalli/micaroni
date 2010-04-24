@@ -1,10 +1,13 @@
 package br.eti.fml.wonderfulstates;
 
-import java.util.concurrent.TimeoutException;
+import br.eti.fml.wonderfulstates.universe.Universe;
 
 /**
  * <p>
  * A State represents a "snapshot" of anything in a timeline.
+ * A State is "live", i. e., its value can be changed internally
+ * unless the {@link #isFrozen()} is set. If you need to change a state,
+ * please have a look at {@link br.eti.fml.wonderfulstates.mutable.MutableState}.
  * </p>
  *
  * <p>
@@ -18,25 +21,26 @@ import java.util.concurrent.TimeoutException;
  *
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
-public interface State<T extends Object, U extends Universe<T>> {
+public abstract class State<T extends Object, U extends Universe<T>> {
     /**
      * Means that this state is not ready to be read yet, but could
      * be transformed soon into a valid, fuzzy or broken value.
      */
-    boolean isUnreacheableYet();
+    public abstract boolean isUnreacheableYet();
 
     /**
-     * The default-default timeout is 0L, and 0L means no timeout.
      * By default any read-function needs to wait the value
      * become {@link #isUnreacheableYet() reacheable}. The methods
      * {@link #isBroken()}, {@link #isFrozen()}, {@link #isFuzzy()},
-     * {@link #getValue()}, {@link #getValueInTheTime()} and
+     * {@link #getValuimport java.util.concurrent.TimeoutException;e()}, {@link #getValueInTheTime()} and
      * {@link #isBeforeTheFirstValue()} can block for a undetermined
-     * time if the timeout is not defined (or defined to 0L).
+     * time if the timeout is defined to zero. This value doesn't need to be
+     * very accurate and it means the maximum time in milis that you'll have
+     * to wait to retrieve some value.
      * 
      * @param timeout in millis
      */
-    void setDefaultTimeout(long timeout);
+    public abstract long getDefaultTimeout();
 
     /**
      * Indicates that it is a invalid state and all functions to get value
@@ -47,7 +51,12 @@ public interface State<T extends Object, U extends Universe<T>> {
      * is only corrupted but it can guess some value, the state would be
      * {@link #isFuzzy() fuzzy}.
      */
-    boolean isBroken() throws TimeoutException;
+    public abstract boolean isBroken() throws TimeoutException, InterruptedException;
+
+    /**
+     * Block until it becomes unblocked.
+     */
+    public abstract void waitUntilBeUnblocked() throws TimeoutException, InterruptedException;
 
     /**
      * Indicates that it state has a not accurate value. It can
@@ -57,12 +66,19 @@ public interface State<T extends Object, U extends Universe<T>> {
      * presumed value. All {@link #isBroken() broken} states is also
      * {@link #isFuzzy() fuzzy}.
      */
-    boolean isFuzzy() throws TimeoutException;
+    public abstract boolean isFuzzy() throws TimeoutException, InterruptedException;
 
     /**
      * When this State is frozen, i. e., it is immutable forever.
      */
-    boolean isFrozen() throws TimeoutException;
+    public abstract boolean isFrozen() throws TimeoutException, InterruptedException;
+
+    /**
+     * If somebody is <i>using</i> this state now. When the {@link State} is in
+     * this <i>state</i> means the value will not change until it becomes
+     * unblocked again.
+     */
+    public abstract boolean isBlocked();
 
     /**
      * It is a really weird situation, but it can happens if you create
@@ -70,31 +86,34 @@ public interface State<T extends Object, U extends Universe<T>> {
      * not means that it is {@link #isBroken() broken} or
      * {@link #isFuzzy() fuzzy}.
      */
-    boolean isBeforeTheFirstValue() throws TimeoutException;
+    public abstract boolean isBeforeTheFirstValue() throws TimeoutException, InterruptedException;
 
     /**
      * Accesses its {@link Universe}. It never returns <code>null</code>, even the
      * universe is a {@link Any generic universe}.
      */
-    U getUniverse();
+    public abstract U getUniverse();
 
     /**
-     * Get the current value.
+     * Get the current value. The value returned is immutable.
      */
-    T getValue() throws BrokenStateException, TimeoutException;
+    public abstract T getValue() throws BrokenStateException, TimeoutException,
+                        InterruptedException;
 
     /**
      * Get the current value and the timestamp when it was defined.
      */
-    Pair<T, Long> getValueInTheTime() throws BrokenStateException, TimeoutException;
+    public abstract Pair<T, Long> getValueInTheTime() throws BrokenStateException,
+            TimeoutException, CantDetermineTimeException,
+            InterruptedException;
 
     /**
-     * Get the timestamp of the last changing.
+     * Get the timestamp of the last change.
      */
-    Long getLastChangingTimestamp() throws CantDetermineLastChangingException;
+    public abstract Long getLastChangeTimestamp() throws CantDetermineTimeException;
 
     /**
      * Unique ID number to indentify this state in all world.
      */
-    String getUID();
+    public abstract String getUID();
 }
