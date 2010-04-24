@@ -1,6 +1,5 @@
 package br.eti.fml.wonderfulstates.dynamics;
 
-import br.eti.fml.wonderfulstates.changing.*;
 import br.eti.fml.wonderfulstates.conducting.SecurityGuardOfStates;
 import br.eti.fml.wonderfulstates.changing.Event;
 
