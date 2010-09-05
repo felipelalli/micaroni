@@ -2,8 +2,6 @@ package br.eti.fml.wonderfulstates.conducting;
 
 import br.eti.fml.basic.Pair;
 import br.eti.fml.wonderfulstates.State;
-import br.eti.fml.wonderfulstates.TimeoutException;
-import br.eti.fml.wonderfulstates.changing.Event;
 import br.eti.fml.wonderfulstates.changing.MutableState;
 
 /**
@@ -19,7 +17,7 @@ public abstract class SecurityGuardOfStates {
     public abstract State getState(String stateUID);
 
     /**
-     * Get the {@link State} to try to change. It just if you can because
+     * Get the {@link State} to try to change. It just "if you can" because
      * you will only get a change if you have the <b>right</b>
      * <i>previous value</i>.
      *
