@@ -2,7 +2,7 @@
 	ANT Build file
 	FML Mar/2010 (c) All rights reserved.
 
-        Look for "CHANGE HERE"
+    Look for "CHANGE HERE"
 -->    
 
 <project name="Wonderful States" default="help" basedir="."> <!-- CHANGE HERE -->
@@ -61,7 +61,6 @@
 
     <target name="clean" depends="init" description="Delete compiled classes.">
         <delete dir="${classes}"/>
-        <delete dir="${classes.teste}"/>
         <delete dir="${tempdir}"/>
     </target>
 
@@ -137,7 +136,7 @@
             <!-- All content of etc/deploy are copied to the project's root -->
             <copy todir="${base}" overwrite="true" failonerror="false">
                     <fileset dir="${etc.deploy}">
-                            <exclude name="**/leiame.txt"/>
+                            <exclude name="**/README"/>
                     </fileset>
             </copy>
 
@@ -167,7 +166,7 @@
         <!-- All content of etc/doc are copied to the javadoc's root -->
         <copy todir="${doc}" overwrite="true" failonerror="false">
                 <fileset dir="${etc.doc}">
-                        <exclude name="**/leiame.txt"/>
+                        <exclude name="**/README"/>
                 </fileset>
         </copy>
     </target>
@@ -194,14 +193,14 @@
             <copy todir="${release}" overwrite="true" failonerror="false">
                     <fileset dir="${bin}">
                             <include name="**/*.dll"/>
-                            <exclude name="**/leiame.txt"/>
+                            <exclude name="**/README"/>
                     </fileset>
             </copy>
             
             <!-- All content of etc/deploy are copied to the release's root -->
             <copy todir="${release}" overwrite="true">
                     <fileset dir="${etc.deploy}">
-                            <exclude name="**/leiame.txt"/>
+                            <exclude name="**/README"/>
                     </fileset>
             </copy>
 
