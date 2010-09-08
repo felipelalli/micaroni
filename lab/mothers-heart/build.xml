@@ -1,0 +1,30 @@
+<project name="Mother's Heart" default="help" basedir=".">
+    <taskdef resource="net/sf/antcontrib/antlib.xml">
+        <classpath>
+            <pathelement location="lib/ant/ant-contrib-1.0b3.jar"/>
+        </classpath>
+    </taskdef>
+
+    <description>
+    	Mother's Heart. It's a network interface to Wonderful States.
+    </description>
+
+    <property name="version" value="1.0-alpha"/>
+    <property name="project.name" value="Mother's Heart"/>
+    <property name="project.simplename" value="mothersheart"/>
+    <property name="author" value="Felipe Micaroni Lalli"/>
+    <property name="with.debug" value="true"/> <!-- "off" or "true" -->
+
+    <target name="help">
+    	<echo message="Try 'ant -projecthelp' for help."/>
+    </target>
+
+    <target name="init">
+        <tstamp/>
+    </target>
+
+    <target name="build" depends="init">
+
+    </target>
+
+</project>
