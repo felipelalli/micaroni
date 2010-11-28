@@ -1,0 +1,11 @@
+A db based on Kyoto Cabinet database.
+
+Public domain or:
+CC-by Felipe Micaroni Lalli <micaroni@gmail.com>
+
+== Requirements ==
+* Java 1.6 or better
+* ant 1.8 or better
+
+== How to build ==
+Just type "ant" in the project root and follow the instructions.
