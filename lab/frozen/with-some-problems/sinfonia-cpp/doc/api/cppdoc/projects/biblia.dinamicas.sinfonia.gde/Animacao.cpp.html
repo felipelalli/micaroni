@@ -1,0 +1,445 @@
+<HTML>
+<HEAD>
+<TITLE>
+Animacao.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: Animacao.cpp.html,v $
+ * $Date: 2005/03/22 20:18:41 $
+ * $Revision: 1.9 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/gde/Animacao.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia<font color="black">:</font><font color="black">:</font>gde;
+
+AnimacaoBiblia<font color="black">:</font><font color="black">:</font>AnimacaoBiblia<font color="black">(</font><font color="blue">const</font> MediadorDeEstados<font color="black">&</font> mde,
+         BasicoVisual<font color="black">&</font> bva,
+         Estado<font color="black">*</font> e<font color="black">)</font>
+    <font color="black">:</font>GeradorDeEventosEspecial<font color="black">(</font>mde<font color="black">)</font>, pVisual<font color="black">(</font>bva<font color="black">)</font>,
+     pEstado<font color="black">(</font>e<font color="black">)</font>, pAnimacaoRelacionada<font color="black">(</font><font color="maroon">"???"</font><font color="black">)</font>,
+     pGeradorDeEventosParaAnimacaoEmThread<font color="black">(</font>pGeradorDeEventosParaAnimacao<font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGeradorDeEventosParaAnimacao.defineThis<font color="black">(</font><font color="blue">this</font><font color="black">)</font>;
+
+    <font color="blue">bool</font> impossivelCriar <font color="black">=</font> <font color="blue">false</font>;
+    ImpossivelCriarAnimacaoBibliaExcecao icabe;
+
+    try <font color="black">{</font>
+        <font color="blue">if</font> <font color="black">(</font>e<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>.indefinida<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+            impossivelCriar <font color="black">=</font> <font color="blue">true</font>;
+            icabe <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"Valor Indefinido! "</font>;
+        <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pAnimacaoRelacionada <font color="black">=</font> e<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>.emString<font color="black">(</font><font color="black">)</font>;
+
+            <font color="blue">if</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pVisual.carregador<font color="black">(</font><font color="black">)</font>
+                .animacaoJaCarregada<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pAnimacaoRelacionada<font color="black">)</font><font color="black">)</font>
+            <font color="black">{</font>
+                impossivelCriar <font color="black">=</font> <font color="blue">true</font>;
+                icabe <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"Animação não definida no arquivo de Camadas! "</font>;
+            <font color="black">}</font>
+        <font color="black">}</font>
+    <font color="black">}</font> <font color="blue">catch</font> <font color="black">(</font><font color="blue">const</font> Excecao<font color="black">&</font> ee<font color="black">)</font> <font color="black">{</font>
+        impossivelCriar <font color="black">=</font> <font color="blue">true</font>;
+        icabe <font color="black">&#60;</font><font color="black">&#60;</font> ee <font color="black">+</font> <font color="maroon">" - "</font>;
+    <font color="black">}</font>
+
+    <font color="blue">if</font> <font color="black">(</font>impossivelCriar<font color="black">)</font> <font color="black">{</font>
+        icabe <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"Erro na criação da AnimacaoBiblia relativa ao Estado '"</font>
+                <font color="black">+</font> <font color="black">*</font>e
+                <font color="black">+</font> <font color="maroon">"'. Campo PRINCIPAL obrigatório / a animação "</font>
+                <font color="black">+</font> <font color="maroon">"'"</font> <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pAnimacaoRelacionada <font color="black">+</font> <font color="maroon">"' deve estar"</font>
+                <font color="black">+</font> <font color="maroon">" previamente criada."</font>;
+
+        <font color="blue">throw</font> icabe;
+    <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+        <font color="black">{</font>
+            <font color="blue">int</font> largura <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>
+                    .animacao<font color="black">(</font><font color="black">)</font>.areaQueOcupa<font color="black">(</font><font color="black">)</font>.largura<font color="black">(</font><font color="black">)</font>;
+
+            <font color="blue">int</font> altura <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>
+                    .animacao<font color="black">(</font><font color="black">)</font>.areaQueOcupa<font color="black">(</font><font color="black">)</font>.altura<font color="black">(</font><font color="black">)</font>;
+
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font>largura, <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pVisual.tempo<font color="black">(</font><font color="black">)</font>, <font color="maroon">"largura"</font><font color="black">)</font>;
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font>altura, <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pVisual.tempo<font color="black">(</font><font color="black">)</font>, <font color="maroon">"altura"</font><font color="black">)</font>;
+        <font color="black">}</font>
+
+        <font color="black">{</font>
+            <font color="blue">int</font> x <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>
+                    .animacao<font color="black">(</font><font color="black">)</font>.posicao<font color="black">(</font><font color="black">)</font>.x<font color="black">(</font><font color="black">)</font>;
+
+            <font color="blue">int</font> y <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>
+                    .animacao<font color="black">(</font><font color="black">)</font>.posicao<font color="black">(</font><font color="black">)</font>.y<font color="black">(</font><font color="black">)</font>;
+
+            try <font color="black">{</font>
+                x <font color="black">=</font> e<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"x"</font><font color="black">)</font>.emInt<font color="black">(</font><font color="black">)</font>;
+            <font color="black">}</font> <font color="blue">catch</font> <font color="black">(</font><font color="blue">const</font> Excecao<font color="black">&</font><font color="black">)</font> <font color="black">{</font>
+                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font>x, <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pVisual.tempo<font color="black">(</font><font color="black">)</font>, <font color="maroon">"x"</font><font color="black">)</font>;
+            <font color="black">}</font>
+
+            try <font color="black">{</font>
+                y <font color="black">=</font> e<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"y"</font><font color="black">)</font>.emInt<font color="black">(</font><font color="black">)</font>;
+            <font color="black">}</font> <font color="blue">catch</font> <font color="black">(</font><font color="blue">const</font> Excecao<font color="black">&</font><font color="black">)</font> <font color="black">{</font>
+                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font>y, <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pVisual.tempo<font color="black">(</font><font color="black">)</font>, <font color="maroon">"y"</font><font color="black">)</font>;
+            <font color="black">}</font>
+
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>
+                    .animacao<font color="black">(</font><font color="black">)</font>.reposiciona<font color="black">(</font>Ponto<font color="black">(</font>x, y<font color="black">)</font><font color="black">)</font>;
+        <font color="black">}</font>
+
+        <font color="black">{</font>
+            <font color="blue">bool</font> visivel <font color="black">=</font> <font color="blue">true</font>;
+            try <font color="black">{</font>
+                visivel <font color="black">=</font> e<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"visível"</font><font color="black">)</font>.emBool<font color="black">(</font><font color="black">)</font>;
+            <font color="black">}</font> <font color="blue">catch</font> <font color="black">(</font><font color="blue">const</font> Excecao<font color="black">&</font><font color="black">)</font> <font color="black">{</font>
+                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font>visivel,
+                        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pVisual.tempo<font color="black">(</font><font color="black">)</font>, <font color="maroon">"visível"</font><font color="black">)</font>;
+            <font color="black">}</font>
+
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.visivel<font color="black">(</font>visivel<font color="black">)</font>;
+        <font color="black">}</font>
+
+        <font color="black">{</font>
+            <font color="blue">bool</font> sentidoInverso <font color="black">=</font> <font color="blue">false</font>;
+            try <font color="black">{</font>
+                sentidoInverso <font color="black">=</font> e<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"sentido inverso"</font><font color="black">)</font>.emBool<font color="black">(</font><font color="black">)</font>;
+            <font color="black">}</font> <font color="blue">catch</font> <font color="black">(</font><font color="blue">const</font> Excecao<font color="black">&</font><font color="black">)</font> <font color="black">{</font>
+                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font>sentidoInverso,
+                        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pVisual.tempo<font color="black">(</font><font color="black">)</font>, <font color="maroon">"sentido inverso"</font><font color="black">)</font>;
+            <font color="black">}</font>
+
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>
+                    .animacao<font color="black">(</font><font color="black">)</font>.sentidoInverso<font color="black">(</font>sentidoInverso<font color="black">)</font>;
+        <font color="black">}</font>
+
+        <font color="black">{</font>
+            <font color="blue">double</font> fps <font color="black">=</font> <font color="maroon">10</font>;
+
+            try <font color="black">{</font>
+                fps <font color="black">=</font> e<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"quadros por segundo"</font><font color="black">)</font>.emDouble<font color="black">(</font><font color="black">)</font>;
+            <font color="black">}</font> <font color="blue">catch</font> <font color="black">(</font><font color="blue">const</font> Excecao<font color="black">&</font><font color="black">)</font> <font color="black">{</font>
+                <font color="green">// Colocando 10 fixo porque é o padrão</font>
+                <font color="green">// FIXME: substituir isso por uma variável</font>
+                <font color="green">// que calcula o fps</font>
+                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font><font color="maroon">10</font>,
+                        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pVisual.tempo<font color="black">(</font><font color="black">)</font>, <font color="maroon">"quadros por segundo"</font><font color="black">)</font>;
+            <font color="black">}</font>
+
+            <font color="blue">if</font> <font color="black">(</font>fps <font color="black">&#60;</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font> <font color="black">{</font>
+                ImpossivelCriarAnimacaoBibliaExcecao icabe;
+                icabe <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"Erro na criação da AnimacaoBiblia"</font>
+                        <font color="maroon">" relativa ao Estado '"</font> <font color="black">+</font> <font color="black">*</font>e
+                        <font color="black">+</font> <font color="maroon">"'. Não é possível que a animação tenha"</font>
+                        <font color="maroon">" 0 ou menos quadros por segundo."</font>;
+
+                <font color="blue">throw</font> icabe;
+            <font color="black">}</font>
+
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>
+                    .mudaIntervalo<font color="black">(</font>Intervalo<font color="black">(</font>
+                        <font color="maroon">1</font>.<font color="maroon">0</font> <font color="black">/</font> fps <font color="black">*</font> <font color="maroon">1000</font>.<font color="maroon">0</font>, Milissegundo<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+        <font color="black">}</font>
+
+        <font color="black">{</font>
+            <font color="blue">double</font> transparencia <font color="black">=</font> <font color="maroon">0</font>;
+
+            try <font color="black">{</font>
+                transparencia <font color="black">=</font> e<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"transparência"</font><font color="black">)</font>.emDouble<font color="black">(</font><font color="black">)</font>;
+            <font color="black">}</font> <font color="blue">catch</font> <font color="black">(</font><font color="blue">const</font> Excecao<font color="black">&</font><font color="black">)</font> <font color="black">{</font>
+                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font>transparencia,
+                        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pVisual.tempo<font color="black">(</font><font color="black">)</font>, <font color="maroon">"transparencia"</font><font color="black">)</font>;
+            <font color="black">}</font>
+
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>
+                    .animacao<font color="black">(</font><font color="black">)</font>.pinta<font color="black">(</font>Transparente<font color="black">(</font>transparencia<font color="black">)</font><font color="black">)</font>;
+        <font color="black">}</font>
+
+        <font color="black">{</font>
+            <font color="blue">bool</font> emLoop <font color="black">=</font> <font color="blue">false</font>;
+
+            try <font color="black">{</font>
+                emLoop <font color="black">=</font> e<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"loop"</font><font color="black">)</font>.emBool<font color="black">(</font><font color="black">)</font>;
+            <font color="black">}</font> <font color="blue">catch</font> <font color="black">(</font><font color="blue">const</font> Excecao<font color="black">&</font><font color="black">)</font> <font color="black">{</font>
+                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font>emLoop,
+                        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pVisual.tempo<font color="black">(</font><font color="black">)</font>, <font color="maroon">"loop"</font><font color="black">)</font>;
+            <font color="black">}</font>
+
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>
+                    .animacao<font color="black">(</font><font color="black">)</font>.emLoop<font color="black">(</font>emLoop<font color="black">)</font>;
+        <font color="black">}</font>
+
+        <font color="black">{</font>
+            <font color="blue">bool</font> iniciado <font color="black">=</font> <font color="blue">false</font>;
+
+            try <font color="black">{</font>
+                iniciado <font color="black">=</font> e<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"iniciado"</font><font color="black">)</font>.emBool<font color="black">(</font><font color="black">)</font>;
+            <font color="black">}</font> <font color="blue">catch</font> <font color="black">(</font><font color="blue">const</font> Excecao<font color="black">&</font><font color="black">)</font> <font color="black">{</font>
+                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font>iniciado,
+                        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pVisual.tempo<font color="black">(</font><font color="black">)</font>, <font color="maroon">"iniciado"</font><font color="black">)</font>;
+            <font color="black">}</font>
+
+            <font color="blue">if</font> <font color="black">(</font>iniciado<font color="black">)</font> <font color="black">{</font>
+                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>
+                        .play<font color="black">(</font><font color="black">)</font>;
+
+                <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>
+                    .animacao<font color="black">(</font><font color="black">)</font>.sentidoInverso<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+                <font color="black">{</font>
+                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>.animacao<font color="black">(</font><font color="black">)</font>.vaiParaOFim<font color="black">(</font><font color="black">)</font>;
+                <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>.animacao<font color="black">(</font><font color="black">)</font>.reinicia<font color="black">(</font><font color="black">)</font>;
+                <font color="black">}</font>
+            <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>
+                        .stop<font color="black">(</font><font color="black">)</font>;
+            <font color="black">}</font>
+        <font color="black">}</font>
+    <font color="black">}</font>
+
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGeradorDeEventosParaAnimacaoEmThread.start<font color="black">(</font>
+            <font color="maroon">"gerador de eventos para animacao em thread: "</font> <font color="black">+</font> <font color="black">*</font><font color="blue">this</font><font color="black">)</font>;
+
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>modificaEventosQueTrata<font color="black">(</font><font color="black">)</font>.adiciona<font color="black">(</font>
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+AnimacaoBiblia<font color="black">:</font><font color="black">:</font>~AnimacaoBiblia<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGeradorDeEventosParaAnimacao.termina<font color="black">(</font><font color="black">)</font>;
+
+    <font color="blue">while</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGeradorDeEventosParaAnimacao.terminou<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        Thread<font color="black">:</font><font color="black">:</font>sleep<font color="black">(</font>Intervalo<font color="black">(</font><font color="maroon">10</font>, Milissegundo<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>
+<font color="black">}</font>
+
+ComponenteGrafico<font color="black">&#60;</font>Video<font color="black">&#62;</font><font color="black">&</font> AnimacaoBiblia<font color="black">:</font><font color="black">:</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pVisual.carregador<font color="black">(</font><font color="black">)</font>.animacao<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pAnimacaoRelacionada<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">const</font> string<font color="black">&</font> AnimacaoBiblia<font color="black">:</font><font color="black">:</font>nomeDaAnimacaoRelacionada<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pAnimacaoRelacionada;
+<font color="black">}</font>
+
+string AnimacaoBiblia<font color="black">:</font><font color="black">:</font>emString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="maroon">"Animacao("</font> <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>nomeDaAnimacaoRelacionada<font color="black">(</font><font color="black">)</font> <font color="black">+</font> <font color="maroon">")("</font>
+            <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font> <font color="black">+</font> <font color="maroon">")"</font>;
+<font color="black">}</font>
+
+Executavel<font color="black">&</font> AnimacaoBiblia<font color="black">:</font><font color="black">:</font>executa<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">while</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>encerrou<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        <font color="blue">const</font> Evento<font color="black">*</font> e <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>esperaAteQueVenhaEvento<font color="black">(</font><font color="black">)</font>;
+
+        <font color="blue">if</font> <font color="black">(</font>e <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font> <font color="black">{</font>
+            <font color="blue">if</font> <font color="black">(</font>e<font color="black">-</font><font color="black">&#62;</font>modificaEstadoDiretamente<font color="black">(</font><font color="black">)</font>
+                <font color="black">&</font><font color="black">&</font> <font color="black">(</font>e<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>
+            <font color="black">{</font>
+                Valor campo <font color="black">=</font> e<font color="black">-</font><font color="black">&#62;</font>modificador<font color="black">(</font><font color="black">)</font>.campo<font color="black">(</font><font color="black">)</font>;
+
+                <font color="blue">if</font> <font color="black">(</font>campo <font color="black">=</font><font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL<font color="black">)</font> <font color="black">{</font>
+                    Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>WARN, <font color="maroon">"AnimacaoBiblia::executa::"</font>
+                            <font color="maroon">" Erro ao tentar mudar de '"</font>
+                            <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>nomeDaAnimacaoRelacionada<font color="black">(</font><font color="black">)</font>
+                            <font color="black">+</font> <font color="maroon">"' para '"</font>
+                            <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>
+                            <font color="black">+</font> <font color="maroon">"'. Não é possível mudar o nome da"</font>
+                            <font color="maroon">" animação relacionada! Corrija isto"</font>
+                            <font color="maroon">" o mais rápido possível porque"</font>
+                            <font color="maroon">" o Estado ficou desatualizado!"</font><font color="black">)</font>;
+                <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>campo <font color="black">=</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"largura"</font><font color="black">)</font> <font color="black">|</font><font color="black">|</font> campo <font color="black">=</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"altura"</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                    Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>WARN, <font color="maroon">"AnimacaoBiblia::executa::"</font>
+                            <font color="maroon">" Não é possível mudar o tamanho da"</font>
+                            <font color="maroon">" animação relacionada! Corrija isto"</font>
+                            <font color="maroon">" o mais rápido possível porque"</font>
+                            <font color="maroon">" o Estado ficou desatualizado!"</font><font color="black">)</font>;      
+                <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>campo <font color="black">=</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"x"</font><font color="black">)</font> <font color="black">|</font><font color="black">|</font> campo <font color="black">=</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"y"</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                    <font color="blue">int</font> x <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>
+                            .animacao<font color="black">(</font><font color="black">)</font>.posicao<font color="black">(</font><font color="black">)</font>.x<font color="black">(</font><font color="black">)</font>;
+
+                    <font color="blue">int</font> y <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>
+                            .animacao<font color="black">(</font><font color="black">)</font>.posicao<font color="black">(</font><font color="black">)</font>.y<font color="black">(</font><font color="black">)</font>;
+
+                    try <font color="black">{</font>
+                        x <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"x"</font><font color="black">)</font>.emInt<font color="black">(</font><font color="black">)</font>;
+                    <font color="black">}</font> <font color="blue">catch</font> <font color="black">(</font><font color="blue">const</font> CampoInexistenteExcecao<font color="black">&</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+                    try <font color="black">{</font>
+                        y <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"y"</font><font color="black">)</font>.emInt<font color="black">(</font><font color="black">)</font>;
+                    <font color="black">}</font> <font color="blue">catch</font> <font color="black">(</font><font color="blue">const</font> CampoInexistenteExcecao<font color="black">&</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+                    Ponto ponto<font color="black">(</font>x, y<font color="black">)</font>;
+                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>
+                            .animacao<font color="black">(</font><font color="black">)</font>.reposiciona<font color="black">(</font>ponto<font color="black">)</font>;
+                <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>campo <font color="black">=</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"visível"</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.visivel<font color="black">(</font>
+                            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"visível"</font><font color="black">)</font>.emBool<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>campo <font color="black">=</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"sentido inverso"</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>
+                            .animacao<font color="black">(</font><font color="black">)</font>.sentidoInverso<font color="black">(</font>
+                                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font>
+                                    <font color="maroon">"sentido inverso"</font><font color="black">)</font>.emBool<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>campo <font color="black">=</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"quadros por segundo"</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                    <font color="blue">double</font> fps <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font>
+                            <font color="maroon">"quadros por segundo"</font><font color="black">)</font>.emDouble<font color="black">(</font><font color="black">)</font>;
+
+                    <font color="blue">if</font> <font color="black">(</font>fps <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font> <font color="black">{</font>
+                        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>
+                                .mudaIntervalo<font color="black">(</font>Intervalo<font color="black">(</font>
+                                    <font color="maroon">1</font>.<font color="maroon">0</font> <font color="black">/</font> fps <font color="black">*</font> <font color="maroon">1000</font>.<font color="maroon">0</font>, Milissegundo<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+                    <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+                        Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>WARN, <font color="maroon">"AnimacaoBiblia::executa"</font>
+                                <font color="maroon">" não é possível mudar 'quadros por segundo'"</font>
+                                <font color="maroon">" para um valor igual ou menor que zero."</font>
+                                <font color="maroon">" Mantendo o valor anterior."</font><font color="black">)</font>;
+                    <font color="black">}</font>
+                <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>campo <font color="black">=</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"transparência"</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                    <font color="blue">double</font> valor <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font>
+                            <font color="maroon">"transparência"</font><font color="black">)</font>.emDouble<font color="black">(</font><font color="black">)</font>;
+
+                    <font color="blue">if</font> <font color="black">(</font>valor <font color="black">&#60;</font> <font color="maroon">0</font><font color="black">)</font> <font color="black">{</font>
+                        Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>WARN, <font color="maroon">"AnimacaoBiblia::executa"</font>
+                                <font color="maroon">" não é possível mudar 'transparência'"</font>
+                                <font color="maroon">" para um valor menor que zero. Definindo"</font>
+                                <font color="maroon">" para zero."</font><font color="black">)</font>;
+
+                        valor <font color="black">=</font> <font color="maroon">0</font>;
+                    <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>valor <font color="black">&#62;</font> <font color="maroon">100</font><font color="black">)</font> <font color="black">{</font>
+                        Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>WARN, <font color="maroon">"AnimacaoBiblia::executa"</font>
+                                <font color="maroon">" não é possível mudar 'transparência'"</font>
+                                <font color="maroon">" para um valor maior que 100. Definindo"</font>
+                                <font color="maroon">" para 100."</font><font color="black">)</font>;
+
+                        valor <font color="black">=</font> <font color="maroon">100</font>;
+                    <font color="black">}</font>
+
+                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>
+                            .animacao<font color="black">(</font><font color="black">)</font>.pinta<font color="black">(</font>Transparente<font color="black">(</font>valor<font color="black">)</font><font color="black">)</font>;
+                <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>campo <font color="black">=</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"loop"</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>
+                            .animacao<font color="black">(</font><font color="black">)</font>.emLoop<font color="black">(</font>
+                                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font>
+                                    <font color="maroon">"loop"</font><font color="black">)</font>.emBool<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>campo <font color="black">=</font><font color="black">=</font> Valor<font color="black">(</font><font color="maroon">"iniciado"</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                    <font color="blue">bool</font> iniciado <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="maroon">"iniciado"</font><font color="black">)</font>.emBool<font color="black">(</font><font color="black">)</font>;
+
+                    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>iniciado<font color="black">)</font> <font color="black">{</font>
+                        <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>.animacao<font color="black">(</font><font color="black">)</font>.fim<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>.stop<font color="black">(</font><font color="black">)</font>;
+                        <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+                            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>.pause<font color="black">(</font><font color="black">)</font>;
+                        <font color="black">}</font>
+                    <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+                        <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>.pausado<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>.play<font color="black">(</font><font color="black">)</font>;
+                        <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+                            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>.play<font color="black">(</font><font color="black">)</font>;
+
+                            <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>
+                                .animacao<font color="black">(</font><font color="black">)</font>.sentidoInverso<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+                            <font color="black">{</font>
+                                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>
+                                        .animacao<font color="black">(</font><font color="black">)</font>.vaiParaOFim<font color="black">(</font><font color="black">)</font>;
+                            <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+                                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>.componente<font color="black">(</font><font color="black">)</font>
+                                        .animacao<font color="black">(</font><font color="black">)</font>.reinicia<font color="black">(</font><font color="black">)</font>;
+                            <font color="black">}</font>
+                        <font color="black">}</font>
+                    <font color="black">}</font>
+                <font color="black">}</font>
+            <font color="black">}</font>
+
+            <font color="blue">delete</font> e;
+        <font color="black">}</font>
+    <font color="black">}</font>
+
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+AnimacaoBiblia<font color="black">:</font><font color="black">:</font>GeraEventosParaAnimacao
+        <font color="black">:</font><font color="black">:</font>GeraEventosParaAnimacao<font color="black">(</font><font color="black">)</font>
+    <font color="black">:</font>pAnimacaoBiblia<font color="black">(</font>NULL<font color="black">)</font>, pTerminou<font color="black">(</font><font color="blue">false</font><font color="black">)</font>,
+     pTermina<font color="black">(</font><font color="blue">false</font><font color="black">)</font>, pFimAnterior<font color="black">(</font><font color="blue">false</font><font color="black">)</font>
+<font color="black">{</font><font color="black">}</font>
+
+<font color="blue">const</font> <font color="blue">bool</font> AnimacaoBiblia<font color="black">:</font><font color="black">:</font>GeraEventosParaAnimacao<font color="black">:</font><font color="black">:</font>fim<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pAnimacaoBiblia<font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>
+                .componente<font color="black">(</font><font color="black">)</font>.animacao<font color="black">(</font><font color="black">)</font>.sentidoInverso<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+        <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pAnimacaoBiblia<font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>
+                    .componente<font color="black">(</font><font color="black">)</font>.animacao<font color="black">(</font><font color="black">)</font>.inicio<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+        <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pAnimacaoBiblia<font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>
+                    .componente<font color="black">(</font><font color="black">)</font>.animacao<font color="black">(</font><font color="black">)</font>.fim<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>
+<font color="black">}</font>
+
+Executavel<font color="black">&</font> AnimacaoBiblia<font color="black">:</font><font color="black">:</font>GeraEventosParaAnimacao<font color="black">:</font><font color="black">:</font>executa<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    try <font color="black">{</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pFimAnterior <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>fim<font color="black">(</font><font color="black">)</font>;
+
+        <font color="blue">while</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTermina<font color="black">)</font> <font color="black">{</font>
+            <font color="blue">bool</font> fimAtual <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>fim<font color="black">(</font><font color="black">)</font>;
+
+            <font color="blue">if</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pAnimacaoBiblia<font color="black">-</font><font color="black">&#62;</font>animacaoRelacionada<font color="black">(</font><font color="black">)</font>
+                .componente<font color="black">(</font><font color="black">)</font>.animacao<font color="black">(</font><font color="black">)</font>.emLoop<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+            <font color="black">{</font>
+                <font color="blue">if</font> <font color="black">(</font>fimAtual <font color="black">&</font><font color="black">&</font> <font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pFimAnterior<font color="black">)</font> <font color="black">{</font>
+                    <font color="green">// Lança evento que terminou</font>
+                    AnimacaoBiblia<font color="black">&</font> a <font color="black">=</font> <font color="black">*</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pAnimacaoBiblia<font color="black">)</font>;
+
+                    ModificadorDeEstado mde<font color="black">(</font>a.pEstado<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                    mde.adicionaParametro<font color="black">(</font>Valor<font color="black">(</font><font color="blue">false</font><font color="black">)</font><font color="black">)</font>;
+
+                    mde.defineCampo<font color="black">(</font><font color="maroon">"iniciado"</font><font color="black">)</font>;
+                    Evento deixaDeEstarIniciado<font color="black">(</font>a.pEstado<font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font>, mde<font color="black">)</font>;
+                    deixaDeEstarIniciado.grupo<font color="black">(</font>a.pEstado<font color="black">-</font><font color="black">&#62;</font>grupo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                    Evento<font color="black">*</font> disparado <font color="black">=</font> deixaDeEstarIniciado.dispara<font color="black">(</font>a.pVisual.tempo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                    disparado<font color="black">-</font><font color="black">&#62;</font>especial<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+                    a.gera<font color="black">(</font>disparado<font color="black">)</font>;
+                <font color="black">}</font>
+            <font color="black">}</font>
+
+            Thread<font color="black">:</font><font color="black">:</font>sleep<font color="black">(</font>Intervalo<font color="black">(</font><font color="maroon">10</font>, Milissegundo<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pFimAnterior <font color="black">=</font> fimAtual;
+        <font color="black">}</font>
+    <font color="black">}</font> <font color="blue">catch</font><font color="black">(</font>exception<font color="black">&</font> e<font color="black">)</font> <font color="black">{</font>
+        <font color="blue">throw</font> e;
+    <font color="black">}</font> <font color="blue">catch</font><font color="black">(</font>...<font color="black">)</font> <font color="black">{</font>
+        Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>ERRO, string<font color="black">(</font><font color="black">)</font>
+                <font color="black">+</font> <font color="maroon">"AnimacaoBiblia::GeraEventosParaAnimacao::executa::"</font>
+                <font color="maroon">" Ocorreu um erro desconhecido na animação."</font>
+                <font color="maroon">" Provavelmente ocorreu porque a função não terminou"</font>
+                <font color="maroon">" enquanto a Animacao era deletada. This: "</font>
+                <font color="black">+</font> <font color="black">*</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pAnimacaoBiblia<font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTerminou <font color="black">=</font> <font color="blue">true</font>;
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+AnimacaoBiblia<font color="black">:</font><font color="black">:</font>GeraEventosParaAnimacao<font color="black">&</font> AnimacaoBiblia
+        <font color="black">:</font><font color="black">:</font>GeraEventosParaAnimacao<font color="black">:</font><font color="black">:</font>termina<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTermina <font color="black">=</font> <font color="blue">true</font>;
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+<font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font> AnimacaoBiblia<font color="black">:</font><font color="black">:</font>GeraEventosParaAnimacao<font color="black">:</font><font color="black">:</font>terminou<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTerminou;
+<font color="black">}</font>
+
+<font color="blue">void</font> AnimacaoBiblia<font color="black">:</font><font color="black">:</font>GeraEventosParaAnimacao<font color="black">:</font><font color="black">:</font>defineThis<font color="black">(</font>AnimacaoBiblia<font color="black">*</font> ab<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pAnimacaoBiblia <font color="black">=</font> ab;
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

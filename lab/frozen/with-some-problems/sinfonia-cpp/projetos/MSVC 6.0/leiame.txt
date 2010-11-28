@@ -1,0 +1,3 @@
+Arquivos estrutura para o MSVC++ 6.0. Projetos, makefiles etc.
+
+http://www.google.com.br/search?q=msvc%2B%2B&btnI=I

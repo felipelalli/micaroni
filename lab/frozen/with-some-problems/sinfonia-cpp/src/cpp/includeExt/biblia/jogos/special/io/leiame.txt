@@ -1,0 +1,1 @@
+RenderizadorDeExternaIO (recebe um ResultadoExternaIO)

@@ -1,0 +1,94 @@
+<HTML>
+<HEAD>
+<TITLE>
+RegraDeEstados.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: RegraDeEstados.cpp.html,v $
+ * $Date: 2005/03/22 20:18:48 $
+ * $Revision: 1.16 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/gde/RegraDeEstados.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia<font color="black">:</font><font color="black">:</font>gde;
+
+RegraDeEstados<font color="black">:</font><font color="black">:</font>RegraDeEstados<font color="black">(</font>
+        <font color="blue">const</font> MediadorDeEstados<font color="black">&</font> mde,
+        <font color="blue">const</font> UniversoDeTempo<font color="black">&</font> u<font color="black">)</font>
+    <font color="black">:</font>GeradorDeEventosEspecial<font color="black">(</font>mde<font color="black">)</font>, pTempo<font color="black">(</font>u<font color="black">)</font>
+<font color="black">{</font><font color="black">}</font>
+
+RegraDeEstados<font color="black">:</font><font color="black">:</font>~RegraDeEstados<font color="black">(</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+RegraDeEstados<font color="black">&</font> RegraDeEstados<font color="black">:</font><font color="black">:</font>adicionaEstado<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> nomeCompletoDoEstado<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>modificaEventosQueTrata<font color="black">(</font><font color="black">)</font>.adiciona<font color="black">(</font>nomeCompletoDoEstado.valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+Executavel<font color="black">&</font> RegraDeEstados<font color="black">:</font><font color="black">:</font>executa<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">while</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>encerrou<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        <font color="blue">const</font> Evento<font color="black">*</font> e <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>esperaAteQueVenhaEvento<font color="black">(</font><font color="black">)</font>;
+        <font color="blue">if</font> <font color="black">(</font>e <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font> <font color="black">{</font>
+            <font color="blue">if</font> <font color="black">(</font>e<font color="black">-</font><font color="black">&#62;</font>modificaEstadoDiretamente<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                <font color="blue">const</font> Valor<font color="black">&</font> valor <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>mediadorDeEstados<font color="black">(</font><font color="black">)</font>
+                        .estado<font color="black">(</font>e<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font>;
+
+                <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>valor.pareceSerBoleano<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+<font color="blue">#ifdef</font> _DEBUG
+                    Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>INFO, <font color="maroon">"RegraDeEstados::executa::"</font>
+                            <font color="maroon">" o estado '"</font> <font color="black">+</font> e<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font>
+                            <font color="black">+</font> <font color="maroon">"' parece não ser boleano, e esta classe"</font>
+                            <font color="maroon">" só trabalha com valores boleanos. this: "</font>
+                            <font color="black">+</font> <font color="black">*</font><font color="blue">this</font><font color="black">)</font>;
+<font color="blue">#endif</font>
+                <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>valor.emBool<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="blue">true</font><font color="black">)</font> <font color="black">{</font>
+                    <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>eventosQueTrata<font color="black">(</font><font color="black">)</font>.tamanho<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+                        Identificacao id<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>eventosQueTrata<font color="black">(</font><font color="black">)</font><font color="black">[</font>i<font color="black">]</font><font color="black">)</font>;
+
+                        <font color="blue">if</font> <font color="black">(</font>id <font color="black">!</font><font color="black">=</font> e<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                            <font color="blue">const</font> Estado<font color="black">&</font> estadoAtual
+                                    <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>mediadorDeEstados<font color="black">(</font><font color="black">)</font>.estado<font color="black">(</font>id.emString<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+                            <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>estadoAtual.valor<font color="black">(</font><font color="black">)</font>.pareceSerBoleano<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+<font color="blue">#ifdef</font> _DEBUG
+                                Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>INFO, <font color="maroon">"RegraDeEstados::executa::"</font>
+                                        <font color="maroon">" o estado '"</font> <font color="black">+</font> estadoAtual
+                                        <font color="black">+</font> <font color="maroon">"' parece não ser boleano, e esta classe"</font>
+                                        <font color="maroon">" só trabalha com valores boleanos. this: "</font>
+                                        <font color="black">+</font> <font color="black">*</font><font color="blue">this</font><font color="black">)</font>;
+<font color="blue">#endif</font>
+                            <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font>estadoAtual.valor<font color="black">(</font><font color="black">)</font>.emBool<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="blue">true</font><font color="black">)</font> <font color="black">{</font>
+                                <font color="green">// Lançar evento para o tornar falso.</font>
+                                Valor nome<font color="black">(</font>e<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                                nome.adicionaApelido<font color="black">(</font><font color="maroon">"desligou pela regra de estado associado"</font><font color="black">)</font>;
+                                ModificadorDeEstado mde<font color="black">(</font>nome<font color="black">)</font>;
+                                mde.adicionaParametro<font color="black">(</font>Valor<font color="black">(</font><font color="blue">false</font><font color="black">)</font><font color="black">)</font>;
+
+                                Evento evento<font color="black">(</font>e<font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font>, mde<font color="black">)</font>;
+                                evento.grupo<font color="black">(</font>e<font color="black">-</font><font color="black">&#62;</font>grupo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                                Evento<font color="black">*</font> tornaFalso <font color="black">=</font> evento.dispara<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTempo<font color="black">)</font>;
+                                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>gera<font color="black">(</font>tornaFalso<font color="black">)</font>;
+                            <font color="black">}</font>
+                        <font color="black">}</font>
+                    <font color="black">}</font>
+                <font color="black">}</font>
+            <font color="black">}</font>
+        <font color="black">}</font>
+    <font color="black">}</font>
+
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,67 @@
+<HTML>
+<HEAD>
+<TITLE>
+Genesis.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: Genesis.h.html,v $
+ * $Date: 2005/03/22 20:19:00 $
+ * $Revision: 1.29 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_GENESIS_H__E0CF8E9F_F262_41A8_B612_54D82F191657__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_GENESIS_H__E0CF8E9F_F262_41A8_B612_54D82F191657__INCLUDED_
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/basico/Objeto.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/basico/Fabrica.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>basico;
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Sinfonia.h"</font>
+
+<font color="blue">namespace</font> biblia <font color="black">{</font>
+ <font color="blue">namespace</font> dinamicas <font color="black">{</font>
+  <font color="blue">namespace</font> sinfonia <font color="black">{</font>
+    <font color="green">/**
+     * &#60;b&#62;É aqui onde tudo começa.&#60;/b&#62;
+     * É uma {@link Fabrica} que gera uma {@link Sinfonia}
+     * toda montada.
+     *
+     * @see Sinfonia
+     * @see ScriptDinamica
+     */</font>
+    <font color="blue">class</font> Genesis<font color="black">:</font> <font color="blue">public</font> Fabrica, <font color="blue">public</font> Conclusivo <font color="black">{</font>
+        <font color="blue">protected</font><font color="black">:</font>
+            Genesis<font color="black">(</font><font color="black">)</font>;
+
+        <font color="blue">public</font><font color="black">:</font>
+            virtual ~Genesis<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Gera uma Sinfonia toda montada.
+             */</font>
+            virtual Sinfonia<font color="black">*</font> geraSinfonia<font color="black">(</font><font color="black">)</font> <font color="black">=</font> <font color="maroon">0</font>;
+
+            <font color="green">// Fabrica:</font>
+            virtual Objeto<font color="black">*</font> gera<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+                <font color="blue">return</font> <font color="black">(</font>Objeto<font color="black">*</font><font color="black">)</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>geraSinfonia<font color="black">(</font><font color="black">)</font>;
+            <font color="black">}</font>
+    <font color="black">}</font>;
+  <font color="black">}</font>
+ <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_GENESIS_H__E0CF8E9F_F262_41A8_B612_54D82F191657__INCLUDED_)</font>
+
+</PRE>
+</BODY>
+</HTML>

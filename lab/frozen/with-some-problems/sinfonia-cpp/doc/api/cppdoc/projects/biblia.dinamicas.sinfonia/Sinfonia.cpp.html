@@ -1,0 +1,371 @@
+<HTML>
+<HEAD>
+<TITLE>
+Sinfonia.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: Sinfonia.cpp.html,v $
+ * $Date: 2005/03/22 20:19:07 $
+ * $Revision: 1.42 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Sinfonia.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia; 
+
+<font color="blue">const</font> Valor Sinfonia<font color="black">:</font><font color="black">:</font>LIGADA <font color="black">=</font> <font color="maroon">"Sinfonia.Reservados.ligada"</font>;
+
+<font color="blue">const</font> GeradorDeEventosDependente<font color="black">&</font> Sinfonia<font color="black">:</font><font color="black">:</font>dinamica<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pDependentes;
+<font color="black">}</font>
+
+GeradorDeEventosDependente<font color="black">&</font> Sinfonia<font color="black">:</font><font color="black">:</font>dinamicaParaModificar<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pDependentes;
+<font color="black">}</font>
+
+Concretizador<font color="black">&</font> Sinfonia<font color="black">:</font><font color="black">:</font>concretizador<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="black">*</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pConcretizador<font color="black">)</font>;
+<font color="black">}</font>
+
+MediadorDeEstados<font color="black">&</font> Sinfonia<font color="black">:</font><font color="black">:</font>estadosParaModificar<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstados;
+<font color="black">}</font>
+
+<font color="blue">const</font> MediadorDeEstados<font color="black">&</font> Sinfonia<font color="black">:</font><font color="black">:</font>estados<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstados;
+<font color="black">}</font>
+
+Sinfonia<font color="black">:</font><font color="black">:</font>Sinfonia<font color="black">(</font><font color="blue">const</font> UniversoDeTempo<font color="black">&</font> u<font color="black">)</font>
+    <font color="black">:</font>GeradorDeEventos<font color="black">(</font>pEstados, <font color="blue">true</font><font color="black">)</font>, pLixoThreads<font color="black">(</font><font color="black">)</font>,
+     pLixo<font color="black">(</font><font color="black">)</font>, pLixoOuvidores<font color="black">(</font><font color="black">)</font>, pEstados<font color="black">(</font>u<font color="black">)</font>, pDependentes<font color="black">(</font>pEstados<font color="black">)</font>,
+     pConcretizador<font color="black">(</font>NULL<font color="black">)</font>,
+     pQuantoTempoExecutando<font color="black">(</font>u, <font color="blue">false</font><font color="black">)</font>,
+     pThreads<font color="black">(</font><font color="black">)</font>, pNomeThreads<font color="black">(</font><font color="black">)</font>, pEsperarAcabar<font color="black">(</font><font color="maroon">1</font><font color="black">)</font>,
+     pEsperarExecutar<font color="black">(</font><font color="maroon">0</font><font color="black">)</font>, pTempo<font color="black">(</font>u<font color="black">)</font>, pExecutou<font color="black">(</font><font color="blue">false</font><font color="black">)</font>,
+     pGeradores<font color="black">(</font><font color="black">)</font>, pGeradoresPontuais<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+    <font color="green">// Cria o Concretizador desta Sinfonia</font>
+    <font color="black">{</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pConcretizador <font color="black">=</font> <font color="blue">new</font> Concretizador<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstados<font color="black">)</font>;
+
+        <font color="green">// Empilha o Concretizador pra ser disparado depois</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>fazRodarUmaVezEmThread<font color="black">(</font><font color="black">*</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pConcretizador<font color="black">)</font>, <font color="maroon">"concretizador"</font><font color="black">)</font>;
+
+        <font color="green">// Trata o Concretizador como um GeradorDeEventos</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>adicionaGeradorDeEventos<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pConcretizador<font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="green">// Cria um estado especial que diz se a Sinfonia está ligada ou não</font>
+    <font color="black">{</font>
+        Estado<font color="black">*</font> sinfoniaLigada <font color="black">=</font> <font color="blue">new</font> Estado<font color="black">(</font>Sinfonia<font color="black">:</font><font color="black">:</font>LIGADA<font color="black">)</font>;
+        sinfoniaLigada<font color="black">-</font><font color="black">&#62;</font>externo<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+        sinfoniaLigada<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font><font color="blue">false</font>, u<font color="black">)</font>; <font color="green">// começa desligada</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>adicionaEstado<font color="black">(</font>sinfoniaLigada<font color="black">)</font>;
+    <font color="black">}</font>
+
+<font color="green">//  Debug::msg(INFO, "--- CRIOU SINFONIA!");</font>
+<font color="black">}</font>
+
+Sinfonia<font color="black">:</font><font color="black">:</font>~Sinfonia<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="green">// lança evento que pára a Sinfonia</font>
+    <font color="black">{</font>
+        Valor nome<font color="black">(</font>Sinfonia<font color="black">:</font><font color="black">:</font>LIGADA<font color="black">)</font>;
+        nome.adicionaApelido<font color="black">(</font><font color="maroon">"deixa de estar"</font><font color="black">)</font>;
+        ModificadorDeEstado mde<font color="black">(</font>nome<font color="black">)</font>;
+        mde.adicionaParametro<font color="black">(</font>Valor<font color="black">(</font><font color="blue">false</font><font color="black">)</font><font color="black">)</font>;
+        Evento<font color="black">*</font> desligaSinfonia <font color="black">=</font> Evento<font color="black">(</font>nome, mde<font color="black">)</font>.dispara<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTempo<font color="black">)</font>;
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>gera<font color="black">(</font>desligaSinfonia<font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pExecutou<font color="black">)</font> <font color="black">{</font>
+<font color="blue">#ifdef</font> _DEBUG
+        Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>INFO, <font color="maroon">"Esperando Sinfonia executar... this: "</font> <font color="black">+</font> <font color="black">*</font><font color="blue">this</font><font color="black">)</font>;
+<font color="blue">#endif</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEsperarExecutar.esperar<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pExecutou<font color="black">)</font> <font color="black">{</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEsperarAcabar.esperar<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+<font color="green">//  Debug::msg(INFO, "--- vai limpar ouvidores!");</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pLixoOuvidores.limpa<font color="black">(</font><font color="black">)</font>;
+
+<font color="green">//  Debug::msg(INFO, "--- vai limpar lixo!");</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pLixo.limpa<font color="black">(</font><font color="black">)</font>;
+
+<font color="green">//  Debug::msg(INFO, "--- vai limpar as threads!");</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pLixoThreads.limpa<font color="black">(</font><font color="black">)</font>;
+
+<font color="green">//  Debug::msg(INFO, "--- VAI DESTRUIR SINFONIA!");</font>
+<font color="black">}</font>
+
+Sinfonia<font color="black">&</font> Sinfonia<font color="black">:</font><font color="black">:</font>adicionaGeradorDeEventos<font color="black">(</font>GeradorDeEventos<font color="black">*</font> ge<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pLixo.adiciona<font color="black">(</font>ge<font color="black">)</font>;
+
+    OuvidorDosGeradoresDeEventos<font color="black">*</font> novoOuvidor
+            <font color="black">=</font> <font color="blue">new</font> OuvidorDosGeradoresDeEventos<font color="black">(</font><font color="blue">this</font>, ge<font color="black">)</font>;
+
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pLixoOuvidores.adiciona<font color="black">(</font>novoOuvidor<font color="black">)</font>;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>fazRodarUmaVezEmThread<font color="black">(</font><font color="black">*</font>novoOuvidor, <font color="maroon">"ouvidor de "</font> <font color="black">+</font> <font color="black">*</font>ge<font color="black">)</font>;
+
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+Sinfonia<font color="black">&</font> Sinfonia<font color="black">:</font><font color="black">:</font>fazRodarUmaVezEmThread<font color="black">(</font>Executavel<font color="black">&</font> e, <font color="blue">const</font> string<font color="black">&</font> nome<font color="black">)</font> <font color="black">{</font>
+    Thread<font color="black">*</font> thread <font color="black">=</font> <font color="blue">new</font> Thread<font color="black">(</font>e<font color="black">)</font>;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pLixoThreads.adiciona<font color="black">(</font>thread<font color="black">)</font>;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pThreads.adiciona<font color="black">(</font>thread<font color="black">)</font>;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pNomeThreads.adiciona<font color="black">(</font>nome<font color="black">)</font>;
+
+    Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>INFO, <font color="maroon">"Sinfonia: vai rodar '"</font> <font color="black">+</font> nome <font color="black">+</font> <font color="maroon">"' em Thread..."</font><font color="black">)</font>;
+
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+Sinfonia<font color="black">&</font> Sinfonia<font color="black">:</font><font color="black">:</font>adicionaGeradorDeEventosEspecial<font color="black">(</font>
+        GeradorDeEventosEspecial<font color="black">*</font> gee, <font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font> executarUmaVezEmThread<font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>gee<font color="black">-</font><font color="black">&#62;</font>naoRecebeNenhumEvento<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        <font color="blue">if</font> <font color="black">(</font>gee<font color="black">-</font><font color="black">&#62;</font>eventosQueTrata<font color="black">(</font><font color="black">)</font>.tamanho<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font> <font color="black">{</font>
+            Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>WARN, <font color="maroon">"Sinfonia::adicionaGeradorDeEventosEspecial::"</font>
+                    <font color="maroon">" foi adicionado um GeradorDeEventosEspecial que não possui"</font>
+                    <font color="maroon">" informações de quais eventos ele trata. Talvez você"</font>
+                    <font color="maroon">" tenha esquecido de adicioná-los. Faça isso antes"</font>
+                    <font color="maroon">" de chamar esta função. cee: "</font> <font color="black">+</font> <font color="black">*</font>gee<font color="black">)</font>;
+
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGeradores.adiciona<font color="black">(</font>gee<font color="black">)</font>;
+        <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+            <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> gee<font color="black">-</font><font color="black">&#62;</font>eventosQueTrata<font color="black">(</font><font color="black">)</font>.tamanho<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+                Identificacao id<font color="black">(</font>gee<font color="black">-</font><font color="black">&#62;</font>eventosQueTrata<font color="black">(</font><font color="black">)</font><font color="black">[</font>i<font color="black">]</font><font color="black">)</font>;
+
+                <font color="blue">if</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGeradoresPontuais.existe<font color="black">(</font>id<font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGeradoresPontuais.insere<font color="black">(</font>id,
+                            Lista<font color="black">&#60;</font>GeradorDeEventosEspecial<font color="black">*</font><font color="black">&#62;</font><font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                <font color="black">}</font>
+
+                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGeradoresPontuais<font color="black">[</font>id<font color="black">]</font>.adiciona<font color="black">(</font>gee<font color="black">)</font>;
+    <font color="green">//          Debug::msg(INFO, "--- capt. de ev. espec. id=" + id + " cee: " + *cee);</font>
+            <font color="black">}</font>
+        <font color="black">}</font>
+    <font color="black">}</font>
+
+    <font color="blue">if</font> <font color="black">(</font>executarUmaVezEmThread<font color="black">)</font> <font color="black">{</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>fazRodarUmaVezEmThread<font color="black">(</font><font color="black">*</font>gee,
+                <font color="maroon">"gerador de eventos especial: "</font> <font color="black">+</font> <font color="black">*</font>gee<font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>adicionaGeradorDeEventos<font color="black">(</font>gee<font color="black">)</font>;
+
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+Sinfonia<font color="black">&</font> Sinfonia<font color="black">:</font><font color="black">:</font>adicionaSituacao<font color="black">(</font><font color="blue">const</font> Situacao<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pLixo.adiciona<font color="black">(</font><font color="black">(</font>Situacao<font color="black">*</font><font color="black">)</font> s<font color="black">)</font>;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>dinamicaParaModificar<font color="black">(</font><font color="black">)</font>.adicionaSituacao<font color="black">(</font>s<font color="black">)</font>;
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+Sinfonia<font color="black">&</font> Sinfonia<font color="black">:</font><font color="black">:</font>adicionaResultado<font color="black">(</font>Resultado<font color="black">*</font> r<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pLixo.adiciona<font color="black">(</font><font color="black">(</font>Resultado<font color="black">*</font><font color="black">)</font> r<font color="black">)</font>;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>concretizador<font color="black">(</font><font color="black">)</font>.adiciona<font color="black">(</font>r<font color="black">)</font>;
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+Sinfonia<font color="black">&</font> Sinfonia<font color="black">:</font><font color="black">:</font>adicionaEstado<font color="black">(</font>Estado<font color="black">*</font> e<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>estadosParaModificar<font color="black">(</font><font color="black">)</font>.adicionaEstado<font color="black">(</font>e<font color="black">)</font>;
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+string Sinfonia<font color="black">:</font><font color="black">:</font>emString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    string retorno <font color="black">=</font> Objeto<font color="black">:</font><font color="black">:</font>emString<font color="black">(</font><font color="black">)</font> <font color="black">+</font> <font color="maroon">" executando há "</font>
+                <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pQuantoTempoExecutando.intervalo<font color="black">(</font><font color="black">)</font>.emString<font color="black">(</font><font color="black">)</font>
+                <font color="black">+</font> <font color="maroon">". Estados: {"</font>;
+
+    <font color="blue">int</font> i, tamanho <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>estados<font color="black">(</font><font color="black">)</font>.nomeDeTodosEstados<font color="black">(</font><font color="black">)</font>.tamanho<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">for</font> <font color="black">(</font>i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> tamanho; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+        retorno <font color="black">+</font><font color="black">=</font> <font color="maroon">""</font> <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>estados<font color="black">(</font><font color="black">)</font>.estado<font color="black">(</font>
+                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>estados<font color="black">(</font><font color="black">)</font>.nomeDeTodosEstados<font color="black">(</font><font color="black">)</font><font color="black">[</font>i<font color="black">]</font>.emString<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+        <font color="blue">if</font> <font color="black">(</font>i <font color="black">&#60;</font> tamanho <font color="maroon">-1</font><font color="black">)</font> <font color="black">{</font>
+            retorno <font color="black">+</font><font color="black">=</font> <font color="maroon">", "</font>;
+        <font color="black">}</font>
+    <font color="black">}</font>
+
+    retorno <font color="black">+</font><font color="black">=</font> <font color="maroon">"}. Dinamica (Situacoes): {"</font>;
+    tamanho <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>dinamica<font color="black">(</font><font color="black">)</font>.nomeDeTodasSituacoes<font color="black">(</font><font color="black">)</font>.tamanho<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">for</font> <font color="black">(</font>i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> tamanho; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+<font color="green">//      Debug::msg(INFO, "--- situacao atual: " + this-&#62;dinamica().nomeDeTodasSituacoes()[i]);</font>
+
+        retorno <font color="black">+</font><font color="black">=</font> <font color="maroon">"{"</font> <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>dinamica<font color="black">(</font><font color="black">)</font>.situacao<font color="black">(</font>
+                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>dinamica<font color="black">(</font><font color="black">)</font>.nomeDeTodasSituacoes<font color="black">(</font><font color="black">)</font><font color="black">[</font>i<font color="black">]</font><font color="black">)</font>;
+
+        <font color="blue">if</font> <font color="black">(</font>i <font color="black">&#60;</font> tamanho <font color="maroon">-1</font><font color="black">)</font> <font color="black">{</font>
+            retorno <font color="black">+</font><font color="black">=</font> <font color="maroon">"}, "</font>;
+        <font color="black">}</font>
+    <font color="black">}</font>
+
+    <font color="blue">return</font> retorno <font color="black">+</font> <font color="maroon">"}."</font>;
+<font color="black">}</font>
+
+Sinfonia<font color="black">&</font> Sinfonia<font color="black">:</font><font color="black">:</font>inicializa<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="green">// Disparando todas as threads pendentes</font>
+    <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pThreads.tamanho<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pThreads<font color="black">[</font>i<font color="black">]</font><font color="black">-</font><font color="black">&#62;</font>start<font color="black">(</font><font color="maroon">"Thread n. "</font> <font color="black">+</font> Inteiro<font color="black">(</font>i <font color="black">+</font> <font color="maroon">1</font><font color="black">)</font>
+                <font color="black">+</font> <font color="maroon">", nome: "</font> <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pNomeThreads<font color="black">[</font>i<font color="black">]</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pThreads.limpa<font color="black">(</font><font color="black">)</font>; <font color="green">// mas elas continuam na lixeira</font>
+
+    <font color="green">// Gera o evento que liga a Sinfonia</font>
+    <font color="black">{</font>
+        Valor nome<font color="black">(</font>Sinfonia<font color="black">:</font><font color="black">:</font>LIGADA<font color="black">)</font>;
+        nome.adicionaApelido<font color="black">(</font><font color="maroon">"torna"</font><font color="black">)</font>;
+        ModificadorDeEstado mde<font color="black">(</font>nome<font color="black">)</font>;
+        mde.adicionaParametro<font color="black">(</font>Valor<font color="black">(</font><font color="blue">true</font><font color="black">)</font><font color="black">)</font>;
+        Evento<font color="black">*</font> ligaSinfonia <font color="black">=</font> Evento<font color="black">(</font>nome, mde<font color="black">)</font>.dispara<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTempo<font color="black">)</font>;
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>gera<font color="black">(</font>ligaSinfonia<font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+Executavel<font color="black">&</font> Sinfonia<font color="black">:</font><font color="black">:</font>executa<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pExecutou<font color="black">)</font> <font color="black">{</font>
+        Debug<font color="black">:</font><font color="black">:</font>sair<font color="black">(</font><font color="maroon">"Concretizador::executa:: só pode ser executado uma vez! "</font>
+                <font color="black">+</font> <font color="black">*</font><font color="blue">this</font><font color="black">)</font>;
+    <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEsperarAcabar.esperar<font color="black">(</font><font color="black">)</font>;
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pExecutou <font color="black">=</font> <font color="blue">true</font>;
+
+<font color="green">//      Debug::msg(INFO, "--- Iniciou Sinfonia: " + *this);</font>
+
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>inicializa<font color="black">(</font><font color="black">)</font>;
+
+        <font color="blue">do</font> <font color="black">{</font>
+<font color="green">//          Debug::msg(INFO, "--- A Sinfonia está rodando! Aguardando algum evento! :)");</font>
+
+            <font color="blue">const</font> Evento<font color="black">*</font> novoEvento <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>esperaAteQueHajaEvento<font color="black">(</font><font color="black">)</font>;
+
+            <font color="blue">static</font> <font color="blue">bool</font> jaAvisou <font color="black">=</font> <font color="blue">false</font>;
+
+            <font color="blue">if</font> <font color="black">(</font>jaAvisou <font color="black">&</font><font color="black">&</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>quantosEventosEmEspera<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font> <font color="black">{</font>
+                jaAvisou <font color="black">=</font> <font color="blue">false</font>;
+                Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>WARN, <font color="maroon">"Sinfonia::executa:: SOBRECARREGAMENTO:"</font>
+                        <font color="maroon">" parece que a sinfonia se normalizou a tempo."</font><font color="black">)</font>;
+            <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>jaAvisou <font color="black">&</font><font color="black">&</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>quantosEventosEmEspera<font color="black">(</font><font color="black">)</font> <font color="black">&#62;</font> <font color="maroon">1000</font><font color="black">)</font> <font color="black">{</font>
+                jaAvisou <font color="black">=</font> <font color="blue">true</font>;
+
+                Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>WARN, <font color="maroon">"Sinfonia::executa:: SOBRECARREGAMENTO:"</font>
+                        <font color="maroon">" há mais de 1000"</font>
+                        <font color="maroon">" eventos que não foram processados! A Sinfonia"</font>
+                        <font color="maroon">" pode estar sendo sobrecarregada. Verifique isto. "</font>
+                        <font color="maroon">" Pode ser que o número de eventos gerados não estão"</font>
+                        <font color="maroon">" conseguindo ser processados no tempo de ciclo total"</font>
+                        <font color="maroon">" da Sinfonia. Tente otimizar algum gerador de eventos"</font>
+                        <font color="maroon">" especial e transformá-lo em algum \"Estado externo\"."</font>
+                        <font color="maroon">" Caso a Sinfonia se normalize a tempo, outro aviso"</font>
+                        <font color="maroon">" será lançado."</font><font color="black">)</font>;
+            <font color="black">}</font>
+
+            <font color="green">// Tem que distribuir o evento para todo mundo.</font>
+
+            <font color="blue">if</font> <font color="black">(</font>novoEvento <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font> <font color="black">{</font>
+                <font color="blue">bool</font> valido <font color="black">=</font> <font color="blue">true</font>;
+
+                try <font color="black">{</font>
+                    <font color="blue">if</font> <font color="black">(</font>novoEvento<font color="black">-</font><font color="black">&#62;</font>especial<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+                <font color="black">}</font> <font color="blue">catch</font><font color="black">(</font>...<font color="black">)</font> <font color="black">{</font>
+                    Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>ERRO, <font color="maroon">"*** ERRO FATAL DENTRO DA SINFONIA! Chegou um"</font>
+                        <font color="maroon">" evento na Sinfonia que não é válido! Tentando ignorar..."</font><font color="black">)</font>;
+
+                    valido <font color="black">=</font> <font color="blue">false</font>;
+                <font color="black">}</font>
+
+                <font color="blue">if</font> <font color="black">(</font>valido<font color="black">)</font> <font color="black">{</font>
+                    string nomeDoEvento <font color="black">=</font> novoEvento<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font>;
+
+                    <font color="green">// No MediadorDeEstado definindo Estado do Evento atual</font>
+<font color="green">//                  Debug::msg(INFO, "--- 1. antes de mandar para a dinâmica - evento: " + *novoEvento);</font>
+                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>estadosParaModificar<font color="black">(</font><font color="black">)</font>.defineEstadoDoEventoAtual<font color="black">(</font><font color="black">*</font>novoEvento<font color="black">)</font>;
+
+<font color="green">//                  Debug::msg(INFO, "--- 2. mandando o evento para a dinâmica");</font>
+                    <font color="green">// No GeradorDeEventosDependente informando qual Evento ocorreu</font>
+                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>dinamicaParaModificar<font color="black">(</font><font color="black">)</font>.aconteceu<font color="black">(</font><font color="black">*</font>novoEvento<font color="black">)</font>;
+
+                    <font color="green">// Processa a dinâmica da Sinfonia</font>
+<font color="green">//                  Debug::msg(INFO, "--- 2,5. processando a dinâmica");</font>
+                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>dinamicaParaModificar<font color="black">(</font><font color="black">)</font>.executa<font color="black">(</font><font color="black">)</font>;
+
+                    <font color="green">// Puxando os Eventos gerados pela dinâmica para a Sinfonia</font>
+                    <font color="blue">while</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>dinamica<font color="black">(</font><font color="black">)</font>.quantosEventosEmEspera<font color="black">(</font><font color="black">)</font> <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font> <font color="black">{</font>
+                        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>gera<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>dinamicaParaModificar<font color="black">(</font><font color="black">)</font>
+                                .esperaAteQueHajaEvento<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                    <font color="black">}</font>
+
+<font color="green">//                  Debug::msg(INFO, "--- 3. mediador de estado");</font>
+                    <font color="green">// MediadorDeEstado, aplicando o Evento de fato</font>
+                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>estadosParaModificar<font color="black">(</font><font color="black">)</font>.aplica<font color="black">(</font><font color="black">*</font>novoEvento<font color="black">)</font>;
+
+<font color="green">//                  Debug::msg(INFO, "--- 4. manda para geradores de eventos especiais");</font>
+                    <font color="green">// Mandando Evento para GeradorDeEventos Especiais</font>
+                    <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGeradores.tamanho<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+<font color="green">//                      Debug::msg(INFO, "--- 4,5. antes de mandar para gerador "</font>
+<font color="green">//                              + Inteiro(i + 1));</font>
+
+                        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGeradores<font color="black">[</font>i<font color="black">]</font><font color="black">-</font><font color="black">&#62;</font>aconteceu<font color="black">(</font>
+                                <font color="black">(</font>Evento<font color="black">*</font><font color="black">)</font> novoEvento<font color="black">-</font><font color="black">&#62;</font>geraCopia<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                    <font color="black">}</font>
+
+                    <font color="green">// Mandando Evento para GeradorDeEventos Especiais pontuais</font>
+<font color="green">//                  Debug::msg(INFO, "--- 4,6. Mandando Evento para GeradorDeEventos Especiais pontuais");</font>
+                    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGeradoresPontuais.existe<font color="black">(</font>nomeDoEvento<font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+<font color="green">//                      Debug::msg(INFO, "--- 4,7. encontrou!! evento: " + nomeDoEvento);</font>
+
+                        Lista<font color="black">&#60;</font>GeradorDeEventosEspecial<font color="black">*</font><font color="black">&#62;</font><font color="black">&</font> pontuais
+                                <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGeradoresPontuais<font color="black">[</font>nomeDoEvento<font color="black">]</font>;
+
+                        <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> j <font color="black">=</font> <font color="maroon">0</font>; j <font color="black">&#60;</font> pontuais.tamanho<font color="black">(</font><font color="black">)</font>; j<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+<font color="green">//                          Debug::msg(INFO, "--- 4,8. mandando evento: " + nomeDoEvento);</font>
+                            pontuais<font color="black">[</font>j<font color="black">]</font><font color="black">-</font><font color="black">&#62;</font>aconteceu<font color="black">(</font><font color="black">(</font>Evento<font color="black">*</font><font color="black">)</font> novoEvento<font color="black">-</font><font color="black">&#62;</font>geraCopia<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                        <font color="black">}</font>
+                    <font color="black">}</font>
+
+<font color="green">//                  Debug::msg(INFO, "--- 5. mandando pro concretizador");</font>
+                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pConcretizador<font color="black">-</font><font color="black">&#62;</font>aconteceu<font color="black">(</font>
+                            <font color="black">(</font>Evento<font color="black">*</font><font color="black">)</font> novoEvento<font color="black">-</font><font color="black">&#62;</font>geraCopia<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+                    <font color="blue">delete</font> novoEvento;
+                <font color="black">}</font>
+            <font color="black">}</font>
+        <font color="black">}</font> <font color="blue">while</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>estados<font color="black">(</font><font color="black">)</font>.estado<font color="black">(</font>Sinfonia<font color="black">:</font><font color="black">:</font>LIGADA<font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font>.emBool<font color="black">(</font><font color="black">)</font>
+                <font color="black">|</font><font color="black">|</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>quantosEventosEmEspera<font color="black">(</font><font color="black">)</font> <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>;
+
+        <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGeradores.tamanho<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGeradores<font color="black">[</font>i<font color="black">]</font><font color="black">-</font><font color="black">&#62;</font>encerra<font color="black">(</font><font color="black">)</font>;
+        <font color="black">}</font>
+
+<font color="blue">#ifdef</font> _DEBUG
+        Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>INFO, <font color="maroon">"Finalizou Sinfonia."</font><font color="black">)</font>; <font color="green">/*+ *this
+                + "...");*/</font>
+<font color="blue">#endif</font>
+
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEsperarAcabar.liberar<font color="black">(</font><font color="black">)</font>;
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEsperarExecutar.liberar<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

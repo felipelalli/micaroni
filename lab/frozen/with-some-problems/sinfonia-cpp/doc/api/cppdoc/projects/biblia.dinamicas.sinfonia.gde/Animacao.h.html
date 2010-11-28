@@ -1,0 +1,160 @@
+<HTML>
+<HEAD>
+<TITLE>
+Animacao.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: Animacao.h.html,v $
+ * $Date: 2005/03/22 20:18:42 $
+ * $Revision: 1.9 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_ANIMACAO_H__EBCEECAD_06D5_45B9_9427_4D9F355AD651__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_ANIMACAO_H__EBCEECAD_06D5_45B9_9427_4D9F355AD651__INCLUDED_
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/mais/allegro/BasicoVisualAllegro.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>mais<font color="black">:</font><font color="black">:</font>allegro;
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/GeradorDeEventosEspecial.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia;
+
+<font color="blue">namespace</font> biblia <font color="black">{</font>
+ <font color="blue">namespace</font> dinamicas <font color="black">{</font>
+  <font color="blue">namespace</font> sinfonia <font color="black">{</font>
+   <font color="blue">namespace</font> gde <font color="black">{</font>
+    <font color="green">/**
+     * Exceções relativas à AnimacaoBiblia.
+     */</font>
+    <font color="blue">class</font> AnimacaoBibliaExcecao<font color="black">:</font> <font color="blue">public</font> SinfoniaExcecao <font color="black">{</font><font color="black">}</font>;
+
+    <font color="green">/**
+     * Quando, por algum motivo, não
+     * foi possível criar a AnimacaoBiblia
+     * em questão.
+     */</font>
+    <font color="blue">class</font> ImpossivelCriarAnimacaoBibliaExcecao<font color="black">:</font> <font color="blue">public</font> AnimacaoBibliaExcecao <font color="black">{</font><font color="black">}</font>;
+
+    <font color="green">/**
+     * Associa diretamente um Estado a uma animação da Bíblia.
+     * &#60;p&#62;
+     * Os campos do {@link Estado} a que esta classe é
+     * relacionada são:
+     * &#60;br&#62;&#60;ul&#62;
+     * &#60;li&#62;&#60;b&#62;(campo principal)&#60;/b&#62; - nome da animação.
+     * &#60;li&#62;&#60;b&#62;x&#60;/b&#62; (opcional) - posição X.
+     * &#60;li&#62;&#60;b&#62;y&#60;/b&#62; (opcional) - posição Y.
+     * &#60;li&#62;&#60;b&#62;largura&#60;/b&#62; (somente leitura) - largura da imagem.
+     * &#60;li&#62;&#60;b&#62;altura&#60;/b&#62; (somente leitura) - altura da imagem.
+     * &#60;li&#62;&#60;b&#62;visível&#60;/b&#62; (padrão SIM)
+     * &#60;li&#62;&#60;b&#62;sentido inverso&#60;/b&#62; (padrão NÃO)
+     * &#60;li&#62;&#60;b&#62;quadros por segundo&#60;/b&#62; (padrão 10) - quantos quadros por segundo.
+     * &#60;li&#62;&#60;b&#62;transparência&#60;/b&#62; (opcional) - porcentagem de transparencia.
+     * &#60;li&#62;&#60;b&#62;loop&#60;/b&#62; (padrão F) - define se esta animação está em loop ou não. Em loop
+     *     ela não gera um {@link Evento} ao chegar no final.
+     *     Caso contrário, a animação pára logo após completar o intervalo
+     *     e um Evento é lançado.
+     * &#60;li&#62;&#60;b&#62;iniciado&#60;/b&#62; (padrão F) - se esta animação
+     *     está em andamento ou não. Fica
+     *     verdadeiro toda vez que inicia e falso quando pára. Para iniciar
+     *     a Animação, é necessário lançar um {@link Evento} que o modifique
+     *     para verdadeiro, e para pará-lo um que o modifique para falso.
+     *     Toda vez que a animação chega no final (ou início caso esteja
+     *     no sentido inverso) e não está em loop é
+     *     lançado um Evento que pára a animação.
+     * &#60;/ul&#62;
+     */</font>
+    <font color="blue">class</font> AnimacaoBiblia<font color="black">:</font> <font color="blue">public</font> GeradorDeEventosEspecial <font color="black">{</font>
+        <font color="blue">private</font><font color="black">:</font>
+            BasicoVisual<font color="black">&</font> pVisual;
+            string pAnimacaoRelacionada;
+            Estado<font color="black">*</font> pEstado;
+
+            <font color="blue">class</font> GeraEventosParaAnimacao<font color="black">:</font> <font color="blue">public</font> Executavel <font color="black">{</font>
+                <font color="blue">private</font><font color="black">:</font>
+                    AnimacaoBiblia<font color="black">*</font> pAnimacaoBiblia;
+                    <font color="blue">bool</font> pFimAnterior;
+
+                    <font color="blue">bool</font> pTermina;
+                    <font color="blue">bool</font> pTerminou;
+
+                <font color="blue">protected</font><font color="black">:</font>
+                    <font color="blue">const</font> <font color="blue">bool</font> fim<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+                <font color="blue">public</font><font color="black">:</font>
+                    GeraEventosParaAnimacao<font color="black">(</font><font color="black">)</font>;
+                    virtual <font color="blue">void</font> defineThis<font color="black">(</font>AnimacaoBiblia<font color="black">*</font><font color="black">)</font>;
+                    virtual GeraEventosParaAnimacao<font color="black">&</font> termina<font color="black">(</font><font color="black">)</font>;
+                    virtual <font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font> terminou<font color="black">(</font><font color="black">)</font>;
+
+                    <font color="green">// Executavel:</font>
+                    virtual Executavel<font color="black">&</font> executa<font color="black">(</font><font color="black">)</font>;
+            <font color="black">}</font> pGeradorDeEventosParaAnimacao;
+
+            Thread pGeradorDeEventosParaAnimacaoEmThread;
+            <font color="blue">friend</font> GeraEventosParaAnimacao;
+
+        <font color="blue">public</font><font color="black">:</font>
+            <font color="green">/**
+             * Cria uma Animação diretamente relacionada a um
+             * {@link Estado} passado como parâmetro. Esse
+             * {@link Estado} deve ser da classe {@link Multifuncional}
+             * e possuir os campos definidos na documentação principal
+             * desta classe, &#60;b&#62;com os valores iniciais já preenchidos&#60;/b&#62;.
+             * A animação da bíblia a que esta classe está relacionada
+             * deve estar previamente criada.
+             * &#60;p&#62;
+             * Esta animação deve ser {@link #executa executada}
+             * uma vez em Thread para funcionar.
+             *
+             * @throws ImpossivelCriarAnimacaoBibliaExcecao É invocado quando
+             *         não há informação suficiente para criar a AnimacaoBiblia.
+             */</font>
+            AnimacaoBiblia<font color="black">(</font><font color="blue">const</font> MediadorDeEstados<font color="black">&</font>,
+                     BasicoVisual<font color="black">&</font>,
+                     Estado<font color="black">*</font> estadoRelacionado<font color="black">)</font>;
+
+            virtual ~AnimacaoBiblia<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Retorna a animação relacionada.
+             */</font>
+            virtual ComponenteGrafico<font color="black">&#60;</font>Video<font color="black">&#62;</font><font color="black">&</font>
+                    animacaoRelacionada<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Retorna o nome da animação relacionada.
+             */</font>
+            virtual <font color="blue">const</font> string<font color="black">&</font> nomeDaAnimacaoRelacionada<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">// Executavel:</font>
+            <font color="green">/**
+             * Deve ser executado uma única vez em Thread.
+             * Fica esperando algum {@link Evento} que corresponda
+             * com o {@link Estado} deste relacionado e toma
+             * as devidas providências.
+             */</font>
+            virtual Executavel<font color="black">&</font> executa<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">// Objeto:</font>
+            virtual string emString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+    <font color="black">}</font>;
+   <font color="black">}</font>
+  <font color="black">}</font>
+ <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_ANIMACAO_H__EBCEECAD_06D5_45B9_9427_4D9F355AD651__INCLUDED_)</font>
+
+</PRE>
+</BODY>
+</HTML>

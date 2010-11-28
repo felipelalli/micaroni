@@ -1,0 +1,7 @@
+Toda a documentação relacionada ao projeto.
+
+.api - Application Program Interface do projeto, subdiv em java, c++ etc.
+.cronogramas - Cronogramas, prazos e histórico de desenv do projeto.
+.definicoes - Definições do projeto.
+.padroes - Padrões e modelos que devem ser seguidos neste projeto.
+.rascunhos - Arquivos usados no desenvolvimento.

@@ -1,0 +1,72 @@
+<HTML>
+<HEAD>
+<TITLE>
+SinfoniaExcecao.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: SinfoniaExcecao.h.html,v $
+ * $Date: 2005/03/22 20:19:08 $
+ * $Revision: 1.37 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_SINFONIAEXCECAO_H__D4A22FAC_DA5B_4404_B002_F45B651E0C0F__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_SINFONIAEXCECAO_H__D4A22FAC_DA5B_4404_B002_F45B651E0C0F__INCLUDED_
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/basico/Excecao.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>basico;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/tempo/UniversoDeTempo.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/tempo/UnidadeDeTempo.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>tempo;
+
+<font color="blue">namespace</font> biblia <font color="black">{</font>
+ <font color="blue">namespace</font> dinamicas <font color="black">{</font>
+  <font color="blue">namespace</font> sinfonia <font color="black">{</font>
+    <font color="green">/**
+     * Exceções relativas à Sinfonia.
+     *
+     * @see Sinfonia
+     */</font>
+    <font color="blue">class</font> SinfoniaExcecao<font color="black">:</font> <font color="blue">public</font> Excecao <font color="black">{</font><font color="black">}</font>;
+
+    <font color="green">// Esta próxima classe está aqui porque a SinfoniaExcecao</font>
+    <font color="green">// é incluída por quase todos.</font>
+
+    <font color="green">/**
+     * É um UniversoDeTempo que conta de um em um,
+     * para ser usado quando não se tem um UniversoDeTempo
+     * disponível.
+     */</font>
+    <font color="blue">class</font> UniversoSequencial<font color="black">:</font> <font color="blue">public</font> UniversoDeTempo <font color="black">{</font>
+        <font color="blue">private</font><font color="black">:</font>
+            <font color="blue">static</font> <font color="blue">int</font> pVezes;
+
+            <font color="blue">static</font> <font color="blue">class</font> Vezes<font color="black">:</font> <font color="blue">public</font> UnidadeDeTempo <font color="black">{</font>
+                <font color="blue">public</font><font color="black">:</font>
+                    Vezes<font color="black">(</font><font color="black">)</font>;
+                    virtual ~Vezes<font color="black">(</font><font color="black">)</font>;
+            <font color="black">}</font> pPasso;
+
+        <font color="blue">public</font><font color="black">:</font>
+            virtual Momento agora<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+            virtual <font color="blue">const</font> UnidadeDeTempo<font color="black">&</font> cadaPasso<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+            virtual <font color="blue">bool</font> mesmoUniversoDeTempo<font color="black">(</font><font color="blue">const</font> UniversoDeTempo<font color="black">&</font><font color="black">)</font> <font color="blue">const</font>;
+    <font color="black">}</font>;
+  <font color="black">}</font>
+ <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_SINFONIAEXCECAO_H__D4A22FAC_DA5B_4404_B002_F45B651E0C0F__INCLUDED_)</font>
+
+</PRE>
+</BODY>
+</HTML>

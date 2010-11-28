@@ -1,0 +1,3 @@
+API gerada pelo cppdoc.
+
+http://www.google.com.br/search?q=cppdoc&btnI=I

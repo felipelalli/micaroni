@@ -1,0 +1,342 @@
+<HTML>
+<HEAD>
+<TITLE>
+MouseBiblia.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: MouseBiblia.cpp.html,v $
+ * $Date: 2005/03/22 20:18:46 $
+ * $Revision: 1.7 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/gde/MouseBiblia.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia<font color="black">:</font><font color="black">:</font>gde;
+
+MouseBiblia<font color="black">:</font><font color="black">:</font>MouseBiblia<font color="black">(</font><font color="blue">const</font> MediadorDeEstados<font color="black">&</font> mde,
+                         <font color="blue">const</font> UniversoDeTempo<font color="black">&</font> u,
+                     Estado<font color="black">*</font> e<font color="black">)</font>
+    <font color="black">:</font>GeradorDeEventosEspecial<font color="black">(</font>mde<font color="black">)</font>, pEstado<font color="black">(</font>e<font color="black">)</font>,
+     pGeradorDeEventosParaMouseEmThread<font color="black">(</font>pGeradorDeEventosParaMouse<font color="black">)</font>,
+     pTempo<font color="black">(</font>u<font color="black">)</font>, pNomeDoEstadoRelacionado<font color="black">(</font><font color="maroon">"???"</font><font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>modificaEventosQueTrata<font color="black">(</font><font color="black">)</font>.adiciona<font color="black">(</font>
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+MouseBiblia<font color="black">:</font><font color="black">:</font>~MouseBiblia<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGeradorDeEventosParaMouse.termina<font color="black">(</font><font color="black">)</font>;
+
+    <font color="blue">while</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGeradorDeEventosParaMouse.terminou<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        Thread<font color="black">:</font><font color="black">:</font>sleep<font color="black">(</font>Intervalo<font color="black">(</font><font color="maroon">10</font>, Milissegundo<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>
+<font color="black">}</font>
+
+string MouseBiblia<font color="black">:</font><font color="black">:</font>emString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="maroon">"MouseBiblia("</font> <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pNomeDoEstadoRelacionado <font color="black">+</font> <font color="maroon">")"</font>;
+<font color="black">}</font>
+
+Executavel<font color="black">&</font> MouseBiblia<font color="black">:</font><font color="black">:</font>executa<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pNomeDoEstadoRelacionado
+            <font color="black">=</font> Valor<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>.emString<font color="black">(</font><font color="black">)</font><font color="black">)</font>.emString<font color="black">(</font><font color="black">)</font>;
+
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>mediadorDeEstados<font color="black">(</font><font color="black">)</font>
+        .existeEstado<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pNomeDoEstadoRelacionado<font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+        Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>WARN, <font color="maroon">"MouseBiblia: aguardando"</font>
+                <font color="maroon">" Estado '"</font> <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pNomeDoEstadoRelacionado <font color="black">+</font> <font color="maroon">"'"</font>
+                <font color="maroon">" ser criado..."</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">while</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>encerrou<font color="black">(</font><font color="black">)</font> <font color="black">&</font><font color="black">&</font> <font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>mediadorDeEstados<font color="black">(</font><font color="black">)</font>
+            .existeEstado<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pNomeDoEstadoRelacionado<font color="black">)</font><font color="black">)</font>
+    <font color="black">{</font>
+        Thread<font color="black">:</font><font color="black">:</font>sleep<font color="black">(</font>Intervalo<font color="black">(</font><font color="maroon">100</font>, Milissegundo<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    try <font color="black">{</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pNomeDoEstadoRelacionado, <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTempo<font color="black">)</font>;
+        Estado<font color="black">*</font> alvo <font color="black">=</font> <font color="black">(</font>Estado<font color="black">*</font><font color="black">)</font> <font color="black">&</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>mediadorDeEstados<font color="black">(</font><font color="black">)</font>
+                .estado<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pNomeDoEstadoRelacionado<font color="black">)</font>;
+
+        <font color="blue">int</font> x <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pMa.posX<font color="black">(</font><font color="black">)</font>;
+        <font color="blue">int</font> y <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pMa.posY<font color="black">(</font><font color="black">)</font>;
+
+        <font color="green">// evento X</font>
+        <font color="black">{</font>
+            ModificadorDeEstado mde<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>; <font color="green">// valor do campo principal</font>
+            mde.adicionaParametro<font color="black">(</font>Valor<font color="black">(</font>x<font color="black">)</font><font color="black">)</font>;
+
+            mde.defineCampo<font color="black">(</font><font color="maroon">"x"</font><font color="black">)</font>;
+            Evento moveX<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>, mde<font color="black">)</font>;
+            Evento<font color="black">*</font> disparado <font color="black">=</font> moveX.dispara<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTempo<font color="black">)</font>;
+            disparado<font color="black">-</font><font color="black">&#62;</font>especial<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>gera<font color="black">(</font>disparado<font color="black">)</font>;
+        <font color="black">}</font>
+
+        <font color="green">// evento Y</font>
+        <font color="black">{</font>
+            ModificadorDeEstado mde<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>; <font color="green">// valor do campo principal</font>
+            mde.adicionaParametro<font color="black">(</font>Valor<font color="black">(</font>y<font color="black">)</font><font color="black">)</font>;
+
+            mde.defineCampo<font color="black">(</font><font color="maroon">"y"</font><font color="black">)</font>;
+            Evento moveY<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>, mde<font color="black">)</font>;
+            Evento<font color="black">*</font> disparado <font color="black">=</font> moveY.dispara<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTempo<font color="black">)</font>;
+            disparado<font color="black">-</font><font color="black">&#62;</font>especial<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>gera<font color="black">(</font>disparado<font color="black">)</font>;
+        <font color="black">}</font>
+
+        <font color="green">// torna visível</font>
+        <font color="black">{</font>
+            ModificadorDeEstado mde<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>; <font color="green">// valor do campo principal</font>
+            mde.adicionaParametro<font color="black">(</font>Valor<font color="black">(</font><font color="blue">true</font><font color="black">)</font><font color="black">)</font>;
+
+            mde.defineCampo<font color="black">(</font><font color="maroon">"visível"</font><font color="black">)</font>;
+            Evento visivel<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>, mde<font color="black">)</font>;
+            Evento<font color="black">*</font> disparado <font color="black">=</font> visivel.dispara<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTempo<font color="black">)</font>;
+            disparado<font color="black">-</font><font color="black">&#62;</font>especial<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>gera<font color="black">(</font>disparado<font color="black">)</font>;
+        <font color="black">}</font>
+    <font color="black">}</font> <font color="blue">catch</font><font color="black">(</font><font color="blue">const</font> Excecao<font color="black">&</font> ex<font color="black">)</font> <font color="black">{</font>
+        ImpossivelCriarMouseBibliaExcecao icmbe;
+        icmbe <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"Erro ao criar MouseBiblia! Campo principal deve"</font>
+                <font color="maroon">" existir e deve existir também um Estado relacionado."</font>
+                <font color="maroon">" Lembre-se que é o nome completo. Excecao: "</font> <font color="black">+</font> ex;
+
+        <font color="blue">throw</font> icmbe;
+    <font color="black">}</font>
+
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGeradorDeEventosParaMouse.defineThis<font color="black">(</font><font color="blue">this</font><font color="black">)</font>;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGeradorDeEventosParaMouseEmThread.start<font color="black">(</font>
+        <font color="maroon">"gerador de eventos para mouse em thread: "</font> <font color="black">+</font> <font color="black">*</font><font color="blue">this</font><font color="black">)</font>;
+
+    <font color="blue">while</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>encerrou<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        <font color="blue">const</font> Evento<font color="black">*</font> e <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>esperaAteQueVenhaEvento<font color="black">(</font><font color="black">)</font>;
+
+        <font color="blue">if</font> <font color="black">(</font>e <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font> <font color="black">{</font>
+            <font color="blue">if</font> <font color="black">(</font>e<font color="black">-</font><font color="black">&#62;</font>modificaEstadoDiretamente<font color="black">(</font><font color="black">)</font>
+                <font color="black">&</font><font color="black">&</font> <font color="black">(</font>e<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>
+            <font color="black">{</font>
+                Valor campo <font color="black">=</font> e<font color="black">-</font><font color="black">&#62;</font>modificador<font color="black">(</font><font color="black">)</font>.campo<font color="black">(</font><font color="black">)</font>;
+
+                <font color="blue">if</font> <font color="black">(</font>campo <font color="black">=</font><font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL<font color="black">)</font> <font color="black">{</font>
+                    Lista<font color="black">&#60;</font>Evento<font color="black">*</font><font color="black">&#62;</font> aDisparar;
+
+                    string nomeDoEstadoRelacionado
+                            <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>.emString<font color="black">(</font><font color="black">)</font>;
+
+                    <font color="green">// retira o visível do Estado anterior</font>
+                    <font color="black">{</font>
+                        ModificadorDeEstado mde<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pNomeDoEstadoRelacionado<font color="black">)</font>;
+                        mde.adicionaParametro<font color="black">(</font>Valor<font color="black">(</font><font color="blue">false</font><font color="black">)</font><font color="black">)</font>;
+
+                        mde.defineCampo<font color="black">(</font><font color="maroon">"visível"</font><font color="black">)</font>;
+                        Evento retiraVisivelDoEstadoAnterior<font color="black">(</font>
+                                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pNomeDoEstadoRelacionado, mde<font color="black">)</font>;
+
+                        Evento<font color="black">*</font> disparado <font color="black">=</font> retiraVisivelDoEstadoAnterior
+                                .dispara<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTempo<font color="black">)</font>;
+
+                        disparado<font color="black">-</font><font color="black">&#62;</font>especial<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+                        aDisparar.adiciona<font color="black">(</font>disparado<font color="black">)</font>;
+                    <font color="black">}</font>
+
+                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pNomeDoEstadoRelacionado
+                            <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>.emString<font color="black">(</font><font color="black">)</font>;
+
+                    <font color="green">// move X</font>
+                    <font color="black">{</font>
+                        ModificadorDeEstado mde<font color="black">(</font>nomeDoEstadoRelacionado<font color="black">)</font>;
+                        mde.adicionaParametro<font color="black">(</font>Valor<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pMa.posX<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+
+                        mde.defineCampo<font color="black">(</font><font color="maroon">"x"</font><font color="black">)</font>;
+                        Evento moveX<font color="black">(</font>nomeDoEstadoRelacionado, mde<font color="black">)</font>;
+
+                        Evento<font color="black">*</font> disparado <font color="black">=</font> moveX.dispara<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTempo<font color="black">)</font>;
+
+                        disparado<font color="black">-</font><font color="black">&#62;</font>especial<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+                        aDisparar.adiciona<font color="black">(</font>disparado<font color="black">)</font>;
+                    <font color="black">}</font>
+
+                    <font color="green">// move Y</font>
+                    <font color="black">{</font>
+                        ModificadorDeEstado mde<font color="black">(</font>nomeDoEstadoRelacionado<font color="black">)</font>;
+                        mde.adicionaParametro<font color="black">(</font>Valor<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pMa.posY<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+
+                        mde.defineCampo<font color="black">(</font><font color="maroon">"y"</font><font color="black">)</font>;
+                        Evento moveY<font color="black">(</font>nomeDoEstadoRelacionado, mde<font color="black">)</font>;
+
+                        Evento<font color="black">*</font> disparado <font color="black">=</font> moveY.dispara<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTempo<font color="black">)</font>;
+
+                        disparado<font color="black">-</font><font color="black">&#62;</font>especial<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+                        aDisparar.adiciona<font color="black">(</font>disparado<font color="black">)</font>;
+                    <font color="black">}</font>
+
+                    <font color="green">// coloca visível no Estado atual</font>
+                    <font color="black">{</font>
+                        ModificadorDeEstado mde<font color="black">(</font>nomeDoEstadoRelacionado<font color="black">)</font>;
+                        mde.adicionaParametro<font color="black">(</font>Valor<font color="black">(</font><font color="blue">true</font><font color="black">)</font><font color="black">)</font>;
+
+                        mde.defineCampo<font color="black">(</font><font color="maroon">"visível"</font><font color="black">)</font>;
+                        Evento colocaVisivelNoEstado<font color="black">(</font>
+                                nomeDoEstadoRelacionado, mde<font color="black">)</font>;
+
+                        Evento<font color="black">*</font> disparado <font color="black">=</font> colocaVisivelNoEstado
+                                .dispara<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTempo<font color="black">)</font>;
+
+                        disparado<font color="black">-</font><font color="black">&#62;</font>especial<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+                        aDisparar.adiciona<font color="black">(</font>disparado<font color="black">)</font>;
+                    <font color="black">}</font>
+
+                    <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> aDisparar.tamanho<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+<font color="green">//                      Debug::msg(WARN, "--- vai disparar: " + *(aDisparar[i]));</font>
+                        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>gera<font color="black">(</font>aDisparar<font color="black">[</font>i<font color="black">]</font><font color="black">)</font>;
+                    <font color="black">}</font>
+                <font color="black">}</font>
+            <font color="black">}</font>
+
+            <font color="blue">delete</font> e;
+        <font color="black">}</font>
+    <font color="black">}</font>
+
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+MouseBiblia<font color="black">:</font><font color="black">:</font>GeraEventosParaMouse
+        <font color="black">:</font><font color="black">:</font>GeraEventosParaMouse<font color="black">(</font><font color="black">)</font>
+    <font color="black">:</font>pMouseBiblia<font color="black">(</font>NULL<font color="black">)</font>, pTerminou<font color="black">(</font><font color="blue">false</font><font color="black">)</font>,
+     pTermina<font color="black">(</font><font color="blue">false</font><font color="black">)</font>
+<font color="black">{</font><font color="black">}</font>
+
+MouseBiblia<font color="black">:</font><font color="black">:</font>GeraEventosParaMouse<font color="black">&</font> MouseBiblia
+        <font color="black">:</font><font color="black">:</font>GeraEventosParaMouse<font color="black">:</font><font color="black">:</font>termina<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTermina <font color="black">=</font> <font color="blue">true</font>;
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+<font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font> MouseBiblia<font color="black">:</font><font color="black">:</font>GeraEventosParaMouse<font color="black">:</font><font color="black">:</font>terminou<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTerminou;
+<font color="black">}</font>
+
+Executavel<font color="black">&</font> MouseBiblia<font color="black">:</font><font color="black">:</font>GeraEventosParaMouse<font color="black">:</font><font color="black">:</font>executa<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    Mouse<font color="black">&</font> m <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pMouseBiblia<font color="black">-</font><font color="black">&#62;</font>pMa;
+    MouseBiblia<font color="black">&</font> mb <font color="black">=</font> <font color="black">*</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pMouseBiblia<font color="black">)</font>;
+    
+    <font color="blue">while</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTermina<font color="black">)</font> <font color="black">{</font>
+        m.executa<font color="black">(</font><font color="black">)</font>;
+        Lista<font color="black">&#60;</font>Evento<font color="black">*</font><font color="black">&#62;</font> aDisparar;
+
+        <font color="blue">if</font> <font color="black">(</font>m.moveuMouse<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+<font color="green">//          Debug::msg(INFO, "--- moveu mouse!!");</font>
+
+            <font color="blue">int</font> x <font color="black">=</font> m.posX<font color="black">(</font><font color="black">)</font>;
+            <font color="blue">int</font> y <font color="black">=</font> m.posY<font color="black">(</font><font color="black">)</font>;
+
+            string estadoRelacionado <font color="black">=</font> mb.pEstado<font color="black">-</font><font color="black">&#62;</font>valor<font color="black">(</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">// evento X</font>
+            <font color="black">{</font>
+                ModificadorDeEstado mde<font color="black">(</font>estadoRelacionado<font color="black">)</font>; <font color="green">// valor do campo principal</font>
+                mde.adicionaParametro<font color="black">(</font>Valor<font color="black">(</font>x<font color="black">)</font><font color="black">)</font>;
+                mde.defineCampo<font color="black">(</font><font color="maroon">"x"</font><font color="black">)</font>;
+                Evento moveX<font color="black">(</font>estadoRelacionado, mde<font color="black">)</font>;
+                Evento<font color="black">*</font> disparado <font color="black">=</font> moveX.dispara<font color="black">(</font>mb.pTempo<font color="black">)</font>;
+                disparado<font color="black">-</font><font color="black">&#62;</font>especial<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+
+                aDisparar.adiciona<font color="black">(</font>disparado<font color="black">)</font>;
+            <font color="black">}</font>
+
+            <font color="green">// evento Y</font>
+            <font color="black">{</font>
+                ModificadorDeEstado mde<font color="black">(</font>estadoRelacionado<font color="black">)</font>; <font color="green">// valor do campo principal</font>
+                mde.adicionaParametro<font color="black">(</font>Valor<font color="black">(</font>y<font color="black">)</font><font color="black">)</font>;
+
+                mde.defineCampo<font color="black">(</font><font color="maroon">"y"</font><font color="black">)</font>;
+                Evento moveY<font color="black">(</font>estadoRelacionado, mde<font color="black">)</font>;
+                Evento<font color="black">*</font> disparado <font color="black">=</font> moveY.dispara<font color="black">(</font>mb.pTempo<font color="black">)</font>;
+                disparado<font color="black">-</font><font color="black">&#62;</font>especial<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+                aDisparar.adiciona<font color="black">(</font>disparado<font color="black">)</font>;
+            <font color="black">}</font>
+        <font color="black">}</font>
+
+        <font color="blue">if</font> <font color="black">(</font>m.pressionouBotaoEsquerdo<font color="black">(</font><font color="black">)</font>
+            <font color="black">|</font><font color="black">|</font> m.liberouBotaoEsquerdo<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+        <font color="black">{</font>
+            <font color="blue">bool</font> valor <font color="black">=</font> m.botaoEsquerdoPressionado<font color="black">(</font><font color="black">)</font>;
+
+            ModificadorDeEstado mde<font color="black">(</font>mb.pEstado<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+            mde.adicionaParametro<font color="black">(</font>Valor<font color="black">(</font>valor<font color="black">)</font><font color="black">)</font>;
+
+            mde.defineCampo<font color="black">(</font><font color="maroon">"botão esquerdo pressionado"</font><font color="black">)</font>;
+            Evento evento<font color="black">(</font>mb.pEstado<font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font>, mde<font color="black">)</font>;
+            evento.grupo<font color="black">(</font>mb.pEstado<font color="black">-</font><font color="black">&#62;</font>grupo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+            Evento<font color="black">*</font> disparado <font color="black">=</font> evento.dispara<font color="black">(</font>mb.pTempo<font color="black">)</font>;
+            disparado<font color="black">-</font><font color="black">&#62;</font>especial<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+            aDisparar.adiciona<font color="black">(</font>disparado<font color="black">)</font>;
+        <font color="black">}</font>
+
+        <font color="blue">if</font> <font color="black">(</font>m.pressionouBotaoDireito<font color="black">(</font><font color="black">)</font>
+            <font color="black">|</font><font color="black">|</font> m.liberouBotaoDireito<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+        <font color="black">{</font>
+            <font color="blue">bool</font> valor <font color="black">=</font> m.botaoDireitoPressionado<font color="black">(</font><font color="black">)</font>;
+
+            ModificadorDeEstado mde<font color="black">(</font>mb.pEstado<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+            mde.adicionaParametro<font color="black">(</font>Valor<font color="black">(</font>valor<font color="black">)</font><font color="black">)</font>;
+
+            mde.defineCampo<font color="black">(</font><font color="maroon">"botão direito pressionado"</font><font color="black">)</font>;
+            Evento evento<font color="black">(</font>mb.pEstado<font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font>, mde<font color="black">)</font>;
+            evento.grupo<font color="black">(</font>mb.pEstado<font color="black">-</font><font color="black">&#62;</font>grupo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+            Evento<font color="black">*</font> disparado <font color="black">=</font> evento.dispara<font color="black">(</font>mb.pTempo<font color="black">)</font>;
+            disparado<font color="black">-</font><font color="black">&#62;</font>especial<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+            aDisparar.adiciona<font color="black">(</font>disparado<font color="black">)</font>;
+        <font color="black">}</font>
+
+        <font color="blue">if</font> <font color="black">(</font>m.pressionouBotaoCentral<font color="black">(</font><font color="black">)</font>
+            <font color="black">|</font><font color="black">|</font> m.liberouBotaoCentral<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+        <font color="black">{</font>
+            <font color="blue">bool</font> valor <font color="black">=</font> m.botaoCentralPressionado<font color="black">(</font><font color="black">)</font>;
+
+            ModificadorDeEstado mde<font color="black">(</font>mb.pEstado<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+            mde.adicionaParametro<font color="black">(</font>Valor<font color="black">(</font>valor<font color="black">)</font><font color="black">)</font>;
+
+            mde.defineCampo<font color="black">(</font><font color="maroon">"botão central pressionado"</font><font color="black">)</font>;
+            Evento evento<font color="black">(</font>mb.pEstado<font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font>, mde<font color="black">)</font>;
+            evento.grupo<font color="black">(</font>mb.pEstado<font color="black">-</font><font color="black">&#62;</font>grupo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+            Evento<font color="black">*</font> disparado <font color="black">=</font> evento.dispara<font color="black">(</font>mb.pTempo<font color="black">)</font>;
+            disparado<font color="black">-</font><font color="black">&#62;</font>especial<font color="black">(</font><font color="blue">true</font><font color="black">)</font>;
+            aDisparar.adiciona<font color="black">(</font>disparado<font color="black">)</font>;
+        <font color="black">}</font>
+
+        m.limpa<font color="black">(</font><font color="black">)</font>;
+
+        <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> aDisparar.tamanho<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+<font color="green">//          Debug::msg(WARN, "--- disparando: " + *(aDisparar[i]));</font>
+            mb.gera<font color="black">(</font>aDisparar<font color="black">[</font>i<font color="black">]</font><font color="black">)</font>;
+        <font color="black">}</font>
+
+        Thread<font color="black">:</font><font color="black">:</font>sleep<font color="black">(</font>Intervalo<font color="black">(</font><font color="maroon">10</font>, Milissegundo<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pTerminou <font color="black">=</font> <font color="blue">true</font>;
+
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+<font color="blue">void</font> MouseBiblia<font color="black">:</font><font color="black">:</font>GeraEventosParaMouse<font color="black">:</font><font color="black">:</font>defineThis<font color="black">(</font>MouseBiblia<font color="black">*</font> mb<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pMouseBiblia <font color="black">=</font> mb;
+<font color="black">}</font>
+
+
+</PRE>
+</BODY>
+</HTML>

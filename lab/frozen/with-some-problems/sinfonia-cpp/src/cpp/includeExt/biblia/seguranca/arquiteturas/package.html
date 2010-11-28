@@ -1,0 +1,530 @@
+<html>
+<body>
+
+<h1>Criptografia</h1>
+<i>Retirado de <a href="http://www.dei.isep.ipp.pt/~andre/documentos/criptografia.html">http://www.dei.isep.ipp.pt/~andre/documentos/criptografia.html</a></i>
+
+<p>A encriptação ou cifragem consiste na aplicação de um algoritmo aos dados por forma a que eles se tornem ilegiveis, para recuperar os dados originais será necessario conhecer o algoritmo de desencriptação ou decifragem.
+
+<p>As aplicações básicas da criptografia são a confidencialidade (garantir que apenas quem autorizado pode ler os dados) e a autenticação/integridade (garantir que os dados têm a origem correcta e que não foram alterados entre origem e destino). Existem ainda outras aplicações, como por exemplo a assinatura digital.
+
+<p>Na prática, juntamente com os algoritmos utilizam-se chaves, mesmo que os algoritmos sejam conhecidos é necessária a chave correta.
+
+<p>A criptografia simétrica, também conhecida por criptografia tradicional utiliza uma única chave que serve tanto para cifrar como para decifrar. A criptografia de chave pública (mais recente) utiliza uma chave para cifrar e outra chave para decifrar.
+
+<p>Não existem mecanismos de cifragem/decifragem 100% eficazes, numa abordagem puramente teórica é imediato que qualquer chave pode ser quebrada pela força bruta (supondo que dispõe de um exemplar de uma mesma mensagem original e cifrada, e o algoritmo é conhecido, basta tentar com todas as chaves possíveis até acertar).
+
+<p>A solução é entrar no dominio prático e atender às capacidades do equipamento de processamento actual de modo a usar algoritmos e chaves que não possam ser descobertas em tempo útil. O tempo necessário para quebrar uma chave pela "força bruta" depende do número de chaves possiveis (número de bits da chave) e do tempo de execução do algoritmo.
+
+<p>O grande problema desta abordagem é que a capacidade de processamento dos equipamentos tem duplicado de 18 em 18 meses, logo de 18 em 18 meses é necessário aumentar um bit às chaves.
+
+<h2>Algoritmos Criptográficos</h2>
+<i>Retirado de <a href="http://www.absoluta.org/cripty/algoritmos.htm">http://www.absoluta.org/cripty/algoritmos.htm</a> ou <a href="http://www.google.com.br/search?sourceid=navclient&hl=pt&ie=UTF-8&oe=UTF-8&q=IDEA+RC2+RC4+RC5+Criptografia&btnI=I">http://www.google.com.br/search?sourceid=navclient&hl=pt&ie=UTF-8&oe=UTF-8&q=IDEA+RC2+RC4+RC5+Criptografia&btnI=I</a></i>
+
+<!-- <h1>
+Algoritmos Criptogr&aacute;ficos</h1> -->
+
+<ul>
+<li>
+<b><font size=+1><a href="#simetrica">Chave sim&eacute;tica</a></font></b></li>
+
+<li>
+<b><font size=+1><a href="#assimetrica">Chave assim&eacute;trica</a></font></b></li>
+
+<li>
+<b><font size=+1><a href="#as_digital">Assinatura digital</a></font></b></li>
+
+<li>
+<b><font size=+1><a href="#sime_assime">Como Combinar Criptografia com
+chave p&uacute;blica e criptografia sim&eacute;trica</a></font></b></li>
+
+<li>
+<b><font size=+1><a href="#certificados">Certificados</a></font></b></li>
+
+<li>
+<b><u><font size=+1><a href="#questoes">Quest&otilde;es pr&aacute;ticas
+no uso da criptografia</a></font></u></b></li>
+</ul>
+Os modernos algoritmos de criptogr&aacute;fia podem ser classificados em
+dois tipos de acordo com a chave que utiliza : os de <b>chave &uacute;nica</b>
+e os de <b>chave p&uacute;blica e privada</b>.
+<p><a NAME="simetrica"></a><b><u><font size=+1>Chave sim&eacute;trica</font></u></b>
+<br>Os <b>algoritmos de chave &uacute;nica</b>, s&atilde;o tamb&eacute;m
+conhecidos como <b>algoritmos de chave sim&eacute;trica</b> e, caracterizam-se
+por utilizar a mesma chave tanto para a cifragem como para a decifragem
+dos dados, esse m&eacute;todo funciona&nbsp; em aplica&ccedil;&otilde;es
+limitadas, como as militares, onde o emissor e o receptor podem se preparar
+antecipadamente para trocar a chave.
+<p>Infelizmente, genericamente esse m&eacute;todo n&atilde;o funciona muito
+bem, pois trocar chaves secretas com todas as pessoas a quem voc&ecirc;
+queira enviar uma mensagem &eacute; praticamente imposs&iacute;vel. Para
+ilustrar isso, considere o que voc&ecirc; teria de fazer se tivesse de
+enviar um memorando confidencial para acionistas de uma empresa. Primeiro,
+voc&ecirc; teria de entra em contato com cada acionista individualmente
+para que pudesse fazer a troca das chaves secretas. Isso poderia ser feito
+ao telefone, mas se as mensagens fossem extremamente confidenciais, talvez
+fosse melhor voc&ecirc; trocar chaves pessoalmente. Lembre-se de que voc&ecirc;
+precisaria fazer isso para todas as pessoas; cada uma teria uma chave secreta
+separada. Para aumentar a complexidade desse sistema, voc&ecirc; tamb&eacute;m
+dever&aacute; se lembrar de qual chave serve para cada cliente. Se voc&ecirc;
+as misturar, os clientes n&atilde;o ser&atilde;o capazes de ler as suas
+mensagens. Obviamente, esse tipo de sistema n&atilde;o &eacute; vi&aacute;vel
+para transa&ccedil;&otilde;es comerciais comuns.
+<p><a NAME="assimetrica"></a><b><u><font size=+1>Chave assim&eacute;trica</font></u></b>
+<br>Os <b>algoritmos de chave p&uacute;blica e privada</b>, tamb&eacute;m
+chamados de <b>algoritmos de chave assim&eacute;trica</b>, utilizam duas
+chaves : uma p&uacute;blica que pode ser divulgada e outra secreta conhecida
+somente por pessoas autorizadas. Em um sistema de chave p&uacute;blica,
+cada pessoa tem duas chaves: uma chave p&uacute;blica e uma chave privada.
+As mensagens criptografadas com uma das chaves do par s&oacute; podem se
+decriptografadas com a outra chave correspondente; portanto, qualquer mensagem
+criptografada com a chave privada s&oacute; pode ser decriptografada com
+a chave p&uacute;blica e vice-versa. Como o nome sugere, normalmente a
+chave p&uacute;blica &eacute; mantida universalmente dispon&iacute;vel.
+A outra chave, a chave privada, &eacute; mantida em segredo.
+<p>Vamos ver com a juda de um exemplo o funcionamento da chave p&uacute;blica.
+Se Frank e Andrea quiserem se comunicar secretamente usando a criptografia
+com chave p&uacute;blica, eles ter&atilde;o de fazer o seguinte :
+<br>&nbsp;
+<ol>
+<li>
+Frank escreve uma mensagem e a criptografa utilizando a chave p&uacute;blica
+de Andrea. A chave est&aacute; dispon&iacute;vel para qualquer pessoa.</li>
+
+<li>
+Frank envia a mensagem para Andrea atrav&eacute;s da Internet.</li>
+
+<li>
+Andrea recebe a mensagem e a decriptografa utilizando sua chave privada.</li>
+
+<li>
+Andrea l&ecirc; a mensagem. Se quiser responder, ela dever&aacute; fazer
+o mesmo, a diferen&ccedil;a &eacute; que dessa vez a chave de Frank ser&aacute;
+utilizada.</li>
+</ol>
+Como apenas Andrea tem acesso &agrave; sua pr&oacute;pria chave privada
+(presupondo-se que a seguran&ccedil;a do sistema seja eficiente), somente
+ela poder&aacute; ler a mensagem, pois existe confidencialidade. A grande
+vantagem deste sistema &eacute; que n&atilde;o s&oacute; Frank pode enviar
+mensagens secretas para Andrea, todo mundo pode. Tudo o que o emissor precisa
+&eacute; da chave p&uacute;blica de Andrea.
+<br>Lembre-se que o sigilo da chave privada &eacute; important&iacute;ssimo.
+O criptossistema inteiro se baseia no fato de que a chave privada &eacute;
+realmente privada. Se um invasor conseguir roubar a sua chave privada,
+tudo estar&aacute; perdido. N&atilde;o importa qual seja a efici&ecirc;ncia
+do algoritmo de criptografia - o intruso vencer&aacute; e poder&aacute;
+ler e criar mensagens utilizando seu nome.
+<br>&nbsp;
+<center><table BORDER COLS=1 WIDTH="60%" >
+<tr>
+<td>
+<center><font color="#FF0000">ADVERT&Ecirc;NCIA</font> :</center>
+Mantenha sua chave privada secreta. N&atilde;o a guarde em texto simples
+no sistema. Se um intruso roubar a sua chave privada, ele poder&aacute;
+assumir a sua identidade, e enviar e receber mensagens como se fosse voc&ecirc;.</td>
+</tr>
+</table></center>
+
+<p><a NAME="as_digital"></a><b><u><font size=+1>Assinatura Digital</font></u></b>:
+<br>Ter duas chaves separadas proporciona outro benef&iacute;cio : a <b>assinatura
+digital</b>. Imagine usar o sistema de forma invertida. Em vez de Frank
+criptografar a mensagem com a chave p&uacute;blica de Andrea, ele utiliza
+sua pr&oacute;pria chave privada. Voc&ecirc; deve observar que agora todo
+mundo pode ler a mensagem, ele deixou de ser privada. Isso &eacute; verdade,
+mas tamb&eacute;m &eacute; verdade que apenas Frank poderia ter escrito
+a mensagem. Pois ele &eacute; a unica pessoa capaz de criar mensagens que
+possam ser lidas com sua chave p&uacute;blica, pressupondo-se que Frank
+n&atilde;o tenha compartilhado sua chave privada com ningu&eacute;m mais
+e que ela seja realmente secreta.
+<p>Vejamos um exemplo. Frank quer enviar uma mensagem para todos os seus
+contatos informando-os que mudou de emprego. Na verdade, ele n&atilde;o
+se importa com quem ler&aacute; a mensagem, mas quer ter certeza de garantir
+a seus contatos que a mensagem realmente &eacute; dele, e n&atilde;o de
+outra pessoa.
+<ol>
+<li>
+Frank escreve a mensagem e a criptografa utilizando sua chave privada.</li>
+
+<li>
+Frank envia a mensagem a seus contatos atrav&eacute;s da Internet.</li>
+
+<li>
+Os contatos recebem a mensagem e a decriptografam utilizando a chave p&uacute;blica
+de Frank.</li>
+</ol>
+O fato de a chave p&uacute;blica de Frank ter decriptografado a mensagem
+garante aos contatos que a mensagem realmente &eacute; de Frank. Qualquer
+mensagem decriptografada com a chave p&uacute;blica de Frank s&oacute;
+poderia ter sido criada com sua chave privada.
+<p>Isso &eacute; muito importante. Na criptografia com chave p&uacute;blica,
+cada par de chaves &eacute; &uacute;nico. S&oacute; existe apenas uma chave
+p&uacute;blica para cada chave privada e vice-versa. Se isso n&atilde;o
+fosse verdade, a assinatura digital n&atilde;o seria poss&iacute;vel; um
+impostor poderia utilizar outra chave privada para criar uma mensagem que
+pudesse ser lida pela chave p&uacute;blica fornecida.
+<p>Podemos observar que a assinatura digital assegura aos contados que
+a mensagem n&atilde;o foi alterada (integridade) e que vei de Frank (autenticidade).
+Al&eacute;m disso, Frank &eacute; o &uacute;nico com acesso a sua chave
+privada.
+<p>Agora combinando so dois m&eacute;todos, Frank pode enviar uma mensagem
+privada e assinada para Andrea, vejamos :
+<ol>
+<li>
+Frank escreve a mensagem e a criptografa utilizando sua chave privada (assinatura
+da mensagem).</li>
+
+<li>
+Em seguida, ele criptografa a mensagem com a chave p&uacute;blica de Andrea
+(tornando-a privada)</li>
+
+<li>
+Frank envia a mensagem duplamente criptografada para Andrea atrav&eacute;s
+da Internet.</li>
+
+<li>
+Andrea recebe a mensagem.</li>
+
+<li>
+Ela decriptografa a mensagem duas vezes. Primeiro, ela utiliza sua chave
+privada e, depois, a chave p&uacute;blica de Frank.</li>
+
+<li>
+Agora Andrea pode ler a mensagem e tem certeza que ela &eacute; secreta
+e vei de Frank. Ela tem certeza de que a mensagem n&atilde;o foi modificada;
+para alter&aacute;-la, o invasor teria de acessar a chave privada de Frank.</li>
+</ol>
+<a NAME="sime_assime"></a><b><font size=+1><u>Como Combinar Criptografia
+com chave p&uacute;blica e criptografia sim&eacute;trica</u> </font></b>:
+<br>Agora vamos ver a combina&ccedil;&atilde;o dos dois m&eacute;todos
+: A criptografia com chave p&uacute;blica &eacute; computacionalmente intensiva;
+&eacute; necess&aacute;rio muito tempo para criptografar uma mensagem com
+apenas alguns paragr&aacute;fos. No entanto, nem tudo est&aacute; perdido,
+pois os melhores aspectos da criptografia com chave sim&eacute;trica e
+da criptografia com chave assim&eacute;trica podem ser combinados codificando-se
+a mensagem com o m&eacute;todo da chave sim&eacute;trica e criptografando-se
+a chave sim&eacute;trica com o m&eacute;todo de chave p&uacute;blica, vejamos
+:
+<p>Novamente vamos considerar Frank e Andrea. Frank quer enviar uma mensagem
+&agrave; Andrea, mas dessa vez ele utilizar&aacute; uma combina&ccedil;&atilde;o
+de criptografia com chave p&uacute;blica e de criptografia com chave sim&eacute;trica
+:
+<ol>
+<li>
+Frank escreve a mensagem e a codifica utilizando a criptografia com chave
+sim&eacute;trica com uma chave que ele cria aleatoriamente apenas para
+essa mensagem. Isso &eacute; conhecido como chave de mensagem ou chave
+de sess&atilde;o.</li>
+
+<li>
+Frank criptografa essa chave de sess&atilde;o com a chave p&uacute;blica
+de Andrea.</li>
+
+<li>
+Frank envia a mensagem criptografada e a chave de sess&atilde;o criptografada
+a Andrea.</li>
+
+<li>
+Andrea decriptografa a chave de sess&atilde;o utilizando sua chave privada.</li>
+
+<li>
+Em seguida, Andrea decriptografa a mensagem usando a chave de sess&atilde;o
+que acabou de receber.</li>
+
+<li>
+Andrea agora pode ler a mensagem.</li>
+</ol>
+Esse m&eacute;todo se beneficia da for&ccedil;a dos dois tipos de criptossistemas
+: a velocidade da criptografia sim&eacute;trica e a facilidade dos mecanismos
+de distribui&ccedil;&atilde;o de chave do sistema de criptografia com chave
+p&uacute;blica.
+<p>Tudo bem, esse m&eacute;todo resolve o problema de garantir a confidencialidade
+de uma mensagem, mas como fica a integridade e a n&atilde;o- repudia&ccedil;&atilde;o
+? Poder&iacute;amos simplemente criptografar a mensagem utilizando a chave
+privada do emissor, como fizemos antes. Infelizmente, encontramos os mesmos
+problemas de desempenho discutidos anteriormente com rela&ccedil;&atilde;o
+&agrave; confidencialidade. Para resolver o problema, precisamos introduzir
+outra ferramenta &uacute;til conhecida como <b>message digest (ou hash)</b>.
+<p><b>Message digest</b> &eacute; uma fun&ccedil;&atilde;o que obt&eacute;m
+uma mensagem como entrada e produz um c&oacute;digo de tamanho fixo como
+sa&iacute;da. Por exemplo, se tiv&eacute;ssemos uma fun&ccedil;&atilde;o
+de message digest de 10 bytes, qualquer texto que execut&aacute;ssemos
+atrav&eacute;s da fun&ccedil;&atilde;o produziria 10 bytes de sa&iacute;da,
+como <b>dar3ksjudr</b>. Lembre-se de que cada mensagem dever&aacute; produzir
+facilmente um message digest aleat&oacute;rio. Ou seja, qualquer par de
+mensagens que escolhermos dever&aacute; produzir um message digest espec&iacute;fico.
+<p>Existem muitos algoritmos de message digest ou hash, mas para que eles
+sejam &uacute;teis a esse prop&oacute;sito (considerados criptograficamente
+seguros), o algoritmo dever&aacute; exibir determinadas propriedades, como
+as seguintes :
+<ul>
+<li>
+Sem retorno - Dever&aacute; ser dif&iacute;cil ou imposs&iacute;vel determinar
+a mensagem que produziu uma determinada sa&iacute;da. Isso impedir&aacute;
+que algu&eacute;m substitua uma mensagem por outra que tenha o mesmo message
+digest.</li>
+
+<li>
+Aleatoriedade - A mensagem dever&aacute; parecer aleat&oacute;ria, mais
+uma vez para impedir que algu&eacute;m determine a mensagem original.</li>
+
+<li>
+Exclusividade - O message digest dever&aacute; ser exclusivo, de modo que
+a exist&ecirc;ncia de duas mensagens com o mesmo message digest seja imposs&iacute;vel.</li>
+</ul>
+V&aacute;rios message digests exibem essas propriedade. Os mais utilizados
+s&atilde;o o MD4 e o MD5, e o SHA.
+<p>Vejamos como os message digest podem ser usados para oferecer n&atilde;o-repudia&ccedil;&atilde;o
+e integridade. Frank deseja enviar uma mensagem assinada a seus contatos,
+s&oacute; que agora de uma forma mais eficiente :
+<ol>
+<li>
+Frank escreve a mensagem e cria um message digest da mensagem.</li>
+
+<li>
+Frank criptografa o message digest com sua chave privada (ele assina a
+mensagem).</li>
+
+<li>
+Ele envia a mensagem e o message digest criptografados a seus contatos
+(eniod da assinatura).</li>
+
+<li>
+Os contatos de Frank calculam um novo message digest da mensagem que acabaram
+de receber.</li>
+
+<li>
+Em seguida, eles decriptografam o message digest que Frank enviou. Para
+isso utilizam a chave p&uacute;blica de Frank.</li>
+
+<li>
+Por fim, eles comparam o message digest que criaram com o que Frank enviou
+(verifica&ccedil;&atilde;o da assinatura).</li>
+</ol>
+Se os dois message digest forem iguais, isso significa que somente Frank
+poder&aacute; ter enviado a mensagem. Al&eacute;m disso, a mensagem n&atilde;o
+poderia ter sido modificada, pois nesse caso os contatos teriam calculado
+um message digest que n&atilde;o corresponderia ao enviado pro Frank.
+<p>E finalmante para oferecer confidencialidade, integridade e n&atilde;o
+repudia&ccedil;&atilde;o, devemos combinar criptografia com chave p&uacute;blica
+e message digest, Frank deseja enviar uma mensagem secreta assinada para
+Andrea :
+<ol>
+<li>
+Frank escreve a mensagem e cria um message digest da mensagem.</li>
+
+<li>
+Frank criptografa o message digest com sua chave privada (ele assina a
+mensagem).</li>
+
+<li>
+Ao mesmo tempo, Frank codifica a mensagem com base na t&eacute;cnica de
+criptografia com chave sim&eacute;trica utilizando uma chave de sess&atilde;o
+aleatoriamente escolhida.</li>
+
+<li>
+Frank criptografa a chave de sess&atilde;o com a chave p&uacute;blica de
+Andrea.</li>
+
+<li>
+Agora, ele envia &agrave; Andrea a mensagem criptografada, o message digest
+criptografado e a chave de sess&atilde;o criptografada.</li>
+
+<li>
+Andrea recebe todos os tr&ecirc;s itens. Primeiro, ela decriptografa a
+chave de sess&atilde;o usando sua chave privada.</li>
+
+<li>
+Usando a chave de sess&atilde;o decriptografada, Andrea decriptografa a
+pr&oacute;pria mensagem.</li>
+
+<li>
+Em seguida, ela calcula seu pr&oacute;prio message digest da mensagem.</li>
+
+<li>
+Agora, ela decriptografa o message digest enviado por Frank. Para isso,
+Andrea utiliza a chave p&uacute;blica de Frank.</li>
+
+<li>
+E finalmente, ela compara os dois message digest. Se eles forem iguais,
+isso significa que a mensagem n&atilde;o foi alterada e realmente foi enviada
+por Frank.</li>
+</ol>
+<a NAME="certificados"></a><b><u><font size=+1>Certificados</font></u></b>
+:
+<br>Como acabamos de ver, a criptografia com chave p&uacute;blica pode
+ser usada para proporcionar confidencialidade, integridade n&atilde;o-repudia&ccedil;&atilde;o.
+A assinatura digital exige que o verificador esteja certo de que tem uma
+chave p&uacute;blica pertencente &agrave; pessoa que assinou a mensagem.
+A confian&ccedil;a do verificador na assinatura dever&aacute; ser igual
+&agrave; sua confian&ccedil;a no propriet&aacute;rio da chave p&uacute;blica.
+Por exemplo, se um violador quiser forjar documentos eletr&ocirc;nicos,
+uma estrat&eacute;gia seria criar um par de chave p&uacute;blica/chave
+privada e divulgar a chave p&uacute;blica com o nome de outra pessoa. Quaisquer
+documento assinado com a chave privada do violador ser&atilde;o verificados
+com a chave p&uacute;blica correspondente - uma chave p&uacute;blica que
+tenha sido anunciada como pertencente a outra pessoa.
+<p>Existem diversas estrat&eacute;gias para solucionar esse problema. Uma
+delas &eacute; trocar chaves p&uacute;blicas atrav&eacute;s de um meio
+diret, como uma reuni&atilde;o. Infelizmente, esse m&eacute;todo n&atilde;o
+funciona bem quando temos muitas pessoas envolvidas. Uma op&ccedil;&atilde;o
+melhor seria a utiliza&ccedil;&atilde;o de <b>certificados e de autoridades
+de certifica&ccedil;&atilde;o</b>.
+<p>Um <b>certificado</b> &eacute; um documento digital contendo informa&ccedil;&otilde;es
+de identifica&ccedil;&atilde;o e uma chave p&uacute;blica. Em geral, os
+certificados t&ecirc;m um formato comum, normalmente baseados no padr&atilde;o
+ITU-T X.509. Mas ainda n&atilde;o podemos ter certeza de que o certificado
+&eacute; genu&iacute;no e n&atilde;o &eacute; falso. Uma forma de descobrir
+isso &eacute; utilizar <b>autoridades de certifica&ccedil;&atilde;o ou
+CAs</b>.
+<p>Uma <b>autoridade de certifica&ccedil;&atilde;o</b> assina certificados
+de chave p&uacute;blica digitalmente. Ao assinar um certificado, a CA garante
+sua validade. No entanto um problema persiste : como a chave p&uacute;blica
+da CA &eacute; distribu&iacute;da? Tamb&eacute;m existem muitas estrat&eacute;gias
+para esse problema. Em uma delas, se a CA for muito conhecida, como &eacute;
+o caso do servi&ccedil;o postal americano, ele poder&aacute; divulgar amplamente
+sua chave p&uacute;blica. Outro m&eacute;todo seria que a CA tivesse seu
+pr&oacute;prio certificado assinado por outra CA, tamb&eacute;m conhecida
+pelo destinat&aacute;rio. Essa id&eacute;ia de encadeamento de certifica&ccedil;&atilde;o
+pode avan&ccedil;ar ainda mais, com v&aacute;rias CAs organizadas em uma
+hierarquia onde cada CA subordinada valida sua assinatura com a assinatura
+de uma CA mais alta na hierarquia. Obviamente, as CAs de n&iacute;vel mais
+alto dever&atilde;o reverter para o m&eacute;todo de divulga&ccedil;&atilde;o
+direta.
+<p>Quem oferecer&aacute; esses servi&ccedil;os ? . H&aacute; muito para
+se discutir a respeito de quem dever&aacute; manter CAs na Internet. Muitas
+organiza&ccedil;&otilde;es, incluindo institui&ccedil;&otilde;es financeiras,
+fornecedores de aplica&ccedil;&otilde;es e at&eacute; mesmo o servi&ccedil;o
+postal americano expressaram interesse em oferecer servi&ccedil;os de certifica&ccedil;&atilde;o.
+Em 1995, com a ajuda de muitos parceiros, a RSA Data Security criou uma
+empresa, a VeriSign, inteiramente dedicada ao fornecimento de servi&ccedil;os
+de certifica&ccedil;&atilde;o para usu&aacute;rios de chaves p&uacute;blicas.
+<p>Em um fututo pr&oacute;ximo, provavelmente existir&atilde;o CAs na Internet,
+cada uma com exig&ecirc;ncias vari&aacute;veis para comprovar identidade.
+Algumas podem exigir que voc&ecirc; venha pessoalmente com uma c&oacute;pia
+da sua certid&atilde;o de nascimento, enquanto outras podem assinar certificados
+com a garantia de sua palavra. A quest&atilde;o aqui &eacute; que o fato
+de um documento ter sido assinado por uma CA n&atilde;o o torna necessariamente
+v&aacute;lido.
+<p><a NAME="questoes"></a><b><u><font size=+1>Quest&otilde;es pr&aacute;ticas
+no uso da criptografia</font></u></b> :
+<br>Vejamos algumas quest&otilde;es de gerenciamento relacionadas ao uso
+da criptografia:
+<ul>
+<li>
+<b>Tamanho da chave</b> - A criptoan&aacute;lise, a ci&ecirc;ncia da decodifica&ccedil;&atilde;o
+de cifras, se baseia no fatoramento de n&uacute;meros grandes. Conseq&uuml;entemente,
+quanto maior a chave, mais dif&iacute;cil decifr&aacute;-la. No entanto,
+as empresas que conduzem neg&oacute;cios nos Estados Unidos e no exterior
+s&atilde;o limitadas pelas leis americanas &agrave; utiliza&ccedil;&atilde;o
+de chaves de 40 bits em suas aplica&ccedil;&otilde;es. Quarenta bits j&aacute;
+s&atilde;o o bastante? Depende do que est&aacute; sendo criptografado;
+as chaves RC4 de 40 bits podem ser decifradas com uma certa facilidade.
+Portanto, voc&ecirc; n&atilde;o vai quere us&aacute;-las para criptografar
+informa&ccedil;&otilde;es durante um per&iacute;odo muito longo. Apesar
+de exigir um esfor&ccedil;o consider&aacute;vel, a decifra&ccedil;&atilde;o
+de uma mensagem criptografada com uma chave RC4 de 40 bits &eacute; possivel.
+As chaves de 40 bits podem ser seguras para criptografar ordens de compra
+ou mensagens de correio eletr&ocirc;nico (que s&oacute; precisam permanecer
+secretas at&eacute; que o destinat&aacute;rio as receba), mas talvez n&atilde;o
+sejam suficientes para proteger segredos vitais para as empresas.</li>
+
+<li>
+<b>Revoga&ccedil;&atilde;o de certificado</b> - O que acontece quando uma
+chave privada &eacute; comprometida, ou uma chave p&uacute;blica passa
+a ser inv&aacute;lida? Nesse caso, os certificados deixam de ser confi&aacute;veis,
+pois as informa&ccedil;&otilde;es que eles est&atilde;o certificando n&atilde;o
+s&atilde;o mais verdadeiras. Como podemos impedir que os certificados sejam
+usados? Muitas autoridades de certifica&ccedil;&atilde;o divulg&atilde;o
+periodicamente listas de certificados que n&atilde;o devem mais ser considerados
+v&aacute;lidos, as CRLs (certificate revocation lists). Os certificados
+dessas listas podem ter expirados, ou o par de chaves associados ao certificado
+pode ter sido decifrado. As CRLs s&atilde;o muito eficientes para verificar
+a precis&atilde;o de um certificado em um determinado momento. No entanto,
+as CRLs n&atilde;o lhe d&atilde;o qualquer garantia de que um certificado
+n&atilde;o foi revogado desde sua divulga&ccedil;&atilde;o. Por essa raz&atilde;o,
+muitas organiza&ccedil;&otilde;es est&atilde;o procurando outras solu&ccedil;&otilde;es
+para lidar com a verifica&ccedil;&atilde;o de certificados.</li>
+
+<li>
+<b>Estrutura de CA</b> - J&aacute; falamos sobre CAs e como podem ser "encadeadas"
+em hierarquias de certifica&ccedil;&atilde;o. Portanto, as grandes organiza&ccedil;&otilde;es
+podem optar por ter dentro delas v&aacute;rias CAs (uma para o departamento
+de pesquisa, outra para o departamento de bolsas e assim por diante) e
+ter uma &uacute;nica CA de n&iacute;vel mais alto para certificar as CAs
+dos departamentos. No entanto, manter v&aacute;rios n&iacute;veis de CAs
+pode ser complicado. Al&eacute;m disso, ter uma &uacute;nica CA na empresa
+cria um "&uacute;nico ponto de falha", pois o comprometimento do par de
+chaves da CA corporativa pode resultar na perda das chaves de todos os
+funcion&aacute;rios da empresa. Outras empresas optam por uma estrutura
+plana de CAs, na qual cada CA departamental tem muitas outras CAs parceiras,
+que correspondem ao outros departamentos da empresa. &Eacute; melhor ter
+uma hierarquia de CAs, na qual o comprometimento de uma &uacute;nica CA
+pode resultar no comprometimento de todos os certificados da empresa, ou
+&eacute; melhor ter uma estrutura plana, na qual v&aacute;rias CAs devem
+ser controladas e devem trocar mensagens umas com as outras?</li>
+
+<li>
+<b>Fazer ou n&atilde;o fazer cau&ccedil;&atilde;o</b> - Esse &eacute; um
+dos assuntos mais debatidos no que se refere &agrave; criptografia. Muitas
+empresas afirmam que, como a comunica&ccedil;&atilde;o dos funcion&aacute;rios
+&eacute; propriedade da empresa, a organiza&ccedil;&atilde;o dever&aacute;
+ter acesso &agrave;s chaves dos funcion&aacute;rios, recuperar mensagens
+(quando houver desligamento de funcion&aacute;rios ou quando eles perderem
+suas chaves, por exemplo). Po outro lado, a maior parte dos defensores
+da privacidade &eacute; veemente contra essa id&eacute;ia, citando a emenda
+federal que garante os direitos dos funcion&aacute;rios &agrave; privacidade.
+(E no Brasil, como anda isso?)</li>
+
+<li>
+<b>O que fazer com todas essas informa&ccedil;&otilde;es</b> - O arquivamento
+de chaves e de dados criptografados (mensagens de correio eletr&ocirc;nico
+criptografadas, ordens de compra assinadas,...) &eacute; uma quest&atilde;o
+extremamente dif&iacute;cil. Muitas empresas t&ecirc;m de armazenar informa&ccedil;&otilde;es
+durante muitos tempo, devido a regulamentos ou outras restri&ccedil;&otilde;es.
+Mas, com freq&uuml;&ecirc;ncia, armazenar mensagens ou ordens de compra
+pode envolver muito mais do que simples manuten&ccedil;&atilde;o de informa&ccedil;&otilde;es.
+Considere, por exemplo, o armazenamento de ordens de compras assinadas.
+Como as assinaturas s&oacute; podem ser verificadas com a chave p&uacute;blica
+apropriada, todas as chaves p&uacute;blicas (e suas cadeias de certifica&ccedil;&atilde;o)
+devem ser guardadas para sempre. Mais uma vez, para grandes empresas, isso
+pode ser complicado.</li>
+</ul>
+
+<p><br><b><u><font size=+1>Refer&ecirc;ncias</font></u></b> :
+<ul>
+<li>
+http://www.penta.ufrgs.br/gere96/segur/cripto_.htm</li>
+
+<li>
+http://www.penta.ufrgs.br/gereseg/kerber2.html</li>
+
+<li>
+Prof. Eduardo M&uuml;ssnich Barreto (eduardo@cepesc.gov.br)</li>
+
+<li>
+Internet Security for Business ( ISBN 0-471-13752-9 )</li>
+
+<li>
+Computer Security Basics (ISBN 0-937175-71-4)</li>
+
+<li>
+Practical UNIX and Internet Security (ISBN 1-56592-148-8)</li>
+
+<li>
+Maximun Security (ISBN 1-57521-268-4)</li>
+
+<li>
+Firewall and Internet Security (ISBN 0-201-63357-4)</li>
+</ul>
+
+<center>
+<hr SIZE=1 WIDTH="100%"></center>
+
+<hr SIZE=1 WIDTH=50%>
+<center><font size=-2>Copyright &copy; 1998 - 1999&nbsp; Verdade @bsoluta</font>
+<br>
+<hr SIZE=1></center>
+
+
+</body>
+</html>

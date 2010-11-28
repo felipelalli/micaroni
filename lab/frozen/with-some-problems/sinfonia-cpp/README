@@ -1,0 +1,24 @@
+Date: 2004/10/15 00:22:03
+
+Sinfonia
+
+Started at Ages Software Technology, Oct 2004
+
+Historical and legal observation:
+The company ended and an agreement was made to the code owner becomes to the developer.
+
+Content:
+
+    - Main definitions
+    doc/definicoes/principal/
+
+    - Definition of script of dynamics of States and Events
+    doc/definicoes/dinamica/
+
+- Directories:
+    . bin - executables and dynamic DLL (must to be in the path of execution)
+    . deploy - compilation result
+    . doc - documentation (in Portuguese yet)
+    . lib - external libraries
+    . projetos - project files
+    . src - source

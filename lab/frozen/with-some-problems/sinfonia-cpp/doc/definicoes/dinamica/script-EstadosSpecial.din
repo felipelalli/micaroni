@@ -1,0 +1,474 @@
+/**
+ * $RCSfile: script-EstadosSpecial.din,v $
+ * $Date: 2004/12/15 22:03:46 $
+ * $Revision: 1.7 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: sinfonia
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, setembro de 2004.
+ */
+
+<Dinamica>
+        <Grupo>
+            <Nome>Estados Special</Nome>
+            <Grupo>
+                <Nome>Jogada</Nome>
+                <Situacao>
+                    <Evento>
+                        <Nome>iniciou</Nome>
+                        <Parametro>V</Parametro>
+                    </Evento>
+                    <Gera>
+                        <Evento>
+                            <Nome>meio da jogada</Nome>
+                            <Parametro>V</Parametro>
+                        </Evento>
+                    </Gera>
+                </Situacao>
+
+                <Situacao>
+                    <Evento>
+                        <Nome>concluiu</Nome>
+                        <Parametro>V</Parametro>
+                    </Evento>
+                    <Gera>
+                        <Evento>
+                            <Nome>meio da jogada</Nome>
+                            <Parametro>F</Parametro>
+                        </Evento>
+                    </Gera>
+                </Situacao>
+
+                <Situacao>
+                    <Comentario>
+                        É possível que o jogo não tenha sido iniciado
+                        e nem tenha sido concluído (antes da jogada).
+                        É possível também que o jogo tenha sido
+                        iniciado e concluído (fim da jogada).
+                    </Comentario>
+                    <Evento>
+                        <Nome>zera</Nome>
+                    </Evento>
+                    <Gera>
+                        <Evento>
+                            <Nome>concluiu</Nome>
+                            <Parametro>F</Parametro>
+                        </Evento>
+                    </Gera>
+                </Situacao>        
+
+                <Situacao>
+                    <Comentario>
+                        Limpa estados que possivelmente
+                        estão restando de uma jogada
+                        anterior.
+                    </Comentario>
+                    <Evento>
+                        <Nome>inicializa estados</Nome>
+                    </Evento>
+                    <Gera>
+                        <Evento>
+                            <Grupo>Bolas</Grupo>
+                            <Nome>timer tempo máximo da filada</Nome>
+                            <Parametro>zera</Parametro>
+                        </Evento>
+                        <Evento>
+                            <Grupo>Bolona</Grupo>
+                            <Nome>zera</Nome>
+                        </Evento>
+                        <Evento>
+                            <Grupo>Cartelas</Grupo>
+                            <Nome>zera</Nome>
+                        </Evento>
+                        <Evento>
+                            <Grupo>Cartelas</Grupo>
+                            <Nome>deve limpar</Nome>
+                        </Evento>
+                        <Evento>
+                            <Grupo>Visor Créditos</Grupo>
+                            <Nome>velocidade</Nome>
+                            <Parametro>normal</Parametro>
+                        </Evento>
+                        <Evento>
+                            <Grupo>Contabilização</Grupo>
+                            <Nome>zera</Nome>
+                        </Evento>
+                        <Evento>
+                            <Grupo>Visor Título</Grupo>
+                            <Nome>qual</Nome>
+                            <Parametro>padrão</Parametro>
+                        </Evento>                
+                    </Gera>
+                </Situacao>
+
+                <Situacao>
+                    <Condicao>
+                        <CondicaoComposta>
+                            <Ligacao>&</Ligacao>
+                            <Comparacao>
+                                <Operador>=</Operador>
+                                <Estado>
+                                    <Nome>preparado para jogar</Nome>
+                                </Estado>
+                                <Constante>
+                                    V
+                                </Constante>
+                            </Comparacao>
+
+                            <Comparacao>
+                                <Verdade>
+                                    <Estado>
+                                        <Nome>meio da jogada</Nome>
+                                    </Estado>
+                                </Verdade>
+                            </Comparacao>
+
+                            <CondicaoModificadora>
+                                <Verdade>
+                                    <Estado>
+                                        <Grupo>Bola Extra</Grupo>
+                                        <Nome>está nela</Nome>
+                                    </Estado>
+                                </Verdade>
+                            </CondicaoModificadora>
+
+                            <Comparacao>
+                                <Operador>=</Operador>
+                                <EstadoDependente>
+                                    <Operador>+</Operador>
+                                    <Estado>
+                                        <Grupo>Visor Créditos</Grupo>
+                                        <Nome>valor final</Nome>                            
+                                    </Estado>
+                                    <Constante>1</Constante>
+                                    <Constante>1</Constante>
+                                </EstadoDependente>
+                                <Constante>2</Constante>
+                            </Comparacao>                    
+                        </CondicaoComposta>
+                    </Condicao>
+                    <Gera>
+                        <Evento>
+                            <Nome>ociosa</Nome>
+                            <Apelido>torna</Apelido>
+                            <Parametro>V</Parametro>
+                        </Evento>
+                    </Gera>
+                    <Senao>
+                        <Evento>
+                            <Nome>ociosa</Nome>
+                            <Apelido>deixa de estar</Apelido>
+                            <Parametro>F</Parametro>
+                        </Evento>
+                    </Senao>
+                </Situacao>
+
+                <Situacao>
+                    <Comentario>
+                        Se algum botão foi pressionado
+                        e o jogo está preparado pra jogar,
+                        além de não estar no meio da jogada
+                        e com as cartelas imóveis ele se
+                        torna "propício" para iniciar uma jogada.
+                    </Comentario>
+                    <Evento>
+                        <Nome>ação do usuário</Nome>
+                    </Evento>
+                    <Condicao>
+                        <CondicaoComposta>
+                            <Ligacao>&</Ligacao>
+                        </CondicaoComposta>
+                        <CondicaoModificadora>
+                            <Verdade>
+                                <Estado>
+                                    <Grupo>Cartelas</Grupo>
+                                    <Nome>girando</Nome>
+                                </Estado>
+                            </Verdade>
+                        </CondicaoModificadora>
+                        <CondicaoModificadora>
+                            <Verdade>
+                                <Estado>
+                                    <Nome>meio da jogada</Nome>
+                                </Estado>
+                            </Verdade>
+                        </CondicaoModificadora>
+                        <Verdade>
+                            <Estado>
+                                <Nome>preparado para jogar</Nome>
+                            </Estado>
+                        </Verdade>
+                        <CondicaoComposta>
+                            <Ligacao>|</Ligacao>
+                            <Comparacao>
+                                <Operador>=</Operador>
+                                <EstadoDoEventoAtual/>
+                                <Constante>jogar</Constante>
+                            </Comparacao>
+                            <Comparacao>
+                                <Operador>=</Operador>
+                                <EstadoDoEventoAtual/>
+                                <Constante>bola extra</Constante>
+                            </Comparacao>
+                            <Comparacao>
+                                <Operador>=</Operador>
+                                <EstadoDoEventoAtual/>
+                                <Constante>super turbo</Constante>
+                            </Comparacao>                    
+                            <Comparacao>
+                                <Operador>=</Operador>
+                                <EstadoDoEventoAtual/>
+                                <Constante>turbo</Constante>
+                            </Comparacao>
+                            <CondicaoComposta>
+                                <Ligacao>&</Ligacao>
+                                <Comparacao>
+                                    <Operador>=</Operador>
+                                    <Estado>
+                                        <Grupo>Botoes</Grupo>
+                                        <Nome>super turbo</Nome>
+                                    </Estado>
+                                    <Constante>pressionado</Constante>
+                                </Comparacao>
+                                <Comparacao>
+                                    <Operador>=</Operador>
+                                    <Estado>
+                                        <Nome>tipo da jogada</Nome>
+                                    </Estado>
+                                    <Constante>super turbo</Constante>
+                                </Comparacao>                        
+                            </CondicaoComposta>
+                        </CondicaoComposta>
+                    </Condicao>
+                    <Gera>
+                        <Evento>
+                            <Nome>pode jogar</Nome>
+                            <Parametro>V</Parametro>
+                        </Evento>
+                        <Evento>
+                            <Nome>mais devagar</Nome>
+                            <Parametro>F</Parametro>
+                        </Evento>                
+                    </Gera>
+                    <Senao>
+                        <Evento>
+                            <Nome>pode jogar</Nome>
+                            <Parametro>F</Parametro>
+                        </Evento>             
+                    </Senao>
+                </Situacao>
+
+            </Grupo>
+        </Grupo>
+</Dinamica>        
+
+/*
+ * Este script possui a definição da dinâmica de estados e eventos.
+ */
+
+* Estados Special {
+    * Jogada {
+        <iniciou>(V) -> <meio da jogada>(V);
+        <concluiu>(V) -> <meio da jogada>(F);
+
+        /**
+         * É possível que o jogo não tenha sido iniciado
+         * e nem tenha sido concluído (antes da jogada).
+         * É possível também que o jogo tenha sido
+         * iniciado e concluído (fim da jogada).
+         */
+        <zera> -> <concluiu>(F);
+
+        /**
+         * Limpa estados que possivelmente
+         * estão restando de uma jogada
+         * anterior.
+         */
+        <inicializa estados>
+            -> <Bolas.timer tempo máximo da filada>(zera)
+            -> <Bolona.zera>
+            -> <Bola Extra.zera>
+            -> <Cartelas.zera>
+            -> <Cartelas.deve limpar>
+            -> <Visor Créditos.velocidade>(normal)
+            -> <Contabilização.zera>
+            -> <Visor Título.qual>(padrão);
+
+        <> & [preparado para jogar]
+           & [meio da jogada]
+           & ![Bola Extra.está nela]
+           & ([Visor Créditos.valor final] + 1 + 1) = 2
+           -> <ociosa>(V):torna ~ <ociosa>(F):deixa de estar;
+
+        /**
+         * @see [preparado para jogar]
+         */
+        <> & [Tela Atual.qual] = jogo
+           & ![Tela Travada.está nela]
+           & ![Bola Extra.está nela]
+           & ![Cobrança.está nela]
+           & ![Ajuda.está nela]
+           -> <preparado para jogar>(V):fica
+           ~ <preparado para jogar>(F):deixa de estar;
+
+        /**
+         * Se algum botão foi pressionado
+         * e o jogo está preparado pra jogar,
+         * além de não estar no meio da jogada
+         * e com as cartelas imóveis ele se
+         * torna "propício" para iniciar uma jogada.
+         */
+        <ação do usuário>
+            & ![Cartelas.girando]
+            & ![meio da jogada]
+            & [preparado para jogar]
+            & (<ação do usuário> = jogar
+               | <ação do usuário> = bola extra
+               | <ação do usuário> = super turbo
+               | [tipo da jogada] = turbo
+               | ([Botoes.super turbo] = pressionado
+                  & [tipo da jogada] = super turbo))
+            -> <pode jogar>(V)
+            -> <mais devagar>(F)
+            ~ <pode jogar>(F);
+
+        /**
+         * Inicia jogada normal.
+         */
+        <Botoes.jogar>(pressionou)
+            & [pode jogar]
+            -> <tipo da jogada>(normal)
+            -> <Bolona.velocidade lançamento>([Ajuda.velocidade])
+            -> <inicia jogada>;
+
+        /**
+         * Inicia jogada no turbo.
+         */
+        <> & [pode jogar]
+           & (<Botoes.bola extra> = pressionou
+             | [tipo da jogada] = turbo)
+           -> <tipo da jogada>(turbo)
+           -> <Bolona.velocidade lançamento>([Ajuda.velocidade turbo])
+           -> <inicia jogada>;
+
+        /**
+         * Inicia jogada no super turbo.
+         */
+        <> & [pode jogar]
+           & (<Botoes.super turbo> = pressionou
+              | ([Botoes.super turbo] = pressionado
+                 & [tipo da jogada] = super turbo))
+           -> <tipo da jogada>(super turbo)
+           -> <Bolona.velocidade lançamento>([Ajuda.velocidade turbo])
+           -> <inicia jogada>;
+
+        <pode ação> -> <outroEvento>;
+        <> & [pode ação] | ![pode ação] -> <outroEvento>;
+
+        /**
+         * @see [pode ação]
+         */
+        <ação do usuário>
+           & ![pode jogar]
+           & ![meio da jogada]
+           & ![Cartelas.girando]
+           & ![Tela Travada.está nela]
+           & [Tela Atual.qual] != carregamento
+           & ![Bonus.está no dobro]
+           & [Visor Créditos.tem créditos]
+           -> <pode ação>(V)
+           ~ <pode ação>(F);
+
+        /**
+         * Destravando a tela.
+         */
+        <Botoes.chave pagamento>(pressionou)
+            & ![pode ação]
+            & [Tela Travada.está nela]
+            -> <Tela Travada.está nela>(F);
+
+        /**
+         * @see [pode ação com cartela]
+         */
+        <Visor Créditos.tem créditos>(V)
+            & ![Ajuda.está nela]
+            & [pode ação]
+            -> <pode ação com cartela>(V)
+            ~ <pode ação com cartela>(F);
+
+        /**
+         * Troca a quantidade de cartelas
+         * ativas.
+         */
+        <Botoes.cartelas>(pressionou)
+            & [pode ação com cartela]
+            -> <Cartelas.próxima cartela ativa>
+            -> <Cartelas.girando>(V) // quando a animação acaba, ela se torna falso
+            -> <inicializa estados>;
+
+        /**
+         * Aumenta a aposta.
+         */
+        <Botoes.aposta>(pressionou)
+            & [pode ação com cartela]
+            -> <Cartelas.aumenta aposta>
+            -> <inicializa estados>;
+
+        /**
+         * Muda números.
+         */
+        <Botoes.números>(pressionou)
+            & [pode ação com cartela]
+            -> <muda números>
+            -> <Cartelas.sorteia números>
+            -> <inicializa estados>;
+
+        <inicia jogada> -> <iniciou>(V);
+
+// Colocar na parte "Tela de Ajuda":
+/*
+         *
+         * Controle de velocidade
+         * na tela de ajuda.
+         *
+        <Botoes.cobrar>(pressionou)
+            & [pode ação]
+            & [Ajuda.está nela]
+            & [Ajuda.qual tela] = velocidade
+            -> <Ajuda.diminui velocidade>
+
+
+
+         * Controle de velocidade
+         * na tela de ajuda.
+         *
+        <Botoes.cartelas>(pressionou)
+            & [pode ação]
+            & [Ajuda.está nela]
+            & [Ajuda.qual tela] = velocidade
+            -> <Ajuda.aumenta velocidade>;
+*/
+
+// Colocar na parte de "Cobrança":
+/*
+         *
+         * Saindo da tela de cobrança.
+         *
+        <Botoes.chave pagamento>(pressionou)
+            & ![pode ação]
+            & [Cobrança.está nela]
+            -> <Cobrança.está nela>(F)
+            -> <inicializa estados>;
+
+         *
+         * Entra na tela de cobrança.
+         *
+        <Botoes.cobrar>(pressionou)
+            & [pode ação com cartela]
+            -> <Cobrança.está nela>(V);
+*/
+    }
+}

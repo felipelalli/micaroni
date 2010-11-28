@@ -1,0 +1,3 @@
+Arquivos estrutura para o GCC. Makefiles etc.
+
+http://www.google.com.br/search?q=gcc&btnI=I

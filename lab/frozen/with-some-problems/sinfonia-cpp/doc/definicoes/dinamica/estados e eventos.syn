@@ -1,0 +1,65 @@
+; Arquivo para o TextPad
+;
+; $RCSfile: estados\040e\040eventos.syn,v $
+; $Date: 2004/10/15 00:22:02 $
+; $Revision: 1.2 $
+; $Author: felipelalli $
+; Tag: $Name:  $
+; Módulo: sinfonia
+; Módulo Central: ages
+;
+; Sinfonia
+; Ages Software Technology, setembro de 2004.
+;
+; Realce de Sintaxe da Dinâmica de Estados e Eventos da Sinfonia
+; Copyright (C) 2004, Ages Software Technology, Sinfonia
+
+C=1
+
+[Syntax]
+Namespace1 = 6
+IgnoreCase = No
+KeyWordLength =
+BracketChars = {()}
+OperatorChars = -+*/<>!~%^&|=[]:.;,
+PreprocStart = #
+SyntaxStart =
+SyntaxEnd =
+HexPrefix = 0x
+CommentStart = /*
+CommentEnd = */
+CommentStartAlt =
+CommentEndAlt =
+SingleComment = //
+SingleCommentCol =
+SingleCommentAlt =
+SingleCommentColAlt =
+SingleCommentEsc =
+StringsSpanLines = Yes
+StringStart = <
+StringEnd = >
+StringAlt =
+StringEsc = \
+CharStart = [
+CharEnd = ]
+CharEsc = \
+
+[Preprocessor keywords]
+#stop
+
+[Keywords 1]
+V
+F
+INF
+
+[Keywords 2]
+bool
+string
+int
+double
+
+[Keywords 3]
+zzz
+
+[Keywords 4]
+zzz

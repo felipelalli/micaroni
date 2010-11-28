@@ -1,0 +1,128 @@
+/**
+ * $RCSfile: script-EstadosSpecial.def,v $
+ * $Date: 2004/12/10 00:25:01 $
+ * $Revision: 1.8 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: sinfonia
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, setembro de 2004.
+ */
+
+<Definicoes>
+    <Grupo>
+        <Nome>Estados Special</Nome>
+        <Grupo>
+            <Nome>Jogada</Nome>
+            <Estado>
+                <Nome>idade</Nome>
+                <MaiorOuIgual>0</MaiorOuIgual>
+                <Menor>140</Menor>
+            </Estado>
+            
+            <Estado>
+                <Nome>tipo da jogada</Nome>
+                <P>normal</P>
+                <P>turbo</P>
+                <P>
+                    <P>super turbo</P>
+                    <P>superturbo</P>
+                </P>                
+            </Estado>
+
+            <Estado>
+                <Nome>mais devagar</Nome>
+                <P>
+                    <P>V</P>
+                    <P>está</P>
+                </P>
+                <P>
+                    <P>F</P>
+                    <P>não está</P>
+                </P>                
+            </Estado>
+
+            <Estado>
+                <Nome>ociosa</Nome>
+                <P>
+                    <P>V</P>
+                    <P>está</P>
+                </P>
+                <P>
+                    <P>F</P>
+                    <P>não está</P>
+                </P>                
+            </Estado>
+
+            <Estado>
+                <Nome>iniciou</Nome>
+                <Classe>Classe</Classe>
+                <P>V</P>
+                <P>
+                    <P>F</P>
+                    <P>não</P>
+                </P>                
+            </Estado>         
+
+            <Estado>
+                <Nome>tempo máximo</Nome>
+                <Classe>Timer</Classe>
+                <Externo/>             
+            </Estado>                     
+        </Grupo>
+    </Grupo>
+</Definicoes>
+
+/*
+ * Este script possui a definição de todos os estados.
+ */
+
+* Estados Special {
+    * Jogada {
+        [idade] {>= 0, < 140}  // >
+        [tipo da jogada] {normal, turbo, super turbo:superturbo};
+        [mais devagar] {V:está, F:não está};
+
+        [em espera] {V:está, F:não está};
+        [ociosa] {V:está, F:não está};
+
+        /**
+         * Indica que o jogo está entre
+         * uma jogada ou outra, ou está
+         * no meio de uma jogada.
+         */
+        [preparado para jogar] {V, F:não está};
+
+        /**
+         * Mais radical que o "preparado para jogar", indica que o jogo
+         * está "propício" para jogar. Ou seja, se este
+         * estado estiver "verdadeiro" e qualquer botão de jogar
+         * for acionado, o jogo certamente iniciará uma nova jogada.
+         */
+        [pode jogar] {V, F:não};
+
+        /**
+         * Indica que pode ser feita uma ação como entrar
+         * na tela de ajuda, cobrar, ou mudar números,
+         * apostas etc.
+         */
+        [pode ação] {V, F:não};
+
+        /**
+         * Se pode trocar números, cartelas ou aposta.
+         */
+        [pode ação com cartela] {V, F:não};
+
+        Classe [iniciou] {V, F:não};
+        [concluiu] {V, F:não};
+        [meio da jogada] {V:está no, F:não está no};
+
+        //^<muda números>; ?
+        //^<inicia jogada>;
+        //^<inicializa estados>;
+
+        ^Timer [tempo máximo];
+    }
+}

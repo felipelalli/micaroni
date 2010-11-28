@@ -1,0 +1,250 @@
+<HTML>
+<HEAD>
+<TITLE>
+Evento.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: Evento.cpp.html,v $
+ * $Date: 2005/03/22 20:18:59 $
+ * $Revision: 1.42 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Evento.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia;
+
+Evento<font color="black">:</font><font color="black">:</font>Evento<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> nome<font color="black">)</font>
+        <font color="black">:</font>Rotulado<font color="black">(</font>nome<font color="black">)</font>, pModificador<font color="black">(</font>NULL<font color="black">)</font>,
+         pMomento<font color="black">(</font>NULL<font color="black">)</font>, pEspecial<font color="black">(</font><font color="blue">false</font><font color="black">)</font>,
+         pGrupo<font color="black">(</font><font color="maroon">""</font><font color="black">)</font>
+<font color="black">{</font><font color="black">}</font>
+
+Evento<font color="black">:</font><font color="black">:</font>Evento<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> nome, <font color="blue">const</font> ModificadorDeEstado<font color="black">&</font> mde<font color="black">)</font>
+        <font color="black">:</font>Rotulado<font color="black">(</font>nome<font color="black">)</font>, pModificador<font color="black">(</font><font color="black">(</font>ModificadorDeEstado<font color="black">*</font><font color="black">)</font> mde.geraCopia<font color="black">(</font><font color="black">)</font><font color="black">)</font>,
+         pMomento<font color="black">(</font>NULL<font color="black">)</font>, pGrupo<font color="black">(</font><font color="maroon">""</font><font color="black">)</font>, pEspecial<font color="black">(</font><font color="blue">false</font><font color="black">)</font>
+<font color="black">{</font><font color="black">}</font>
+
+Evento<font color="black">:</font><font color="black">:</font>Evento<font color="black">(</font><font color="blue">const</font> Evento<font color="black">&</font> e<font color="black">)</font><font color="black">:</font>Rotulado<font color="black">(</font><font color="maroon">"_"</font><font color="black">)</font>,
+        pGrupo<font color="black">(</font><font color="maroon">"_"</font><font color="black">)</font>, pMomento<font color="black">(</font>NULL<font color="black">)</font>, pModificador<font color="black">(</font>NULL<font color="black">)</font>
+<font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>copiaEmSi<font color="black">(</font>e<font color="black">)</font>;
+<font color="black">}</font>
+
+Evento<font color="black">:</font><font color="black">:</font>~Evento<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pMomento<font color="black">)</font> <font color="black">{</font>
+        <font color="blue">delete</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pMomento;
+    <font color="black">}</font>
+
+    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificador<font color="black">)</font> <font color="black">{</font>
+        <font color="blue">delete</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificador;
+    <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">const</font> Valor<font color="black">&</font> Evento<font color="black">:</font><font color="black">:</font>grupo<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGrupo;
+<font color="black">}</font>
+
+Evento<font color="black">&</font> Evento<font color="black">:</font><font color="black">:</font>grupo<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> v<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGrupo <font color="black">=</font> v;
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+<font color="blue">const</font> Valor Evento<font color="black">:</font><font color="black">:</font>nomeCompleto<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> Valor<font color="black">(</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>grupo<font color="black">(</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font>.compare<font color="black">(</font><font color="maroon">""</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font>?<font color="maroon">""</font>
+            <font color="black">:</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>grupo<font color="black">(</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font> <font color="black">+</font> <font color="maroon">"."</font><font color="black">)</font> <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font> Evento<font color="black">:</font><font color="black">:</font>especial<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEspecial;
+<font color="black">}</font>
+
+Evento<font color="black">&</font> Evento<font color="black">:</font><font color="black">:</font>especial<font color="black">(</font><font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font> e<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEspecial <font color="black">=</font> e;
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+<font color="blue">const</font> <font color="blue">bool</font> Evento<font color="black">:</font><font color="black">:</font>modificaEstadoDiretamente<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificador <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font>;
+<font color="black">}</font>
+
+Evento<font color="black">*</font> Evento<font color="black">:</font><font color="black">:</font>dispara<font color="black">(</font><font color="blue">const</font> UniversoDeTempo<font color="black">&</font> u<font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>disparado<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        EventoDisparadoExcecao e;
+        e <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"Evento::dispara:: não é possível disparar"</font>
+                <font color="maroon">" um evento através de outro já disparado!"</font>;
+
+        <font color="blue">throw</font> e;
+    <font color="black">}</font>
+
+    Evento<font color="black">*</font> retorno <font color="black">=</font> <font color="black">(</font>Evento<font color="black">*</font><font color="black">)</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>geraCopia<font color="black">(</font><font color="black">)</font>;
+
+    try <font color="black">{</font>
+        retorno<font color="black">-</font><font color="black">&#62;</font>pMomento <font color="black">=</font> <font color="blue">new</font> Momento<font color="black">(</font>u.agora<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font> <font color="blue">catch</font><font color="black">(</font>...<font color="black">)</font> <font color="black">{</font>
+        Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>WARN, <font color="maroon">"Evento::dispara:: não foi possível determinar"</font>
+                <font color="maroon">" o momento que este Evento foi disparado. Evento: "</font> <font color="black">+</font> <font color="black">*</font>retorno<font color="black">)</font>;
+
+        retorno<font color="black">-</font><font color="black">&#62;</font>pMomento <font color="black">=</font> NULL;
+    <font color="black">}</font>
+
+    <font color="blue">if</font> <font color="black">(</font>retorno<font color="black">-</font><font color="black">&#62;</font>pMomento <font color="black">=</font><font color="black">=</font> NULL<font color="black">)</font> <font color="black">{</font>
+        <font color="blue">static</font> UniversoSequencial us;
+        retorno<font color="black">-</font><font color="black">&#62;</font>pMomento <font color="black">=</font> <font color="blue">new</font> Momento<font color="black">(</font>us.agora<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">return</font> retorno;
+<font color="black">}</font>
+
+<font color="blue">const</font> <font color="blue">bool</font> Evento<font color="black">:</font><font color="black">:</font>disparado<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pMomento <font color="black">!</font><font color="black">=</font> NULL;
+<font color="black">}</font>
+
+<font color="blue">const</font> ModificadorDeEstado<font color="black">&</font> Evento<font color="black">:</font><font color="black">:</font>modificador<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>modificaEstadoDiretamente<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        <font color="blue">return</font> <font color="black">*</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificador<font color="black">)</font>;
+    <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+        EventoIntermediarioExcecao e;
+        e <font color="black">&#60;</font><font color="black">&#60;</font> string<font color="black">(</font><font color="black">)</font> <font color="black">+</font> <font color="maroon">"Evento::modificador():: só é possível acessar o modificador caso este"</font>
+                <font color="black">+</font> <font color="maroon">" modifique um estado diretamente."</font>;
+
+        <font color="blue">throw</font> e;
+    <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">const</font> Momento<font color="black">&</font> Evento<font color="black">:</font><font color="black">:</font>momentoDoDisparo<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>disparado<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        EventoNaoDisparadoExcecao e;
+        e <font color="black">&#60;</font><font color="black">&#60;</font> string<font color="black">(</font><font color="black">)</font> <font color="black">+</font> <font color="maroon">"Evento::momentoDoDisparo():: esse Evento é para consulta,"</font>
+                <font color="black">+</font> <font color="maroon">" nunca foi disparado. "</font> <font color="black">+</font> <font color="black">*</font><font color="blue">this</font>;
+
+        <font color="blue">throw</font> e;
+    <font color="black">}</font>
+
+    <font color="blue">return</font> <font color="black">*</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pMomento<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">const</font> <font color="blue">bool</font> Evento<font color="black">:</font><font color="black">:</font>igual<font color="black">(</font><font color="blue">const</font> Igualavel<font color="black">&</font> alheio<font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">bool</font> retorno <font color="black">=</font> <font color="blue">false</font>;
+
+    try <font color="black">{</font>
+        <font color="blue">const</font> Evento<font color="black">&</font> evento <font color="black">=</font> dynamic_cast<font color="black">&#60;</font><font color="blue">const</font> Evento<font color="black">&</font><font color="black">&#62;</font><font color="black">(</font>alheio<font color="black">)</font>;
+
+        <font color="blue">if</font> <font color="black">(</font>evento.nomeCompleto<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+            <font color="green">//Debug::msg(INFO, "--- nomes iguais!");</font>
+
+            <font color="blue">if</font> <font color="black">(</font>evento.intermediario<font color="black">(</font><font color="black">)</font> <font color="black">|</font><font color="black">|</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>intermediario<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                <font color="green">//Debug::msg(INFO, "--- um dos dois é intermediário!");</font>
+                retorno <font color="black">=</font> <font color="blue">true</font>;
+            <font color="black">}</font> <font color="blue">else</font> <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificador<font color="black">-</font><font color="black">&#62;</font>igual<font color="black">(</font><font color="black">*</font><font color="black">(</font>evento.pModificador<font color="black">)</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                <font color="green">//Debug::msg(INFO, "--- os modificadores sao iguais!");</font>
+                retorno <font color="black">=</font> <font color="blue">true</font>;
+            <font color="black">}</font>
+        <font color="black">}</font>
+    <font color="black">}</font> <font color="blue">catch</font> <font color="black">(</font>...<font color="black">)</font> <font color="black">{</font>
+        Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>WARN, <font color="maroon">"Evento::igual(...):: O que você está tentando comparar com um Evento?? "</font>
+                   <font color="black">+</font> <font color="black">*</font><font color="blue">this</font> <font color="black">+</font> <font color="maroon">" ??"</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">return</font> retorno;
+<font color="black">}</font>
+
+string Evento<font color="black">:</font><font color="black">:</font>emString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    string retorno;
+
+    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>especial<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        retorno <font color="black">+</font><font color="black">=</font> <font color="maroon">"* "</font>;
+    <font color="black">}</font>
+
+    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font>.apelidos<font color="black">(</font><font color="black">)</font>.tamanho<font color="black">(</font><font color="black">)</font> <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font> <font color="black">{</font>
+        retorno <font color="black">+</font><font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font>.apelidos<font color="black">(</font><font color="black">)</font><font color="black">[</font><font color="maroon">0</font><font color="black">]</font> <font color="black">+</font> <font color="maroon">" "</font>;
+    <font color="black">}</font>
+
+    retorno <font color="black">+</font><font color="black">=</font> <font color="maroon">"&#60;"</font> <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font> <font color="black">+</font> <font color="maroon">"&#62;"</font>;
+
+    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>nome<font color="black">(</font><font color="black">)</font>.apelidos<font color="black">(</font><font color="black">)</font>.tamanho<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font> <font color="black">{</font>
+        <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificador <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font> <font color="black">{</font>
+            <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificador<font color="black">-</font><font color="black">&#62;</font>acao<font color="black">(</font><font color="black">)</font>
+                <font color="black">!</font><font color="black">=</font> ModificadorDeEstado<font color="black">:</font><font color="black">:</font>APENAS_ATRIBUI<font color="black">)</font>
+            <font color="black">{</font>
+                retorno <font color="black">+</font><font color="black">=</font> <font color="maroon">""</font> <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificador<font color="black">-</font><font color="black">&#62;</font>acao<font color="black">(</font><font color="black">)</font>;
+            <font color="black">}</font>
+
+            retorno <font color="black">+</font><font color="black">=</font> <font color="maroon">"("</font>;
+
+            <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificador<font color="black">-</font><font color="black">&#62;</font>campo<font color="black">(</font><font color="black">)</font> <font color="black">!</font><font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL<font color="black">)</font> <font color="black">{</font>
+                retorno <font color="black">+</font><font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificador<font color="black">-</font><font color="black">&#62;</font>campo<font color="black">(</font><font color="black">)</font> <font color="black">+</font> <font color="maroon">"="</font>;
+            <font color="black">}</font>
+
+            <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificador<font color="black">-</font><font color="black">&#62;</font>parametros<font color="black">(</font><font color="black">)</font>.tamanho<font color="black">(</font><font color="black">)</font> <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font> <font color="black">{</font>
+                <font color="blue">int</font> tamanho <font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificador<font color="black">-</font><font color="black">&#62;</font>parametros<font color="black">(</font><font color="black">)</font>.tamanho<font color="black">(</font><font color="black">)</font>;
+
+                <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> tamanho; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+                    retorno <font color="black">+</font><font color="black">=</font> <font color="maroon">""</font> <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificador<font color="black">-</font><font color="black">&#62;</font>parametros<font color="black">(</font><font color="black">)</font><font color="black">[</font>i<font color="black">]</font>;
+
+                    <font color="blue">if</font> <font color="black">(</font>i <font color="black">&#60;</font> tamanho <font color="maroon">-1</font><font color="black">)</font> <font color="black">{</font>
+                        retorno <font color="black">+</font><font color="black">=</font> <font color="maroon">", "</font>;
+                    <font color="black">}</font>
+                <font color="black">}</font>
+            <font color="black">}</font>
+
+            retorno <font color="black">+</font><font color="black">=</font> <font color="maroon">")"</font>;
+        <font color="black">}</font>
+    <font color="black">}</font>
+
+    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>disparado<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        retorno <font color="black">+</font><font color="black">=</font> <font color="maroon">" "</font> <font color="black">+</font> Intervalo<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>momentoDoDisparo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">return</font> retorno;
+<font color="black">}</font>
+
+Objeto<font color="black">*</font> Evento<font color="black">:</font><font color="black">:</font>geraCopia<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">new</font> Evento<font color="black">(</font><font color="black">*</font><font color="blue">this</font><font color="black">)</font>;
+<font color="black">}</font>
+
+Copiavel<font color="black">&</font> Evento<font color="black">:</font><font color="black">:</font>copiaEmSi<font color="black">(</font><font color="blue">const</font> Copiavel<font color="black">&</font> alheio<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">const</font> Evento<font color="black">&</font> e <font color="black">=</font> dynamic_cast<font color="black">&#60;</font><font color="blue">const</font> Evento<font color="black">&</font><font color="black">&#62;</font><font color="black">(</font>alheio<font color="black">)</font>;
+    
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>mudaNome<font color="black">(</font>e.nome<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEspecial <font color="black">=</font> e.pEspecial;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pGrupo <font color="black">=</font> e.pGrupo;
+
+    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificador <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font> <font color="black">{</font>
+        <font color="blue">delete</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificador;
+    <font color="black">}</font>
+
+    <font color="blue">if</font> <font color="black">(</font>e.pModificador <font color="black">=</font><font color="black">=</font> NULL<font color="black">)</font> <font color="black">{</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificador <font color="black">=</font> NULL;
+    <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pModificador <font color="black">=</font> <font color="black">(</font>ModificadorDeEstado<font color="black">*</font><font color="black">)</font> e.pModificador<font color="black">-</font><font color="black">&#62;</font>geraCopia<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pMomento <font color="black">!</font><font color="black">=</font> NULL<font color="black">)</font> <font color="black">{</font>
+        <font color="blue">delete</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pMomento;
+    <font color="black">}</font>
+
+    <font color="blue">if</font> <font color="black">(</font>e.pMomento <font color="black">=</font><font color="black">=</font> NULL<font color="black">)</font> <font color="black">{</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pMomento <font color="black">=</font> NULL;
+    <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pMomento <font color="black">=</font> <font color="blue">new</font> Momento<font color="black">(</font><font color="black">*</font><font color="black">(</font>e.pMomento<font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+Evento Evento<font color="black">:</font><font color="black">:</font>criaEventoIntermediarioRelacionadoAEstado<font color="black">(</font><font color="blue">const</font> Estado<font color="black">&</font> e<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> Evento<font color="black">(</font>e.nomeCompleto<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,106 @@
+<HTML>
+<HEAD>
+<TITLE>
+Demonstracao.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: Demonstracao.cpp.html,v $
+ * $Date: 2005/03/22 20:18:40 $
+ * $Revision: 1.6 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/demonstracao/Demonstracao.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia<font color="black">:</font><font color="black">:</font>demonstracao;
+
+Demonstracao<font color="black">:</font><font color="black">:</font>Demonstracao<font color="black">(</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+Demonstracao<font color="black">:</font><font color="black">:</font>~Demonstracao<font color="black">(</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+Executavel<font color="black">&</font> Demonstracao<font color="black">:</font><font color="black">:</font>executa<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+
+    
+
+    Vitrola vitrola;
+    FabricaDeSonsFMod fabricaDeSons;
+    CarregadorDeSom carregadorDeSom <font color="black">(</font>fabricaDeSons<font color="black">)</font>;
+    ResultadoSonoro resultadoSonoro;
+
+    vitrola.outroResultado <font color="black">(</font><font color="black">(</font>ResultadoSonoro<font color="black">*</font><font color="black">)</font><font color="black">&</font>resultadoSonoro<font color="black">)</font>;
+
+    carregadorDeSom
+        .carregaSom <font color="black">(</font><font color="maroon">"musica1"</font>        ,<font color="maroon">"sons/musica1.mp3"</font><font color="black">)</font>
+        .carregaSom <font color="black">(</font><font color="maroon">"musica2"</font>        ,<font color="maroon">"sons/musica2.mp3"</font><font color="black">)</font>
+        .carregaSom <font color="black">(</font><font color="maroon">"musica3"</font>        ,<font color="maroon">"sons/musica3.mp3"</font><font color="black">)</font>
+        .carregaSom <font color="black">(</font><font color="maroon">"portaAbre"</font>      ,<font color="maroon">"sons/abrePorta.wav"</font><font color="black">)</font>
+        .carregaSom <font color="black">(</font><font color="maroon">"portaFecha"</font>     ,<font color="maroon">"sons/fechaPorta.wav"</font><font color="black">)</font>
+        .carregaSom <font color="black">(</font><font color="maroon">"janelaAbreFecha"</font>,<font color="maroon">"sons/janelaAbreFecha.wav"</font><font color="black">)</font>
+        .carregaSom <font color="black">(</font><font color="maroon">"tictac"</font>         ,<font color="maroon">"sons/tictac.wav"</font><font color="black">)</font>
+        .carregaSom <font color="black">(</font><font color="maroon">"torradeira"</font>     ,<font color="maroon">"sons/torradeira.wav"</font><font color="black">)</font>
+        .carregaSom <font color="black">(</font><font color="maroon">"liquidificador"</font> ,<font color="maroon">"sons/liquidificador.wav"</font><font color="black">)</font>
+        .carregaSom <font color="black">(</font><font color="maroon">"cuco"</font>           ,<font color="maroon">"sons/cuco.wav"</font><font color="black">)</font>
+        .carregaSom <font color="black">(</font><font color="maroon">"latido"</font>         ,<font color="maroon">"sons/cachorro.wav"</font><font color="black">)</font>     
+        .executa<font color="black">(</font><font color="black">)</font>;
+    
+    <font color="green">// Carregando tela:</font>
+
+    BasicoVisualAllegro visual;
+
+    CarregadorWizard carregadorWizard
+            <font color="black">=</font> CarregadorWizard<font color="black">(</font>visual.carregador<font color="black">(</font><font color="black">)</font>,
+                    visual.resultadoGrafico<font color="black">(</font><font color="black">)</font>,
+                    visual.animacoes<font color="black">(</font><font color="black">)</font>,
+                    <font color="maroon">"dat/camadasDemonstracao.txt"</font><font color="black">)</font>;
+
+    carregadorWizard.executa<font color="black">(</font><font color="black">)</font>;
+
+    DesenhistaDeResultadoGraficoNaTela desenhista;
+    desenhista.outraTela<font color="black">(</font><font color="black">(</font>TelaComFundo<font color="black">*</font><font color="black">)</font> <font color="black">&</font>visual.tela<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+            .outraFabrica<font color="black">(</font><font color="black">(</font>FabricaDeImagens<font color="black">*</font><font color="black">)</font> <font color="black">&</font>visual.fabrica<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+            .outroResultado<font color="black">(</font><font color="black">(</font>ResultadoGrafico<font color="black">*</font><font color="black">)</font> <font color="black">&</font>visual.resultadoGrafico<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+    <font color="green">// Gerando o básico da Sinfonia:</font>
+
+    ScriptDinamica genesis<font color="black">(</font><font color="maroon">"./dat/demonstracao.xml"</font>, visual,resultadoSonoro,carregadorDeSom<font color="black">)</font>;
+    Sinfonia<font color="black">*</font> sinfonia <font color="black">=</font> genesis.geraSinfonia<font color="black">(</font><font color="black">)</font>;
+    Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>INFO, <font color="maroon">"--- Sinfonia gerada: "</font> <font color="black">+</font> <font color="black">*</font>sinfonia<font color="black">)</font>;
+
+    <font color="green">// Teclado:</font>
+
+    TecladoAllegro<font color="black">*</font> tecladoAllegro <font color="black">=</font> TecladoAllegro
+            <font color="black">:</font><font color="black">:</font>criaTecladoAllegro<font color="black">(</font>sinfonia<font color="black">-</font><font color="black">&#62;</font>estados<font color="black">(</font><font color="black">)</font>, visual.tempo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+    sinfonia<font color="black">-</font><font color="black">&#62;</font>adicionaGeradorDeEventosEspecial<font color="black">(</font>tecladoAllegro, <font color="blue">true</font><font color="black">)</font>;
+
+    <font color="green">// Sinfonia:</font>
+
+    Thread sinfoniaEmThread<font color="black">(</font><font color="black">*</font>sinfonia<font color="black">)</font>;
+    sinfoniaEmThread.start<font color="black">(</font><font color="maroon">"Sinfonia em thread"</font><font color="black">)</font>;
+
+    <font color="blue">while</font> <font color="black">(</font><font color="black">!</font>sinfonia<font color="black">-</font><font color="black">&#62;</font>estados<font color="black">(</font><font color="black">)</font>.estado<font color="black">(</font>Sinfonia<font color="black">:</font><font color="black">:</font>LIGADA<font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font>.emBool<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+    <font color="blue">while</font> <font color="black">(</font>sinfonia<font color="black">-</font><font color="black">&#62;</font>estados<font color="black">(</font><font color="black">)</font>.estado<font color="black">(</font>Sinfonia<font color="black">:</font><font color="black">:</font>LIGADA<font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font>.emBool<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        Thread<font color="black">:</font><font color="black">:</font>sleep<font color="black">(</font>Intervalo<font color="black">(</font><font color="maroon">10</font>, Milissegundo<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+        visual.animacoes<font color="black">(</font><font color="black">)</font>.executa<font color="black">(</font><font color="black">)</font>;
+        desenhista.executa<font color="black">(</font><font color="black">)</font>;
+        vitrola.executa<font color="black">(</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">delete</font> sinfonia;
+
+
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+
+</PRE>
+</BODY>
+</HTML>

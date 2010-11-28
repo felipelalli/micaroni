@@ -1,0 +1,97 @@
+<HTML>
+<HEAD>
+<TITLE>
+AreaClicavel.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: AreaClicavel.h.html,v $
+ * $Date: 2005/03/22 20:18:44 $
+ * $Revision: 1.6 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_AREACLICAVEL_H__B744BEC3_0D74_4116_A46C_FC76FAF6A01F__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_AREACLICAVEL_H__B744BEC3_0D74_4116_A46C_FC76FAF6A01F__INCLUDED_
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/GeradorDeEventosEspecial.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia;
+
+<font color="blue">namespace</font> biblia <font color="black">{</font>
+ <font color="blue">namespace</font> dinamicas <font color="black">{</font>
+  <font color="blue">namespace</font> sinfonia <font color="black">{</font>
+   <font color="blue">namespace</font> gde <font color="black">{</font>
+    <font color="green">/**
+     * Exceções relativas à AreaClicavel.
+     */</font>
+    <font color="blue">class</font> AreaClicavelExcecao<font color="black">:</font> <font color="blue">public</font> SinfoniaExcecao <font color="black">{</font><font color="black">}</font>;
+
+    <font color="green">/**
+     * Quando, por algum motivo, não
+     * foi possível criar a AreaClicavel
+     * em questão.
+     */</font>
+    <font color="blue">class</font> ImpossivelCriarAreaClicavelExcecao<font color="black">:</font> <font color="blue">public</font> AreaClicavelExcecao <font color="black">{</font><font color="black">}</font>;
+
+    <font color="green">/**
+     * Representa uma área clicável na tela associado ao seu
+     * Estado correspondente. É associado (através do
+     * campo principal) ao nome do Estado do Mouse.
+     * &#60;p&#62;
+     * Os campos do {@link Estado} a que esta classe é
+     * relacionada são:
+     * &#60;br&#62;&#60;ul&#62;
+     * &#60;li&#62;&#60;b&#62;(campo principal)&#60;/b&#62; - nome completo do Estado relativo
+     *                                ao Mouse.
+     *
+     * &#60;li&#62;&#60;b&#62;x&#60;/b&#62; - posição X da área retangular
+     * &#60;li&#62;&#60;b&#62;y&#60;/b&#62; - posição Y da área
+     * &#60;li&#62;&#60;b&#62;largura&#60;/b&#62;
+     * &#60;li&#62;&#60;b&#62;altura&#60;/b&#62;
+     * &#60;li&#62;&#60;b&#62;habilitada&#60;/b&#62;
+     * &#60;li&#62;&#60;b&#62;mouse sobre&#60;/b&#62; (somente leitura)
+     * &#60;li&#62;&#60;b&#62;clicado sobre&#60;/b&#62; (somente leitura)
+     * &#60;/ul&#62;
+     */</font>
+    <font color="blue">class</font> AreaClicavel<font color="black">:</font> <font color="blue">public</font> GeradorDeEventosEspecial <font color="black">{</font>
+        <font color="blue">private</font><font color="black">:</font>
+            Estado<font color="black">*</font> pEstado;
+            <font color="blue">const</font> UniversoDeTempo<font color="black">&</font> pTempo;
+
+        <font color="blue">public</font><font color="black">:</font>
+            AreaClicavel<font color="black">(</font><font color="blue">const</font> MediadorDeEstados<font color="black">&</font>,
+                     <font color="blue">const</font> UniversoDeTempo<font color="black">&</font>,
+                     Estado<font color="black">*</font> estadoRelacionado<font color="black">)</font>;
+
+            virtual ~AreaClicavel<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">// Executavel:</font>
+            <font color="green">/**
+             * Deve ser executado uma única vez em Thread.
+             * Fica esperando algum {@link Evento} que corresponda
+             * com o {@link Estado} deste relacionado e toma
+             * as devidas providências.
+             */</font>
+            virtual Executavel<font color="black">&</font> executa<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">// Objeto:</font>
+            virtual string emString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+    <font color="black">}</font>;
+   <font color="black">}</font>
+  <font color="black">}</font>
+ <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_AREACLICAVEL_H__B744BEC3_0D74_4116_A46C_FC76FAF6A01F__INCLUDED_)</font>
+
+</PRE>
+</BODY>
+</HTML>

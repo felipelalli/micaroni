@@ -1,0 +1,47 @@
+<HTML>
+<HEAD>
+<TITLE>
+SinfoniaExcecao.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: SinfoniaExcecao.cpp.html,v $
+ * $Date: 2005/03/22 20:19:08 $
+ * $Revision: 1.37 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/SinfoniaExcecao.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia; 
+
+<font color="green">/* UniversoSequencial */</font>
+
+UniversoSequencial<font color="black">:</font><font color="black">:</font>Vezes<font color="black">:</font><font color="black">:</font>Vezes<font color="black">(</font><font color="black">)</font><font color="black">:</font>UnidadeDeTempo<font color="black">(</font><font color="maroon">0</font>, <font color="maroon">"impossível determinar tempo"</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+UniversoSequencial<font color="black">:</font><font color="black">:</font>Vezes<font color="black">:</font><font color="black">:</font>~Vezes<font color="black">(</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+<font color="blue">int</font> UniversoSequencial<font color="black">:</font><font color="black">:</font>pVezes <font color="black">=</font> <font color="maroon">0</font>;
+UniversoSequencial<font color="black">:</font><font color="black">:</font>Vezes UniversoSequencial<font color="black">:</font><font color="black">:</font>pPasso <font color="black">=</font> UniversoSequencial<font color="black">:</font><font color="black">:</font>Vezes<font color="black">(</font><font color="black">)</font>;
+
+Momento UniversoSequencial<font color="black">:</font><font color="black">:</font>agora<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> Momento<font color="black">(</font><font color="black">+</font><font color="black">+</font>UniversoSequencial<font color="black">:</font><font color="black">:</font>pVezes, <font color="black">*</font><font color="blue">this</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">const</font> UnidadeDeTempo<font color="black">&</font> UniversoSequencial<font color="black">:</font><font color="black">:</font>cadaPasso<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> UniversoSequencial<font color="black">:</font><font color="black">:</font>pPasso;
+<font color="black">}</font>
+
+<font color="blue">bool</font> UniversoSequencial<font color="black">:</font><font color="black">:</font>mesmoUniversoDeTempo<font color="black">(</font><font color="blue">const</font> UniversoDeTempo<font color="black">&</font> u<font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> typeid<font color="black">(</font><font color="black">*</font><font color="blue">this</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> typeid<font color="black">(</font>u<font color="black">)</font>?<font color="blue">true</font><font color="black">:</font><font color="blue">false</font>;
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,3 @@
+Arquivos estrutura para o javac. Meta-files etc.
+
+http://www.google.com.br/search?q=java&btnI=I

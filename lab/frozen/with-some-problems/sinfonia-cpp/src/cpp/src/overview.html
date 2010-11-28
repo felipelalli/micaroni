@@ -1,0 +1,68 @@
+<html>
+	<body>
+			Este documento é a API da {@link Sinfonia}, a interface de suas classes públicas e suas documentações.
+		<h1>Visão Geral do Pacote</h1>
+
+		<h2>1. Introdução</h2>
+		Propõe uma estrutura de software para a organização das relações de mudanças de determinados {@link Estado}s.
+
+		<p><i>Nota: Este pacote possui diversos conceitos genéricos, e onde possivelmente couber uma implementação específica do programador que usar a Sinfonia, a classe conterá o nome "Especial", como por exemplo a {@link GeradorDeEventosEspecial}.</i>
+
+		<p><i>Nota 2: Versão deste documento: $Revision: 1.5 $, $Date: 2005/01/06 01:21:05 $</i>
+
+		<h2>2. Contexto Geral</h2>
+		A Sinfonia é dividida em três partes: os {@link Estado}s (e suas definições), a mudança dos {@link Estado}s através de {@link Evento}s que são gerados por {@link GeradorDeEventos Geradores de Eventos} e a realização ou uso desses {@link Estado}s e {@link Evento}s através de {@link CaptadorDeEventos Captadores de Eventos}.
+
+		<p>Todos os {@link Estado}s lançados por qualquer {@link GeradorDeEventos Gerador de Eventos} serão enviados para todos que puderem captar esses {@link Evento}s como os {@link CaptadorDeEventos Captadores de Eventos}.
+
+		<h3>2.1. {@link Estado}s</h3>
+		Caracterizam os estados de um determinado momento do software em questão. Cada {@link Estado} é	uma parte de um todo que pode ser representado através de um valor de algum tipo ({@link Classe}).	Esse tipo é geralmente definido por um {@link Multifuncional} que aceita tipos primitivos tais como <i>boleano</i> (verdadeiro/falso), números (inteiros/reais) ou letras (string ou cadeia de caracteres). É a {@link Classe} a que pertence que define quais ações podem ser aplicadas a ele. O "todo" mencionado no início do parágrafo é um grupo de {@link Estado}s que une conceitualmente as partes primitivas.
+
+		<p>Cada {@link Estado} pode possuir mais de um campo, caso necessário. Definindo-os é possível unir mais conceitos num {@link Estado} só. Um {@link Estado} possui um nome que o identifica	unicamente num grupo e pode possuir também apelidos alternativos.
+
+		<p>Exemplos de {@link Estado}s são:	"iniciou jogada", "quantos pontos", "está jogando", "nome do jogador" etc.
+
+		<h4>2.1.1. Definição dos {@link Estado}s</h4>
+		Os {@link Estado}s são definidos na {@link Sinfonia} através de um <i>script</i> ou pela adição "manual" de um {@link Estado} pronto para ser modificado. Esse <i>script</i> pode ser gerado por um aplicativo auxiliar; para detalhes consulte a documentação específica.
+
+		<h3>2.2. {@link Evento}s</h3>
+		Caracterizam a mudança de um {@link Estado}. Um {@link Evento} representa algum acontecimento que modificará um {@link Estado}, disparará outros {@link Eventos} ou realizará determinada ação implementada pelo programador que usa a {@link Sinfonia}.
+
+		<p>Um {@link Evento}, assim como um {@link Estado}, possui um nome (com apelidos opcionais) e um grupo. São exemplos de {@link Evento}s: "inicia jogada", "muda pontos", "muda nome do jogador" etc. {@link Evento}s que modificam diretamente um {@link Estado} deverão possuir o mesmo nome do {@link Estado}	e o primeiro apelido deve ser usado para facilitar a leitura da ação em si, como por exemplo: nome estado: "está jogando", nome do evento: "está jogando" e apelido: "inicia jogada".
+
+		<p>Um {@link Evento} que não modifica diretamente um {@link Estado} é chamado de "evento intermediário"	e não possui parâmetros. É usado para disparar outros {@link Evento}s ou realizar determinada ação no software. Um {@link Evento} que não é intermediário, i. e., modifica diretamente um {@link Estado}, geralmente possui parâmetros que serão usados na modificação.
+
+		<p>Num caso especial, é possível que um {@link Estado} seja modificado sem o lançamento de um {@link Evento}. Nesse caso, o {@link Estado} é chamado de "externo". Sendo assim, não é possível detectar sua mudança.
+
+		<h3>2.3. Geradores de {@link Evento}s</h3>
+		Todo {@link Evento} é gerado através de um {@link GeradorDeEventos}. Esse pode ser dependente ({@link GeradorDeEventosDependente}, depende de outros {@link Evento}s e da situação atual dos {@link Estado}s para gerar) ou especial ({@link GeradorDeEventosEspecial}, implementado pelo programador que usa a {@link Sinfonia}).
+
+		<h4>2.3.1. Dinâmica ({@link GeradorDeEventosDependente Gerador de Eventos Dependente})</h4>
+		Toda a lógica (ou pelo menos a grande maioria) do software deveria ficar embutida nesse {@link GeradorDeEventosDependente Geradores de Eventos Dependente}. Chama-se de lógica qualquer regra que impõe mudanças nos {@link Estado}s, e essa lógica é formada por um conjunto de {@link Situacao situações}.
+
+		<h5>2.3.1.1. Situações ({@link Situacao})</h5>
+		Uma {@link Situacao} possui um conjunto de {@link Evento}s que são capazes de "despertá-la", uma {@link Condicao} (formada por comparações entre {@link Estado}s e constantes e {@link Estado}s entre si), um conjunto de {@link Evento}s que gera caso a {@link Situacao} como um todo seja verdadeira e outro conjunto caso seja falsa.
+
+		<h4>2.3.2. {@link GeradorDeEventosEspecial Gerador de Eventos Especial}</h4>
+		É um {@link GeradorDeEventos} implementado de alguma forma pelo programador-usuário da {@link Sinfonia}.
+
+		<p>Os {@link Evento}s disparados por {@link GeradorDeEventosEspecial Geradores de Eventos Especiais} possuem a característica de serem "especiais". E os que são gerados pelos {@link GeradorDeEventosDependente Geradores Dependentes} são "genéricos".
+
+		<h3>2.4. {@link CaptadorDeEventos Captadores de Eventos}</h3>
+		Os {@link CaptadoresDeEventos Captadores de Eventos} capturam {@link Evento}s da {@link Sinfonia} e aplicam no software de alguma forma implementada pelo programador-usuário da {@link Sinfonia}. Todo {@link CaptadorDeEventos} é também um {@link GeradorDeEventos} capaz de gerar {@link Evento}s novamente para a {@link Sinfonia}.
+
+		<h4>2.4.1. {@link Concretizador} ({@link CaptadorDeEventos Captador de Eventos})</h4>
+		Um {@link Concretizador} é um {@link CaptadorDeEventos} genérico, que associa uma determinada {@link Situacao} a um {@link Executavel} qualquer implementado pelo programador-usuário da {@link Sinfonia}.
+
+		<h4>2.4.2. {@link CaptadorDeEventosEspecial Captador de Eventos Especial}</h4>
+		Um {@link CaptadorDeEventosEspecial} é um {@link CaptadorDeEventos} implementado de alguma forma pelo programador-usuário da {@link Sinfonia}.
+
+		<h2>3. A Fazer (to do list)</h2>
+		Implementação de tipos complexos (compostos) tal como lista, hashs etc. (verificar a necessidade da criação de Estados dinamicamente).
+
+		<h2>3. Considerações Finais</h2>
+		Os conceitos estão mais detalhados na documentação das classes aqui citadas.
+
+		<p>Note que essa estrutura proposta apenas prevê a união da modificação e realização dos {@link Estado}s através de {@link Estado}s predefinidos e regras de {@link Estado}s que dependem de outros {@link Estado}s. --- A idéia é passar a maior parte possível da lógica do software para os {@link GeradorDeEventosDependente Geradores de Eventos Dependente} (tornando as regras genéricas); porém, é provável que a maior complexidade da lógica fique embutida em alguns {@link GeradorDeEventosEspecial Geradores de Eventos Especiais}. É importante que essa complexidade seja estruturada de acordo com sua necessidade, mesmo que a {@link Sinfonia} não saiba de sua existência.
+	</body>
+</html>

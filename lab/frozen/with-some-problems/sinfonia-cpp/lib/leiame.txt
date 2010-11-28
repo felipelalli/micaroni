@@ -1,0 +1,6 @@
+Bibliotecas estáticas externas do projeto.
+
+Lembrar de, sempre que fazer release, compilar as seguintes bibliotecas:
+
+- biblia.old-1.X.lib
+- biblia.old-debug-1.X.lib

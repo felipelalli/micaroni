@@ -1,0 +1,115 @@
+<HTML>
+<HEAD>
+<TITLE>
+EstadoAlvo.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: EstadoAlvo.cpp.html,v $
+ * $Date: 2005/03/22 20:18:58 $
+ * $Revision: 1.10 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/EstadoAlvo.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia;
+
+EstadoAlvo<font color="black">:</font><font color="black">:</font>EstadoAlvo<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> valorConstante<font color="black">)</font>
+        <font color="black">:</font>pEstado<font color="black">(</font>NULL<font color="black">)</font>, pCampo<font color="black">(</font>valorConstante<font color="black">)</font>
+<font color="black">{</font>
+    <font color="green">// detalhe de implementação: quando o EstadoAlvo é constante</font>
+    <font color="green">// ele é guardado na variável pCampo porque o campo sempre</font>
+    <font color="green">// será o mesmo: Principal.</font>
+<font color="black">}</font>
+
+EstadoAlvo<font color="black">:</font><font color="black">:</font>EstadoAlvo<font color="black">(</font><font color="blue">const</font> Estado<font color="black">*</font> estado, <font color="blue">const</font> Valor<font color="black">&</font> campoAlvo<font color="black">)</font>
+        <font color="black">:</font>pEstado<font color="black">(</font>estado<font color="black">)</font>, pCampo<font color="black">(</font>campoAlvo<font color="black">)</font>
+<font color="black">{</font><font color="black">}</font>
+
+EstadoAlvo<font color="black">:</font><font color="black">:</font>EstadoAlvo<font color="black">(</font><font color="blue">const</font> Estado<font color="black">*</font> estado<font color="black">)</font>
+        <font color="black">:</font>pEstado<font color="black">(</font>estado<font color="black">)</font>, pCampo<font color="black">(</font>Multifuncional<font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL<font color="black">)</font>
+<font color="black">{</font><font color="black">}</font>
+
+EstadoAlvo<font color="black">:</font><font color="black">:</font>~EstadoAlvo<font color="black">(</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+<font color="blue">const</font> <font color="blue">bool</font> EstadoAlvo<font color="black">:</font><font color="black">:</font>constante<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado <font color="black">=</font><font color="black">=</font> NULL;
+<font color="black">}</font>
+
+<font color="blue">const</font> Valor<font color="black">&</font> EstadoAlvo<font color="black">:</font><font color="black">:</font>campoAlvo<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>constante<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        <font color="blue">return</font> Multifuncional<font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL;
+    <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+        <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pCampo;
+    <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">const</font> Estado<font color="black">&</font> EstadoAlvo<font color="black">:</font><font color="black">:</font>estado<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>constante<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        Debug<font color="black">:</font><font color="black">:</font>sair<font color="black">(</font><font color="maroon">"EstadoAlvo::estado():: Não é possível"</font>
+                <font color="maroon">" resgatar um Estado de um EstadoAlvo constante."</font>
+                <font color="maroon">" Use a função 'constante()' para verificar."</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">return</font> <font color="black">*</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">const</font> Valor EstadoAlvo<font color="black">:</font><font color="black">:</font>valorAlvo<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>constante<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pCampo;
+    <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+        <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>estado<font color="black">(</font><font color="black">)</font>.valor<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>campoAlvo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>
+<font color="black">}</font>
+
+Objeto<font color="black">*</font> EstadoAlvo<font color="black">:</font><font color="black">:</font>geraCopia<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">new</font> EstadoAlvo<font color="black">(</font><font color="black">*</font><font color="blue">this</font><font color="black">)</font>;
+<font color="black">}</font>
+
+Copiavel<font color="black">&</font> EstadoAlvo<font color="black">:</font><font color="black">:</font>copiaEmSi<font color="black">(</font><font color="blue">const</font> Copiavel<font color="black">&</font> alheio<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">const</font> EstadoAlvo<font color="black">&</font> ea <font color="black">=</font> dynamic_cast<font color="black">&#60;</font><font color="blue">const</font> EstadoAlvo<font color="black">&</font><font color="black">&#62;</font><font color="black">(</font>alheio<font color="black">)</font>;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pCampo <font color="black">=</font> ea.pCampo;
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado <font color="black">=</font> ea.pEstado;
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+string EstadoAlvo<font color="black">:</font><font color="black">:</font>emString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    Valor va<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>valorAlvo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    string retorno;
+
+    <font color="green">// se o EstadoAlvo é constante ou o Estado apontado é constante</font>
+    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado <font color="black">=</font><font color="black">=</font> NULL?<font color="blue">true</font><font color="black">:</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>estado<font color="black">(</font><font color="black">)</font>.constante<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        retorno <font color="black">=</font> string<font color="black">(</font>va.indefinida<font color="black">(</font><font color="black">)</font>
+            ?<font color="maroon">"&#60;&#60;indefinido&#62;&#62;"</font><font color="black">:</font>va.emString<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+        retorno <font color="black">=</font> <font color="maroon">"&#62;&#62;"</font> <font color="black">+</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>estado<font color="black">(</font><font color="black">)</font>
+                .emString<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>campoAlvo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">return</font> retorno;
+<font color="black">}</font>
+
+<font color="blue">const</font> <font color="blue">bool</font> EstadoAlvo<font color="black">:</font><font color="black">:</font>igual<font color="black">(</font><font color="blue">const</font> Igualavel<font color="black">&</font> alheio<font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">const</font> EstadoAlvo<font color="black">&</font> ea <font color="black">=</font> dynamic_cast<font color="black">&#60;</font><font color="blue">const</font> EstadoAlvo<font color="black">&</font><font color="black">&#62;</font><font color="black">(</font>alheio<font color="black">)</font>;
+    <font color="blue">bool</font> retorno <font color="black">=</font> <font color="blue">false</font>;
+
+    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstado <font color="black">=</font><font color="black">=</font> ea.pEstado<font color="black">)</font> <font color="black">{</font>
+        <font color="blue">if</font> <font color="black">(</font>ea.campoAlvo<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>campoAlvo<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+            retorno <font color="black">=</font> <font color="blue">true</font>;
+        <font color="black">}</font>
+    <font color="black">}</font>
+
+    <font color="blue">return</font> retorno;
+<font color="black">}</font>
+
+</PRE>
+</BODY>
+</HTML>

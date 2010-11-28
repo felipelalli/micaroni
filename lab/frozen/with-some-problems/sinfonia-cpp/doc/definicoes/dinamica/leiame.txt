@@ -1,0 +1,8 @@
+[Definição da Dinâmica de Estados e Eventos]
+doc. relacionado: CVS "ages/doc/definicoes/principal/Mapa dos Projetos.doc"
+
+Consiste em mapear em forma de estados e eventos algo que já temos. No caso, foi escolhido o Estados Special como parâmetro.
+
+Definir os estados pensando que poderão ser usados no futuro projeto da "Sinfonia". Mesmo que ainda não sejam diretamente usados, eles serão útil para refinar o método de construção dos diagramas e definições estruturais dos estados e eventos de uma máquina de estados qualquer.
+
+Durante a definição, um script será criado definindo os componentes básicos que essa dinâmica deve ter.

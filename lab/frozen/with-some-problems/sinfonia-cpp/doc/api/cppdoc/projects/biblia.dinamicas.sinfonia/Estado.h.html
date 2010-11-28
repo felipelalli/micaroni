@@ -1,0 +1,391 @@
+<HTML>
+<HEAD>
+<TITLE>
+Estado.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: Estado.h.html,v $
+ * $Date: 2005/03/22 20:18:58 $
+ * $Revision: 1.42 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_ESTADO_H__BD1AC713_75BD_4AB0_981C_27067A96BA91__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_ESTADO_H__BD1AC713_75BD_4AB0_981C_27067A96BA91__INCLUDED_
+
+<font color="blue">#include</font> <font color="maroon">&#60;string&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> std;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/util/Lixeira.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>util;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/tempo/Momento.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/tempo/UniversoDeTempo.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>tempo;
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/armazenamento/volatil/carcacas/Lista.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/armazenamento/volatil/carcacas/MapaHash.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>armazenamento<font color="black">:</font><font color="black">:</font>volatil<font color="black">:</font><font color="black">:</font>carcacas;
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Valor.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Classe.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Universo.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Rotulado.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Multifuncional.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/UniversoMultifuncional.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/SinfoniaExcecao.h"</font>
+
+<font color="blue">namespace</font> biblia <font color="black">{</font>
+ <font color="blue">namespace</font> dinamicas <font color="black">{</font>
+  <font color="blue">namespace</font> sinfonia <font color="black">{</font>
+    <font color="green">/**
+     * Exceções relativas ao Estado.
+     */</font>
+    <font color="blue">class</font> EstadoExcecao<font color="black">:</font> <font color="blue">public</font> SinfoniaExcecao <font color="black">{</font><font color="black">}</font>;
+
+    <font color="green">/**
+     * É invocado quando algum Campo for requisitado
+     * mas não foi previamente definido.
+     */</font>
+    <font color="blue">class</font> CampoInexistenteExcecao<font color="black">:</font> <font color="blue">public</font> EstadoExcecao <font color="black">{</font><font color="black">}</font>;
+
+    <font color="green">/**
+     * É invocado quando se tentar mudar
+     * pela segunda vez o valor de um Estado constante.
+     */</font>
+    <font color="blue">class</font> EstadoConstanteExcecao<font color="black">:</font> <font color="blue">public</font> EstadoExcecao <font color="black">{</font><font color="black">}</font>;
+
+    <font color="green">/**
+     * Caracteriza o estado de um momento do software.
+     * &#60;p&#62;
+     * Um Estado possui um nome (deriva de Rotulado),
+     * um grupo, uma Classe (que por padrão é a Multifuncional), um Valor
+     * e um Universo a que pertence (possíveis valores).
+     * &#60;p&#62;
+     * Pode ser executado sobre esse Estado uma
+     * ação qualquer (definida por uma Identificacao),
+     * que esteja disponível na Classe a que
+     * este pertence, retornando um novo
+     * valor ou ele mesmo no caso da atribuição.
+     * &#60;p&#62;
+     * Um Estado pode possuir mais de um campo caso sua
+     * estrutura interna necessite disso, mas o uso normal
+     * supõe que ele possui apenas o campo principal
+     * definido por CAMPO_PRINCIPAL.
+     * &#60;p&#62;
+     * A cópia não é possível porque pode ser demorada
+     * demais. Use ponteiros e referências.
+     *
+     * @see Evento
+     * @see MediadorDeEstados
+     * @see #CAMPO_PRINCIPAL
+     * @see EstadoAlvo
+     *
+     * @version $Revision: 1.42 $, $Date: 2005/03/22 20:18:58 $ (GMT-3)
+     * @author &#60;a href="mailto:lalli@ages.com.br?subject=$RCSfile: Estado.h.html,v $"&#62;Felipe Micaroni Lalli&#60;/a&#62;
+     * @author modificado por $Author: felipelalli $
+     */</font>
+    <font color="blue">class</font> Estado<font color="black">:</font> <font color="blue">public</font> Rotulado <font color="black">{</font>
+        <font color="blue">private</font><font color="black">:</font>
+            <font color="blue">const</font> Classe<font color="black">*</font> pClasse;
+            <font color="blue">bool</font> pExterno;
+            <font color="blue">bool</font> pConstante;
+            Lista<font color="black">&#60;</font>Identificacao<font color="black">&#62;</font> pQuaisCampos;
+            MapaHash<font color="black">&#60;</font>Valor<font color="black">*</font><font color="black">&#62;</font> pCampos;
+            Valor pGrupo;
+            Momento<font color="black">*</font> pUltimaMudanca;
+            mutable Lixeira pLixo;
+            mutable MapaHash<font color="black">&#60;</font>UniversoMultifuncional<font color="black">*</font><font color="black">&#62;</font> pUniversos;
+            mutable Valor pNomeCompleto; <font color="green">// buffer</font>
+
+        <font color="blue">protected</font><font color="black">:</font>
+            <font color="green">/**
+             * A cópia não é possível porque pode ser demorada
+             * demais. Use ponteiros e referências.
+             */</font>
+            Estado<font color="black">(</font><font color="blue">const</font> Estado<font color="black">&</font><font color="black">)</font><font color="black">:</font>Rotulado<font color="black">(</font><font color="maroon">"_"</font><font color="black">)</font>, pGrupo<font color="black">(</font><font color="maroon">"_"</font><font color="black">)</font>,
+                                  pNomeCompleto<font color="black">(</font><font color="maroon">"_"</font><font color="black">)</font>, pClasse<font color="black">(</font>NULL<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+        <font color="blue">public</font><font color="black">:</font>
+            <font color="green">/**
+             * Usado para definir a classe padrão
+             * de todo {@link Estado}.
+             */</font>
+            <font color="blue">static</font> Multifuncional MULTIFUNCIONAL;
+
+            <font color="green">/**
+             * Nome do Estado que é constante. Todo
+             * estado constante possui o mesmo nome.
+             */</font>
+            <font color="blue">static</font> Valor CONSTANTE;
+
+            <font color="green">/**
+             * Um valor definido por &#60;b&#62;meta nome&#60;/b&#62;
+             * que representa um campo especial de
+             * todo Estado que retorna o seu próprio
+             * nome completo.
+             */</font>
+            <font color="blue">static</font> Valor META_NOME;
+
+            <font color="green">/**
+             * Por padrão, é da classe Multifuncional, que aceita
+             * os tipos primitivos: boolean, int, double e string.
+             * Define o Universo {@link UniversoMultifuncional} como padrão que pode
+             * ser modificado externamente através da função
+             * {@link #universo()}. A princípio está definido como
+             * se não fosse modificado externamente, mas isso pode ser
+             * redefinido pela função {@link #externo}.
+             * Também por padrão começa sem nenhum grupo, mas isso deve
+             * ser definido após sua criação pela função {@link #grupo}.
+             * &#60;p&#62;
+             * &#60;i&#62;Obs.: não pega para si a responsabilidade de deletar a Classe passada.&#60;/i&#62;
+             * &#60;br&#62;&#60;i&#62;Obs.2: por enquanto só suporta {@link UniversoMultifuncional}.
+             */</font>
+            Estado<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> nome,
+                   <font color="blue">const</font> Classe<font color="black">*</font> <font color="black">=</font> <font color="black">(</font><font color="blue">const</font> Classe<font color="black">*</font><font color="black">)</font> <font color="black">&</font>Estado<font color="black">:</font><font color="black">:</font>MULTIFUNCIONAL<font color="black">)</font>;
+
+            virtual ~Estado<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Se é modificado externamente.
+             */</font>
+            virtual <font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font> externo<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Define se é modificado externamente. &#60;i&#62;Cuidado
+             * com Estados que são modificados externamente sem
+             * Eventos! Não saber exatamente seu comportamento pode ocasionar
+             * erros inesperados.&#60;/i&#62;
+             */</font>
+            virtual Estado<font color="black">&</font> externo<font color="black">(</font><font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Indica se esse estado é constante. Se for, só
+             * será possível atribuir um valor numa primeira vez.
+             */</font>
+            virtual <font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font> constante<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Define este Estado como constante. É impossível
+             * desfazer essa ação.
+             */</font>
+            virtual Estado<font color="black">&</font> defineComoConstante<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * O grupo a que este Estado pertence.
+             * Está na forma de e. g.: "GrupoA.SubgrupoB"
+             *
+             * @see #nome()
+             * @see #nomeCompleto()
+             */</font>
+            virtual <font color="blue">const</font> Valor<font color="black">&</font> grupo<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Define o grupo a que este Estado pertence. Deve
+             * estar na forma de e. g.: "GrupoA.SubgrupoB"
+             */</font>
+            virtual Estado<font color="black">&</font> grupo<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * É o nome completo deste Estado que o identifica
+             * como único no universo. Este deve ser usado
+             * como chave em buscas de chaves únicas.
+             * &#60;p&#62;
+             * Soma o grupo ao nome deste unido por
+             * um ponto. E. g.: "GrupoA.SubgrupoB.nome deste estado"
+             *
+             * @see #nome()
+             * @see #grupo()
+             */</font>
+            virtual <font color="blue">const</font> Valor nomeCompleto<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * A que Classe pertence esse Estado.
+             * Uma Classe agrupa um conjunto de funcionalidades
+             * que são possíveis aplicar sobre qualquer valor.
+             */</font>
+            virtual <font color="blue">const</font> Classe<font color="black">&</font> classe<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Retorna o momento em que esse Estado foi modificado.
+             */</font>
+            virtual <font color="blue">const</font> Momento<font color="black">&</font> ultimaModificacao<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Retorna um valor desse Estado. Se o "campo" não
+             * for especificado, retorna o principal por padrão.
+             *
+             * @throws CampoInexistenteExcecao
+             *
+             * @see #atribui
+             * @see #campos()
+             */</font>
+            virtual <font color="blue">const</font> Valor<font color="black">&</font> valor<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> campo
+                    <font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL<font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Retorna os possíveis campos deste Estado, inclusive
+             * o principal (se existir) definido
+             * pela constante {@link Estado#CAMPO_PRINCIPAL}.
+             * &#60;p&#62;
+             * Um Estado simples pode possuir apenas o campo principal,
+             * definido por {@link Estado#CAMPO_PRINCIPAL}. Se sua estrutura
+             * for complexa (composta) ele pode possuir mais de
+             * um campo. Por exemplo: se este Estado representasse
+             * uma lista, cada campo seria o índice da lista
+             * e inclusive (nesse caso específico) essa função não seria
+             * recomendada pois poderia retornar muitos valores
+             * (todos os índices).
+             */</font>
+            virtual <font color="blue">const</font> Lista<font color="black">&#60;</font>Identificacao<font color="black">&#62;</font><font color="black">&</font> campos<font color="black">(</font><font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Executa uma ação sobre esse Estado usando o valor em questão
+             * como parâmetro único ou sem nenhum parâmetro. &#60;b&#62;ATENÇÃO:
+             * esta função não atribui automaticamente o resultado. Para tal,
+             * utilize a função {@link #atribui} passando o retorno desta.&#60;/b&#62;
+             * &#60;p&#62;
+             * Equivale a &#60;code&#62;this-&#62;classe().aplica(this-&#62;valor(qualCampo), acao, valores);&#60;/code&#62;.
+             *
+             * @throws AcaoIndisponivelExcecao A compatibilidade da ação depende das ações
+             *         disponíveis na Classe a que esse Estado pertence. 
+             *
+             * @throws ValorForaDeIntervalo Veja o Universo que esse Estado pertence.
+             * @return Depende da ação executada.
+             */</font>
+            virtual <font color="blue">const</font> Valor executa<font color="black">(</font><font color="blue">const</font> Identificacao<font color="black">&</font> acao,
+                    <font color="blue">const</font> Valor<font color="black">&</font> valor <font color="black">=</font> Irrelevante<font color="black">(</font><font color="black">)</font>,
+                    <font color="blue">const</font> Valor<font color="black">&</font> qualCampo <font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL<font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Executa uma ação sobre esse Estado usando os valores em questão
+             * como parâmetros. &#60;b&#62;ATENÇÃO:
+             * esta função não atribui automaticamente o resultado. Para tal,
+             * utilize a função {@link #atribui} passando o retorno desta.&#60;/b&#62;
+             *
+             * @throws AcaoIndisponivelExcecao A compatibilidade da ação depende das ações
+             *         disponíveis na Classe a que esse Estado pertence.
+             *
+             * @throws ValorForaDeIntervaloExcecao Veja o Universo a que esse Estado pertence.
+             * @return Depende da ação executada.
+             */</font>
+            virtual <font color="blue">const</font> Valor executa<font color="black">(</font><font color="blue">const</font> Identificacao<font color="black">&</font> acao,
+                                    <font color="blue">const</font> Lista<font color="black">&#60;</font><font color="blue">const</font> Valor<font color="black">*</font><font color="black">&#62;</font><font color="black">&</font> valores,
+                                    <font color="blue">const</font> Valor<font color="black">&</font> qualCampo
+                                        <font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL<font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Atribui um valor a este Estado no campo principal
+             * por padrão ou no campo especificado.
+             *
+             * @throws ForaDeIntervaloExcecao Veja o Universo que esse Estado pertence.
+             */</font>
+            virtual Estado<font color="black">&</font> atribui<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> valor, <font color="blue">const</font> UniversoDeTempo<font color="black">&</font>,
+                    <font color="blue">const</font> Valor<font color="black">&</font> campo <font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL<font color="black">)</font>;
+
+            <font color="green">/**
+             * Prefira utilizar a função {@link #atribui} passando
+             * um {@link UniversoDeTempo} como parâmetro ao invés desta.
+             */</font>
+            virtual Estado<font color="black">&</font> atribui<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> valor,
+                    <font color="blue">const</font> Valor<font color="black">&</font> campo <font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL<font color="black">)</font>;
+
+            <font color="green">/**
+             * Retorna o UniversoMultifuncional (somente-leitura)
+             * a que esse Estado pertence para consulta
+             * externa.
+             */</font>
+            virtual <font color="blue">const</font> UniversoMultifuncional<font color="black">&</font> universo<font color="black">(</font>
+                    <font color="blue">const</font> Valor<font color="black">&</font> campo <font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL<font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">/**
+             * Retorna o UniversoMultifuncional a que esse Estado pertence
+             * para ser modificado externamente. Use esta função
+             * quando você quiser restringir ou abranger o universo.
+             *
+             * @see #valoresPossiveis()
+             */</font>
+            virtual UniversoMultifuncional<font color="black">&</font> universoParaModificar<font color="black">(</font>
+                    <font color="blue">const</font> Valor<font color="black">&</font> campo <font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL<font color="black">)</font>;
+
+            <font color="green">// Objeto:</font>
+
+            <font color="green">/**
+             * Veja {@link #emString} com parâmetro.
+             */</font>
+            virtual string emString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+                <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>emString<font color="black">(</font>Multifuncional
+                    <font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL<font color="black">)</font>;
+            <font color="black">}</font>
+
+            <font color="green">/**
+             * Se o valor principal for boleano e sua
+             * correspondência no "Universo"
+             * possuir pelo menos um apelido, usa o primeiro apelido
+             * seguido do nome do Estado, e. g.: se o Estado se chama
+             * "esperando" e o primeiro apelido é "está", esta função
+             * retorna "está [esperando]". Se não for boleano, usa o
+             * próprio nome original do valor principal, sempre entre
+             * colchetes, seguido do valor (campo principal)
+             * entre parênteses, assim: "[estado](valor)". Coloca um
+             * asterisco (&#42) na frente caso seja externo, como por exemplo:
+             * "* [estado](valor)". Se estiver especificado um
+             * campo diferente de {@link Multifuncional#CAMPO_PRINCIPAL}
+             * no parâmetro único a string passa a ser
+             * "[estado].nomeDoCampo(valor)".
+             */</font>
+            virtual string emString<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> campo<font color="black">)</font> <font color="blue">const</font>;
+    <font color="black">}</font>;
+  <font color="black">}</font>
+ <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_ESTADO_H__BD1AC713_75BD_4AB0_981C_27067A96BA91__INCLUDED_)</font>
+
+<font color="green">/*
+                        .   .  .        ,...:;,             .                   
+                .              ,VW###############Rt:.   ,     .                 
+                     .. .  .tM##R+. .     .    .=IB###MRi:.                     
+                  .   . +R##Bt,                  ..  .+YB#R  . .                
+                    .I###Y:                               X#B                   
+                 .  X#R.                              .     Y#V=                
+            ..     ##+                  .        .  .     . ,M##X .             
+               ..+##                                .    .IW######=  . .        
+           . .. R#I .                            .    , t##########+ .          
+        . .    ##,.                                  ,X#############Y           
+            . R#=                            .     +#################i .        
+             =#B..                             . X####################          
+            .##   .                        .  ;Y######################R.        
+            ##=                             :B#########################         
+           R#X          .                 t###########################M.        
+           ##=            .            .M##############################V        
+          .=#B.                  .  .=X################################t        
+          . ##:.                   t###################################         
+         . .t#X          .       V#####################################         
+             ##            .  ;B######################################I         
+             ,##.           tM########################################          
+              ;##.       .I##########################################+          
+            .  ;##..   :RW##########################################;           
+             .  .##. +#############################################,.           
+               . ,###############################################R,. .          
+                   i############################################t               
+                .   .+#######################################Wt  .              
+               .     ..+R##################################Bi.  .    .          
+            .            ,iR############################Bt,                     
+                            .=YB####################MY;.                        
+                          ..     .,=IYYIBMBRVYII;:.                             
+                                     .          .                   
+*/</font>
+
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,23 @@
+/**
+ * $RCSfile: descricao.txt,v $
+ * $Date: 2004/10/21 01:08:42 $
+ * $Revision: 1.1 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: sinfonia
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, setembro de 2004.
+ */
+
+
+[Arquivo de explicação de um script de definições (.def) e dinâmica (.din)]
+
+[Definições (.def)]
+
+- Não é sensível a caixa alta/baixa e nem a acentos.
+- Os grupos são definidos por
+
+
+-

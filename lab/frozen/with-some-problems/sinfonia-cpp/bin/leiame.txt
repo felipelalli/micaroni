@@ -1,0 +1,1 @@
+Executáveis e dlls dinâmicas (este diretório deve estar no path da aplicação final) ou seus arquivos devem ser copiados para o mesmo diretório do executável. Pode conter também executáveis externos auxiliares do projeto.

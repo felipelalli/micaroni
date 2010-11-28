@@ -1,0 +1,283 @@
+<HTML>
+<HEAD>
+<TITLE>
+MediadorDeEstados.cpp
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: MediadorDeEstados.cpp.html,v $
+ * $Date: 2005/03/22 20:19:03 $
+ * $Revision: 1.42 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/MediadorDeEstados.h"</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>dinamicas<font color="black">:</font><font color="black">:</font>sinfonia;
+
+Valor MediadorDeEstados<font color="black">:</font><font color="black">:</font>ESTADO_DO_EVENTO_ATUAL
+        <font color="black">=</font> <font color="maroon">"Sinfonia.Reservados.estado do evento atual"</font>;
+
+MediadorDeEstados<font color="black">:</font><font color="black">:</font>MediadorDeEstados<font color="black">(</font>
+        <font color="blue">const</font> UniversoDeTempo<font color="black">&</font> u<font color="black">)</font>
+    <font color="black">:</font>pUniverso<font color="black">(</font>u<font color="black">)</font>, pEstados<font color="black">(</font><font color="black">)</font>, pNomeEstados<font color="black">(</font><font color="black">)</font>,
+     pLixo<font color="black">(</font><font color="black">)</font>, pConstantes<font color="black">(</font><font color="black">)</font>
+<font color="black">{</font><font color="black">}</font>
+
+MediadorDeEstados<font color="black">:</font><font color="black">:</font>~MediadorDeEstados<font color="black">(</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+MediadorDeEstados<font color="black">&</font> MediadorDeEstados<font color="black">:</font><font color="black">:</font>adicionaEstado<font color="black">(</font>
+        Estado<font color="black">*</font> e, <font color="blue">const</font> <font color="blue">bool</font><font color="black">&</font> ficaResponsavelPelaDelecao<font color="black">)</font>
+<font color="black">{</font>
+    string nome <font color="black">=</font> e<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font>;
+
+    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstados.existe<font color="black">(</font>nome<font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>WARN, <font color="maroon">"MediadorDeEstados::adicionaEstado::"</font>
+                <font color="maroon">" Um Estado já foi adicionado"</font>
+                <font color="maroon">" anteriormente com o mesmo nome: '"</font> <font color="black">+</font> nome
+                <font color="black">+</font> <font color="maroon">"' . Verifique"</font>
+                <font color="maroon">" se realmente são os mesmos, e evite a duplicidade. Este ("</font>
+                <font color="black">+</font> <font color="black">*</font>e <font color="black">+</font> <font color="maroon">") será ignorado! O Estado aque aqui está é: "</font>
+                <font color="black">+</font> <font color="black">*</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstados<font color="black">[</font>nome<font color="black">]</font><font color="black">)</font> <font color="black">+</font> <font color="maroon">"."</font><font color="black">)</font>;
+    <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstados.insere<font color="black">(</font>nome, e<font color="black">)</font>;
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pNomeEstados.adiciona<font color="black">(</font>nome<font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">if</font> <font color="black">(</font>ficaResponsavelPelaDelecao<font color="black">)</font> <font color="black">{</font>
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pLixo.adiciona<font color="black">(</font>e<font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+<font color="blue">const</font> <font color="blue">bool</font> MediadorDeEstados<font color="black">:</font><font color="black">:</font>existeEstado<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> nomeCompleto<font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    string id <font color="black">=</font> nomeCompleto.valor<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstados.existe<font color="black">(</font>id<font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="blue">const</font> Estado<font color="black">&</font> MediadorDeEstados<font color="black">:</font><font color="black">:</font>estado<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> nomeCompleto<font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    string id <font color="black">=</font> nomeCompleto.valor<font color="black">(</font><font color="black">)</font>;
+
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>existeEstado<font color="black">(</font>nomeCompleto<font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        string erro<font color="black">(</font><font color="maroon">"MediadorDeEstados::estado::"</font>
+                <font color="maroon">" O estado '"</font> <font color="black">+</font> nomeCompleto <font color="black">+</font> <font color="maroon">"' não existe!"</font><font color="black">)</font>;
+
+        Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>ERRO, erro<font color="black">)</font>;
+
+        EstadoInexistenteExcecao e;
+        e <font color="black">&#60;</font><font color="black">&#60;</font> erro;
+        <font color="blue">throw</font> e;
+    <font color="black">}</font>
+
+    <font color="blue">return</font> <font color="black">*</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstados<font color="black">[</font>id<font color="black">]</font><font color="black">)</font>;
+<font color="black">}</font>
+
+EstadoDependente<font color="black">*</font> MediadorDeEstados<font color="black">:</font><font color="black">:</font>criaEstadoDependente<font color="black">(</font>
+        <font color="blue">const</font> Estado<font color="black">*</font> baseadoEm, <font color="blue">const</font> Valor<font color="black">&</font> campo<font color="black">)</font> <font color="blue">const</font>
+<font color="black">{</font>
+    EstadoDependente<font color="black">*</font> novoEstadoDependente
+            <font color="black">=</font> <font color="blue">new</font> EstadoDependente<font color="black">(</font>EstadoAlvo<font color="black">(</font>baseadoEm, campo<font color="black">)</font><font color="black">)</font>;
+
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pLixo.adiciona<font color="black">(</font>novoEstadoDependente<font color="black">)</font>;
+    <font color="blue">return</font> novoEstadoDependente;
+<font color="black">}</font>
+
+<font color="blue">const</font> Estado<font color="black">&</font> MediadorDeEstados<font color="black">:</font><font color="black">:</font>estadoConstante<font color="black">(</font>
+        <font color="blue">const</font> Valor<font color="black">&</font> valorDoEstado<font color="black">)</font> <font color="blue">const</font>
+<font color="black">{</font>
+    string id <font color="black">=</font> <font color="maroon">"Sinfonia.Reservados.constante:"</font>
+            <font color="black">+</font> valorDoEstado.geraStringUnicaECompleta<font color="black">(</font><font color="black">)</font>;
+
+    <font color="blue">if</font> <font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pConstantes.existe<font color="black">(</font>id<font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        <font color="blue">return</font> <font color="black">*</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pConstantes<font color="black">[</font>id<font color="black">]</font><font color="black">)</font>;
+    <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+        Estado<font color="black">*</font> novoEstado <font color="black">=</font> <font color="blue">new</font> Estado<font color="black">(</font>Valor<font color="black">(</font>id, <font color="blue">true</font><font color="black">)</font><font color="black">)</font>;
+        novoEstado<font color="black">-</font><font color="black">&#62;</font>defineComoConstante<font color="black">(</font><font color="black">)</font>;
+        novoEstado<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font>valorDoEstado, <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>universo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pConstantes.insere<font color="black">(</font>id, novoEstado<font color="black">)</font>;
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pLixo.adiciona<font color="black">(</font>novoEstado<font color="black">)</font>;
+        <font color="blue">return</font> <font color="black">*</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pConstantes<font color="black">[</font>id<font color="black">]</font><font color="black">)</font>;
+    <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">const</font> Estado<font color="black">&</font> MediadorDeEstados<font color="black">:</font><font color="black">:</font>estadoDoEventoAtual<font color="black">(</font>
+        <font color="blue">const</font> Valor<font color="black">&</font> nomeCompleto<font color="black">)</font> <font color="blue">const</font>
+<font color="black">{</font>
+    string id <font color="black">=</font> MediadorDeEstados<font color="black">:</font><font color="black">:</font>ESTADO_DO_EVENTO_ATUAL
+            <font color="black">+</font> <font color="maroon">"("</font> <font color="black">+</font> nomeCompleto <font color="black">+</font> <font color="maroon">")"</font>; <font color="green">// ver defineEstadoDoEventoAtual</font>
+
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstados.existe<font color="black">(</font>id<font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        Estado<font color="black">*</font> novoEstado <font color="black">=</font> <font color="blue">new</font> Estado<font color="black">(</font>id<font color="black">)</font>;
+
+        <font color="green">// colocando todos os campos</font>
+        <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>estado<font color="black">(</font>nomeCompleto<font color="black">)</font>.campos<font color="black">(</font><font color="black">)</font>.tamanho<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+            novoEstado<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>estado<font color="black">(</font>nomeCompleto<font color="black">)</font>
+                    .valor<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>estado<font color="black">(</font>nomeCompleto<font color="black">)</font>.campos<font color="black">(</font><font color="black">)</font><font color="black">[</font>i<font color="black">]</font>.emString<font color="black">(</font><font color="black">)</font><font color="black">)</font>,
+                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>universo<font color="black">(</font><font color="black">)</font>, <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>estado<font color="black">(</font>nomeCompleto<font color="black">)</font>.campos<font color="black">(</font><font color="black">)</font><font color="black">[</font>i<font color="black">]</font>.emString<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+        <font color="black">}</font>
+
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstados.insere<font color="black">(</font>novoEstado<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font>, novoEstado<font color="black">)</font>;
+        <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pLixo.adiciona<font color="black">(</font>novoEstado<font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="blue">return</font> <font color="black">*</font><font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstados<font color="black">[</font>id<font color="black">]</font><font color="black">)</font>;
+<font color="black">}</font>
+
+MediadorDeEstados<font color="black">&</font> MediadorDeEstados<font color="black">:</font><font color="black">:</font>defineEstadoDoEventoAtual<font color="black">(</font><font color="blue">const</font> Evento<font color="black">&</font> e<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>e.intermediario<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+<font color="green">//      Debug::msg(INFO, "--- MediadorDeEstados::defineEstadoDoEventoAtual:: "</font>
+<font color="green">//              "O Evento " + e + " é intermediário.");</font>
+    <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+        <font color="blue">const</font> ModificadorDeEstado<font color="black">&</font> m <font color="black">=</font> e.modificador<font color="black">(</font><font color="black">)</font>;
+        string idDoEstado <font color="black">=</font> m.estado<font color="black">(</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font>;
+
+        <font color="blue">if</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstados.existe<font color="black">(</font>idDoEstado<font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+<font color="blue">#ifdef</font> _DEBUG
+            <font color="blue">if</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pJaExibiuEsteErro2.existe<font color="black">(</font>idDoEstado<font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>INFO, <font color="maroon">"MediadorDeEstados::defineEstadoDoEventoAtual::"</font>
+                        <font color="maroon">" não foi possível definir o estado do evento atual para "</font>
+                        <font color="maroon">" o estado: '"</font> <font color="black">+</font> idDoEstado <font color="black">+</font> <font color="maroon">"' porque ele não foi previamente definido."</font><font color="black">)</font>;
+
+                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pJaExibiuEsteErro2.insere<font color="black">(</font>idDoEstado, <font color="blue">true</font><font color="black">)</font>;
+            <font color="black">}</font>
+<font color="blue">#endif</font>
+        <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+            string id <font color="black">=</font> MediadorDeEstados<font color="black">:</font><font color="black">:</font>ESTADO_DO_EVENTO_ATUAL
+                    <font color="black">+</font> <font color="maroon">"("</font> <font color="black">+</font> idDoEstado <font color="black">+</font> <font color="maroon">")"</font>; <font color="green">// ver estadoDoEventoAtual</font>
+
+            Valor<font color="black">*</font> resultado;
+            <font color="blue">if</font> <font color="black">(</font>m.acao<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> ModificadorDeEstado<font color="black">:</font><font color="black">:</font>APENAS_ATRIBUI<font color="black">)</font> <font color="black">{</font>
+                <font color="blue">if</font> <font color="black">(</font>m.parametros<font color="black">(</font><font color="black">)</font>.tamanho<font color="black">(</font><font color="black">)</font> <font color="black">!</font><font color="black">=</font> <font color="maroon">1</font><font color="black">)</font> <font color="black">{</font>
+                    Debug<font color="black">:</font><font color="black">:</font>sair<font color="black">(</font><font color="maroon">"MediadorDeEstados::defineEstadoDoEventoAtual:: "</font>
+                            <font color="maroon">"para atribuir tem que ter UM ÚNICO parâmetro! Está sendo"</font>
+                            <font color="maroon">" passado "</font> <font color="black">+</font> Inteiro<font color="black">(</font>m.parametros<font color="black">(</font><font color="black">)</font>.tamanho<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+                            <font color="black">+</font> <font color="maroon">" parametro(s)"</font><font color="black">)</font>;
+                <font color="black">}</font>
+
+                resultado <font color="black">=</font> <font color="blue">new</font> Valor<font color="black">(</font>m.parametros<font color="black">(</font><font color="black">)</font><font color="black">[</font><font color="maroon">0</font><font color="black">]</font>.valorAlvo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                <font color="green">// só pode ter um único parâmetro</font>
+            <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+                Lista<font color="black">&#60;</font><font color="blue">const</font> Valor<font color="black">*</font><font color="black">&#62;</font> valores;
+
+                <font color="blue">int</font> i;
+                <font color="blue">for</font> <font color="black">(</font>i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> m.parametros<font color="black">(</font><font color="black">)</font>.tamanho<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+                    valores.adiciona<font color="black">(</font><font color="blue">new</font> Valor<font color="black">(</font>m.parametros<font color="black">(</font><font color="black">)</font><font color="black">[</font>i<font color="black">]</font>.valorAlvo<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+                <font color="black">}</font>
+
+                resultado <font color="black">=</font> <font color="blue">new</font> Valor<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstados<font color="black">[</font>idDoEstado<font color="black">]</font>
+                        <font color="black">-</font><font color="black">&#62;</font>executa<font color="black">(</font>m.acao<font color="black">(</font><font color="black">)</font>, valores<font color="black">)</font><font color="black">)</font>;
+
+                <font color="blue">for</font> <font color="black">(</font>i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> m.parametros<font color="black">(</font><font color="black">)</font>.tamanho<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+                    <font color="blue">delete</font> valores<font color="black">[</font>i<font color="black">]</font>;
+                <font color="black">}</font>
+            <font color="black">}</font>
+
+            <font color="blue">if</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstados.existe<font color="black">(</font>id<font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                Estado<font color="black">*</font> novoEstado <font color="black">=</font> <font color="blue">new</font> Estado<font color="black">(</font>id<font color="black">)</font>;
+
+                <font color="green">// colocando todos os campos</font>
+                <font color="blue">for</font> <font color="black">(</font><font color="blue">int</font> i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>estado<font color="black">(</font>idDoEstado<font color="black">)</font>.campos<font color="black">(</font><font color="black">)</font>.tamanho<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+                    novoEstado<font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>estado<font color="black">(</font>idDoEstado<font color="black">)</font>
+                            .valor<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>estado<font color="black">(</font>idDoEstado<font color="black">)</font>.campos<font color="black">(</font><font color="black">)</font><font color="black">[</font>i<font color="black">]</font>.emString<font color="black">(</font><font color="black">)</font><font color="black">)</font>,
+                            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>universo<font color="black">(</font><font color="black">)</font>, <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>estado<font color="black">(</font>idDoEstado<font color="black">)</font>
+                            .campos<font color="black">(</font><font color="black">)</font><font color="black">[</font>i<font color="black">]</font>.emString<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                <font color="black">}</font>
+
+                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstados.insere<font color="black">(</font>novoEstado<font color="black">-</font><font color="black">&#62;</font>nomeCompleto<font color="black">(</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font>, novoEstado<font color="black">)</font>;
+
+                <font color="green">// this-&#62;pNomeEstados.adiciona(novoEstado-&#62;nomeCompleto().valor());</font>
+                <font color="green">// ^-- não é necessário porque se trata do atual</font>
+                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pLixo.adiciona<font color="black">(</font>novoEstado<font color="black">)</font>;
+            <font color="black">}</font>
+
+            <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstados<font color="black">[</font>id<font color="black">]</font><font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font><font color="black">*</font>resultado, <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>universo<font color="black">(</font><font color="black">)</font>,
+                    e.modificador<font color="black">(</font><font color="black">)</font>.campo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+            <font color="blue">delete</font> resultado;
+        <font color="black">}</font>
+    <font color="black">}</font>
+
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+MediadorDeEstados<font color="black">&</font> MediadorDeEstados<font color="black">:</font><font color="black">:</font>aplica<font color="black">(</font><font color="blue">const</font> Evento<font color="black">&</font> e<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>e.modificaEstadoDiretamente<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+        <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>e.disparado<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+            EventoNaoDisparadoExcecao e;
+            e <font color="black">&#60;</font><font color="black">&#60;</font> string<font color="black">(</font><font color="black">)</font> <font color="black">+</font> <font color="maroon">"MediadorDeEstados::aplica()::"</font>
+                    <font color="black">+</font> <font color="maroon">" só é possível aplicar Eventos que estão disparados. Evento: "</font>
+                    <font color="black">+</font> e;
+
+            <font color="blue">throw</font> e;
+        <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+            <font color="blue">const</font> ModificadorDeEstado<font color="black">&</font> m <font color="black">=</font> e.modificador<font color="black">(</font><font color="black">)</font>;
+            <font color="blue">const</font> string id <font color="black">=</font> m.estado<font color="black">(</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font>;
+
+            <font color="blue">if</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstados.existe<font color="black">(</font>id<font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                <font color="blue">if</font> <font color="black">(</font><font color="black">!</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pJaExibiuEsteErro.existe<font color="black">(</font>id<font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+                    Debug<font color="black">:</font><font color="black">:</font>msg<font color="black">(</font>WARN, <font color="maroon">"MediadorDeEstados::aplica::"</font>
+                            <font color="maroon">" Evento "</font> <font color="black">+</font> e <font color="black">+</font> <font color="maroon">" não tem estado correspondente"</font>
+                            <font color="maroon">" definido!"</font><font color="black">)</font>;
+
+                    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pJaExibiuEsteErro.insere<font color="black">(</font>id, <font color="blue">true</font><font color="black">)</font>;
+                <font color="black">}</font>
+            <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+                Valor<font color="black">*</font> resultado;
+                <font color="blue">if</font> <font color="black">(</font>m.acao<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="black">=</font> ModificadorDeEstado<font color="black">:</font><font color="black">:</font>APENAS_ATRIBUI<font color="black">)</font> <font color="black">{</font>
+                    <font color="blue">if</font> <font color="black">(</font>m.parametros<font color="black">(</font><font color="black">)</font>.tamanho<font color="black">(</font><font color="black">)</font> <font color="black">!</font><font color="black">=</font> <font color="maroon">1</font><font color="black">)</font> <font color="black">{</font>
+                    Debug<font color="black">:</font><font color="black">:</font>sair<font color="black">(</font><font color="maroon">"MediadorDeEstados::aplica:: "</font>
+                            <font color="maroon">"para atribuir tem que ter UM ÚNICO parâmetro! Está sendo"</font>
+                            <font color="maroon">" passado "</font> <font color="black">+</font> Inteiro<font color="black">(</font>m.parametros<font color="black">(</font><font color="black">)</font>.tamanho<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+                            <font color="black">+</font> <font color="maroon">" parametro(s)"</font><font color="black">)</font>;
+                    <font color="black">}</font>
+
+                    resultado <font color="black">=</font> <font color="blue">new</font> Valor<font color="black">(</font>m.parametros<font color="black">(</font><font color="black">)</font><font color="black">[</font><font color="maroon">0</font><font color="black">]</font>.valorAlvo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                    <font color="green">// só pode ter um único parâmetro</font>
+                <font color="black">}</font> <font color="blue">else</font> <font color="black">{</font>
+                    Lista<font color="black">&#60;</font><font color="blue">const</font> Valor<font color="black">*</font><font color="black">&#62;</font> valores;
+
+                    <font color="blue">int</font> i;
+                    <font color="blue">for</font> <font color="black">(</font>i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> m.parametros<font color="black">(</font><font color="black">)</font>.tamanho<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+                        valores.adiciona<font color="black">(</font><font color="blue">new</font> Valor<font color="black">(</font>m.parametros<font color="black">(</font><font color="black">)</font><font color="black">[</font>i<font color="black">]</font>.valorAlvo<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+                    <font color="black">}</font>
+
+                    resultado <font color="black">=</font> <font color="blue">new</font> Valor<font color="black">(</font><font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstados<font color="black">[</font>m.estado<font color="black">(</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font><font color="black">]</font>
+                            <font color="black">-</font><font color="black">&#62;</font>executa<font color="black">(</font>m.acao<font color="black">(</font><font color="black">)</font>, valores, m.campo<font color="black">(</font><font color="black">)</font><font color="black">)</font><font color="black">)</font>;
+
+                    <font color="blue">for</font> <font color="black">(</font>i <font color="black">=</font> <font color="maroon">0</font>; i <font color="black">&#60;</font> valores.tamanho<font color="black">(</font><font color="black">)</font>; i<font color="black">+</font><font color="black">+</font><font color="black">)</font> <font color="black">{</font>
+                        <font color="blue">delete</font> valores<font color="black">[</font>i<font color="black">]</font>;
+                    <font color="black">}</font>
+                <font color="black">}</font>
+
+<font color="green">//              Debug::msg(INFO, "--- MediadorDeEstados::aplica::"</font>
+<font color="green">//                      " ao aplicar " + e + " no campo: " + m.campo());</font>
+
+                <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pEstados<font color="black">[</font>m.estado<font color="black">(</font><font color="black">)</font>.valor<font color="black">(</font><font color="black">)</font><font color="black">]</font><font color="black">-</font><font color="black">&#62;</font>atribui<font color="black">(</font>
+                        <font color="black">*</font>resultado, <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>universo<font color="black">(</font><font color="black">)</font>, m.campo<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+
+                <font color="blue">delete</font> resultado;
+            <font color="black">}</font>
+        <font color="black">}</font>
+    <font color="black">}</font>
+
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+<font color="black">}</font>
+
+<font color="blue">const</font> Lista<font color="black">&#60;</font>Identificacao<font color="black">&#62;</font><font color="black">&</font> MediadorDeEstados<font color="black">:</font><font color="black">:</font>nomeDeTodosEstados<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pNomeEstados;
+<font color="black">}</font>
+
+<font color="blue">const</font> UniversoDeTempo<font color="black">&</font> MediadorDeEstados<font color="black">:</font><font color="black">:</font>universo<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>pUniverso;
+<font color="black">}</font>
+</PRE>
+</BODY>
+</HTML>

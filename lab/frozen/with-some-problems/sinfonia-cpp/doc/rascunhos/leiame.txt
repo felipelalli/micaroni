@@ -1,0 +1,1 @@
+Conterá todos os arquivos "rascunhos" usados no desenvolvimento.

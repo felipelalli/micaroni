@@ -1,0 +1,37 @@
+Veja a nova documentação em src/cpp/src/overview.html ou doc/api/cppdoc/index.html
+
+
+...................
+
+[visão geral do pacote]
+
+1. Introdução
+Propõe uma estrutura de software para a mudança e realização de determinados Estados.
+
+{nota} [Este pacote possui diversos conceitos genéricos, e onde possivelmente couber uma implementação específica, a classe (por definição) conterá o nome "Especial".]
+
+2. Contexto Geral
+Em alto nível, este pacote possui uma Máquina de Estados coordenada por um Maestro.
+
+2.1. Máquina de Estados
+Uma Máquina de Estados agrupa conceitualmente os elementos que garantem a separação física da Lógica, dos Estados predefinidos e de sua Realização. --- em outras palavras, possui um Gerador de Eventos, um conjunto de Estados e um Concretizador específico.
+
+2.1.1. Estados, Eventos e sua Lógica
+As mudanças dos Estados (chamadas de Eventos) ocorrem através de Geradores de Eventos. Toda a Lógica (ou pelo menos a grande maioria) do software ficará embutida nesses Geradores. --- [chama-se de Lógica qualquer regra que impõe mudanças nos Estados.]
+
+Esses Geradores são divididos basicamente em dois tipos: Gerador de Eventos Especial e Gerador de Eventos Dependente. --- O Especial é implementação específica de uma determinada biblioteca ou do próprio software em questão. --- O Dependente possui regras que associam determinadas Situações (conjunto de Eventos e Estados) a geração de outro Evento.
+
+Os Estados que são modificados por Geradores de Eventos Especial possuem a característica de serem "específicos". E os que são modificados pelos Geradores Dependentes são "genéricos".
+
+2.1.2. Concretizador
+Um Concretizador transformará Situações em instruções específicas para que um ou mais Realizadores as realize. Este Concretizador somente interpreta Estados que são "genéricos". Isso para que, numa possível mudança radical dos Estados específicos, os Estados genéricos possam permanecer os mesmos. [no caso da mudança de biblioteca, ou da entrada/hardware sem a mudança do contexto geral (definição dos Estados) do software]
+
+2.2. Maestro
+Um Maestro é um Distrubuidor de Eventos específico para coordenar a Máquina de Estados e que contém funções como o armazenamento, reprodução e destruição de Eventos.
+
+Possui, em alto nível, basicamente quatro Transportadores de Eventos (todos capturando o evento da Máquina de Estados): um que transporta para a própria Máquina de Estados, outro para um Registro de Eventos (log), outro para um possível Controlador de Eventos Externo (implementações específicas) e enfim, um para uma Lixeira.
+
+3. Considerações Finais
+Os conceitos estão mais detalhados na documentação das classes aqui citadas.
+
+Note que essa estrutura proposta apenas prevê a união da modificação e realização dos Estados através de Estados predefinidos e regras de Estados que dependem de outros Estados. --- A idéia é passar a maior parte possível da Lógica do software para os Geradores de Eventos Dependente (tornando as regras genéricas); porém, é provável que a maior complexidade da Lógica fique embutida em algum Gerador de Eventos Especial ligado a um Estado específico. É importante que essa complexidade seja estruturada de acordo com sua necessidade, mesmo que este pacote não saiba de sua existência. --- O mesmo ocorre para os Realizadores que possuirão sua Lógica específica de acordo com sua complexidade para realizar determinadas instruções geradas pelos Concretizadores.

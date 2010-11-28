@@ -1,0 +1,183 @@
+<HTML>
+<HEAD>
+<TITLE>
+EstadoDependente.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">/**
+ * $RCSfile: EstadoDependente.h.html,v $
+ * $Date: 2005/03/22 20:18:59 $
+ * $Revision: 1.41 $
+ * $Author: felipelalli $
+ * Tag: $Name:  $
+ * Módulo: biblia.dinamicas.sinfonia-dev
+ * Módulo Central: ages
+ *
+ * Sinfonia
+ * Ages Software Technology, outubro de 2004.
+ */</font>
+
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>AFX_ESTADODEPENDENTE_H__DC5FAE7D_175B_44A6_BE92_C884AA390079__INCLUDED_<font color="black">)</font>
+<font color="blue">#define</font> AFX_ESTADODEPENDENTE_H__DC5FAE7D_175B_44A6_BE92_C884AA390079__INCLUDED_
+
+<font color="blue">#include</font> <font color="maroon">&#60;biblia/armazenamento/volatil/carcacas/Lista.h&#62;</font>
+<font color="blue">using</font> <font color="blue">namespace</font> biblia<font color="black">:</font><font color="black">:</font>armazenamento<font color="black">:</font><font color="black">:</font>volatil<font color="black">:</font><font color="black">:</font>carcacas;
+
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/Valor.h"</font>
+<font color="blue">#include</font> <font color="maroon">"biblia/dinamicas/sinfonia/EstadoAlvo.h"</font>
+
+<font color="blue">namespace</font> biblia <font color="black">{</font>
+ <font color="blue">namespace</font> dinamicas <font color="black">{</font>
+  <font color="blue">namespace</font> sinfonia <font color="black">{</font>
+    <font color="blue">class</font> MediadorDeEstados;
+
+    <font color="green">/**
+     * É um Estado que depende diretamente de
+     * outros Estados. Consiste numa sequencia de
+     * Estados interligados por operações que
+     * serão feitas toda vez que se obter
+     * o valor deste Estado.
+     * &#60;p&#62;
+     * Importante: Não existe prioridade de operadores,
+     * eles serão executados na ordem em que forem
+     * encontrados. Portanto, ao fazer por exemplo:
+     * [A].campoA + [B].campoB * [C] é como se fizesse ([A].campoA + [B].campoB) * [C].
+     * &#60;br&#62;Se você quer dar prioridade a alguma operação,
+     * use EstadosDependentes dentro do outro, como
+     * por exemplo:
+     * &#60;br&#62;EstadoDependente([A].campoA, EstadoDependente([B].campoB * [C]))
+     * (em pseudo-código).
+     * &#60;p&#62;
+     * É considerado externo porque não necessita de Eventos
+     * diretos para ser modificado. É um Estado usado em operações dentro
+     * das Condições ({@link Situacao}).
+     *
+     * @see Estado
+     */</font>
+    <font color="blue">class</font> EstadoDependente<font color="black">:</font> <font color="blue">public</font> Estado <font color="black">{</font>
+        <font color="blue">friend</font> MediadorDeEstados;
+
+        <font color="blue">private</font><font color="black">:</font>
+            Lista<font color="black">&#60;</font>Identificacao<font color="black">&#62;</font> pOperacoes;
+            Lista<font color="black">&#60;</font>EstadoAlvo<font color="black">&#62;</font> pEstados;
+            <font color="blue">static</font> UniversoSequencial pSequencial;
+            mutable Valor pUltimoValor; <font color="green">// é mutable pq é usado como buffer</font>
+
+        <font color="blue">protected</font><font color="black">:</font>
+            <font color="green">/**
+             * Cria um EstadoDependente baseado num
+             * primeiro Estado.
+             * &#60;br&#62;&#60;i&#62;Esse Estado deve "sobreviver"
+             * enquanto este EstadoDependente vive.&#60;/i&#62;
+             * Somente um {@link MediadorDeEstados} pode criar
+             * um EstadoDependente.
+             *
+             * @see MediadorDeEstados#criaEstadoDependente
+             */</font>
+            EstadoDependente<font color="black">(</font><font color="blue">const</font> EstadoAlvo<font color="black">&</font> primeiroEstado<font color="black">)</font>;
+
+        <font color="blue">public</font><font color="black">:</font>
+            virtual ~EstadoDependente<font color="black">(</font><font color="black">)</font>;
+
+            <font color="green">/**
+             * Adiciona uma operação seguida de um Estado,
+             * por exemplo: + [B]
+             * &#60;br&#62;&#60;i&#62;Esse Estado deve "sobreviver"
+             * enquanto este EstadoDependente vive.&#60;/i&#62;
+             */</font>
+            virtual EstadoDependente<font color="black">&</font> adicionaEstado<font color="black">(</font>
+                    <font color="blue">const</font> Identificacao<font color="black">&</font> operacao, <font color="blue">const</font> EstadoAlvo<font color="black">&</font><font color="black">)</font>;
+
+            <font color="green">// Estado:</font>
+
+            <font color="green">/**
+             * Calcula o valor atual a partir dos outros Estados.
+             * &#60;i&#62;Nota importante: Caso algum dos
+             * {@link EstadoAlvo Estados-Alvos} envolvidos
+             * conter algum valor indefinido, o resultado será
+             * um {@link Irrelevante}.
+             * &#60;/i&#62;
+             *
+             * @throws FuncaoNaoImplementadaExcecao Caso o campo
+             *         passado não seja {@link Estado#CAMPO_PRINCIPAL}.
+             */</font>
+            virtual <font color="blue">const</font> Valor<font color="black">&</font> valor<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> campo
+                    <font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL<font color="black">)</font> <font color="blue">const</font>;
+
+            <font color="green">// funções sem sentido para esta implementação:</font>
+
+            virtual <font color="blue">const</font> Momento<font color="black">&</font> ultimaModificacao<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+                FuncaoNaoImplementadaExcecao e;
+                e <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"EstadoDependente::ultimaModificacao::"</font>
+                        <font color="maroon">" nao disponivel!"</font>;
+
+                <font color="blue">throw</font> e;
+            <font color="black">}</font>
+
+            <font color="green">/**
+             * @return {@link Estado#CAMPO_PRINCIPAL}
+             */</font>
+            virtual <font color="blue">const</font> Lista<font color="black">&#60;</font>Identificacao<font color="black">&#62;</font><font color="black">&</font> campos<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+                <font color="blue">static</font> Lista<font color="black">&#60;</font>Identificacao<font color="black">&#62;</font> l<font color="black">(</font>Multifuncional<font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL.valor<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+                <font color="blue">return</font> l;
+            <font color="black">}</font>
+
+            <font color="green">/**
+             * @throws FuncaoNaoImplementadaExcecao
+             */</font>
+            virtual Estado<font color="black">&</font> atribui<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font>, <font color="blue">const</font> UniversoDeTempo<font color="black">&</font>,
+                    <font color="blue">const</font> Valor<font color="black">&</font> <font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL<font color="black">)</font>
+            <font color="black">{</font>
+                FuncaoNaoImplementadaExcecao e;
+                e <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"EstadoDependente::atribui:: não é possível"</font>
+                        <font color="maroon">" atribuir valor a um EstadoDependente."</font>;
+
+                <font color="blue">throw</font> e;
+                <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+            <font color="black">}</font>
+
+            <font color="green">/**
+             *  @throws FuncaoNaoImplementadaExcecao
+             */</font>
+            virtual <font color="blue">const</font> UniversoMultifuncional<font color="black">&</font> universo<font color="black">(</font>
+                    <font color="blue">const</font> Valor<font color="black">&</font> <font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL<font color="black">)</font> <font color="blue">const</font>
+            <font color="black">{</font>
+                FuncaoNaoImplementadaExcecao e;
+                e <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"EstadoDependente::universo:: não é possível"</font>
+                        <font color="maroon">" pegar o Universo de um EstadoDependente."</font>;
+
+                <font color="blue">throw</font> e;
+            <font color="black">}</font>
+
+            <font color="green">/**
+             * @throws FuncaoNaoImplementadaExcecao
+             */</font>
+            virtual UniversoMultifuncional<font color="black">&</font> universoParaModificar<font color="black">(</font>
+                    <font color="blue">const</font> Valor<font color="black">&</font> <font color="black">=</font> Multifuncional<font color="black">:</font><font color="black">:</font>CAMPO_PRINCIPAL<font color="black">)</font>
+            <font color="black">{</font>
+                FuncaoNaoImplementadaExcecao e;
+                e <font color="black">&#60;</font><font color="black">&#60;</font> <font color="maroon">"EstadoDependente::universoParaModificar:: não é possível"</font>
+                        <font color="maroon">" modificar o Universo deste EstadoDependente."</font>;
+
+                <font color="blue">throw</font> e;
+            <font color="black">}</font>
+
+            <font color="green">// Objeto:</font>
+            <font color="green">/**
+             * Concatena numa string os estados intercalados
+             * pelos operadores, por exemplo:
+             * "[A] + [B] * [C]"
+             */</font>
+            virtual string emString<font color="black">(</font><font color="blue">const</font> Valor<font color="black">&</font> campo<font color="black">)</font> <font color="blue">const</font>;
+    <font color="black">}</font>;
+  <font color="black">}</font>
+ <font color="black">}</font>
+<font color="black">}</font>
+
+<font color="blue">#endif</font> <font color="green">// !defined(AFX_ESTADODEPENDENTE_H__DC5FAE7D_175B_44A6_BE92_C884AA390079__INCLUDED_)</font>
+
+</PRE>
+</BODY>
+</HTML>

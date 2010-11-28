@@ -1,0 +1,1 @@
+Application Program Interface do projeto, subdividido por aplicativo que gerou a documentação: cppdoc, doxygen, javadoc etc.

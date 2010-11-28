@@ -1,0 +1,4 @@
+Padrões que devem ser seguidos neste projeto.
+
+CodeConventions.pdf
+http://www.google.com.br/search?q=code+conventions+for+java&btnI=I

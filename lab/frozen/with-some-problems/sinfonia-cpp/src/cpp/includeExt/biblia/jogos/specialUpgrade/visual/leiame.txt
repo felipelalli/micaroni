@@ -1,0 +1,1 @@
+RenderizadorGraficoSuperBonus (recebe a lógica e tem um resultado gráfico)
