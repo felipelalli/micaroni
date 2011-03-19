@@ -4,6 +4,11 @@
 
 # Project files:
 private/
+.idea/
+*.iml
+*.eml
+.project
+.classpath
 
 # Compilation result
 deploy/
