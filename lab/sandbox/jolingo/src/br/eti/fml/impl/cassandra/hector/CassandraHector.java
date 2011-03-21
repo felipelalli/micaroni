@@ -6,7 +6,11 @@ import me.prettyprint.cassandra.connection.HConnectionManager;
 import me.prettyprint.cassandra.serializers.AbstractSerializer;
 import me.prettyprint.cassandra.serializers.StringSerializer;
 import me.prettyprint.cassandra.service.CassandraHostConfigurator;
+import me.prettyprint.cassandra.service.ExhaustedPolicy;
+import me.prettyprint.cassandra.service.OperationType;
 import me.prettyprint.hector.api.Cluster;
+import me.prettyprint.hector.api.ConsistencyLevelPolicy;
+import me.prettyprint.hector.api.HConsistencyLevel;
 import me.prettyprint.hector.api.Keyspace;
 import me.prettyprint.hector.api.beans.HColumn;
 import me.prettyprint.hector.api.ddl.ColumnFamilyDefinition;
@@ -17,6 +21,7 @@ import me.prettyprint.hector.api.factory.HFactory;
 import me.prettyprint.hector.api.mutation.Mutator;
 import me.prettyprint.hector.api.query.ColumnQuery;
 import me.prettyprint.hector.api.query.QueryResult;
+import org.apache.cassandra.thrift.ConsistencyLevel;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -30,7 +35,7 @@ public class CassandraHector extends KeyValueImpl {
     private HConnectionManager connectionManager;
     private String defaultColumnFamily;
     private Mutator<String> defaultMutator;
-    private Keyspace keyspace;
+    private Keyspace keyspaceObj;
 
     private final static StringSerializer stringSerializer = new StringSerializer();
     private final static BytesSerializer bytesSerializer = new BytesSerializer();
@@ -73,8 +78,15 @@ public class CassandraHector extends KeyValueImpl {
 
         String hosts = sb.toString();
 
+        CassandraHostConfigurator cassandraHostConfigurator
+                = new CassandraHostConfigurator(hosts);
+
+        //cassandraHostConfigurator.setAutoDiscoverHosts(true);
+        cassandraHostConfigurator.setExhaustedPolicy(
+                ExhaustedPolicy.WHEN_EXHAUSTED_FAIL);
+
         connectionManager = new HConnectionManager(
-            clusterName, new CassandraHostConfigurator(hosts));
+                clusterName, cassandraHostConfigurator);
 
         ColumnFamilyDefinition columnFamilyDefinition
                 = HFactory.createColumnFamilyDefinition(keyspace,
@@ -92,12 +104,29 @@ public class CassandraHector extends KeyValueImpl {
             // ignores
         }
 
-        this.keyspace = HFactory.createKeyspace(keyspace, cluster);
+        this.keyspaceObj = HFactory.createKeyspace(keyspace, cluster);
         this.defaultColumnFamily = defaultColumnFamily;
 
         this.defaultMutator
                 = HFactory.<String, String, byte[]>createMutator(
-                    this.keyspace, stringSerializer);
+                    this.keyspaceObj, stringSerializer);
+
+        this.keyspaceObj.setConsistencyLevelPolicy(new ConsistencyLevelPolicy() {
+
+            @Override
+            public HConsistencyLevel get(me.prettyprint.cassandra.service.OperationType op) {
+                switch (op){
+                    case READ: return HConsistencyLevel.ONE;
+                    case WRITE: return HConsistencyLevel.ANY;
+                    default: return HConsistencyLevel.QUORUM;
+                }
+            }
+
+            @Override
+            public HConsistencyLevel get(me.prettyprint.cassandra.service.OperationType op, String cfName) {
+                return this.get(op);
+            }
+        });
     }
 
     @Override
@@ -109,12 +138,13 @@ public class CassandraHector extends KeyValueImpl {
     @Override
     public byte[] get(String key, String column) throws IOException {
         ColumnQuery<String, String, byte[]> columnQuery =
-            HFactory.createColumnQuery(keyspace,
+            HFactory.createColumnQuery(keyspaceObj,
                     stringSerializer, stringSerializer, bytesSerializer);
 
         columnQuery.setColumnFamily(defaultColumnFamily).setKey(key).setName(column);
         QueryResult<HColumn<String, byte[]>> result = columnQuery.execute();
-        return result.get().getValue();
+        HColumn<String, byte[]> value = result.get();
+        return value == null ? null : value.getValue();
     }
 
     @Override
@@ -127,7 +157,7 @@ public class CassandraHector extends KeyValueImpl {
         Queue<Operation> operations = this.getQueueOperations(queueId);
 
         Mutator<String> mutator = HFactory.<String, String, byte[]>createMutator(
-                    this.keyspace, stringSerializer);
+                    this.keyspaceObj, stringSerializer);
 
         while (!operations.isEmpty()) {
             Operation op = operations.poll();
@@ -149,5 +179,6 @@ public class CassandraHector extends KeyValueImpl {
     @Override
     public void shutdown() throws IOException {
         connectionManager.shutdown();
+        System.exit(0);
     }
 }

@@ -1,13 +1,11 @@
 package br.eti.fml.jolingo;
 
 import br.eti.fml.impl.cassandra.hector.CassandraHector;
-import com.esotericsoftware.kryo.Kryo;
 import me.prettyprint.cassandra.serializers.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 /**
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
@@ -17,23 +15,27 @@ public class Jolingo {
 
     public static void main(String[] args) throws IOException {
         CassandraHector cassandraHector = new CassandraHector("cassandra small",
-                "jolingo_dev", "test", "192.168.122.50", "192.168.122.151",
-                "192.168.122.97");
+                "jolingo_dev", "test", "192.168.122.50",
+                    "192.168.122.151", "192.168.122.97");
 
         StringSerializer ss = CassandraHector.getDefaultStringSerializer();
 
-        byte[] bytes = ss.toBytes("ola");
-        System.out.println("size=" + bytes.length);
-        cassandraHector.put("oi", bytes);
+        log.info("*** V1");
 
-        byte[] bytes2 = cassandraHector.get("oi");
-        System.out.println("size=" + bytes2.length);
-        log.info("value=" + ss.fromBytes(bytes2));
+        for (int i = 0; i < 100000; i++) {
+            cassandraHector.lazyPut("xxx", "oi" + i, ss.toBytes("ola"));
+        }
 
+        cassandraHector.commitQueue("xxx");
 
+        log.info("*** V2");
+
+        for (int i = 0; i < 100000; i++) {
+           ss.fromBytes(cassandraHector.get("oi" + i));
+        }
+
+        log.info("*** V3");
 
         cassandraHector.shutdown();
-
-        System.exit(0);
     }
 }
