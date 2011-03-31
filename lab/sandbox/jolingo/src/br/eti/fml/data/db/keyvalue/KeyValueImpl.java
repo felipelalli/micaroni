@@ -12,7 +12,7 @@ import java.util.Queue;
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
  */
 public abstract class KeyValueImpl implements KeyValue {
-    private Map<String, Queue<Operation>> operations
+    private final Map<String, Queue<Operation>> operations
             = new HashMap<String, Queue<Operation>>();
 
     protected enum OperationType {
@@ -20,10 +20,10 @@ public abstract class KeyValueImpl implements KeyValue {
     }
 
     protected class Operation {
-        private OperationType type;
-        private String key;
-        private String column;
-        private byte[] value;
+        private final OperationType type;
+        private final String key;
+        private final String column;
+        private final byte[] value;
 
         Operation(OperationType type, String key, String column, byte[] value) {
             this.type = type;

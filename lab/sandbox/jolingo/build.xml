@@ -15,11 +15,9 @@
 
     <property file="build.properties"/>
 
-    <path id="classpath">
-        <fileset dir="${lib.dir}">
-            <include name="**/*.jar"/>
-        </fileset>
-    </path>
+    <fileset id="classpath" dir="${lib.dir}">
+        <include name="**/*.jar"/>
+    </fileset>
 
     <target name="help">
         <echo message="Use ant -projecthelp to see all options"/>

@@ -11,7 +11,7 @@ import java.io.IOException;
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
  */
 public class Jolingo {
-    private static Logger log = LoggerFactory.getLogger(Jolingo.class);
+    private static final Logger log = LoggerFactory.getLogger(Jolingo.class);
 
     public static void main(String[] args) throws IOException {
         CassandraHector cassandraHector = new CassandraHector("cassandra small",
@@ -31,7 +31,8 @@ public class Jolingo {
         log.info("*** V2");
 
         for (int i = 0; i < 100000; i++) {
-           ss.fromBytes(cassandraHector.get("oi" + i));
+           System.out.println(i + "=" + ss.fromBytes(
+                   cassandraHector.get("oi" + i)));
         }
 
         log.info("*** V3");

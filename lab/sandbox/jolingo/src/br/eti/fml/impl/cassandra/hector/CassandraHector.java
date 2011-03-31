@@ -80,6 +80,12 @@ public class CassandraHector extends KeyValueImpl {
                 = new CassandraHostConfigurator(hosts);
 
         //cassandraHostConfigurator.setAutoDiscoverHosts(true);
+
+        cassandraHostConfigurator.setMaxActive(20);
+        cassandraHostConfigurator.setMaxIdle(5);
+        cassandraHostConfigurator.setCassandraThriftSocketTimeout(3000);
+        cassandraHostConfigurator.setMaxWaitTimeWhenExhausted(4000);
+
         cassandraHostConfigurator.setExhaustedPolicy(
                 ExhaustedPolicy.WHEN_EXHAUSTED_FAIL);
 
