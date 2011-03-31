@@ -1,0 +1,9 @@
+# runtime
+logs/
+
+# compile
+out/
+deploy/
+
+# project
+.idea/
