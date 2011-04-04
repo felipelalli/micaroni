@@ -11,7 +11,7 @@ public class Test {
         CrazyDB db = new CrazyDB("db");
 
         UUID uuid = UUID.randomUUID();
-        byte[] value = ByteUtils.UUID2bytes(uuid);
+        byte[] value = ByteUtil.UUID2bytes(uuid);
 
         db.put("ola".getBytes(), value);
     }

@@ -1,5 +1,7 @@
 package br.eti.fml.crazydb;
 
+import org.apache.log4j.Logger;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -12,6 +14,8 @@ import java.util.Arrays;
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
  */
 public class TheBigFile {
+    private static final Logger log = Logger.getLogger(TheBigFile.class);
+
     private RandomAccessFile file;
     private String path;
     private String mode;
@@ -47,6 +51,7 @@ public class TheBigFile {
         if (this.file.length() >= size) {
             return false;
         } else {
+            log.debug("Allocating " + size + " bytes...");
             this.file.setLength(size);
             return true;
         }
@@ -99,5 +104,17 @@ public class TheBigFile {
     public void putLongAt(long position, long value) throws IOException {
         this.file.seek(position);
         this.file.writeLong(value);
+    }
+
+    public byte[] readBytesAt(long position, int size) throws IOException {
+        this.file.seek(position);
+        byte[] read = new byte[size];
+        this.file.read(read);
+        return read;
+    }
+
+    public void putBytesAt(long position, byte[] bytes) throws IOException {
+        this.file.seek(position);
+        this.file.write(bytes);
     }
 }

@@ -12,7 +12,7 @@ public class Body {
         this.db = db;
     }
 
-    public long allocate(byte[] data) throws IOException {
+    public long allocateAndPut(byte[] data) throws IOException {
         return this.db.putAtTheEnd(data);
     }
 }
