@@ -33,18 +33,11 @@ public class CrazyDB {
     }
 
     public void put(byte[] key, byte[] value) throws IOException {
-        this.put(UUID.nameUUIDFromBytes(key), key, value);
+        this.put(UUID.nameUUIDFromBytes(key), value);
     }
 
-    protected void put(UUID key, byte[] bytesKey, byte[] value) throws IOException {
-        long address = 0L;
-
-        this.index.updateIndex(key, bytesKey, address, value.length);
-
-
-
-
-
-        //this.db.
+    protected void put(UUID key, byte[] value) throws IOException {
+        long address = this.body.allocateAndPut(value);
+        this.index.updateIndex(key, address, value.length);
     }    
 }

@@ -14,5 +14,13 @@ public class Test {
         byte[] value = ByteUtil.UUID2bytes(uuid);
 
         db.put("ola".getBytes(), value);
+        db.put("oi tudo bem?".getBytes(), value);
+        db.put("como vai voce".getBytes(), value);
+        db.put("certinho".getBytes(), value);
+        db.put("opa lele".getBytes(), value);
+        db.put("non creddo".getBytes(), value);
+        db.put("poutz".getBytes(), value);
+        db.put("lokkura ne".getBytes(), value);
+        db.put("doido".getBytes(), value);
     }
 }
