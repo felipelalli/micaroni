@@ -19,15 +19,21 @@ public class TheBigFile {
     private RandomAccessFile file;
     private String path;
     private String mode;
+    private String name;
 
     /**
+     * @param exclusiveName The exclusiveName of database
      * @param path The filesystem path
      * @param synchronize Forces a hard synchronization with the filesystem. It
      *                    can let the database ~ 300 times slower.
      *
      */
-    public TheBigFile(String path, boolean synchronize) {
+    public TheBigFile(String exclusiveName, String path, boolean synchronize) {
+        assert exclusiveName.length() > 0;
+        assert exclusiveName.length() < 512;
+
         this.path = path;
+        this.name = exclusiveName;
 
         if (synchronize) {
             this.mode = "rws";
@@ -47,11 +53,15 @@ public class TheBigFile {
         this.file = new RandomAccessFile(this.path, this.mode);
     }
 
+    public void close() throws IOException {
+        this.file.close();
+    }
+
     public boolean preallocate(long size) throws IOException {
         if (this.file.length() >= size) {
             return false;
         } else {
-            log.debug("Allocating " + size + " bytes...");
+            log.debug("Allocating " + (size / 1024 / 1024) + " MB...");
             this.file.setLength(size);
             return true;
         }
@@ -116,5 +126,9 @@ public class TheBigFile {
     public void putBytesAt(long position, byte[] bytes) throws IOException {
         this.file.seek(position);
         this.file.write(bytes);
+    }
+
+    public String getName() {
+        return name;
     }
 }

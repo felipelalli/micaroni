@@ -6,7 +6,9 @@ import java.util.UUID;
 /**
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
  */
-public class ByteUtil {
+public final class ByteUtil {
+    private ByteUtil() {}
+
     public static final long TB = 1024L * 1024L * 1024L * 1024L;
     public static final long GB = 1024L * 1024L * 1024L;
     public static final long MB = 1024L * 1024L;

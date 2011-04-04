@@ -19,4 +19,8 @@ public class Body {
     public void replaceAt(long position, byte[] data) throws IOException {
         this.db.putBytesAt(position, data);
     }
+
+    public byte[] read(Long address, Long size) throws IOException {
+        return this.db.readBytesAt(address, size.intValue());
+    }
 }
