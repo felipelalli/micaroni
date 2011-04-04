@@ -75,7 +75,7 @@ public class CrazyDB {
     }
 
     protected void put(UUID key, byte[] value) throws IOException {
-        long address = this.body.allocateAndPut(value);
+        long address = this.index.allocateAndPut(value);
         this.index.updateIndex(key, address, value.length);
     }
 

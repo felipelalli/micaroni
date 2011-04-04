@@ -12,10 +12,6 @@ public class Body {
         this.db = db;
     }
 
-    public long allocateAndPut(byte[] data) throws IOException {
-        return this.db.putAtTheEnd(data);
-    }
-
     public void replaceAt(long position, byte[] data) throws IOException {
         this.db.putBytesAt(position, data);
     }

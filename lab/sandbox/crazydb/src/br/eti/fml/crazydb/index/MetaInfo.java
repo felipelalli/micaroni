@@ -17,9 +17,11 @@ class MetaInfo {
     public static final int META_INFO_FIXED_SIZE_IN_BYTES
             = (int) (5 * ByteUtil.MB);
     
-    private static final int META_INFO_SIZE = 1 + 512 + 4 + 8;
+    private static final int META_INFO_SIZE = 1 + 512 + 4 + 8 + 8 + 8;
+    private static final long SIZE_POSITION = 1 + 512 + 4 + 8 + 8;
 
     private TheBigFile db;
+
 
     MetaInfo(TheBigFile db) {
         this.db = db;
@@ -44,6 +46,8 @@ class MetaInfo {
                 .put(nameBytes)
                 .putInt(indexSizeInMegabytes)
                 .putLong(creationTimestamp)
+                .putLong(META_INFO_FIXED_SIZE_IN_BYTES
+                        + FreeTable.FREE_TABLE_FIXED_SIZE_IN_BYTES) // current size
                 .array();
 
         this.db.putBytesAt(0, metaInfoBytes);
@@ -78,5 +82,13 @@ class MetaInfo {
 
     public void setShutdown(boolean shutdown) throws IOException {
         this.db.putBytesAt(0L, new byte[] { shutdown ? (byte) 1 : (byte) 0 });
+    }
+
+    public long getCurrentSize() throws IOException {
+        return this.db.readLongAt(SIZE_POSITION);
+    }
+
+    public void setNewSize(long newSize) throws IOException {
+        this.db.putLongAt(SIZE_POSITION, newSize);
     }
 }

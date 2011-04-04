@@ -104,13 +104,6 @@ public class TheBigFile {
         return realValue == value;
     }
 
-    public long putAtTheEnd(byte[] data) throws IOException {
-        long address = this.file.length();
-        this.file.seek(address);
-        this.file.write(data);
-        return address;
-    }
-
     public void putLongAt(long position, long value) throws IOException {
         this.file.seek(position);
         this.file.writeLong(value);
@@ -130,5 +123,10 @@ public class TheBigFile {
 
     public String getName() {
         return name;
+    }
+
+    public long readLongAt(long position) throws IOException {
+        this.file.seek(position);
+        return this.file.readLong();
     }
 }

@@ -156,7 +156,7 @@ public class Index {
                                 bytesKey, size, address, 0L, 0L);
 
                         long newHashNodeAddress
-                                = this.body.allocateAndPut(newHashNode);
+                                = this.allocateAndPut(newHashNode);
 
                         log.trace("The key " + DebugUtil.niceName(key)
                                 + " was not found. Creating a new node at "
@@ -209,10 +209,17 @@ public class Index {
                                      long indexPosition, long nextAddress) throws IOException {
 
         byte[] hashNode = getAHashNode(bytesKey, size, address, nextAddress, 0L);
-        long nodeAddress = this.body.allocateAndPut(hashNode);
+        long nodeAddress = this.allocateAndPut(hashNode);
         this.db.putLongAt(indexPosition, nodeAddress);
         byte[] checkSum = ByteUtil.getChecksum(nodeAddress);
         this.db.putBytesAt(indexPosition + 8, checkSum);
+    }
+
+    public long allocateAndPut(byte[] data) throws IOException {
+        long currentSize = this.metaInfo.getCurrentSize();
+        this.metaInfo.setNewSize(currentSize + data.length);
+        this.body.replaceAt(currentSize, data);
+        return currentSize;
     }
 
     public void closeIndex() throws IOException {
@@ -244,10 +251,10 @@ public class Index {
                 ByteBuffer byteBuffer = ByteBuffer.wrap(hashNode);
                 byte[] k = new byte[KEY_SIZE];
                 byteBuffer.get(k);
-                long oldSize = byteBuffer.getLong();
-                long oldAddress = byteBuffer.getLong();
-                byte[] oldAddressChecksum = new byte[2];
-                byteBuffer.get(oldAddressChecksum);
+                long size = byteBuffer.getLong();
+                long address = byteBuffer.getLong();
+                byte[] addressChecksum = new byte[2];
+                byteBuffer.get(addressChecksum);
                 long nextAddress = byteBuffer.getLong();
                 byte[] nextAddressChecksum = new byte[2];
                 byteBuffer.get(nextAddressChecksum);
@@ -257,8 +264,10 @@ public class Index {
                     log.trace("The key " + DebugUtil.niceName(key)
                             + " was found at " + DebugUtil.niceName(currentPosition));
 
+                    checkForCorruptedData(address, addressChecksum, true);
+
                     end = true;
-                    result = new Pair<Long, Long>(oldAddress, oldSize);
+                    result = new Pair<Long, Long>(address, size);
 
                 } else if (nextAddress != 0L) { // just go to next
                     checkForCorruptedData(nextAddress,
