@@ -42,11 +42,10 @@ public class Index {
         this.db = db;
         this.body = body;
         this.metaInfo = new MetaInfo(this.db);
-        //this.indexSizeInBytes = indexSizeInMegabytes * ByteUtil.MB;
+        this.indexSizeInBytes = indexSizeInMegabytes * ByteUtil.MB;
 
-        this.indexSizeInBytes = 3 * ADDRESS_SIZE; // TODO: JUST FOR DEBUG
-
-        log.debug("Starting '" + db.getName() + "' with " + indexSizeInMegabytes + " MB index...");
+        log.debug("Starting '" + db.getName() + "' with "
+                + indexSizeInMegabytes + " MB index...");
 
         if (!this.db.preallocate(indexSizeInBytes + INDEX_START_POSITION)) {
             log.debug("Nice! The index already was created before.");
@@ -160,7 +159,7 @@ public class Index {
 
                         log.trace("The key " + DebugUtil.niceName(key)
                                 + " was not found. Creating a new node at "
-                                + newHashNodeAddress);
+                                + DebugUtil.niceName(newHashNodeAddress));
 
                         byte[] currentHashNode = getAHashNode(
                                 k, oldAddress, oldSize, newHashNodeAddress,

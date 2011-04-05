@@ -1,13 +1,15 @@
 package br.eti.fml.crazydb;
 
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.util.UUID;
 
 /**
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
  */
 public final class ByteUtil {
-    private ByteUtil() {}
+    private ByteUtil() {
+    }
 
     public static final long TB = 1024L * 1024L * 1024L * 1024L;
     public static final long GB = 1024L * 1024L * 1024L;
@@ -42,5 +44,23 @@ public final class ByteUtil {
     public static byte[] getChecksum(long address) {
         short value = (short) (address % Short.MAX_VALUE);
         return ByteBuffer.allocate(2).putShort(value).array();
+    }
+
+
+    public static byte[] stringToBytesUTFNIO(String str) {
+        char[] buffer = str.toCharArray();
+        byte[] b = new byte[buffer.length << 1];
+        CharBuffer cBuffer = ByteBuffer.wrap(b).asCharBuffer();
+
+        for (char aBuffer : buffer) {
+            cBuffer.put(aBuffer);
+        }
+
+        return b;
+    }
+
+    public static String bytesToStringUTFNIO(byte[] bytes) {
+        CharBuffer cBuffer = ByteBuffer.wrap(bytes).asCharBuffer();
+        return cBuffer.toString();
     }
 }

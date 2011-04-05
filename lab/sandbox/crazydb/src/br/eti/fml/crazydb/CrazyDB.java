@@ -12,7 +12,8 @@ import java.util.UUID;
 public class CrazyDB {
     private static final Logger log = Logger.getLogger(CrazyDB.class);
 
-    private static final int DEFAULT_SIZE_IN_MEGABYTES = 512;
+    //private static final int DEFAULT_SIZE_IN_MEGABYTES = 512;
+    private static final int DEFAULT_SIZE_IN_MEGABYTES = 1;
 
     private volatile boolean shutdown = false;
     
@@ -60,8 +61,16 @@ public class CrazyDB {
         this.put(UUID.nameUUIDFromBytes(key), value);
     }
 
+    public void put(String key, byte[] value) throws IOException {
+        this.put(ByteUtil.stringToBytesUTFNIO(key), value);
+    }    
+
     public byte[] get(byte[] key) throws IOException {
         return this.get(UUID.nameUUIDFromBytes(key));
+    }
+
+    public byte[] get(String key) throws IOException {
+        return this.get(ByteUtil.stringToBytesUTFNIO(key));
     }
 
     protected byte[] get(UUID key) throws IOException {
