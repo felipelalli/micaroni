@@ -7,6 +7,7 @@ import br.eti.fml.crazydb.TheBigFile;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -35,7 +36,7 @@ public class Index {
     private MetaInfo metaInfo;
 
     // cache
-    private boolean[] freeSlots;
+    private ByteBuffer freeSlots;
 
     public Index(TheBigFile db, Body body, int indexSizeInMegabytes) throws IOException {
         this.db = db;
@@ -48,9 +49,14 @@ public class Index {
         log.debug("Starting '" + db.getName() + "' with "
                 + indexSizeInMegabytes + " MB index...");
 
-        boolean firstTime;
+        if (this.metaInfo.isFirstTime()) {
+            this.db.fillWithZero(0L, indexSizeInBytes
+                    + INDEX_START_POSITION, BUFFER_SIZE);
 
-        if (!this.db.preallocate(indexSizeInBytes + INDEX_START_POSITION)) {
+            metaInfo.writeFirstTime(db.getName(), indexSizeInMegabytes,
+                    System.currentTimeMillis());
+        } else {
+            this.db.preallocate(indexSizeInBytes + INDEX_START_POSITION);
             log.debug("Nice! The index already was created before.");
 
             metaInfo.checkValues(this.db.getName(), indexSizeInMegabytes);
@@ -59,35 +65,31 @@ public class Index {
                 log.error("Shutdown was not called last time. Some data can be corrupted!");
             }
 
-            firstTime = false;
-        } else {
-            this.db.fillWithZero(0L, indexSizeInBytes
-                    + INDEX_START_POSITION, BUFFER_SIZE);
-
-            metaInfo.writeFirstTime(db.getName(), indexSizeInMegabytes,
-                    System.currentTimeMillis());
-
-            firstTime = true;
         }
 
         metaInfo.setShutdown(false);
 
         int slots = (int) (indexSizeInBytes / IndexNode.ADDRESS_SIZE);
-        this.freeSlots = new boolean[slots];
+        this.freeSlots = ByteBuffer.allocateDirect(slots);
+        byte[] freeSlotsTemp = new byte[slots];
 
-        if (firstTime) {
-            log.debug("Your first time with this database. All slots are free.");
-            Arrays.fill(this.freeSlots, true);
+        if (this.metaInfo.isFirstTime()) {
+            log.debug("Your first time with this database. All "
+                    + slots + " slots are free.");
+
+            Arrays.fill(freeSlotsTemp, (byte) 1);            
+            this.freeSlots.put(freeSlotsTemp);
         } else {
             log.debug("Caching index up to " + slots + " slots...");
-            Arrays.fill(this.freeSlots, false);
+            Arrays.fill(freeSlotsTemp, (byte) 0);
+            this.freeSlots.put(freeSlotsTemp);
 
             for (int n = 0; n < slots; n++) {
                 long indexPosition = this.getIndexPositionByNumber(n);
 
                 // TODO FIXME: improve this reading using buffer
                 if (this.db.checkIfPositionIsEqualTo(indexPosition, 0L)) {
-                    this.freeSlots[n] = true;
+                    this.freeSlots.put(n, (byte) 1);
                 }
 
                 if (n % (slots / 5) == 0 && n != 0) {
@@ -96,6 +98,7 @@ public class Index {
             }
         }
 
+        this.metaInfo.clearFirstTimeFlag();
         log.debug("Ok! Ready!");
     }
 
@@ -119,7 +122,7 @@ public class Index {
         for (int n = 0; n < slots; n++) {
             long indexPosition = this.getIndexPositionByNumber(n);
 
-            if (this.freeSlots[n]) {
+            if (this.freeSlots.get(n) != (byte) 0) {
                 freeSlots++;
             } else {
                 byte[] indexNodeRaw = this.db.readBytesAt(
@@ -202,13 +205,13 @@ public class Index {
         final long indexPosition = getIndexPositionByKey(key);
         final int slotPosition = getSlotPositionByKey(key);
 
-        if (this.freeSlots[slotPosition]) {
+        if (this.freeSlots.get(slotPosition) != (byte) 0) {
             if (TRACE_ENABLED) {
                 log.trace("The slot is free, recording new node at "
                         + DebugUtil.niceName(indexPosition) + " index position.");
             }
 
-            this.freeSlots[slotPosition] = false;
+            this.freeSlots.put(slotPosition, (byte) 0);
             writeNewNodeAtIndex(bytesKey, address, size, indexPosition, 0L);
         } else {
             if (TRACE_ENABLED) {

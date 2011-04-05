@@ -22,12 +22,14 @@ class MetaInfo {
 
     private TheBigFile db;
     private long currentSize;
+    private boolean firstTime = false;
 
     MetaInfo(TheBigFile db) throws IOException {
         this.db = db;
 
         if (this.db.length() < SIZE_POSITION) {
             this.currentSize = 0L;
+            this.firstTime = true;
         } else {
             this.currentSize = this.db.length();
         }
@@ -82,8 +84,10 @@ class MetaInfo {
         int oldIndexSizeInMegabytes = buffer.getInt();
 
         if (oldIndexSizeInMegabytes != indexSizeInMegabytes) {
-            throw new RuntimeException("The database index size cannot change! The original size is "
-                    + oldIndexSizeInMegabytes + " and the new one is " + indexSizeInMegabytes);
+            throw new RuntimeException(
+                    "The database index size cannot change! The original size is "
+                    + oldIndexSizeInMegabytes
+                            + " and the new one is " + indexSizeInMegabytes);
         }
     }
 
@@ -112,5 +116,13 @@ class MetaInfo {
             this.db.setLength(bigSize);
             this.db.putLongAt(SIZE_POSITION, bigSize);
         }
+    }
+
+    public boolean isFirstTime() {
+        return firstTime;
+    }
+
+    public void clearFirstTimeFlag() {
+        this.firstTime = false;
     }
 }

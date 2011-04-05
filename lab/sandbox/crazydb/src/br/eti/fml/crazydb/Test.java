@@ -9,7 +9,7 @@ import java.util.Map;
  */
 public class Test {
     public static void main(String[] args) throws IOException {
-        CrazyDB db = new CrazyDB("my database", "db", 42);
+        CrazyDB db = new CrazyDB("my database", "db", 12);
         Map<String, String> values = new HashMap<String, String>();
 
         System.out.println(db.getInfo());
