@@ -128,9 +128,4 @@ public class TheBigFile {
         this.file.seek(position);
         return this.file.readLong();
     }
-
-    public void readyFully(long indexStartPosition, java.nio.ByteBuffer bb) throws IOException {
-        this.file.seek(indexStartPosition);
-        this.file.getChannel().read(bb);
-    }
 }

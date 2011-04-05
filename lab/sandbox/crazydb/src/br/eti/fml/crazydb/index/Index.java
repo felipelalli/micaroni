@@ -39,8 +39,6 @@ public class Index {
     private Body body;
     private MetaInfo metaInfo;
 
-    private ByteBuffer indexCache;
-
     public Index(TheBigFile db, Body body, int indexSizeInMegabytes) throws IOException {
         this.db = db;
         this.body = body;
@@ -81,12 +79,6 @@ public class Index {
                     + indexSizeInMegabytes + " MB of free memory. You have "
                     + (free / 1024 / 1024) + " MB free.");
         }
-
-        log.debug("Allocating index cache...");
-        indexCache = ByteBuffer.allocateDirect((int) this.indexSizeInBytes);
-        log.debug("Reading index to cache...");
-        this.db.readyFully(INDEX_START_POSITION, indexCache);
-        log.debug("Index cache is OK!");
     }
 
     public String retrieveInfo() {
@@ -95,6 +87,8 @@ public class Index {
         for (long n = 0; n < total; n += ADDRESS_SIZE) {
             long indexPosition = this.getIndexPositionByNumber(n);
         }
+
+        // TODO
 
         return "";
     }
