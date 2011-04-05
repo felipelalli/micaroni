@@ -13,7 +13,7 @@ public class Test {
         Map<String, String> values = new HashMap<String, String>();
 
         System.out.println(db.getInfo());
-        int tests = 10000;
+        int tests = 500000;
 
         try {
             long now = System.currentTimeMillis();
@@ -25,7 +25,7 @@ public class Test {
                 db.put(key, value.getBytes());
                 values.put(key, value);
 
-                if (i % 1000 == 0) {
+                if (i % 10000 == 0) {
                     System.out.print(".");
                 }
             }
@@ -43,7 +43,7 @@ public class Test {
                 String readValue = values.get(key);
 
                 if (readValue.equals(value)) {
-                    if (i % 1000 == 0) {
+                    if (i % 10000 == 0) {
                         System.out.print(".");
                     }
                 } else {

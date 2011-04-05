@@ -9,7 +9,9 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -32,6 +34,9 @@ public class Index {
     private TheBigFile db;
     private Body body;
     private MetaInfo metaInfo;
+
+    // cache
+    private Set<Long> freeSlots;
 
     public Index(TheBigFile db, Body body, int indexSizeInMegabytes) throws IOException {
         this.db = db;
@@ -61,7 +66,20 @@ public class Index {
         }
 
         metaInfo.setShutdown(false);
-        log.debug("Ready! Thanks for wait.");
+        log.debug("Almost ready! Caching index...");
+
+        int slots = (int) (indexSizeInBytes / IndexNode.ADDRESS_SIZE);
+        this.freeSlots = new HashSet<Long>(slots);
+
+        for (long n = 0; n < slots; n++) {
+            long indexPosition = this.getIndexPositionByNumber(n);
+
+            if (this.db.checkIfPositionIsEqualTo(indexPosition, 0L)) {
+                this.freeSlots.add(indexPosition);
+            }
+        }
+
+        log.debug("Ok! Ready!");
     }
 
     private String percentage(long part, long total) {
@@ -82,7 +100,7 @@ public class Index {
         for (long n = 0; n < slots; n++) {
             long indexPosition = this.getIndexPositionByNumber(n);
 
-            if (this.db.checkIfPositionIsEqualTo(indexPosition, 0L)) {
+            if (this.freeSlots.contains(indexPosition)) {
                 freeSlots++;
             } else {
                 byte[] indexNodeRaw = this.db.readBytesAt(
@@ -164,12 +182,13 @@ public class Index {
         final byte[] bytesKey = ByteUtil.UUID2bytes(key);
         final long indexPosition = getIndexPositionByKey(key);
 
-        if (this.db.checkIfPositionIsEqualTo(indexPosition, 0L)) {
+        if (this.freeSlots.contains(indexPosition)) {
             if (TRACE_ENABLED) {
                 log.trace("The slot is free, recording new node at "
                         + DebugUtil.niceName(indexPosition) + " index position.");
             }
 
+            this.freeSlots.remove(indexPosition);
             writeNewNodeAtIndex(bytesKey, address, size, indexPosition, 0L);
         } else {
             if (TRACE_ENABLED) {
@@ -268,9 +287,9 @@ public class Index {
                 bytesKey, size, address, nextAddress, 0L).getHashNode();
 
         long nodeAddress = this.allocateAndPut(hashNode);
-        this.db.putLongAt(indexPosition, nodeAddress);
-        byte[] checkSum = ByteUtil.getChecksum(nodeAddress);
-        this.db.putBytesAt(indexPosition + 8, checkSum);
+        byte[] indexNode = new IndexNode(nodeAddress).getIndexNode();
+
+        this.db.putBytesAt(indexPosition, indexNode);
     }
 
     public long allocateAndPut(byte[] data) throws IOException {

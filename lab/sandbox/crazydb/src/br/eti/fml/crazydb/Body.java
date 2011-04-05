@@ -16,7 +16,7 @@ public class Body {
         this.db.putBytesAt(position, data);
     }
 
-    public byte[] read(Long address, Long size) throws IOException {
-        return this.db.readBytesAt(address, size.intValue());
+    public byte[] read(long address, int size) throws IOException {
+        return this.db.readBytesAt(address, size);
     }
 }

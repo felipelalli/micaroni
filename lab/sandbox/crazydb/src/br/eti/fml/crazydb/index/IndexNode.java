@@ -21,11 +21,24 @@ public class IndexNode {
     private long hashNodeAddress;
     private byte[] hashNodeChecksumAddress;
 
+    private byte[] indexNode;
+
     public IndexNode(byte[] indexNode) {
         ByteBuffer indexNodeBuffer = ByteBuffer.wrap(indexNode);
         hashNodeAddress = indexNodeBuffer.getLong();
         hashNodeChecksumAddress = new byte[2];
         indexNodeBuffer.get(hashNodeChecksumAddress);
+
+        this.indexNode = indexNode;
+    }
+
+    public IndexNode(long hashNodeAddress) {
+        this.hashNodeAddress = hashNodeAddress;
+        this.hashNodeChecksumAddress = ByteUtil.getChecksum(hashNodeAddress);
+
+        this.indexNode = ByteBuffer
+                .allocate(ADDRESS_SIZE).putLong(hashNodeAddress)
+                .put(hashNodeChecksumAddress).array();
     }
 
     public long getHashNodeAddress() {
@@ -40,7 +53,11 @@ public class IndexNode {
             return false;
         }
     }
-    
+
+    public byte[] getIndexNode() {
+        return indexNode;
+    }
+
     public boolean checkForCorruptedData(boolean throwException) throws CorruptedData {
         byte[] realChecksum = ByteUtil.getChecksum(hashNodeAddress);
 

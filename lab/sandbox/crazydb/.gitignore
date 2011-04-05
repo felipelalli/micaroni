@@ -8,3 +8,6 @@ deploy/
 
 # project
 .idea/
+
+# profiler
+jrat*

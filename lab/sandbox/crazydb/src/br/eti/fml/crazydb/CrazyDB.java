@@ -78,7 +78,7 @@ public class CrazyDB {
         HashNode node = this.index.find(key);
 
         if (node != null) {
-            return this.body.read(node.getAddress(), node.getSize());
+            return this.body.read(node.getAddress(), (int) node.getSize());
         } else {
             return null;
         }

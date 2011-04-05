@@ -4,7 +4,6 @@ import br.eti.fml.crazydb.ByteUtil;
 import br.eti.fml.crazydb.TheBigFile;
 import org.apache.log4j.Logger;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
@@ -24,14 +23,13 @@ class MetaInfo {
     private TheBigFile db;
     private long currentSize;
 
-
     MetaInfo(TheBigFile db) throws IOException {
         this.db = db;
 
-        try {
-            this.currentSize = this.db.readLongAt(SIZE_POSITION);
-        } catch (EOFException e) {
+        if (this.db.length() < SIZE_POSITION) {
             this.currentSize = 0L;
+        } else {
+            this.currentSize = this.db.length();
         }
     }
 
@@ -52,6 +50,8 @@ class MetaInfo {
         this.currentSize = META_INFO_FIXED_SIZE_IN_BYTES
                         + FreeTable.FREE_TABLE_FIXED_SIZE_IN_BYTES
                         + (indexSizeInMegabytes * ByteUtil.MB);
+
+        this.db.putLongAt(SIZE_POSITION, this.currentSize);
         
         byte[] metaInfoBytes = ByteBuffer.allocate(META_INFO_SIZE)
                 .put((byte) 0) // not closeIndex
@@ -93,6 +93,10 @@ class MetaInfo {
 
     public void setShutdown(boolean shutdown) throws IOException {
         this.db.putBytesAt(0L, new byte[] { shutdown ? (byte) 1 : (byte) 0 });
+
+        if (shutdown) {
+            this.db.putLongAt(SIZE_POSITION, this.currentSize);
+        }
     }
 
     public long getCurrentSize() throws IOException {
@@ -101,6 +105,12 @@ class MetaInfo {
 
     public void setNewSize(long newSize) throws IOException {
         this.currentSize = newSize;
-        this.db.putLongAt(SIZE_POSITION, newSize);
+        long realSize = this.db.length();
+
+        if (newSize > realSize) {
+            long bigSize = realSize + (16 * ByteUtil.MB);
+            this.db.setLength(bigSize);
+            this.db.putLongAt(SIZE_POSITION, bigSize);
+        }
     }
 }
