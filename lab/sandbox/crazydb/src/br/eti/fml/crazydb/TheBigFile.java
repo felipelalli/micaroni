@@ -108,22 +108,22 @@ public class TheBigFile {
     }
 
     public void putLongAt(long position, long value) throws IOException {
-        this.increaseIfNeeded(position);
+        this.increaseIfNeeded(position, 4);
         this.file.seek(position);
         this.file.writeLong(value);
     }
 
-    private void increaseIfNeeded(long position) throws IOException {
+    private void increaseIfNeeded(long position, int dataSize) throws IOException {
         long size = this.file.length();
 
-        if (position > size) {
+        if (position + dataSize >= size) {
             size += (size / 10); // + 10%
             this.file.setLength(size);
         }
     }
 
     public void putBytesAt(long position, byte[] bytes) throws IOException {
-        this.increaseIfNeeded(position);
+        this.increaseIfNeeded(position, bytes.length);
         this.file.seek(position);
         this.file.write(bytes);
     }

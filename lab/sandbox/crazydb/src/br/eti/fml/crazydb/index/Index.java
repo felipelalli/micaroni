@@ -3,13 +3,15 @@ package br.eti.fml.crazydb.index;
 import br.eti.fml.crazydb.Body;
 import br.eti.fml.crazydb.ByteUtil;
 import br.eti.fml.crazydb.DebugUtil;
-import br.eti.fml.crazydb.Pair;
 import br.eti.fml.crazydb.TheBigFile;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  *
@@ -17,15 +19,7 @@ import java.util.UUID;
  */
 public class Index {
     private static final Logger log = Logger.getLogger(Index.class);
-    public static final boolean TRACE_ENABLED = false;
-
-    private static final int KEY_SIZE = 16;
-    private static final int SIZE_SIZE = 8;
-    private static final int CHECKSUM_SIZE = 2;
-    private static final int ADDRESS_SIZE = 8 + CHECKSUM_SIZE;
-    private static final int TIMESTAMP_SIZE = 8;
-    private static final int HASH_NODE_SIZE = KEY_SIZE + SIZE_SIZE
-            + ADDRESS_SIZE + ADDRESS_SIZE + TIMESTAMP_SIZE;
+    public static final boolean TRACE_ENABLED = false;    
 
     private static final long INDEX_START_POSITION
             = MetaInfo.META_INFO_FIXED_SIZE_IN_BYTES
@@ -59,48 +53,108 @@ public class Index {
                 log.error("Shutdown was not called last time. Some data can be corrupted!");
             }
         } else {
-            log.debug("Filling with zeros...");
             this.db.fillWithZero(0L, indexSizeInBytes
                     + INDEX_START_POSITION, BUFFER_SIZE);
 
             metaInfo.writeFirstTime(db.getName(), indexSizeInMegabytes,
                     System.currentTimeMillis());
-
-            log.debug("Filling with zeros done! Thanks for wait.");
         }
 
         metaInfo.setShutdown(false);
+        log.debug("Ready! Thanks for wait.");
     }
 
-    public String retrieveInfo() {
-        long total = (indexSizeInBytes / ADDRESS_SIZE);
+    private String percentage(long part, long total) {
+        double number = (((double) part) / ((double) total));
+        DecimalFormat format = new DecimalFormat("0.00%");
+        return format.format(number);
+    }
 
-        for (long n = 0; n < total; n += ADDRESS_SIZE) {
+    public String retrieveInfo() throws IOException {
+        StringBuilder info = new StringBuilder();
+
+        long slots = (indexSizeInBytes / IndexNode.ADDRESS_SIZE);
+        long freeSlots = 0L;
+        Map<Integer, Integer> sizes = new HashMap<Integer, Integer>();
+
+        for (long n = 0; n < slots; n++) {
             long indexPosition = this.getIndexPositionByNumber(n);
+
+            if (this.db.checkIfPositionIsEqualTo(indexPosition, 0L)) {
+                freeSlots++;
+            } else {
+                byte[] indexNodeRaw = this.db.readBytesAt(
+                        indexPosition, IndexNode.ADDRESS_SIZE);
+
+                IndexNode indexNode = new IndexNode(indexNodeRaw);
+
+                if (!indexNode.checkIfDataIsOK()) {
+                    log.error("The indexNode is corrupted?");
+                } else {
+                    final AtomicInteger count = new AtomicInteger();
+                    count.incrementAndGet();
+
+                    HashNode.navigateThrough(indexNode.getHashNodeAddress(),
+                            null, this.db,
+
+                        new HashNode.HashNodeNavigator() {
+                            @Override
+                            public void whenTheKeyIsEqual(
+                                    long currentPosition,
+                                    HashNode currentHashNode)  throws IOException {
+                            }
+
+                            @Override
+                            public void interceptGoingToNextNode(
+                                    long currentPosition, HashNode currentHashNode)
+                                        throws IOException {
+
+                                count.incrementAndGet();
+                            }
+
+                            @Override
+                            public void whenTheKeyWasNotFound(long currentPosition,
+                                    HashNode currentHashNode) throws IOException {
+
+                            }
+                       });
+
+                    if (!sizes.containsKey(count.get())) {
+                        sizes.put(count.get(), 0);
+                    }
+
+                    sizes.put(count.get(), sizes.get(count.get()) + 1);
+                }
+            }
         }
 
-        // TODO
+        info.append("Name: ").append(this.db.getName()).append("\n");
+        info.append("Index size: ").append(
+                this.indexSizeInBytes / ByteUtil.MB).append(" MB").append("\n");
+        
+        info.append("Body size: ").append((this.metaInfo.getCurrentSize()
+                - this.indexSizeInBytes) / ByteUtil.MB).append(" MB").append("\n");
 
-        return "";
+        info.append("Total size: ").append(this.metaInfo.getCurrentSize() / ByteUtil.MB)
+                .append(" MB").append("\n");
+
+        info.append("Total slots: ").append(slots).append("\n");
+        info.append("Free slots: ").append(freeSlots).append(" ")
+                .append(percentage(freeSlots, slots)).append("\n");
+
+        info.append("Used slots: ").append(slots - freeSlots).append(" ")
+                .append(percentage(slots - freeSlots, slots)).append("\n");
+
+        for (Integer n : sizes.keySet()) {
+            info.append("With: ").append(n).append(" keys: ")
+                    .append(sizes.get(n)).append(" ")
+                .append(percentage(sizes.get(n), slots)).append("\n");
+        }
+        
+        return info.toString();
     }
     
-    protected static byte[] getAHashNode(byte[] key, long size,
-                                         long address, long nextAddress,
-                                         long timestamp) {
-
-        if (timestamp == 0L) {
-            timestamp = System.currentTimeMillis();
-        }
-
-        byte[] addressChecksum = ByteUtil.getChecksum(address);
-        byte[] nextAddressChecksum = ByteUtil.getChecksum(nextAddress);
-
-        return ByteBuffer.allocate(HASH_NODE_SIZE).put(key).putLong(size)
-                .putLong(address).put(addressChecksum).putLong(nextAddress)
-                .put(nextAddressChecksum).putLong(timestamp).array();
-    }
-
-    public void updateIndex(UUID key, long address, long size) throws IOException {
+    public void updateIndex(final UUID key, final long address, final long size) throws IOException {
         final byte[] bytesKey = ByteUtil.UUID2bytes(key);
         final long indexPosition = getIndexPositionByKey(key);
 
@@ -117,115 +171,82 @@ public class Index {
                         + " is used. Trying to find the key or a free slot.");
             }
 
-            byte[] indexNode = this.db.readBytesAt(indexPosition, ADDRESS_SIZE);
-            ByteBuffer indexNodeBuffer = ByteBuffer.wrap(indexNode);
-            long hashNodeAddress = indexNodeBuffer.getLong();
-            byte[] hashNodeChecksumAddress = new byte[2];
-            indexNodeBuffer.get(hashNodeChecksumAddress);
+            byte[] indexNodeRaw = this.db.readBytesAt(
+                    indexPosition, IndexNode.ADDRESS_SIZE);
 
-            if (!checkForCorruptedData(hashNodeAddress, hashNodeChecksumAddress, false)) {
+            IndexNode indexNode = new IndexNode(indexNodeRaw);
+
+            if (!indexNode.checkIfDataIsOK()) {
                 writeNewNodeAtIndex(bytesKey, address, size, indexPosition, 0L);
             } else {
-                long currentPosition = hashNodeAddress;
-                boolean end = false;
+                HashNode.navigateThrough(indexNode.getHashNodeAddress(), bytesKey, this.db,
+                    new HashNode.HashNodeNavigator() {
+                        @Override
+                        public void whenTheKeyIsEqual(
+                                long currentPosition,
+                                HashNode currentHashNode)  throws IOException {
 
-                while (!end) {
-                    byte[] hashNode = this.db.readBytesAt(
-                            currentPosition, HASH_NODE_SIZE);
+                            if (TRACE_ENABLED) {
+                                log.trace("The key " + DebugUtil.niceName(key)
+                                        + " was used before and will be updated at "
+                                        + DebugUtil.niceName(currentPosition));
+                            }
 
-                    ByteBuffer byteBuffer = ByteBuffer.wrap(hashNode);
-                    byte[] k = new byte[KEY_SIZE];
-                    byteBuffer.get(k);
-                    long oldSize = byteBuffer.getLong();
-                    long oldAddress = byteBuffer.getLong();
-                    byte[] oldAddressChecksum = new byte[2];
-                    byteBuffer.get(oldAddressChecksum);
-                    long nextAddress = byteBuffer.getLong();
-                    byte[] nextAddressChecksum = new byte[2];
-                    byteBuffer.get(nextAddressChecksum);
-                    long oldTimestamp = byteBuffer.getLong();
+                            // needs to replace (update) the hashNode
+                            byte[] newHashNode = new HashNode(
+                                    bytesKey, size, address,
+                                    currentHashNode.getNextAddress(), 0L)
+                                        .getHashNode();
 
-                    if (ByteUtil.compare(k, bytesKey)) {
-                        if (TRACE_ENABLED) {
-                            log.trace("The key " + DebugUtil.niceName(key)
-                                    + " was used before and will be updated at "
-                                    + DebugUtil.niceName(currentPosition));
+                            body.replaceAt(currentPosition, newHashNode);
+
+                            // TODO: need to free the oldAddress
                         }
 
-                        // needs to replace (update) the hashNode
-                        byte[] newHashNode = getAHashNode(
-                                bytesKey, size, address, nextAddress, 0L);
+                        @Override
+                        public void interceptGoingToNextNode(
+                                long currentPosition, HashNode currentHashNode)
+                                    throws IOException {
 
-                        this.body.replaceAt(currentPosition, newHashNode);
-
-                        // TODO: need to free the oldAddress
-
-                        end = true;
-                    } else if (nextAddress != 0L) { // just go to next
-                        checkForCorruptedData(nextAddress,
-                                nextAddressChecksum, true);
-
-                        if (TRACE_ENABLED) {
-                            log.trace("The key " + DebugUtil.niceName(key)
-                                    + " was not found yet. Going to next node: "
-                                    + DebugUtil.niceName(nextAddress));
+                            if (TRACE_ENABLED) {
+                                log.trace("The key " + DebugUtil.niceName(key)
+                                        + " was not found yet. Going to next node: "
+                                        + DebugUtil.niceName(currentHashNode.getNextAddress()));
+                            }
                         }
 
-                        currentPosition = nextAddress;
-                    } else {
-                        // needs to update the nextAddress of currentHashNode
-                        byte[] newHashNode = getAHashNode(
-                                bytesKey, size, address, 0L, 0L);
+                        @Override
+                        public void whenTheKeyWasNotFound(long currentPosition,
+                                HashNode currentHashNode) throws IOException {
 
-                        long newHashNodeAddress
-                                = this.allocateAndPut(newHashNode);
+                            // needs to update the nextAddress of currentHashNode
+                            byte[] newHashNode = new HashNode(
+                                    bytesKey, size, address, 0L, 0L).getHashNode();
 
-                        if (TRACE_ENABLED) {
-                            log.trace("The key " + DebugUtil.niceName(key)
-                                    + " was not found. Creating a new node at "
-                                    + DebugUtil.niceName(newHashNodeAddress));
+                            long newHashNodeAddress = allocateAndPut(newHashNode);
+
+                            if (TRACE_ENABLED) {
+                                log.trace("The key " + DebugUtil.niceName(key)
+                                        + " was not found. Creating a new node at "
+                                        + DebugUtil.niceName(newHashNodeAddress));
+                            }
+
+                            byte[] newCurrentHashNode = new HashNode(
+                                    currentHashNode.getKey(), currentHashNode.getSize(),
+                                    currentHashNode.getAddress(), newHashNodeAddress,
+                                    currentHashNode.getTimestamp()).getHashNode();
+    
+                            body.replaceAt(currentPosition, newCurrentHashNode);
                         }
-
-                        byte[] currentHashNode = getAHashNode(
-                                k, oldSize, oldAddress, newHashNodeAddress,
-                                oldTimestamp);
-
-                        this.body.replaceAt(currentPosition, currentHashNode);
-                        end = true;
-                    }
-                }
+                   });
             }
-        }
-    }
-
-    private boolean checkForCorruptedData(long address,
-                                       byte[] checksumAddress,
-                                       boolean throwException) throws IOException {
-
-        if (ByteUtil.compare(ByteUtil.getChecksum(address), checksumAddress)) {
-            return true;
-        } else {
-            // TODO: CORRUPTED DATA, WHAT TO DO NOW TO RECOVER?
-
-            log.error("I'm so sorry. Some data is corrupted here, so"
-                    + " it's possible you lost some valid keys. I'll just"
-                    + " replace this corrupted node with the new one. address="
-                    + address + " : checksumAddress=("
-                    + checksumAddress[0] + "," + checksumAddress[1]);
-
-            if (throwException) {
-                throw new IOException("Corrupted data. " + address
-                        + " seems to be invalid!");
-            }
-
-            return false;
         }
     }
 
     private long getIndexPositionByNumber(long positiveNumber) {
         return INDEX_START_POSITION
-                + positiveNumber % (indexSizeInBytes / ADDRESS_SIZE)
-                    * ADDRESS_SIZE;
+                + positiveNumber % (indexSizeInBytes / IndexNode.ADDRESS_SIZE)
+                    * IndexNode.ADDRESS_SIZE;
     }
 
     private long getIndexPositionByKey(UUID key) {
@@ -237,7 +258,9 @@ public class Index {
     private void writeNewNodeAtIndex(byte[] bytesKey, long address, long size,
                                      long indexPosition, long nextAddress) throws IOException {
 
-        byte[] hashNode = getAHashNode(bytesKey, size, address, nextAddress, 0L);
+        byte[] hashNode = new HashNode(
+                bytesKey, size, address, nextAddress, 0L).getHashNode();
+
         long nodeAddress = this.allocateAndPut(hashNode);
         this.db.putLongAt(indexPosition, nodeAddress);
         byte[] checkSum = ByteUtil.getChecksum(nodeAddress);
@@ -255,74 +278,57 @@ public class Index {
         this.metaInfo.setShutdown(true);
     }
 
-    public Pair<Long, Long> find(UUID key) throws IOException {
-        Pair<Long, Long> result = null;
+    public HashNode find(final UUID key) throws IOException {
+        final HashNode[] result = new HashNode[1]; // boxing
+        result[0] = null;
 
         final byte[] bytesKey = ByteUtil.UUID2bytes(key);
         final long indexPosition = getIndexPositionByKey(key);
 
-        byte[] indexNode = this.db.readBytesAt(indexPosition, ADDRESS_SIZE);
-        ByteBuffer indexNodeBuffer = ByteBuffer.wrap(indexNode);
-        long hashNodeAddress = indexNodeBuffer.getLong();
-        byte[] hashNodeChecksumAddress = new byte[2];
-        indexNodeBuffer.get(hashNodeChecksumAddress);
+        byte[] indexNodeRaw = this.db.readBytesAt(indexPosition, IndexNode.ADDRESS_SIZE);
+        IndexNode indexNode = new IndexNode(indexNodeRaw);
 
-        checkForCorruptedData(hashNodeAddress, hashNodeChecksumAddress, true);
+        indexNode.checkForCorruptedData(true);
 
-        if (hashNodeAddress != 0) {
-            long currentPosition = hashNodeAddress;
-            boolean end = false;
+        HashNode.navigateThrough(indexNode.getHashNodeAddress(),
+                bytesKey, this.db, new HashNode.HashNodeNavigator() {
 
-            while (!end) {
-                byte[] hashNode = this.db.readBytesAt(
-                        currentPosition, HASH_NODE_SIZE);
+            @Override
+            public void whenTheKeyIsEqual(long currentPosition,
+                            HashNode currentHashNode)  throws IOException {
 
-                ByteBuffer byteBuffer = ByteBuffer.wrap(hashNode);
-                byte[] k = new byte[KEY_SIZE];
-                byteBuffer.get(k);
-                long size = byteBuffer.getLong();
-                long address = byteBuffer.getLong();
-                byte[] addressChecksum = new byte[2];
-                byteBuffer.get(addressChecksum);
-                long nextAddress = byteBuffer.getLong();
-                byte[] nextAddressChecksum = new byte[2];
-                byteBuffer.get(nextAddressChecksum);
-                //long oldTimestamp = byteBuffer.getLong();
+                if (TRACE_ENABLED) {
+                    log.trace("The key " + DebugUtil.niceName(key)
+                            + " was found at " + DebugUtil.niceName(currentPosition));
+                }
 
-                if (ByteUtil.compare(k, bytesKey)) {
-                    if (TRACE_ENABLED) {
-                        log.trace("The key " + DebugUtil.niceName(key)
-                                + " was found at " + DebugUtil.niceName(currentPosition));
-                    }
+                result[0] = currentHashNode;
+            }
 
-                    checkForCorruptedData(address, addressChecksum, true);
+            @Override
+            public void interceptGoingToNextNode(long currentPosition,
+                             HashNode currentHashNode) throws IOException {
 
-                    end = true;
-                    result = new Pair<Long, Long>(address, size);
-
-                } else if (nextAddress != 0L) { // just go to next
-                    checkForCorruptedData(nextAddress,
-                            nextAddressChecksum, true);
-
-                    if (TRACE_ENABLED) {
-                        log.trace("The key " + DebugUtil.niceName(key)
-                                + " was not found yet. Going to next node: "
-                                + DebugUtil.niceName(nextAddress));
-                    }
-
-                    currentPosition = nextAddress;
-                } else {
-                    if (TRACE_ENABLED) {
-                        log.trace("The key " + DebugUtil.niceName(key)
-                                + " was not found!");
-                    }
-
-                    end = true;
-                    result = null;
+                if (TRACE_ENABLED) {
+                    log.trace("The key " + DebugUtil.niceName(key)
+                            + " was not found yet. Going to next node: "
+                            + DebugUtil.niceName(currentHashNode.getNextAddress()));
                 }
             }
-        }
 
-        return result;
+            @Override
+            public void whenTheKeyWasNotFound(long currentPosition,
+                                HashNode currentHashNode) throws IOException {
+                
+                if (TRACE_ENABLED) {
+                    log.trace("The key " + DebugUtil.niceName(key)
+                            + " was not found!");
+                }
+
+                result[0] = null;
+            }
+        });
+
+        return result[0];
     }
 }

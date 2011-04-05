@@ -12,10 +12,13 @@ public class Test {
         CrazyDB db = new CrazyDB("my database", "db");
         Map<String, String> values = new HashMap<String, String>();
 
+        System.out.println(db.getInfo());
+        int tests = 30000;
+
         try {
             long now = System.currentTimeMillis();
 
-            for (int i = 0; i < 30000; i++) {
+            for (int i = 0; i < tests; i++) {
                 String key = "key" + i;
                 String value = "value " + i;
 
@@ -27,7 +30,7 @@ public class Test {
                 }
             }
 
-            System.out.println("time 1 per key: " +  ((System.currentTimeMillis() - now) / 30000d));
+            System.out.println("\n\ntime 1 per key: " +  ((System.currentTimeMillis() - now) / (double) tests) + "ms");
             System.out.println("\n*** CHECKING... ");
 
             now = System.currentTimeMillis();
@@ -47,7 +50,9 @@ public class Test {
                 }
             }
 
-            System.out.println("time 2 per key: " +  ((System.currentTimeMillis() - now) / 30000d));
+            System.out.println("\ntime 2 per key: " +  ((System.currentTimeMillis() - now) / (double) tests) + " ms");
+
+            System.out.println(db.getInfo());
 
         } finally {
             db.shutdown();

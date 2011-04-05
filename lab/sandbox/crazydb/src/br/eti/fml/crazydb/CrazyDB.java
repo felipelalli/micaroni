@@ -1,5 +1,6 @@
 package br.eti.fml.crazydb;
 
+import br.eti.fml.crazydb.index.HashNode;
 import br.eti.fml.crazydb.index.Index;
 import org.apache.log4j.Logger;
 
@@ -74,10 +75,10 @@ public class CrazyDB {
     }
 
     protected byte[] get(UUID key) throws IOException {
-        Pair<Long, Long> addressAndSize = this.index.find(key);
+        HashNode node = this.index.find(key);
 
-        if (addressAndSize != null) {
-            return this.body.read(addressAndSize.car, addressAndSize.cdr);
+        if (node != null) {
+            return this.body.read(node.getAddress(), node.getSize());
         } else {
             return null;
         }
@@ -98,6 +99,10 @@ public class CrazyDB {
             System.gc();
             log.info("Shutdown OK!");
         }
+    }
+
+    public String getInfo() throws IOException {
+        return this.index.retrieveInfo();
     }
 
     @Override
