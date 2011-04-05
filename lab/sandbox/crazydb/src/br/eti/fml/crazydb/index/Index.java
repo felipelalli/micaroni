@@ -75,7 +75,9 @@ public class Index {
 
         long slots = (indexSizeInBytes / IndexNode.ADDRESS_SIZE);
         long freeSlots = 0L;
+        final AtomicInteger keys = new AtomicInteger();
         Map<Integer, Integer> sizes = new HashMap<Integer, Integer>();
+        boolean seemsCorrupted = false;
 
         for (long n = 0; n < slots; n++) {
             long indexPosition = this.getIndexPositionByNumber(n);
@@ -89,7 +91,7 @@ public class Index {
                 IndexNode indexNode = new IndexNode(indexNodeRaw);
 
                 if (!indexNode.checkIfDataIsOK()) {
-                    log.error("The indexNode is corrupted?");
+                    seemsCorrupted = true;
                 } else {
                     final AtomicInteger count = new AtomicInteger();
                     count.incrementAndGet();
@@ -110,12 +112,14 @@ public class Index {
                                         throws IOException {
 
                                 count.incrementAndGet();
+                                keys.incrementAndGet();
                             }
 
                             @Override
                             public void whenTheKeyWasNotFound(long currentPosition,
                                     HashNode currentHashNode) throws IOException {
 
+                                keys.incrementAndGet();
                             }
                        });
 
@@ -138,6 +142,8 @@ public class Index {
         info.append("Total size: ").append(this.metaInfo.getCurrentSize() / ByteUtil.MB)
                 .append(" MB").append("\n");
 
+        info.append("Seems corrupted? ").append(seemsCorrupted).append("\n");
+        info.append("Keys: ").append(keys.get()).append("\n");
         info.append("Total slots: ").append(slots).append("\n");
         info.append("Free slots: ").append(freeSlots).append(" ")
                 .append(percentage(freeSlots, slots)).append("\n");

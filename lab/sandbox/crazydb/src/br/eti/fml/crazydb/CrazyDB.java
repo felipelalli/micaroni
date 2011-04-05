@@ -48,7 +48,7 @@ public class CrazyDB {
             public void run() {
                 try {
                     if (!CrazyDB.this.shutdown) {
-                        log.fatal("CAUTION in shutdownHook: You MUST to call shutdown() or your can LOST DATA! Trying to shutdown...");
+                        log.fatal("CAUTION in shutdownHook: You MUST to call shutdown() or you can LOST DATA! Trying to shutdown...");
                         CrazyDB.this.shutdown();
                     }
                 } catch (Throwable e) {
@@ -108,7 +108,7 @@ public class CrazyDB {
     @Override
     public void finalize() throws Throwable {
         if (!this.shutdown) {
-            log.fatal("CAUTION in finalize: You MUST to call shutdown() or your can LOST DATA! Trying to shutdown...");
+            log.fatal("CAUTION in finalize: You MUST to call shutdown() or you can LOST DATA! Trying to shutdown...");
             this.shutdown();
         }
 

@@ -17,7 +17,7 @@ class MetaInfo {
 
     public static final int META_INFO_FIXED_SIZE_IN_BYTES
             = (int) (5 * ByteUtil.MB);
-    
+
     private static final int META_INFO_SIZE = 1 + 512 + 4 + 8 + 8;
     private static final long SIZE_POSITION = 1 + 512 + 4 + 8;
 
