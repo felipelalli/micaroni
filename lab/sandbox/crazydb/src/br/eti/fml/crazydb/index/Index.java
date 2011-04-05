@@ -46,7 +46,7 @@ public class Index {
 
         assert this.indexSizeInBytes % 8 == 0;
 
-        log.debug("Starting '" + db.getName() + "' with "
+        log.info("Starting '" + db.getName() + "' with "
                 + indexSizeInMegabytes + " MB index...");
 
         if (this.metaInfo.isFirstTime()) {
@@ -72,24 +72,23 @@ public class Index {
         long maximum = Runtime.getRuntime().maxMemory();
         long needMB = ((slots * 3) / ByteUtil.MB);
 
-        log.info("You have " + (maximum / ByteUtil.MB)
-                + " MB of maximum memory and need ~ " + needMB + " MB");
-
         if (maximum < slots * 3) {
-            log.fatal("NOT ENOUGH MEMORY!");
+            log.fatal("You have " + (maximum / ByteUtil.MB)
+                    + " MB of maximum memory and need at least " + needMB + " MB");
+
             throw new OutOfMemoryError("You need at least " + needMB + " MB maximum");
         } else {
             this.freeSlots = ByteBuffer.allocateDirect(slots);
             byte[] freeSlotsTemp = new byte[slots];
 
             if (this.metaInfo.isFirstTime()) {
-                log.debug("Your first time with this database. All "
+                log.info("Your first time with this database. All "
                         + slots + " slots are maximum.");
 
                 Arrays.fill(freeSlotsTemp, (byte) 1);
                 this.freeSlots.put(freeSlotsTemp);
             } else {
-                log.debug("Caching index up to " + slots + " slots...");
+                log.info("Caching index up to " + slots + " slots...");
                 Arrays.fill(freeSlotsTemp, (byte) 0);
                 this.freeSlots.put(freeSlotsTemp);
 
@@ -104,14 +103,14 @@ public class Index {
                     }
 
                     if (System.currentTimeMillis() - now > 5000) {
-                        log.debug("Caching index yet... " + percentage(n, slots) + " done");
+                        log.info("Caching index yet... " + percentage(n, slots) + " done");
                         now = System.currentTimeMillis();
                     }
                 }
             }
 
             this.metaInfo.clearFirstTimeFlag();
-            log.debug("Ok! Ready!");
+            log.info("Ok! The database is ready!");
         }
     }
 

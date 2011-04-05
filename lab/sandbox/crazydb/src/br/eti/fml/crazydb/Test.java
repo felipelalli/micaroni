@@ -9,11 +9,11 @@ import java.util.Map;
  */
 public class Test {
     public static void main(String[] args) throws IOException {
-        CrazyDB db = new CrazyDB("my database", "db", 512);
+        CrazyDB db = new CrazyDB("my database", "db", 12);
         Map<String, String> values = new HashMap<String, String>();
 
         System.out.println(db.getInfo());
-        int tests = 500000;
+        int tests = 50000;
 
         try {
             long now = System.currentTimeMillis();

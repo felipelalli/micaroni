@@ -17,8 +17,6 @@ public class TheBigFile {
     private static final Logger log = Logger.getLogger(TheBigFile.class);
 
     private RandomAccessFile file;
-    private String path;
-    private String mode;
     private String name;
 
     /**
@@ -31,28 +29,29 @@ public class TheBigFile {
         assert exclusiveName.length() > 0;
         assert exclusiveName.length() < 512;
 
-        this.path = path;
         this.name = exclusiveName;
 
+        String mode;
         if (synchronize) {
-            this.mode = "rws";
+            mode = "rws";
         } else {
-            this.mode = "rw";
+            mode = "rw";
         }
 
         try {
-            this.file = new RandomAccessFile(this.path, this.mode);
+            this.file = new RandomAccessFile(path, mode);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
     public void flush() throws IOException {
-        this.file.close();
-        this.file = new RandomAccessFile(this.path, this.mode);
+        log.trace("Flushing file to disk...");
+        this.file.getChannel().force(true);
     }
 
     public void close() throws IOException {
+        this.flush();
         this.file.close();
     }
 

@@ -115,6 +115,7 @@ class MetaInfo {
             long bigSize = realSize + (16 * ByteUtil.MB);
             this.db.setLength(bigSize);
             this.db.putLongAt(SIZE_POSITION, bigSize);
+            this.db.flush();
         }
     }
 

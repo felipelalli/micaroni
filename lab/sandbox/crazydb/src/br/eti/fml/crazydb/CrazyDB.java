@@ -81,11 +81,11 @@ public class CrazyDB {
             this.shutdown = true;
             log.info("1/5 Shutting down...");
             this.index.closeIndex();
-            log.info("2/5 Index closed...");
+            log.debug("2/5 Index closed...");
             this.db.close();
-            log.info("3/5 Big file closed...");
+            log.debug("3/5 Big file closed...");
             System.runFinalization();
-            log.info("4/5 Finalization called...");
+            log.debug("4/5 Finalization called...");
             System.gc();
             log.info("5/5 Shutdown OK!");
         }
