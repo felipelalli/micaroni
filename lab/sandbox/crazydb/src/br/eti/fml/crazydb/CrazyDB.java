@@ -13,7 +13,7 @@ public class CrazyDB {
     private static final Logger log = Logger.getLogger(CrazyDB.class);
 
     //private static final int DEFAULT_SIZE_IN_MEGABYTES = 512;
-    private static final int DEFAULT_SIZE_IN_MEGABYTES = 1;
+    private static final int DEFAULT_SIZE_IN_MEGABYTES = 512;
 
     private volatile boolean shutdown = false;
     

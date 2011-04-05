@@ -17,6 +17,7 @@ import java.util.UUID;
  */
 public class Index {
     private static final Logger log = Logger.getLogger(Index.class);
+    public static final boolean TRACE_ENABLED = false;
 
     private static final int KEY_SIZE = 16;
     private static final int SIZE_SIZE = 8;
@@ -38,11 +39,15 @@ public class Index {
     private Body body;
     private MetaInfo metaInfo;
 
+    private ByteBuffer indexCache;
+
     public Index(TheBigFile db, Body body, int indexSizeInMegabytes) throws IOException {
         this.db = db;
         this.body = body;
         this.metaInfo = new MetaInfo(this.db);
         this.indexSizeInBytes = indexSizeInMegabytes * ByteUtil.MB;
+
+        assert this.indexSizeInBytes % 8 == 0;
 
         log.debug("Starting '" + db.getName() + "' with "
                 + indexSizeInMegabytes + " MB index...");
@@ -67,6 +72,31 @@ public class Index {
         }
 
         metaInfo.setShutdown(false);
+
+        // Reading all index in memory:
+        long free = Runtime.getRuntime().freeMemory();
+
+        if (free < this.indexSizeInBytes) {
+            log.warn("Your free memory is TOO low! You need at least "
+                    + indexSizeInMegabytes + " MB of free memory. You have "
+                    + (free / 1024 / 1024) + " MB free.");
+        }
+
+        log.debug("Allocating index cache...");
+        indexCache = ByteBuffer.allocateDirect((int) this.indexSizeInBytes);
+        log.debug("Reading index to cache...");
+        this.db.readyFully(INDEX_START_POSITION, indexCache);
+        log.debug("Index cache is OK!");
+    }
+
+    public String retrieveInfo() {
+        long total = (indexSizeInBytes / ADDRESS_SIZE);
+
+        for (long n = 0; n < total; n += ADDRESS_SIZE) {
+            long indexPosition = this.getIndexPositionByNumber(n);
+        }
+
+        return "";
     }
     
     protected static byte[] getAHashNode(byte[] key, long size,
@@ -90,13 +120,17 @@ public class Index {
         final long indexPosition = getIndexPositionByKey(key);
 
         if (this.db.checkIfPositionIsEqualTo(indexPosition, 0L)) {
-            log.trace("The slot is free, recording new node at "
-                    + DebugUtil.niceName(indexPosition) + " index position.");
+            if (TRACE_ENABLED) {
+                log.trace("The slot is free, recording new node at "
+                        + DebugUtil.niceName(indexPosition) + " index position.");
+            }
 
             writeNewNodeAtIndex(bytesKey, address, size, indexPosition, 0L);
         } else {
-            log.trace("The slot " + DebugUtil.niceName(indexPosition)
-                    + " is used. Trying to find the key or a free slot.");
+            if (TRACE_ENABLED) {
+                log.trace("The slot " + DebugUtil.niceName(indexPosition)
+                        + " is used. Trying to find the key or a free slot.");
+            }
 
             byte[] indexNode = this.db.readBytesAt(indexPosition, ADDRESS_SIZE);
             ByteBuffer indexNodeBuffer = ByteBuffer.wrap(indexNode);
@@ -127,9 +161,11 @@ public class Index {
                     long oldTimestamp = byteBuffer.getLong();
 
                     if (ByteUtil.compare(k, bytesKey)) {
-                        log.trace("The key " + DebugUtil.niceName(key)
-                                + " was used before and will be updated at "
-                                + DebugUtil.niceName(currentPosition));
+                        if (TRACE_ENABLED) {
+                            log.trace("The key " + DebugUtil.niceName(key)
+                                    + " was used before and will be updated at "
+                                    + DebugUtil.niceName(currentPosition));
+                        }
 
                         // needs to replace (update) the hashNode
                         byte[] newHashNode = getAHashNode(
@@ -144,10 +180,12 @@ public class Index {
                         checkForCorruptedData(nextAddress,
                                 nextAddressChecksum, true);
 
-                        log.trace("The key " + DebugUtil.niceName(key)
-                                + " was not found yet. Going to next node: "
-                                + DebugUtil.niceName(nextAddress));
-                        
+                        if (TRACE_ENABLED) {
+                            log.trace("The key " + DebugUtil.niceName(key)
+                                    + " was not found yet. Going to next node: "
+                                    + DebugUtil.niceName(nextAddress));
+                        }
+
                         currentPosition = nextAddress;
                     } else {
                         // needs to update the nextAddress of currentHashNode
@@ -157,9 +195,11 @@ public class Index {
                         long newHashNodeAddress
                                 = this.allocateAndPut(newHashNode);
 
-                        log.trace("The key " + DebugUtil.niceName(key)
-                                + " was not found. Creating a new node at "
-                                + DebugUtil.niceName(newHashNodeAddress));
+                        if (TRACE_ENABLED) {
+                            log.trace("The key " + DebugUtil.niceName(key)
+                                    + " was not found. Creating a new node at "
+                                    + DebugUtil.niceName(newHashNodeAddress));
+                        }
 
                         byte[] currentHashNode = getAHashNode(
                                 k, oldAddress, oldSize, newHashNodeAddress,
@@ -197,11 +237,16 @@ public class Index {
         }
     }
 
-    private long getIndexPositionByKey(UUID key) {
+    private long getIndexPositionByNumber(long positiveNumber) {
         return INDEX_START_POSITION
-                + (Math.abs(key.getMostSignificantBits()
-                    ^ key.getLeastSignificantBits())
-                    % (indexSizeInBytes / ADDRESS_SIZE) * ADDRESS_SIZE);
+                + positiveNumber % (indexSizeInBytes / ADDRESS_SIZE)
+                    * ADDRESS_SIZE;
+    }
+
+    private long getIndexPositionByKey(UUID key) {
+        return getIndexPositionByNumber(
+                Math.abs(key.getMostSignificantBits()
+                        ^ key.getLeastSignificantBits()));
     }
 
     private void writeNewNodeAtIndex(byte[] bytesKey, long address, long size,
@@ -260,8 +305,10 @@ public class Index {
                 //long oldTimestamp = byteBuffer.getLong();
 
                 if (ByteUtil.compare(k, bytesKey)) {
-                    log.trace("The key " + DebugUtil.niceName(key)
-                            + " was found at " + DebugUtil.niceName(currentPosition));
+                    if (TRACE_ENABLED) {
+                        log.trace("The key " + DebugUtil.niceName(key)
+                                + " was found at " + DebugUtil.niceName(currentPosition));
+                    }
 
                     checkForCorruptedData(address, addressChecksum, true);
 
@@ -272,14 +319,18 @@ public class Index {
                     checkForCorruptedData(nextAddress,
                             nextAddressChecksum, true);
 
-                    log.trace("The key " + DebugUtil.niceName(key)
-                            + " was not found yet. Going to next node: "
-                            + DebugUtil.niceName(nextAddress));
+                    if (TRACE_ENABLED) {
+                        log.trace("The key " + DebugUtil.niceName(key)
+                                + " was not found yet. Going to next node: "
+                                + DebugUtil.niceName(nextAddress));
+                    }
 
                     currentPosition = nextAddress;
                 } else {
-                    log.trace("The key " + DebugUtil.niceName(key)
-                            + " was not found!");
+                    if (TRACE_ENABLED) {
+                        log.trace("The key " + DebugUtil.niceName(key)
+                                + " was not found!");
+                    }
 
                     end = true;
                     result = null;

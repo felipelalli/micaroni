@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
 import java.util.Arrays;
 
 /**
@@ -23,10 +24,9 @@ public class TheBigFile {
 
     /**
      * @param exclusiveName The exclusiveName of database
-     * @param path The filesystem path
-     * @param synchronize Forces a hard synchronization with the filesystem. It
-     *                    can let the database ~ 300 times slower.
-     *
+     * @param path          The filesystem path
+     * @param synchronize   Forces a hard synchronization with the filesystem. It
+     *                      can let the database ~ 300 times slower.
      */
     public TheBigFile(String exclusiveName, String path, boolean synchronize) {
         assert exclusiveName.length() > 0;
@@ -68,9 +68,8 @@ public class TheBigFile {
     }
 
     /**
-     * 
-     * @param index where the zeros must start
-     * @param size the length of zeros
+     * @param index             where the zeros must start
+     * @param size              the length of zeros
      * @param bufferSizeInBytes 1024 * 512 is a good value for big sizes
      * @throws IOException if something goes wrong with the disk
      */
@@ -128,5 +127,10 @@ public class TheBigFile {
     public long readLongAt(long position) throws IOException {
         this.file.seek(position);
         return this.file.readLong();
+    }
+
+    public void readyFully(long indexStartPosition, java.nio.ByteBuffer bb) throws IOException {
+        this.file.seek(indexStartPosition);
+        this.file.getChannel().read(bb);
     }
 }
