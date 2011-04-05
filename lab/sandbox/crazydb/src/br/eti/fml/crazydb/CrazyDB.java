@@ -13,24 +13,11 @@ import java.util.UUID;
 public class CrazyDB {
     private static final Logger log = Logger.getLogger(CrazyDB.class);
 
-    //private static final int DEFAULT_SIZE_IN_MEGABYTES = 512;
-    private static final int DEFAULT_SIZE_IN_MEGABYTES = 1;
-
     private volatile boolean shutdown = false;
     
     private TheBigFile db;
     private Index index;
     private Body body;
-
-    @SuppressWarnings("unused")
-    public CrazyDB(String exclusiveName, String path) throws IOException {
-        this(exclusiveName, path, DEFAULT_SIZE_IN_MEGABYTES, false);
-    }
-
-    @SuppressWarnings("unused")
-    public CrazyDB(String exclusiveName, String path, boolean forceFileSystemSynchronize) throws IOException {
-        this(exclusiveName, path, DEFAULT_SIZE_IN_MEGABYTES, forceFileSystemSynchronize);
-    }
 
     @SuppressWarnings("unused")
     public CrazyDB(String exclusiveName, String path, int indexSizeInMegabytes) throws IOException {
@@ -48,7 +35,7 @@ public class CrazyDB {
             public void run() {
                 try {
                     if (!CrazyDB.this.shutdown) {
-                        log.fatal("CAUTION in shutdownHook: You MUST to call shutdown() or you can LOST DATA! Trying to shutdown...");
+                        log.fatal("CAUTION in shutdownHook: You MUST to call shutdown() or you can LOOSE DATA! Trying to shutdown...");
                         CrazyDB.this.shutdown();
                     }
                 } catch (Throwable e) {
@@ -92,12 +79,15 @@ public class CrazyDB {
     public void shutdown() throws IOException {
         if (!this.shutdown) {
             this.shutdown = true;
-            log.info("Shutting down...");
+            log.info("1/5 Shutting down...");
             this.index.closeIndex();
+            log.info("2/5 Index closed...");
             this.db.close();
+            log.info("3/5 Big file closed...");
             System.runFinalization();
+            log.info("4/5 Finalization called...");
             System.gc();
-            log.info("Shutdown OK!");
+            log.info("5/5 Shutdown OK!");
         }
     }
 
@@ -108,7 +98,7 @@ public class CrazyDB {
     @Override
     public void finalize() throws Throwable {
         if (!this.shutdown) {
-            log.fatal("CAUTION in finalize: You MUST to call shutdown() or you can LOST DATA! Trying to shutdown...");
+            log.fatal("CAUTION in finalize: You MUST to call shutdown() or you can LOOSE DATA! Trying to shutdown...");
             this.shutdown();
         }
 

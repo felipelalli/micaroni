@@ -8,10 +8,9 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -36,7 +35,7 @@ public class Index {
     private MetaInfo metaInfo;
 
     // cache
-    private Set<Long> freeSlots;
+    private boolean[] freeSlots;
 
     public Index(TheBigFile db, Body body, int indexSizeInMegabytes) throws IOException {
         this.db = db;
@@ -49,6 +48,8 @@ public class Index {
         log.debug("Starting '" + db.getName() + "' with "
                 + indexSizeInMegabytes + " MB index...");
 
+        boolean firstTime;
+
         if (!this.db.preallocate(indexSizeInBytes + INDEX_START_POSITION)) {
             log.debug("Nice! The index already was created before.");
 
@@ -57,25 +58,41 @@ public class Index {
             if (!metaInfo.checkShutdown()) {
                 log.error("Shutdown was not called last time. Some data can be corrupted!");
             }
+
+            firstTime = false;
         } else {
             this.db.fillWithZero(0L, indexSizeInBytes
                     + INDEX_START_POSITION, BUFFER_SIZE);
 
             metaInfo.writeFirstTime(db.getName(), indexSizeInMegabytes,
                     System.currentTimeMillis());
+
+            firstTime = true;
         }
 
         metaInfo.setShutdown(false);
-        log.debug("Almost ready! Caching index...");
 
         int slots = (int) (indexSizeInBytes / IndexNode.ADDRESS_SIZE);
-        this.freeSlots = new HashSet<Long>(slots);
+        this.freeSlots = new boolean[slots];
 
-        for (long n = 0; n < slots; n++) {
-            long indexPosition = this.getIndexPositionByNumber(n);
+        if (firstTime) {
+            log.debug("Your first time with this database. All slots are free.");
+            Arrays.fill(this.freeSlots, true);
+        } else {
+            log.debug("Caching index up to " + slots + " slots...");
+            Arrays.fill(this.freeSlots, false);
 
-            if (this.db.checkIfPositionIsEqualTo(indexPosition, 0L)) {
-                this.freeSlots.add(indexPosition);
+            for (int n = 0; n < slots; n++) {
+                long indexPosition = this.getIndexPositionByNumber(n);
+
+                // TODO FIXME: improve this reading using buffer
+                if (this.db.checkIfPositionIsEqualTo(indexPosition, 0L)) {
+                    this.freeSlots[n] = true;
+                }
+
+                if (n % (slots / 5) == 0 && n != 0) {
+                    log.debug("Caching index... " + percentage(n, slots) + " done");
+                }
             }
         }
 
@@ -89,6 +106,8 @@ public class Index {
     }
 
     public String retrieveInfo() throws IOException {
+        log.debug("Retrieving database info...");
+
         StringBuilder info = new StringBuilder();
 
         long slots = (indexSizeInBytes / IndexNode.ADDRESS_SIZE);
@@ -97,10 +116,10 @@ public class Index {
         Map<Integer, Integer> sizes = new HashMap<Integer, Integer>();
         boolean seemsCorrupted = false;
 
-        for (long n = 0; n < slots; n++) {
+        for (int n = 0; n < slots; n++) {
             long indexPosition = this.getIndexPositionByNumber(n);
 
-            if (this.freeSlots.contains(indexPosition)) {
+            if (this.freeSlots[n]) {
                 freeSlots++;
             } else {
                 byte[] indexNodeRaw = this.db.readBytesAt(
@@ -181,14 +200,15 @@ public class Index {
     public void updateIndex(final UUID key, final long address, final long size) throws IOException {
         final byte[] bytesKey = ByteUtil.UUID2bytes(key);
         final long indexPosition = getIndexPositionByKey(key);
+        final int slotPosition = getSlotPositionByKey(key);
 
-        if (this.freeSlots.contains(indexPosition)) {
+        if (this.freeSlots[slotPosition]) {
             if (TRACE_ENABLED) {
                 log.trace("The slot is free, recording new node at "
                         + DebugUtil.niceName(indexPosition) + " index position.");
             }
 
-            this.freeSlots.remove(indexPosition);
+            this.freeSlots[slotPosition] = false;
             writeNewNodeAtIndex(bytesKey, address, size, indexPosition, 0L);
         } else {
             if (TRACE_ENABLED) {
@@ -268,16 +288,27 @@ public class Index {
         }
     }
 
+    private int getSlotPositionByKey(UUID key) {
+        return this.getSlotPositionByPositiveNumber(getAPositiveNumberByKey(key));
+    }
+
     private long getIndexPositionByNumber(long positiveNumber) {
         return INDEX_START_POSITION
-                + positiveNumber % (indexSizeInBytes / IndexNode.ADDRESS_SIZE)
+                + getSlotPositionByPositiveNumber(positiveNumber)
                     * IndexNode.ADDRESS_SIZE;
     }
 
+    private int getSlotPositionByPositiveNumber(long positiveNumber) {
+        return (int) (positiveNumber % (indexSizeInBytes / IndexNode.ADDRESS_SIZE));
+    }
+
     private long getIndexPositionByKey(UUID key) {
-        return getIndexPositionByNumber(
-                Math.abs(key.getMostSignificantBits()
-                        ^ key.getLeastSignificantBits()));
+        return getIndexPositionByNumber(getAPositiveNumberByKey(key));
+    }
+
+    private long getAPositiveNumberByKey(UUID key) {
+        return Math.abs(key.getMostSignificantBits()
+                        ^ key.getLeastSignificantBits());
     }
 
     private void writeNewNodeAtIndex(byte[] bytesKey, long address, long size,
