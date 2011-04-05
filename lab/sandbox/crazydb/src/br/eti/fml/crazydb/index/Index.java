@@ -70,15 +70,6 @@ public class Index {
         }
 
         metaInfo.setShutdown(false);
-
-        // Reading all index in memory:
-        long free = Runtime.getRuntime().freeMemory();
-
-        if (free < this.indexSizeInBytes) {
-            log.warn("Your free memory is TOO low! You need at least "
-                    + indexSizeInMegabytes + " MB of free memory. You have "
-                    + (free / 1024 / 1024) + " MB free.");
-        }
     }
 
     public String retrieveInfo() {
@@ -196,7 +187,7 @@ public class Index {
                         }
 
                         byte[] currentHashNode = getAHashNode(
-                                k, oldAddress, oldSize, newHashNodeAddress,
+                                k, oldSize, oldAddress, newHashNodeAddress,
                                 oldTimestamp);
 
                         this.body.replaceAt(currentPosition, currentHashNode);

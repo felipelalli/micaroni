@@ -13,6 +13,8 @@ public class Test {
         Map<String, String> values = new HashMap<String, String>();
 
         try {
+            long now = System.currentTimeMillis();
+
             for (int i = 0; i < 30000; i++) {
                 String key = "key" + i;
                 String value = "value " + i;
@@ -25,11 +27,13 @@ public class Test {
                 }
             }
 
-            System.out.println("*** CHECKING...");
+            System.out.println("time 1 per key: " +  ((System.currentTimeMillis() - now) / 30000d));
+            System.out.println("\n*** CHECKING... ");
+
+            now = System.currentTimeMillis();
 
             for (int i = 0; i < 30000; i++) {
                 String key = "key" + i;
-                System.out.println(key);
                 String value = new String(db.get(key));
                 String readValue = values.get(key);
 
@@ -42,6 +46,8 @@ public class Test {
                             + readValue);
                 }
             }
+
+            System.out.println("time 2 per key: " +  ((System.currentTimeMillis() - now) / 30000d));
 
         } finally {
             db.shutdown();

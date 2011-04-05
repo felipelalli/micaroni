@@ -5,7 +5,6 @@ import org.apache.log4j.Logger;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.channels.FileChannel;
 import java.util.Arrays;
 
 /**
@@ -89,10 +88,8 @@ public class TheBigFile {
                 this.file.write(buffer);
                 filled += buffer.length;
             } else {
-                for (int i = 0; i < remaining; i++) {
-                    filled++;
-                    this.file.writeByte(0);
-                }
+                this.file.write(buffer, 0, (int) remaining);
+                filled += remaining;
             }
         } while (remaining > 0L);
     }
@@ -103,11 +100,6 @@ public class TheBigFile {
         return realValue == value;
     }
 
-    public void putLongAt(long position, long value) throws IOException {
-        this.file.seek(position);
-        this.file.writeLong(value);
-    }
-
     public byte[] readBytesAt(long position, int size) throws IOException {
         this.file.seek(position);
         byte[] read = new byte[size];
@@ -115,7 +107,23 @@ public class TheBigFile {
         return read;
     }
 
+    public void putLongAt(long position, long value) throws IOException {
+        this.increaseIfNeeded(position);
+        this.file.seek(position);
+        this.file.writeLong(value);
+    }
+
+    private void increaseIfNeeded(long position) throws IOException {
+        long size = this.file.length();
+
+        if (position > size) {
+            size += (size / 10); // + 10%
+            this.file.setLength(size);
+        }
+    }
+
     public void putBytesAt(long position, byte[] bytes) throws IOException {
+        this.increaseIfNeeded(position);
         this.file.seek(position);
         this.file.write(bytes);
     }
