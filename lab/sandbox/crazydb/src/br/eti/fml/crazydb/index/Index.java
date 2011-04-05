@@ -56,50 +56,63 @@ public class Index {
             metaInfo.writeFirstTime(db.getName(), indexSizeInMegabytes,
                     System.currentTimeMillis());
         } else {
+            metaInfo.checkValues(this.db.getName(), indexSizeInMegabytes);
+
             this.db.preallocate(indexSizeInBytes + INDEX_START_POSITION);
             log.debug("Nice! The index already was created before.");
-
-            metaInfo.checkValues(this.db.getName(), indexSizeInMegabytes);
 
             if (!metaInfo.checkShutdown()) {
                 log.error("Shutdown was not called last time. Some data can be corrupted!");
             }
-
         }
 
         metaInfo.setShutdown(false);
 
         int slots = (int) (indexSizeInBytes / IndexNode.ADDRESS_SIZE);
-        this.freeSlots = ByteBuffer.allocateDirect(slots);
-        byte[] freeSlotsTemp = new byte[slots];
+        long maximum = Runtime.getRuntime().maxMemory();
+        long needMB = ((slots * 3) / ByteUtil.MB);
 
-        if (this.metaInfo.isFirstTime()) {
-            log.debug("Your first time with this database. All "
-                    + slots + " slots are free.");
+        log.info("You have " + (maximum / ByteUtil.MB)
+                + " MB of maximum memory and need ~ " + needMB + " MB");
 
-            Arrays.fill(freeSlotsTemp, (byte) 1);            
-            this.freeSlots.put(freeSlotsTemp);
+        if (maximum < slots * 3) {
+            log.fatal("NOT ENOUGH MEMORY!");
+            throw new OutOfMemoryError("You need at least " + needMB + " MB maximum");
         } else {
-            log.debug("Caching index up to " + slots + " slots...");
-            Arrays.fill(freeSlotsTemp, (byte) 0);
-            this.freeSlots.put(freeSlotsTemp);
+            this.freeSlots = ByteBuffer.allocateDirect(slots);
+            byte[] freeSlotsTemp = new byte[slots];
 
-            for (int n = 0; n < slots; n++) {
-                long indexPosition = this.getIndexPositionByNumber(n);
+            if (this.metaInfo.isFirstTime()) {
+                log.debug("Your first time with this database. All "
+                        + slots + " slots are maximum.");
 
-                // TODO FIXME: improve this reading using buffer
-                if (this.db.checkIfPositionIsEqualTo(indexPosition, 0L)) {
-                    this.freeSlots.put(n, (byte) 1);
-                }
+                Arrays.fill(freeSlotsTemp, (byte) 1);
+                this.freeSlots.put(freeSlotsTemp);
+            } else {
+                log.debug("Caching index up to " + slots + " slots...");
+                Arrays.fill(freeSlotsTemp, (byte) 0);
+                this.freeSlots.put(freeSlotsTemp);
 
-                if (n % (slots / 5) == 0 && n != 0) {
-                    log.debug("Caching index... " + percentage(n, slots) + " done");
+                long now = System.currentTimeMillis();
+
+                for (int n = 0; n < slots; n++) {
+                    long indexPosition = this.getIndexPositionByNumber(n);
+
+                    // TODO FIXME: improve this reading using buffer
+                    if (this.db.checkIfPositionIsEqualTo(indexPosition, 0L)) {
+                        this.freeSlots.put(n, (byte) 1);
+                    }
+
+                    if (System.currentTimeMillis() - now > 5000) {
+                        log.debug("Caching index yet... " + percentage(n, slots) + " done");
+                        now = System.currentTimeMillis();
+                    }
                 }
             }
-        }
 
-        this.metaInfo.clearFirstTimeFlag();
-        log.debug("Ok! Ready!");
+            this.metaInfo.clearFirstTimeFlag();
+            log.debug("Ok! Ready!");
+        }
     }
 
     private String percentage(long part, long total) {

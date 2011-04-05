@@ -92,7 +92,7 @@ class MetaInfo {
     }
 
     public boolean checkShutdown() throws IOException {
-        return this.db.readBytesAt(0, 1)[0] == ((byte) 1);
+        return this.db.readBytesAt(0, 1)[0] != ((byte) 0);
     }
 
     public void setShutdown(boolean shutdown) throws IOException {
