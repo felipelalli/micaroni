@@ -30,8 +30,9 @@ class MetaInfo {
         if (this.db.length() < SIZE_POSITION) {
             this.currentSize = 0L;
             this.firstTime = true;
+            this.db.putLongAt(SIZE_POSITION, 0L);
         } else {
-            this.currentSize = this.db.length();
+            this.currentSize = this.db.readLongAt(SIZE_POSITION);
         }
     }
 

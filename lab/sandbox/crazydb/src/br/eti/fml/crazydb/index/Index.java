@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -67,6 +68,7 @@ public class Index {
         }
 
         metaInfo.setShutdown(false);
+        this.db.flush();
 
         int slots = (int) (indexSizeInBytes / IndexNode.ADDRESS_SIZE);
         long maximum = Runtime.getRuntime().maxMemory();
@@ -129,7 +131,7 @@ public class Index {
         long freeSlots = 0L;
         final AtomicInteger keys = new AtomicInteger();
         Map<Integer, Integer> sizes = new HashMap<Integer, Integer>();
-        boolean seemsCorrupted = false;
+        final AtomicBoolean seemsCorrupted = new AtomicBoolean(false);
 
         for (int n = 0; n < slots; n++) {
             long indexPosition = this.getIndexPositionByNumber(n);
@@ -143,13 +145,13 @@ public class Index {
                 IndexNode indexNode = new IndexNode(indexNodeRaw);
 
                 if (!indexNode.checkIfDataIsOK()) {
-                    seemsCorrupted = true;
+                    seemsCorrupted.set(true);
                 } else {
                     final AtomicInteger count = new AtomicInteger();
                     count.incrementAndGet();
 
                     HashNode.navigateThrough(indexNode.getHashNodeAddress(),
-                            null, this.db,
+                            null, this.db, false,
 
                         new HashNode.HashNodeNavigator() {
                             @Override
@@ -173,7 +175,12 @@ public class Index {
 
                                 keys.incrementAndGet();
                             }
-                       });
+
+                            @Override
+                            public void corruptedData(long currentPosition, HashNode currentHashNode) throws IOException {
+                                seemsCorrupted.set(true);
+                            }
+                        });
 
                     if (!sizes.containsKey(count.get())) {
                         sizes.put(count.get(), 0);
@@ -194,7 +201,10 @@ public class Index {
         info.append("Total size: ").append(this.metaInfo.getCurrentSize() / ByteUtil.MB)
                 .append(" MB").append("\n");
 
-        info.append("Seems corrupted? ").append(seemsCorrupted).append("\n");
+        info.append("Real size: ").append(this.db.length() / ByteUtil.MB)
+                .append(" MB").append("\n");
+
+        info.append("Seems corrupted? ").append(seemsCorrupted.get()).append("\n");
         info.append("Keys: ").append(keys.get()).append("\n");
         info.append("Total slots: ").append(slots).append("\n");
         info.append("Free slots: ").append(freeSlots).append(" ")
@@ -239,7 +249,8 @@ public class Index {
             if (!indexNode.checkIfDataIsOK()) {
                 writeNewNodeAtIndex(bytesKey, address, size, indexPosition, 0L);
             } else {
-                HashNode.navigateThrough(indexNode.getHashNodeAddress(), bytesKey, this.db,
+                HashNode.navigateThrough(indexNode.getHashNodeAddress(),
+                        bytesKey, this.db, true,
                     new HashNode.HashNodeNavigator() {
                         @Override
                         public void whenTheKeyIsEqual(
@@ -298,7 +309,12 @@ public class Index {
     
                             body.replaceAt(currentPosition, newCurrentHashNode);
                         }
-                   });
+
+                        @Override
+                        public void corruptedData(long currentPosition, HashNode currentHashNode) throws IOException {
+                            // :(
+                        }
+                    });
             }
         }
     }
@@ -362,7 +378,7 @@ public class Index {
         indexNode.checkForCorruptedData(true);
 
         HashNode.navigateThrough(indexNode.getHashNodeAddress(),
-                bytesKey, this.db, new HashNode.HashNodeNavigator() {
+                bytesKey, this.db, false, new HashNode.HashNodeNavigator() {
 
             @Override
             public void whenTheKeyIsEqual(long currentPosition,
@@ -398,7 +414,13 @@ public class Index {
 
                 result[0] = null;
             }
-        });
+
+            @Override
+            public void corruptedData(long currentPosition, HashNode currentHashNode) throws IOException {
+                    result[0] = null;
+                }
+            }
+        );
 
         return result[0];
     }

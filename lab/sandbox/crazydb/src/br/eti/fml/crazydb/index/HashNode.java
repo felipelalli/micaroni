@@ -98,10 +98,12 @@ public class HashNode {
         return timestamp;
     }
 
-    public void checkForCorruptedDataInNextAddress() throws CorruptedData {
+    public boolean checkForCorruptedDataInNextAddress(boolean throwException) throws CorruptedData {
         byte[] realChecksum = ByteUtil.getChecksum(nextAddress);
 
-        if (!ByteUtil.compare(realChecksum, this.nextAddressChecksum)) {
+        if (ByteUtil.compare(realChecksum, this.nextAddressChecksum)) {
+            return true;
+        } else {
             // TODO: CORRUPTED DATA, WHAT TO DO NOW TO RECOVER?
 
             log.fatal("I'm so sorry! Next address is corrupted here. address="
@@ -111,15 +113,21 @@ public class HashNode {
 
             log.fatal("NEXT ADDRESS IS CORRUPTED! WHAT NOW?");
 
-            throw new CorruptedData("Corrupted data. " + nextAddress
-                    + " seems to be invalid!");
+            if (throwException) {
+                throw new CorruptedData("Corrupted data. " + nextAddress
+                        + " seems to be invalid!");
+            }
+
+            return false;
         }
     }
 
-    public void checkForCorruptedDataInAddress() throws CorruptedData {
+    public boolean checkForCorruptedDataInAddress(boolean throwException) throws CorruptedData {
         byte[] realChecksum = ByteUtil.getChecksum(address);
 
-        if (!ByteUtil.compare(realChecksum, this.addressChecksum)) {
+        if (ByteUtil.compare(realChecksum, this.addressChecksum)) {
+            return true;
+        } else {
             // TODO: CORRUPTED DATA, WHAT TO DO NOW TO RECOVER?
 
             log.fatal("The address is corrupted here. address="
@@ -129,7 +137,11 @@ public class HashNode {
 
             log.fatal("ADDRESS IS CORRUPTED! WHAT NOW?");
 
-            throw new CorruptedData("Corrupted data. " + address + " seems to be invalid!");
+            if (throwException) {
+                throw new CorruptedData("Corrupted data. " + address + " seems to be invalid!");
+            }
+
+            return false;
         }
     }
 
@@ -137,10 +149,13 @@ public class HashNode {
         void whenTheKeyIsEqual(long currentPosition, HashNode currentHashNode) throws IOException;
         void interceptGoingToNextNode(long currentPosition, HashNode currentHashNode) throws IOException;
         void whenTheKeyWasNotFound(long currentPosition, HashNode currentHashNode) throws IOException;
+        void corruptedData(long currentPosition, HashNode currentHashNode) throws IOException;
     }
 
     public static void navigateThrough(long hashNodeAddress, byte[] bytesKey,
-                                       TheBigFile db, HashNodeNavigator navigator) throws IOException {
+                                       TheBigFile db,
+                                       boolean throwExceptionWhenCorrupted,
+                                       HashNodeNavigator navigator) throws IOException {
 
         if (hashNodeAddress != 0L) {
             long currentPosition = hashNodeAddress;
@@ -153,13 +168,21 @@ public class HashNode {
                 final HashNode hashNode = new HashNode(hashNodeRaw);
 
                 if (bytesKey != null && ByteUtil.compare(hashNode.getKey(), bytesKey)) {
-                    hashNode.checkForCorruptedDataInAddress();
-                    navigator.whenTheKeyIsEqual(currentPosition, hashNode);
+                    if (!hashNode.checkForCorruptedDataInAddress(throwExceptionWhenCorrupted)) {
+                        navigator.corruptedData(currentPosition, hashNode);
+                    } else {
+                        navigator.whenTheKeyIsEqual(currentPosition, hashNode);
+                    }
+
                     end = true;
                 } else if (hashNode.getNextAddress() != 0L) { // just go to next
-                    hashNode.checkForCorruptedDataInNextAddress();
-                    navigator.interceptGoingToNextNode(currentPosition, hashNode);
-                    currentPosition = hashNode.getNextAddress();
+                    if (!hashNode.checkForCorruptedDataInNextAddress(throwExceptionWhenCorrupted)) {
+                        navigator.corruptedData(currentPosition, hashNode);
+                        end = true;
+                    } else {
+                        navigator.interceptGoingToNextNode(currentPosition, hashNode);
+                        currentPosition = hashNode.getNextAddress();
+                    }
                 } else {
                     end = true;
                     navigator.whenTheKeyWasNotFound(currentPosition, hashNode);

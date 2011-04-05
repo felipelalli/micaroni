@@ -127,4 +127,9 @@ public class TheBigFile {
     public void setLength(long bigSize) throws IOException {
         this.file.setLength(bigSize);
     }
+
+    public long readLongAt(long position) throws IOException {
+        this.file.seek(position);
+        return this.file.readLong();
+    }
 }
