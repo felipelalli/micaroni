@@ -3,6 +3,7 @@ package br.eti.fml.crazydb.index;
 import br.eti.fml.crazydb.Body;
 import br.eti.fml.crazydb.ByteUtil;
 import br.eti.fml.crazydb.DebugUtil;
+import br.eti.fml.crazydb.Pair;
 import br.eti.fml.crazydb.TheBigFile;
 import org.apache.log4j.Logger;
 
@@ -70,7 +71,7 @@ public class Index {
         metaInfo.setShutdown(false);
         this.db.flush();
 
-        int slots = (int) (indexSizeInBytes / IndexNode.ADDRESS_SIZE);
+        int slots = (int) (indexSizeInBytes / IndexNode.INDEX_NODE_SIZE);
         long maximum = Runtime.getRuntime().maxMemory();
         long needMB = ((slots * 3) / ByteUtil.MB);
 
@@ -85,7 +86,7 @@ public class Index {
 
             if (this.metaInfo.isFirstTime()) {
                 log.info("Your first time with this database. All "
-                        + slots + " slots are maximum.");
+                        + slots + " slots are free.");
 
                 Arrays.fill(freeSlotsTemp, (byte) 1);
                 this.freeSlots.put(freeSlotsTemp);
@@ -99,7 +100,7 @@ public class Index {
                 for (int n = 0; n < slots; n++) {
                     long indexPosition = this.getIndexPositionByNumber(n);
 
-                    // TODO FIXME: improve this reading using buffer
+                    // TODO FIXME: improve this reading with buffer
                     if (this.db.checkIfPositionIsEqualTo(indexPosition, 0L)) {
                         this.freeSlots.put(n, (byte) 1);
                     }
@@ -127,11 +128,12 @@ public class Index {
 
         StringBuilder info = new StringBuilder();
 
-        long slots = (indexSizeInBytes / IndexNode.ADDRESS_SIZE);
+        long slots = (indexSizeInBytes / IndexNode.INDEX_NODE_SIZE);
         long freeSlots = 0L;
         final AtomicInteger keys = new AtomicInteger();
         Map<Integer, Integer> sizes = new HashMap<Integer, Integer>();
-        final AtomicBoolean seemsCorrupted = new AtomicBoolean(false);
+        final AtomicInteger corruptedNodes = new AtomicInteger();
+        final AtomicInteger corruptedHashNodes = new AtomicInteger();
 
         for (int n = 0; n < slots; n++) {
             long indexPosition = this.getIndexPositionByNumber(n);
@@ -140,24 +142,24 @@ public class Index {
                 freeSlots++;
             } else {
                 byte[] indexNodeRaw = this.db.readBytesAt(
-                        indexPosition, IndexNode.ADDRESS_SIZE);
+                        indexPosition, IndexNode.INDEX_NODE_SIZE);
 
                 IndexNode indexNode = new IndexNode(indexNodeRaw);
 
-                if (!indexNode.checkIfDataIsOK()) {
-                    seemsCorrupted.set(true);
+                if (indexNode.isCorruptedNode()) {
+                    corruptedNodes.incrementAndGet();
                 } else {
                     final AtomicInteger count = new AtomicInteger();
                     count.incrementAndGet();
 
                     HashNode.navigateThrough(indexNode.getHashNodeAddress(),
-                            null, this.db, false,
+                            null, this.db,
 
                         new HashNode.HashNodeNavigator() {
                             @Override
                             public void whenTheKeyIsEqual(
                                     long currentPosition,
-                                    HashNode currentHashNode)  throws IOException {
+                                    HashNode currentHashNode) throws IOException {
                             }
 
                             @Override
@@ -177,8 +179,11 @@ public class Index {
                             }
 
                             @Override
-                            public void corruptedData(long currentPosition, HashNode currentHashNode) throws IOException {
-                                seemsCorrupted.set(true);
+                            public void corruptedHashNode(
+                                    long currentPosition,
+                                    HashNode currentHashNode) throws IOException {
+
+                                corruptedHashNodes.incrementAndGet();
                             }
                         });
 
@@ -204,7 +209,12 @@ public class Index {
         info.append("Real size: ").append(this.db.length() / ByteUtil.MB)
                 .append(" MB").append("\n");
 
-        info.append("Seems corrupted? ").append(seemsCorrupted.get()).append("\n");
+        info.append("Corrupted index nodes: ")
+                .append(corruptedNodes.get()).append("\n");
+
+        info.append("Corrupted hash nodes: ")
+                .append(corruptedHashNodes.get()).append("\n");
+
         info.append("Keys: ").append(keys.get()).append("\n");
         info.append("Total slots: ").append(slots).append("\n");
         info.append("Free slots: ").append(freeSlots).append(" ")
@@ -222,7 +232,11 @@ public class Index {
         return info.toString();
     }
     
-    public void updateIndex(final UUID key, final long address, final long size) throws IOException {
+    public void updateIndex(
+            final UUID key, final long address,
+            final int checksumData, final long size)
+                    throws IOException, CorruptedIndex {
+        
         final byte[] bytesKey = ByteUtil.UUID2bytes(key);
         final long indexPosition = getIndexPositionByKey(key);
         final int slotPosition = getSlotPositionByKey(key);
@@ -234,7 +248,7 @@ public class Index {
             }
 
             this.freeSlots.put(slotPosition, (byte) 0);
-            writeNewNodeAtIndex(bytesKey, address, size, indexPosition, 0L);
+            writeNewNodeAtIndex(bytesKey, address, checksumData, size, indexPosition, 0L);
         } else {
             if (TRACE_ENABLED) {
                 log.trace("The slot " + DebugUtil.niceName(indexPosition)
@@ -242,15 +256,19 @@ public class Index {
             }
 
             byte[] indexNodeRaw = this.db.readBytesAt(
-                    indexPosition, IndexNode.ADDRESS_SIZE);
+                    indexPosition, IndexNode.INDEX_NODE_SIZE);
 
             IndexNode indexNode = new IndexNode(indexNodeRaw);
 
-            if (!indexNode.checkIfDataIsOK()) {
-                writeNewNodeAtIndex(bytesKey, address, size, indexPosition, 0L);
+            if (indexNode.isCorruptedNode()) {
+                throw new CorruptedIndex(indexPosition, indexNode);
             } else {
+                final AtomicBoolean isCorrupted = new AtomicBoolean(false);
+                final Pair<Long, HashNode> corruptedHashNode
+                        = new Pair<Long, HashNode>(null, null);
+
                 HashNode.navigateThrough(indexNode.getHashNodeAddress(),
-                        bytesKey, this.db, true,
+                        bytesKey, this.db,
                     new HashNode.HashNodeNavigator() {
                         @Override
                         public void whenTheKeyIsEqual(
@@ -265,7 +283,7 @@ public class Index {
 
                             // needs to replace (update) the hashNode
                             byte[] newHashNode = new HashNode(
-                                    bytesKey, size, address,
+                                    bytesKey, size, address, checksumData,
                                     currentHashNode.getNextAddress(), 0L)
                                         .getHashNode();
 
@@ -282,7 +300,8 @@ public class Index {
                             if (TRACE_ENABLED) {
                                 log.trace("The key " + DebugUtil.niceName(key)
                                         + " was not found yet. Going to next node: "
-                                        + DebugUtil.niceName(currentHashNode.getNextAddress()));
+                                        + DebugUtil.niceName(
+                                            currentHashNode.getNextAddress()));
                             }
                         }
 
@@ -292,7 +311,8 @@ public class Index {
 
                             // needs to update the nextAddress of currentHashNode
                             byte[] newHashNode = new HashNode(
-                                    bytesKey, size, address, 0L, 0L).getHashNode();
+                                    bytesKey, size, address, checksumData,
+                                    0L, 0L).getHashNode();
 
                             long newHashNodeAddress = allocateAndPut(newHashNode);
 
@@ -303,20 +323,33 @@ public class Index {
                             }
 
                             byte[] newCurrentHashNode = new HashNode(
-                                    currentHashNode.getKey(), currentHashNode.getSize(),
-                                    currentHashNode.getAddress(), newHashNodeAddress,
-                                    currentHashNode.getTimestamp()).getHashNode();
+                                    currentHashNode.getKey(),
+                                    currentHashNode.getSize(),
+                                    currentHashNode.getAddress(),
+                                    currentHashNode.getChecksumData(),
+                                    newHashNodeAddress,
+                                    currentHashNode.getTimestamp())
+                                            .getHashNode();
     
                             body.replaceAt(currentPosition, newCurrentHashNode);
                         }
 
                         @Override
-                        public void corruptedData(
+                        public void corruptedHashNode(
                                 long currentPosition,
                                 HashNode currentHashNode) throws IOException {
-                            // :(
+
+                            isCorrupted.set(true);
+                            corruptedHashNode.car = currentPosition;
+                            corruptedHashNode.cdr = currentHashNode;
                         }
-                    });
+                    }
+                );
+
+                if (isCorrupted.get()) {
+                    throw new CorruptedIndex(
+                            corruptedHashNode.car, corruptedHashNode.cdr);
+                }
             }
         }
     }
@@ -328,11 +361,11 @@ public class Index {
     private long getIndexPositionByNumber(long positiveNumber) {
         return INDEX_START_POSITION
                 + getSlotPositionByPositiveNumber(positiveNumber)
-                    * IndexNode.ADDRESS_SIZE;
+                    * IndexNode.INDEX_NODE_SIZE;
     }
 
     private int getSlotPositionByPositiveNumber(long positiveNumber) {
-        return (int) (positiveNumber % (indexSizeInBytes / IndexNode.ADDRESS_SIZE));
+        return (int) (positiveNumber % (indexSizeInBytes / IndexNode.INDEX_NODE_SIZE));
     }
 
     private long getIndexPositionByKey(UUID key) {
@@ -344,11 +377,13 @@ public class Index {
                         ^ key.getLeastSignificantBits());
     }
 
-    private void writeNewNodeAtIndex(byte[] bytesKey, long address, long size,
-                                     long indexPosition, long nextAddress) throws IOException {
+    private void writeNewNodeAtIndex(
+            byte[] bytesKey, long address, int checksumData, long size,
+            long indexPosition, long nextAddress) throws IOException {
 
         byte[] hashNode = new HashNode(
-                bytesKey, size, address, nextAddress, 0L).getHashNode();
+                bytesKey, size, address, checksumData,
+                nextAddress, 0L).getHashNode();
 
         long nodeAddress = this.allocateAndPut(hashNode);
         byte[] indexNode = new IndexNode(nodeAddress).getIndexNode();
@@ -367,63 +402,78 @@ public class Index {
         this.metaInfo.setShutdown(true);
     }
 
-    public HashNode find(final UUID key) throws IOException {
+    public HashNode find(final UUID key) throws IOException, CorruptedIndex {
         final HashNode[] result = new HashNode[1]; // boxing
+        final AtomicBoolean isCorrupted = new AtomicBoolean(false);
+        final Pair<Long, HashNode> corruptedHashNode
+                = new Pair<Long, HashNode>(null, null);
+
         result[0] = null;
 
         final byte[] bytesKey = ByteUtil.UUID2bytes(key);
         final long indexPosition = getIndexPositionByKey(key);
 
-        byte[] indexNodeRaw = this.db.readBytesAt(indexPosition, IndexNode.ADDRESS_SIZE);
+        byte[] indexNodeRaw = this.db.readBytesAt(indexPosition, IndexNode.INDEX_NODE_SIZE);
         IndexNode indexNode = new IndexNode(indexNodeRaw);
 
-        indexNode.checkForCorruptedData(true);
+        if (indexNode.isCorruptedNode()) {
+            throw new CorruptedIndex(indexPosition, indexNode);
+        } else {
+            HashNode.navigateThrough(indexNode.getHashNodeAddress(),
+                    bytesKey, this.db, new HashNode.HashNodeNavigator() {
 
-        HashNode.navigateThrough(indexNode.getHashNodeAddress(),
-                bytesKey, this.db, false, new HashNode.HashNodeNavigator() {
+                @Override
+                public void whenTheKeyIsEqual(long currentPosition,
+                                HashNode currentHashNode)  throws IOException {
 
-            @Override
-            public void whenTheKeyIsEqual(long currentPosition,
-                            HashNode currentHashNode)  throws IOException {
+                    if (TRACE_ENABLED) {
+                        log.trace("The key " + DebugUtil.niceName(key)
+                                + " was found at " + DebugUtil.niceName(currentPosition));
+                    }
 
-                if (TRACE_ENABLED) {
-                    log.trace("The key " + DebugUtil.niceName(key)
-                            + " was found at " + DebugUtil.niceName(currentPosition));
+                    result[0] = currentHashNode;
                 }
 
-                result[0] = currentHashNode;
-            }
+                @Override
+                public void interceptGoingToNextNode(long currentPosition,
+                                 HashNode currentHashNode) throws IOException {
 
-            @Override
-            public void interceptGoingToNextNode(long currentPosition,
-                             HashNode currentHashNode) throws IOException {
-
-                if (TRACE_ENABLED) {
-                    log.trace("The key " + DebugUtil.niceName(key)
-                            + " was not found yet. Going to next node: "
-                            + DebugUtil.niceName(currentHashNode.getNextAddress()));
-                }
-            }
-
-            @Override
-            public void whenTheKeyWasNotFound(long currentPosition,
-                                HashNode currentHashNode) throws IOException {
-                
-                if (TRACE_ENABLED) {
-                    log.trace("The key " + DebugUtil.niceName(key)
-                            + " was not found!");
+                    if (TRACE_ENABLED) {
+                        log.trace("The key " + DebugUtil.niceName(key)
+                                + " was not found yet. Going to next node: "
+                                + DebugUtil.niceName(currentHashNode.getNextAddress()));
+                    }
                 }
 
-                result[0] = null;
-            }
+                @Override
+                public void whenTheKeyWasNotFound(long currentPosition,
+                                    HashNode currentHashNode) throws IOException {
 
-            @Override
-            public void corruptedData(long currentPosition, HashNode currentHashNode) throws IOException {
+                    if (TRACE_ENABLED) {
+                        log.trace("The key " + DebugUtil.niceName(key)
+                                + " was not found!");
+                    }
+
                     result[0] = null;
                 }
-            }
-        );
 
-        return result[0];
+                @Override
+                public void corruptedHashNode(
+                        long currentPosition,
+                        HashNode currentHashNode) throws IOException {
+
+                    isCorrupted.set(true);
+                    corruptedHashNode.car = currentPosition;
+                    corruptedHashNode.cdr = currentHashNode;
+                }
+            });
+
+            if (isCorrupted.get()) {
+                throw new CorruptedIndex(
+                        corruptedHashNode.car, corruptedHashNode.cdr);
+            }
+
+            return result[0];
+        }
     }
 }

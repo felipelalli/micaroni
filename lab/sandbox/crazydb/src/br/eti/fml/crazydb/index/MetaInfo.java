@@ -17,12 +17,13 @@ class MetaInfo {
     public static final int META_INFO_FIXED_SIZE_IN_BYTES
             = (int) (5 * ByteUtil.MB);
 
-    private static final int META_INFO_SIZE = 1 + 512 + 4 + 8 + 8;
+    private static final int META_INFO_SIZE = 1 + 512 + 4 + 8 + 8 + 8 + 8 + 4;
     private static final long SIZE_POSITION = 1 + 512 + 4 + 8;
 
     private TheBigFile db;
     private long currentSize;
     private boolean firstTime = false;
+    private static final float VERSION = 0.1f;
 
     MetaInfo(TheBigFile db) throws IOException {
         this.db = db;
@@ -32,7 +33,19 @@ class MetaInfo {
             this.firstTime = true;
             this.db.putLongAt(SIZE_POSITION, 0L);
         } else {
-            this.currentSize = this.db.readLongAt(SIZE_POSITION);
+            long currentSize1 = this.db.readLongAt(SIZE_POSITION);
+            long currentSize2 = this.db.readLongAt(SIZE_POSITION + 8);
+            long currentSize3 = this.db.readLongAt(SIZE_POSITION + 8 + 8);
+
+            if (currentSize1 != currentSize2 && currentSize2 != currentSize3
+                && currentSize1 != currentSize3) {
+
+                this.currentSize = this.db.length();
+            } else if (currentSize1 == currentSize3) {
+                this.currentSize = currentSize3;
+            } else {
+                this.currentSize = currentSize2;
+            }
         }
     }
 
@@ -55,13 +68,18 @@ class MetaInfo {
                         + (indexSizeInMegabytes * ByteUtil.MB);
 
         this.db.putLongAt(SIZE_POSITION, this.currentSize);
-        
+        this.db.putLongAt(SIZE_POSITION + 8, this.currentSize);
+        this.db.putLongAt(SIZE_POSITION + 8 + 8, this.currentSize);
+
         byte[] metaInfoBytes = ByteBuffer.allocate(META_INFO_SIZE)
                 .put((byte) 0) // not closeIndex
                 .put(nameBytes)
                 .putInt(indexSizeInMegabytes)
                 .putLong(creationTimestamp)
-                .putLong(currentSize) // current size
+                .putLong(currentSize) // current size 1
+                .putLong(currentSize) // current size 2
+                .putLong(currentSize) // current size 3
+                .putFloat(VERSION)
                 .array();
 
         this.db.putBytesAt(0, metaInfoBytes);
@@ -101,6 +119,8 @@ class MetaInfo {
 
         if (shutdown) {
             this.db.putLongAt(SIZE_POSITION, this.currentSize);
+            this.db.putLongAt(SIZE_POSITION + 8, this.currentSize);
+            this.db.putLongAt(SIZE_POSITION + 8 + 8, this.currentSize);
         }
     }
 
@@ -116,6 +136,8 @@ class MetaInfo {
             long bigSize = realSize + (16 * ByteUtil.MB);
             this.db.setLength(bigSize);
             this.db.putLongAt(SIZE_POSITION, bigSize);
+            this.db.putLongAt(SIZE_POSITION + 8, bigSize);
+            this.db.putLongAt(SIZE_POSITION + 8 + 8, bigSize);
             this.db.flush();
         }
     }

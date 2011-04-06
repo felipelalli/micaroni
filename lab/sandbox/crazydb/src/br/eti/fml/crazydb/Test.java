@@ -1,5 +1,7 @@
 package br.eti.fml.crazydb;
 
+import br.eti.fml.crazydb.index.CorruptedIndex;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,7 +10,9 @@ import java.util.Map;
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
  */
 public class Test {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args)
+            throws IOException, CorruptedIndex, CorruptedDataException {
+        
         CrazyDB db = new CrazyDB("my database", "db", 12);
         Map<String, String> values = new HashMap<String, String>();
 

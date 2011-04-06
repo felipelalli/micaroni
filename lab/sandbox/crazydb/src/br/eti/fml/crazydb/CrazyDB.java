@@ -1,10 +1,12 @@
 package br.eti.fml.crazydb;
 
+import br.eti.fml.crazydb.index.CorruptedIndex;
 import br.eti.fml.crazydb.index.HashNode;
 import br.eti.fml.crazydb.index.Index;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.UUID;
 
 /**
@@ -45,35 +47,49 @@ public class CrazyDB {
         });
     }
 
-    public void put(byte[] key, byte[] value) throws IOException {
+    public void put(byte[] key, byte[] value) throws IOException, CorruptedIndex {
         this.put(UUID.nameUUIDFromBytes(key), value);
     }
 
-    public void put(String key, byte[] value) throws IOException {
+    public void put(String key, byte[] value) throws IOException, CorruptedIndex {
         this.put(ByteUtil.stringToBytesUTFNIO(key), value);
     }    
 
-    public byte[] get(byte[] key) throws IOException {
+    public byte[] get(byte[] key)
+            throws IOException, CorruptedIndex, CorruptedDataException {
+
         return this.get(UUID.nameUUIDFromBytes(key));
     }
 
-    public byte[] get(String key) throws IOException {
+    public byte[] get(String key)
+            throws IOException, CorruptedIndex, CorruptedDataException {
+
         return this.get(ByteUtil.stringToBytesUTFNIO(key));
     }
 
-    protected byte[] get(UUID key) throws IOException {
+    protected byte[] get(UUID key)
+            throws IOException, CorruptedIndex, CorruptedDataException {
+
         HashNode node = this.index.find(key);
 
-        if (node != null) {
-            return this.body.read(node.getAddress(), (int) node.getSize());
-        } else {
+        if (node == null) {
             return null;
+        } else {
+            byte[] data = this.body.read(node.getAddress(), (int) node.getSize());
+            int realChecksumData = Arrays.hashCode(data);
+
+            if (realChecksumData != node.getChecksumData()) {
+                throw new CorruptedDataException();
+            }
+
+            return data;
         }
     }
 
-    protected void put(UUID key, byte[] value) throws IOException {
+    protected void put(UUID key, byte[] value) throws IOException, CorruptedIndex {
         long address = this.index.allocateAndPut(value);
-        this.index.updateIndex(key, address, value.length);
+        int checksumData = Arrays.hashCode(value);
+        this.index.updateIndex(key, address, checksumData, value.length);
     }
 
     public void shutdown() throws IOException {
