@@ -311,7 +311,9 @@ public class Index {
                         }
 
                         @Override
-                        public void corruptedData(long currentPosition, HashNode currentHashNode) throws IOException {
+                        public void corruptedData(
+                                long currentPosition,
+                                HashNode currentHashNode) throws IOException {
                             // :(
                         }
                     });
