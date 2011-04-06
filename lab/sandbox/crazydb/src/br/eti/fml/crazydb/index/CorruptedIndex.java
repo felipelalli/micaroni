@@ -39,8 +39,9 @@ public class CorruptedIndex extends Exception {
     }
 
     public String toString() {
-        return "Corrupted node type " + this.node.getType() + " at #"
+        return "Corrupted " + this.node.getType() + " at #"
                     + Long.toHexString(this.getPosition())
-                + ". More details: " + this.getNode();
+                + ". More details: " + this.getNode()
+                + " - " + super.toString();
     }
 }

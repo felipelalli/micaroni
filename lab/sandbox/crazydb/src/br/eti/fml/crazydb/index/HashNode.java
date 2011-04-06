@@ -177,7 +177,7 @@ public class HashNode extends Node {
                 ", nextAddress=" + nextAddress +
                 ", timestamp=" + timestamp +
                 ", checksumNode=" + checksumNode +
-                ", realChecksum=" + realChecksum +
+                ", checksumNode should be=" + realChecksum +
                 ", *hashNode=" + Arrays.toString(hashNode) +
                 "}";
     }

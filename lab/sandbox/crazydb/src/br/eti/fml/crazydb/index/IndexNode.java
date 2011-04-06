@@ -30,6 +30,10 @@ public class IndexNode extends Node {
         indexNodeBuffer.get(hashNodeChecksumAddress);
 
         this.indexNode = indexNode;
+
+        byte[] realChecksum = ByteUtil.getChecksum(hashNodeAddress);
+        this.setCorruptedNode(!ByteUtil.compare(
+                realChecksum, this.hashNodeChecksumAddress));
     }
 
     public IndexNode(long hashNodeAddress) {
@@ -41,10 +45,6 @@ public class IndexNode extends Node {
         this.indexNode = ByteBuffer
                 .allocate(INDEX_NODE_SIZE).putLong(hashNodeAddress)
                 .put(hashNodeChecksumAddress).array();
-
-        byte[] realChecksum = ByteUtil.getChecksum(hashNodeAddress);
-        this.setCorruptedNode(!ByteUtil.compare(
-                realChecksum, this.hashNodeChecksumAddress));
     }
 
     public long getHashNodeAddress() {
@@ -59,7 +59,10 @@ public class IndexNode extends Node {
     public String toString() {
         return "IndexNode{" +
                 "hashNodeAddress=" + hashNodeAddress +
-                ", hashNodeChecksumAddress=" + Arrays.toString(hashNodeChecksumAddress) +
+                ", hashNodeChecksumAddress="
+                        + Arrays.toString(hashNodeChecksumAddress) +
+                ", hashNodeChecksumAddress should be="
+                        + Arrays.toString(ByteUtil.getChecksum(hashNodeAddress)) +
                 ", *indexNode=" + Arrays.toString(indexNode) +
                 '}';
     }

@@ -52,7 +52,11 @@ public class CrazyDB {
     }
 
     public void put(String key, byte[] value) throws IOException, CorruptedIndex {
-        this.put(ByteUtil.stringToBytesUTFNIO(key), value);
+        try {
+            this.put(ByteUtil.stringToBytesUTFNIO(key), value);
+        } catch (CorruptedIndex e) {
+            throw new CorruptedIndex("at " + key, e.getPosition(), e.getNode());
+        }
     }    
 
     public byte[] get(byte[] key)
@@ -64,7 +68,14 @@ public class CrazyDB {
     public byte[] get(String key)
             throws IOException, CorruptedIndex, CorruptedDataException {
 
-        return this.get(ByteUtil.stringToBytesUTFNIO(key));
+        try {
+            return this.get(ByteUtil.stringToBytesUTFNIO(key));
+        } catch (CorruptedIndex e) {
+            throw new CorruptedIndex("at " + key, e.getPosition(), e.getNode());
+        } catch (CorruptedDataException e) {
+            throw new CorruptedDataException("at " + key,
+                    e.getCorruptedData(), e.getChecksum(), e.getRealChecksum());
+        }
     }
 
     protected byte[] get(UUID key)
@@ -79,7 +90,8 @@ public class CrazyDB {
             int realChecksumData = Arrays.hashCode(data);
 
             if (realChecksumData != node.getChecksumData()) {
-                throw new CorruptedDataException();
+                throw new CorruptedDataException(
+                        data, node.getChecksumData(), realChecksumData);
             }
 
             return data;
