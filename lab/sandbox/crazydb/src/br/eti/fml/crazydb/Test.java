@@ -26,7 +26,7 @@ public class Test {
                 String key = "key" + i;
                 String value = "value " + i;
 
-                //db.put(key, value.getBytes());
+                db.put(key, value.getBytes());
                 values.put(key, value);
 
                 if (i % 10000 == 0) {
