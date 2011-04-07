@@ -14,8 +14,7 @@ import java.nio.ByteBuffer;
 class MetaInfo {
     private static final Logger log = Logger.getLogger(MetaInfo.class);
 
-    public static final int META_INFO_FIXED_SIZE_IN_BYTES
-            = (int) (5 * ByteUtil.MB);
+    public static final int META_INFO_FIXED_SIZE_IN_BYTES = (int) (1 * ByteUtil.MB);
 
     private static final int META_INFO_SIZE = 1 + 512 + 4 + 8 + 8 + 8 + 8 + 4;
     private static final long SIZE_POSITION = 1 + 512 + 4 + 8;
@@ -64,7 +63,6 @@ class MetaInfo {
         }
 
         this.currentSize = META_INFO_FIXED_SIZE_IN_BYTES
-                        + FreeTable.FREE_TABLE_FIXED_SIZE_IN_BYTES
                         + (indexSizeInMegabytes * ByteUtil.MB);
 
         this.db.putLongAt(SIZE_POSITION, this.currentSize);

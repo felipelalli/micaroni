@@ -86,7 +86,7 @@ public class CrazyDB {
         if (node == null) {
             return null;
         } else {
-            byte[] data = this.body.read(node.getAddress(), (int) node.getSize());
+            byte[] data = this.body.read(node.getAddress(), node.getSize());
             int realChecksumData = Arrays.hashCode(data);
 
             if (realChecksumData != node.getChecksumData()) {

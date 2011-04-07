@@ -17,7 +17,7 @@ public class Test {
         Map<String, String> values = new HashMap<String, String>();
 
         System.out.println(db.getInfo());
-        int tests = 100000;
+        int tests = 300000;
 
         try {
             long now = System.currentTimeMillis();
@@ -36,7 +36,7 @@ public class Test {
 
             System.out.println("\n\ntime 1 per key: "
                     +  ((System.currentTimeMillis() - now) / (double) tests) + "ms");
-            
+
             System.out.println("\n*** CHECKING... ");
 
             now = System.currentTimeMillis();

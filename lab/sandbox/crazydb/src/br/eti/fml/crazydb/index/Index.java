@@ -26,10 +26,9 @@ public class Index {
     public static final boolean TRACE_ENABLED = false;    
 
     private static final long INDEX_START_POSITION
-            = MetaInfo.META_INFO_FIXED_SIZE_IN_BYTES
-                + FreeTable.FREE_TABLE_FIXED_SIZE_IN_BYTES;
+            = MetaInfo.META_INFO_FIXED_SIZE_IN_BYTES;
     
-    private static final int BUFFER_SIZE = (int) (512 * ByteUtil.KB);
+    private static final int BUFFER_SIZE = (512 * ByteUtil.KB);
 
     private long indexSizeInBytes;
 
@@ -98,16 +97,18 @@ public class Index {
                 long now = System.currentTimeMillis();
 
                 for (int n = 0; n < slots; n++) {
+                    if (System.currentTimeMillis() - now > 5000) {
+                        log.info("Caching index yet... "
+                                + percentage(n, slots) + " done");
+                        
+                        now = System.currentTimeMillis();
+                    }
+
                     long indexPosition = this.getIndexPositionByNumber(n);
 
                     // TODO FIXME: improve this reading with buffer
                     if (this.db.checkIfPositionIsEqualTo(indexPosition, 0L)) {
                         this.freeSlots.put(n, (byte) 1);
-                    }
-
-                    if (System.currentTimeMillis() - now > 5000) {
-                        log.info("Caching index yet... " + percentage(n, slots) + " done");
-                        now = System.currentTimeMillis();
                     }
                 }
             }
@@ -123,6 +124,14 @@ public class Index {
         return format.format(number);
     }
 
+    public void defrag() throws IOException {
+        log.debug("Starting defrag...");
+
+        // TODO
+
+        log.debug("Defrag done!");
+    }
+
     public String retrieveInfo() throws IOException {
         log.debug("Retrieving database info...");
 
@@ -135,7 +144,14 @@ public class Index {
         final AtomicInteger corruptedNodes = new AtomicInteger();
         final AtomicInteger corruptedHashNodes = new AtomicInteger();
 
+        long now = System.currentTimeMillis();
+
         for (int n = 0; n < slots; n++) {
+            if (System.currentTimeMillis() - now > 5000) {
+                log.info("Retrieving info yet... " + percentage(n, slots) + " done");
+                now = System.currentTimeMillis();
+            }
+
             long indexPosition = this.getIndexPositionByNumber(n);
 
             if (this.freeSlots.get(n) != (byte) 0) {
@@ -234,7 +250,7 @@ public class Index {
     
     public void updateIndex(
             final UUID key, final long address,
-            final int checksumData, final long size)
+            final int checksumData, final int size)
                     throws IOException, CorruptedIndex {
         
         final byte[] bytesKey = ByteUtil.UUID2bytes(key);
@@ -378,7 +394,7 @@ public class Index {
     }
 
     private void writeNewNodeAtIndex(
-            byte[] bytesKey, long address, int checksumData, long size,
+            byte[] bytesKey, long address, int checksumData, int size,
             long indexPosition, long nextAddress) throws IOException {
 
         byte[] hashNode = new HashNode(

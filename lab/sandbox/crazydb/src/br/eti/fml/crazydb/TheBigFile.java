@@ -77,7 +77,7 @@ public class TheBigFile {
         byte[] buffer = new byte[bufferSizeInBytes];
         Arrays.fill(buffer, (byte) 0);
 
-        long filled = 0L;
+        int filled = 0;
         long remaining;
 
         do {
@@ -87,6 +87,8 @@ public class TheBigFile {
                 this.file.write(buffer);
                 filled += buffer.length;
             } else {
+                assert remaining < Integer.MAX_VALUE;
+
                 this.file.write(buffer, 0, (int) remaining);
                 filled += remaining;
             }

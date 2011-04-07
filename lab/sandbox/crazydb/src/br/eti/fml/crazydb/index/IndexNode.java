@@ -14,13 +14,14 @@ public class IndexNode extends Node {
 
     public static final int CHECKSUM_SIZE = 2;
     public static final int ADDRESS_SIZE = 8;
-    public static final int INDEX_NODE_SIZE = ADDRESS_SIZE + CHECKSUM_SIZE;
+    public static final int INDEX_NODE_SIZE
+            = ADDRESS_SIZE + CHECKSUM_SIZE;
 
     private long hashNodeAddress;
     private byte[] hashNodeChecksumAddress;
 
     private byte[] indexNode;
-    
+
     public IndexNode(byte[] indexNode) {
         super(Node.NodeType.INDEX_NODE);
 
