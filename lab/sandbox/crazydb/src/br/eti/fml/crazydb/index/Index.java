@@ -303,12 +303,6 @@ public class Index {
                                     currentHashNode.getNextAddress(), 0L)
                                         .getHashNode();
 
-                            long checksumPosition = currentPosition
-                                    + HashNode.KEY_SIZE
-                                    + HashNode.SIZE_SIZE;
-
-                            long checksum = body.readLong(checksumPosition);
-
                             body.replaceAt(currentPosition, newHashNode);
 
                             // TODO: need to free the oldAddress
