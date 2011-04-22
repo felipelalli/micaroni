@@ -12,8 +12,6 @@ import java.util.UUID;
  */
 @SuppressWarnings("unused")
 public class CampinasDB {
-    private static final long WARN_MAX_BYTES_WITHOUT_STREAM = 512 * ByteUtil.KB;
-
     public CampinasDB(String exclusiveName, String pathDirectory,
                       int indexSizeInMegabytes) throws IOException {
 
@@ -21,31 +19,8 @@ public class CampinasDB {
     }
 
     public void put(String key, byte[] value) throws IOException {
-        this.put(UUID.nameUUIDFromBytes(
-                ByteUtil.stringToBytesUTFNIO(key)), value);
-    }
-
-    public void putStreamInThread(
-            String key, InputStream value, ActionStreamCallback callback) {
-        // TODO
-    }
-
-    public byte[] get(String key) throws IOException {
-        return this.get(UUID.nameUUIDFromBytes(
-                ByteUtil.stringToBytesUTFNIO(key)));
-    }
-
-    public void getStreamInThread(
-            String key, OutputStream returnedValue,
-            ActionStreamCallback callback) {
-
-        // TODO
-    }
-
-    protected void put(UUID key, byte[] value) throws IOException {
-        if (value.length > WARN_MAX_BYTES_WITHOUT_STREAM) {
-
-        }
+        UUID k = UUID.nameUUIDFromBytes(
+                ByteUtil.stringToBytesUTFNIO(key));
 
 //        long address = this.index.allocateAndPut(value);
 //        int checksumData = Arrays.hashCode(value);
@@ -53,8 +28,9 @@ public class CampinasDB {
         // TODO
     }
 
-    protected byte[] get(UUID key)
-            throws IOException {
+    public byte[] get(String key) throws IOException {
+        UUID k = UUID.nameUUIDFromBytes(
+                ByteUtil.stringToBytesUTFNIO(key));
 
 //        HashNode node = this.index.find(key);
 //
