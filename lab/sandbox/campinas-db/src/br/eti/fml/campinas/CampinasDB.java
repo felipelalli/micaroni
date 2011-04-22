@@ -16,16 +16,15 @@ public class CampinasDB {
 
     private volatile boolean down = false;
 
-    //private MetaInfo metaInfo;
+    private MetaInfo metaInfo;
     //private Index index;
     //private Body body;
 
     public CampinasDB(String exclusiveName, String pathDirectory,
                       int indexSizeInMegabytes) throws IOException {
 
-//        this.db = new TheBigFile(exclusiveName, path, forceFileSystemSynchronize);
-//        this.body = new Body(db);
-//        this.index = new Index(db, body, indexSizeInMegabytes);
+        assert exclusiveName.length() > 0;
+        assert exclusiveName.length() < 512;
 
         File directory = new File(pathDirectory);
 
@@ -38,6 +37,9 @@ public class CampinasDB {
                 throw new IOException("The path '"
                         + pathDirectory + "' is not a directory.");
         }
+
+        this.metaInfo = new MetaInfo(directory);
+        // TODO
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
@@ -88,6 +90,14 @@ public class CampinasDB {
     public void shutdown() throws IOException {
         if (!this.down) {
             this.down = true;
+            log.info("Shutting down...");
+
+            log.debug("1/X Shutting down... [ ] metainfo, [ ] index, [ ] body, [ ] finalization, [ ] gc");
+            this.metaInfo.shutdown();
+            log.debug("2/X Shutting down... [X] metainfo ");
+
+            log.info("Shutdown OK!");
+
 //            log.info("1/5 Shutting down...");
 //            this.index.closeIndex();
 //            log.debug("2/5 Index closed...");
