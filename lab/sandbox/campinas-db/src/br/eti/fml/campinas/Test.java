@@ -1,10 +1,20 @@
 package br.eti.fml.campinas;
 
+import java.io.IOException;
+
 /**
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
  */
 public class Test {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        CampinasDB db = new CampinasDB("my database", "db", 12);
+
+        try {
+
+        } finally {
+            db.shutdown();
+        }
+
 //        CrazyDB db = new CrazyDB("my database", "db", 12);
 //        Map<String, String> values = new HashMap<String, String>();
 //
