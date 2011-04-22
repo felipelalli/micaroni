@@ -25,8 +25,6 @@ public class MetaInfo {
     //    32 bits - version (float) - 4 bytes
 
     private static final float VERSION = 0.1f;
-    public static final int META_INFO_FIXED_SIZE_IN_BYTES = 1474560;
-
     private static final int META_INFO_SIZE = 1 + 512 + 4 + 8 + 4;
 
     private boolean firstTime;
@@ -34,10 +32,17 @@ public class MetaInfo {
     private RandomAccessFile file;
     private FileChannel channel;
     private FileLock lock;
+    
+    private String name;
 
-    public MetaInfo(File directoryPath) throws IOException {
+    public MetaInfo(String name, File directoryPath) throws IOException {
+        assert name.length() > 0;
+        assert name.length() < 512;
+
+        this.name = name;
+
         File f = new File(directoryPath.getAbsolutePath()
-                + File.pathSeparator + "metainfo");
+                + File.separator + "metainfo");
 
         this.file = new RandomAccessFile(f, "rw");
         this.channel = this.file.getChannel();
@@ -73,9 +78,10 @@ public class MetaInfo {
     public void setShutdown(boolean shutdown) throws IOException {
         this.file.seek(0);
         this.file.writeByte(shutdown ? (byte) 0xFF : (byte) 0);
+        this.channel.force(true);
     }
 
-    public void writeFirstTime(String name, int indexSizeInMegabytes,
+    public void writeFirstTime(int indexSizeInMegabytes,
                           long creationTimestamp) throws IOException {
 
         StringBuilder sb = new StringBuilder(name);
@@ -96,7 +102,11 @@ public class MetaInfo {
                 .putLong(creationTimestamp)
                 .putFloat(VERSION);
 
+        metaInfoBytes.position(0);
+
+        this.file.setLength(META_INFO_SIZE);
         this.channel.write(metaInfoBytes, 0);
+        this.channel.force(true);
     }
 
     public void checkValues(String name, int indexSizeInMegabytes)
@@ -105,14 +115,17 @@ public class MetaInfo {
         ByteBuffer metaInfoBytes = ByteBuffer.allocate(META_INFO_SIZE);
         this.channel.read(metaInfoBytes, 0);
 
+        metaInfoBytes.position(0);
         metaInfoBytes.get(); // discard first byte
         byte[] nameBytes = new byte[512];
         metaInfoBytes.get(nameBytes);
         String oldName = new String(nameBytes, "ASCII");
 
         if (!oldName.trim().equals(name.trim())) {
-            throw new RuntimeException("The database name cannot change! The original name is '"
-                    + oldName.trim() + "' and the new one is " + name.trim());
+            throw new RuntimeException(
+                    "The database name cannot change! The original name is '"
+                    + oldName.trim() + "' and the new one is '"
+                            + name.trim() + "'");
         }
 
         int oldIndexSizeInMegabytes = metaInfoBytes.getInt();
@@ -121,7 +134,11 @@ public class MetaInfo {
             throw new RuntimeException(
                     "The database index size cannot change! The original size is "
                     + oldIndexSizeInMegabytes
-                            + " and the new one is " + indexSizeInMegabytes);
+                    + " and the new one is " + indexSizeInMegabytes);
         }
+    }
+
+    public String getName() {
+        return name;
     }
 }

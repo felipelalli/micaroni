@@ -1,5 +1,6 @@
 package br.eti.fml.campinas;
 
+import br.eti.fml.campinas.index.Index;
 import br.eti.fml.campinas.util.ByteUtil;
 import org.apache.log4j.Logger;
 
@@ -17,14 +18,11 @@ public class CampinasDB {
     private volatile boolean down = false;
 
     private MetaInfo metaInfo;
-    //private Index index;
+    private Index index;
     //private Body body;
 
     public CampinasDB(String exclusiveName, String pathDirectory,
                       int indexSizeInMegabytes) throws IOException {
-
-        assert exclusiveName.length() > 0;
-        assert exclusiveName.length() < 512;
 
         File directory = new File(pathDirectory);
 
@@ -38,7 +36,8 @@ public class CampinasDB {
                         + pathDirectory + "' is not a directory.");
         }
 
-        this.metaInfo = new MetaInfo(directory);
+        this.metaInfo = new MetaInfo(exclusiveName, directory);
+        this.index = new Index(directory, metaInfo, indexSizeInMegabytes);
         // TODO
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -92,9 +91,9 @@ public class CampinasDB {
             this.down = true;
             log.info("Shutting down...");
 
-            log.debug("1/X Shutting down... [ ] metainfo, [ ] index, [ ] body, [ ] finalization, [ ] gc");
+            log.debug("1/X Shutting down... [ ] metainfo - [ ] index - [ ] body - [ ] finalization - [ ] gc");
             this.metaInfo.shutdown();
-            log.debug("2/X Shutting down... [X] metainfo ");
+            log.debug("2/X Shutting down... [X] metainfo - [ ] index - [ ] body - [ ] finalization - [ ] gc ");
 
             log.info("Shutdown OK!");
 
