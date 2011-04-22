@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+
+<project name="ant" default="help" basedir=".">
+    <property file="build.properties"/>
+
+    <description>
+        Ant for -= ${project.name} =- project
+    </description>
+
+    <tstamp/>
+
+    <property name="jar.file" value="${project.name}-${version}"/>
+
+    <path id="classpath">
+        <fileset dir="${lib.dir}">
+            <include name="**/*.jar" />
+        </fileset>
+    </path>
+
+    <target name="help">
+        <echo message="Use ant -projecthelp to see all options"/>
+    </target>
+
+    <target name="init">
+        <!--
+        <splash imageurl="http://www.redferret.net/wp-content/uploads/2007/05/tamagotchi4_small.jpg"/>
+        -->
+    </target>
+
+    <target name="clean" depends="init" description="Delete compiled classes.">
+        <delete dir="${deploy.dir}"/>
+        <delete dir="${deploy.jars.dir}"/>
+        <delete dir="${deploy.classes.dir}"/>
+    </target>
+
+    <target name="compile" depends="init" description="Compile the java classes to deploy dir">
+        <mkdir dir="${deploy.dir}"/>
+        <mkdir dir="${deploy.jars.dir}"/>
+        <mkdir dir="${deploy.classes.dir}"/>
+
+        <javac srcdir="${src.dir}" destdir="${deploy.classes.dir}" debug="${debug}" includeantruntime="true">
+            <classpath refid="classpath"/>
+        </javac>
+
+        <copy todir="${deploy.classes.dir}" overwrite="true">
+            <fileset dir="${src.dir}">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+
+        <jar jarfile="${deploy.jars.dir}/${jar.file}.jar" basedir="${deploy.classes.dir}">
+            <!-- excludes="**/**Teste**" -->
+            <manifest>
+                <attribute name="Built-By" value="${company}"/>
+                <attribute name="Main-Class" value="${main.class}"/>
+                <attribute name="Class-Path" value="${classpath.jars}"/>
+            </manifest>
+        </jar>
+
+        <copy todir="${deploy.jars.dir}" overwrite="true" failonerror="no">
+            <fileset dir="${lib.dir}">
+                <include name="*.jar"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="run" depends="compile" description="Run the project">
+        <java fork="true" jar="${deploy.jars.dir}/${jar.file}.jar"
+              classpath=".;{deploy.jars.dir}"/>
+
+    </target>
+
+    <target name="dist" depends="clean,compile" description="Make the jar project file">
+        <jar destfile="${deploy.dir}/${project.name}-${version}.jar" update="true">
+            <fileset dir="${deploy.dir}">
+                <include name="**/*.class"/>
+                <include name="**/*.xml"/>
+                <include name="**/*.properties"/>
+            </fileset>
+
+            <manifest>
+                <attribute name="Built-By" value="${company}"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="document" depends="compile" description="Make the project API.">
+        <mkdir dir="${doc.api}"/>
+        <javadoc sourcepath="${src.dir}" destdir="${doc.api}"
+                 author="true" version="true" use="true"
+                 packagenames="*" doctitle="${project.name} ${version} API"
+                 charset="UTF-8"
+                 windowtitle="${project.name} ${version} API">
+            <classpath refid="classpath"/>
+        </javadoc>
+    </target>
+</project>
