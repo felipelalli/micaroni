@@ -164,6 +164,19 @@ public class Index {
                 % (indexSizeInBytes / IndexNode.INDEX_NODE_SIZE));
     }
 
+    private int getSlotPositionByKey(UUID key) {
+        return this.getSlotPositionByPositiveNumber(getAPositiveNumberByKey(key));
+    }
+
+    private long getIndexPositionByKey(UUID key) {
+        return getIndexPositionByNumber(getAPositiveNumberByKey(key));
+    }
+
+    private long getAPositiveNumberByKey(UUID key) {
+        return Math.abs(key.getMostSignificantBits()
+                        ^ key.getLeastSignificantBits());
+    }    
+
     public String retrieveInfo() throws IOException {
         log.debug("Retrieving database info...");
 
@@ -296,8 +309,36 @@ public class Index {
         return info.toString();
     }
 
+    private void writeNewNodeAtIndex(
+            long indexPosition, byte[] bytesKey, byte flags,
+            byte address1, long address2, long left, long right) throws IOException {
 
-    public void updateIndex(UUID key, byte flags, byte address1, long address2) {
-        // TODO
+//        byte[] hashNode = new HashNode(
+//                bytesKey, size, address, checksumData,
+//                nextAddress, 0L).getHashNode();
+//
+//        long nodeAddress = this.allocateAndPut(hashNode);
+//        byte[] indexNode = new IndexNode(nodeAddress).getIndexNode();
+//
+//        this.db.putBytesAt(indexPosition, indexNode);
+    }
+
+    public void updateIndex(UUID key, byte flags, byte address1, long address2) throws IOException {
+        final byte[] bytesKey = ByteUtil.UUID2bytes(key);
+        final long indexPosition = getIndexPositionByKey(key);
+        final int slotPosition = getSlotPositionByKey(key);
+
+        if (this.freeSlots.get(slotPosition) != (byte) 0) {
+            if (TRACE_ENABLED) {
+                log.trace("The slot is free, recording new node at "
+                        + DebugUtil.niceName(indexPosition) + " index position.");
+            }
+
+            this.freeSlots.put(slotPosition, (byte) 0);
+            writeNewNodeAtIndex(indexPosition, bytesKey, flags,
+                    address1, address2, 0L, 0L);
+        } else {
+            // TODO
+        }
     }
 }
