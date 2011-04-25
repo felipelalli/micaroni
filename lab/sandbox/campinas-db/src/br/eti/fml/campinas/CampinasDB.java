@@ -1,5 +1,7 @@
 package br.eti.fml.campinas;
 
+import br.eti.fml.campinas.index.CorruptedIndex;
+import br.eti.fml.campinas.index.HashNode;
 import br.eti.fml.campinas.index.Index;
 import br.eti.fml.campinas.util.ByteUtil;
 import org.apache.log4j.Logger;
@@ -54,7 +56,7 @@ public class CampinasDB {
         });
     }
 
-    public void put(String key, byte[] value) throws IOException {
+    public void put(String key, byte[] value) throws IOException, CorruptedIndex {
         UUID k = UUID.nameUUIDFromBytes(
                 ByteUtil.stringToBytesUTFNIO(key));
 
@@ -79,9 +81,18 @@ public class CampinasDB {
         this.index.updateIndex(k, flags, address1, address2);
     }
 
-    public byte[] get(String key) throws IOException {
+    public byte[] get(String key) throws IOException, CorruptedIndex {
         UUID k = UUID.nameUUIDFromBytes(
                 ByteUtil.stringToBytesUTFNIO(key));
+
+        HashNode node = this.index.find(k);
+
+        if (node == null) {
+            return null;
+        } else {
+            // TODO
+            return null;
+        }
 
 //        HashNode node = this.index.find(key);
 //
@@ -98,7 +109,6 @@ public class CampinasDB {
 //
 //            return data;
 //        }
-        return null; // TODO
     }
 
     public void shutdown() throws IOException {
@@ -107,22 +117,16 @@ public class CampinasDB {
             log.info("Shutting down...");
 
             this.index.shutdown();
-            log.debug("Index down");
+            log.debug("1/4 Index down...");
             this.metaInfo.setShutdown(true);
             this.metaInfo.shutdown();
-            log.debug("Metainfo down");
+            log.debug("2/4 Metainfo down...");
+            System.runFinalization();
+            log.debug("3/4 Finalization called...");
+            System.gc();
+            log.debug("4/4 Free memory...");
 
             log.info("Shutdown OK!");
-
-//            log.info("1/5 Shutting down...");
-//            this.index.closeIndex();
-//            log.debug("2/5 Index closed...");
-//            this.db.close();
-//            log.debug("3/5 Big file closed...");
-//            System.runFinalization();
-//            log.debug("4/5 Finalization called...");
-//            System.gc();
-//            log.info("5/5 Shutdown OK!");
         }
     }
 
@@ -134,5 +138,9 @@ public class CampinasDB {
         }
 
         super.finalize();
+    }
+
+    public String getInfo() throws IOException {
+        return this.index.retrieveInfo();
     }
 }

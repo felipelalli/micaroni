@@ -69,11 +69,14 @@ public class HashNode extends Node {
         this.setCorruptedNode(realChecksum != checksum);
     }
 
-    public HashNode(NodeType type, byte[] key,
+    public HashNode(byte[] key,
                     byte flags, byte address1, long address2,
                     long timestamp, long leftNode, long rightNode) {
         
-        super(type);
+        super(NodeType.HASH_NODE);
+
+        assert key == null || key.length == 16;
+
         this.key = key;
         this.flags = flags;
         this.address1 = address1;
@@ -140,19 +143,22 @@ public class HashNode extends Node {
     }
 
     public ByteBuffer getHashNode() {
+        hashNode.position(0);
         return hashNode;
     }
     public interface HashNodeNavigator {
         void whenTheKeyIsEqual(long currentPosition, HashNode currentHashNode) throws IOException;
         void interceptGoingToLeftNode(long currentPosition, HashNode currentHashNode) throws IOException;
         void interceptGoingToRightNode(long currentPosition, HashNode currentHashNode) throws IOException;
-        void whenTheKeyWasNotFound(long currentPosition, HashNode currentHashNode) throws IOException;
+        void whenTheKeyWasNotFound(boolean isLeft, long currentPosition, HashNode currentHashNode) throws IOException;
         void corruptedHashNode(long currentPosition, HashNode currentHashNode) throws IOException;
     }
 
     public static void navigateThrough(
             long hashNodeAddress, byte[] bytesKey,
             FileChannel file, HashNodeNavigator navigator) throws IOException {
+
+        assert bytesKey != null && bytesKey.length == 16;
 
         if (hashNodeAddress != 0L) {
             long currentPosition = hashNodeAddress;
@@ -166,9 +172,6 @@ public class HashNode extends Node {
 
                 if (hashNode.isCorruptedNode()) {
                     navigator.corruptedHashNode(currentPosition, hashNode);
-                    end = true;
-                } else if (bytesKey == null) {
-                    navigator.whenTheKeyWasNotFound(currentPosition, hashNode);
                     end = true;
                 } else {
                     int compareResult = ByteUtil.compare(
@@ -193,8 +196,8 @@ public class HashNode extends Node {
                         currentPosition = hashNode.getRightNode();
                     } else {
                         navigator.whenTheKeyWasNotFound(
-                                currentPosition, hashNode);
-                        
+                                compareResult < 0, currentPosition, hashNode);
+
                         end = true;
                     }
                 }

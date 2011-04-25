@@ -19,9 +19,12 @@ public final class ByteUtil {
     public static final int B = 1;
 
     public static byte[] UUID2bytes(UUID uuid) {
-        return ByteBuffer.allocate(16).putLong(
+        byte[] bytes = ByteBuffer.allocate(16).putLong(
                 uuid.getMostSignificantBits()).putLong(
                 uuid.getLeastSignificantBits()).array();
+
+        assert bytes.length == 16;
+        return bytes;
     }
 
     public static UUID bytes2UUID(byte[] bytes) {

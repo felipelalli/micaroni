@@ -14,8 +14,8 @@ public class IndexNode extends Node {
     // 64 bits - addr          - 8 bytes
     // 32 bits - checksum      - 4 bytes
 
-    public static final int CHECKSUM_SIZE = 2;
     public static final int ADDRESS_SIZE = 8;
+    public static final int CHECKSUM_SIZE = 4;
     public static final int INDEX_NODE_SIZE = ADDRESS_SIZE + CHECKSUM_SIZE;
 
     private long hashNodeAddress;
@@ -56,6 +56,7 @@ public class IndexNode extends Node {
     }
 
     public ByteBuffer getIndexNode() {
+        indexNode.position(0);
         return indexNode;
     }
 
