@@ -38,16 +38,18 @@ public final class ByteUtil {
      * and a != null and b != null.
      * @param a an array of bytes
      * @param b an array of bytes
-     * @return if equals
+     * @return -1 if minor, 1 if major and 0 if equal
      */
-    public static boolean compare(byte[] a, byte[] b) {
+    public static int compare(byte[] a, byte[] b) {
         for (int i = 0; i < a.length; i++) {
-            if (a[i] != b[i]) {
-                return false;
+            if (a[i] < b[i]) {
+                return -1;
+            } else if (a[i] > b[i]) {
+                return 1;
             }
         }
 
-        return true;
+        return 0;
     }
 
     public static byte[] stringToBytesUTFNIO(String str) {

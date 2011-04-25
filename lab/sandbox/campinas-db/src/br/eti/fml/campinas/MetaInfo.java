@@ -102,7 +102,7 @@ public class MetaInfo {
                 .putLong(creationTimestamp)
                 .putFloat(VERSION);
 
-        metaInfoBytes.position(0);
+        metaInfoBytes.flip();
 
         this.file.setLength(META_INFO_SIZE);
         this.channel.write(metaInfoBytes, 0);

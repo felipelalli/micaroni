@@ -58,10 +58,25 @@ public class CampinasDB {
         UUID k = UUID.nameUUIDFromBytes(
                 ByteUtil.stringToBytesUTFNIO(key));
 
-//        long address = this.index.allocateAndPut(value);
-//        int checksumData = Arrays.hashCode(value);
-//        this.index.updateIndex(key, address, checksumData, value.length);
-        // TODO
+        byte flags = 0;
+
+        if (value == null || value.length == 0) {
+            flags |= Flags.DELETED.getValue();
+        } else if (value.length == 1) {
+            flags |= Flags.ONE_BYTE.getValue();
+        } else if (value.length == 2) {
+            flags |= Flags.TWO_BYTES.getValue();
+        } else if (value.length == 3) {
+            flags |= Flags.THREE_BYTES.getValue();
+        } else if (value.length == 4) {
+            flags |= Flags.FOUR_BYTES.getValue();
+        } else { // value.length > 4
+            flags |= Flags.POINTER.getValue();
+        }
+
+        byte address1 = 1; // TODO
+        long address2 = 0L;
+        this.index.updateIndex(k, flags, address1, address2);
     }
 
     public byte[] get(String key) throws IOException {
@@ -91,9 +106,11 @@ public class CampinasDB {
             this.down = true;
             log.info("Shutting down...");
 
-            log.debug("1/X Shutting down... [ ] metainfo - [ ] index - [ ] body - [ ] finalization - [ ] gc");
+            this.index.shutdown();
+            log.debug("Index down");
+            this.metaInfo.setShutdown(true);
             this.metaInfo.shutdown();
-            log.debug("2/X Shutting down... [X] metainfo - [ ] index - [ ] body - [ ] finalization - [ ] gc ");
+            log.debug("Metainfo down");
 
             log.info("Shutdown OK!");
 
