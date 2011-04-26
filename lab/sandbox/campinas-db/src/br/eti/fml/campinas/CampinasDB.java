@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.UUID;
 
 /**
@@ -61,23 +62,28 @@ public class CampinasDB {
                 ByteUtil.stringToBytesUTFNIO(key));
 
         byte flags = 0;
+        byte address1 = 0;
+        long address2 = 0;
 
         if (value == null || value.length == 0) {
-            flags |= Flags.DELETED.getValue();
-        } else if (value.length == 1) {
-            flags |= Flags.ONE_BYTE.getValue();
-        } else if (value.length == 2) {
-            flags |= Flags.TWO_BYTES.getValue();
-        } else if (value.length == 3) {
-            flags |= Flags.THREE_BYTES.getValue();
-        } else if (value.length == 4) {
-            flags |= Flags.FOUR_BYTES.getValue();
-        } else { // value.length > 4
-            flags |= Flags.POINTER.getValue();
+            flags |= Flag.DELETED.getValue();
+        } else {
+            if (value.length > 8) {
+                assert value.length <= ByteUtil.GB;
+                flags |= Flag.POINTER.getValue();
+                address1 = 1; // TODO
+                address2 = 0L; // TODO
+            } else {
+                flags |= Flag.N_BYTES.getValue();
+                address1 = (byte) value.length;
+
+                ByteBuffer buffer = ByteBuffer.allocate(8);
+                buffer.put(value);
+                buffer.position(0);
+                address2 = buffer.getLong();
+            }
         }
 
-        byte address1 = 1; // TODO
-        long address2 = 0L;
         this.index.updateIndex(k, flags, address1, address2);
     }
 
@@ -86,13 +92,26 @@ public class CampinasDB {
                 ByteUtil.stringToBytesUTFNIO(key));
 
         HashNode node = this.index.find(k);
+        byte[] result = null;
 
-        if (node == null) {
-            return null;
-        } else {
-            // TODO
-            return null;
+        if (node != null) {
+            byte flags = node.getFlags();
+
+            if (!Flag.DELETED.isInside(flags)) {
+                if (Flag.POINTER.isInside(flags)) {
+                    // TODO: search on Bodies
+                } else if (Flag.N_BYTES.isInside(flags)) {
+                    ByteBuffer buffer = ByteBuffer.allocate(8);
+                    buffer.putLong(node.getAddress2());
+                    buffer.position(0);
+                    int n = node.getAddress1();
+                    result = new byte[n];
+                    buffer.get(result);
+                }
+            }
         }
+
+        return result;
 
 //        HashNode node = this.index.find(key);
 //
