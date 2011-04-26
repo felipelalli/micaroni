@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Arrays;
+import java.util.Stack;
 
 /**
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
@@ -36,6 +37,9 @@ public class HashNode extends Node {
             + ADDRESS1_SIZE + ADDRESS2_SIZE + TIMESTAMP_SIZE + LEFT_NODE
             + RIGHT_NODE + CHECKSUM_SIZE;
 
+    public static final long NULL = -1L;
+    public static final long NOW = 0L;
+
     private ByteBuffer hashNode;
 
     private byte[] key;
@@ -45,7 +49,7 @@ public class HashNode extends Node {
     private long timestamp;
     private long leftNode;
     private long rightNode;
-    private int checksum;       
+    private int checksum;
 
     public HashNode(ByteBuffer hashNode) {
         super(Node.NodeType.HASH_NODE);
@@ -128,6 +132,7 @@ public class HashNode extends Node {
         return address2;
     }
 
+    @SuppressWarnings("unused")
     public long getTimestamp() {
         return timestamp;
     }
@@ -140,6 +145,7 @@ public class HashNode extends Node {
         return rightNode;
     }
 
+    @SuppressWarnings("unused")
     public int getChecksum() {
         return checksum;
     }
@@ -148,6 +154,7 @@ public class HashNode extends Node {
         hashNode.position(0);
         return hashNode;
     }
+
     public interface HashNodeNavigator {
         void whenTheKeyIsEqual(long currentPosition, HashNode currentHashNode) throws IOException;
         void interceptGoingToLeftNode(long currentPosition, HashNode currentHashNode) throws IOException;
@@ -156,13 +163,55 @@ public class HashNode extends Node {
         void corruptedHashNode(long currentPosition, HashNode currentHashNode) throws IOException;
     }
 
+    public interface HashNodeFullyNavigator {
+        void updateCurrentNode(long currentPosition, HashNode currentHashNode) throws IOException;
+        void corruptedHashNode(long currentPosition, HashNode currentHashNode) throws IOException;
+        void nodeHasLeft(long currentPosition, HashNode currentHashNode) throws IOException;
+        void nodeHasRight(long currentPosition, HashNode currentHashNode) throws IOException;
+    }
+
+    public static void navigateThroughFully(
+            long hashNodeAddress,
+            FileChannel file, HashNodeFullyNavigator navigator) throws IOException {
+
+        Stack<Long> nextAddress = new Stack<Long>();
+
+        if (hashNodeAddress != HashNode.NULL) {
+            nextAddress.push(hashNodeAddress);
+
+            while (nextAddress.size() > 0) {
+                long currentPosition = nextAddress.pop();
+
+                ByteBuffer hashNodeRaw = ByteBuffer.allocate(HASH_NODE_SIZE);
+                file.read(hashNodeRaw, currentPosition);
+
+                final HashNode hashNode = new HashNode(hashNodeRaw);
+                navigator.updateCurrentNode(currentPosition, hashNode);
+
+                if (hashNode.isCorruptedNode()) {
+                    navigator.corruptedHashNode(currentPosition, hashNode);
+                } else {
+                    if (hashNode.getLeftNode() != HashNode.NULL) {
+                        nextAddress.push(hashNode.getLeftNode());
+                        navigator.nodeHasLeft(currentPosition, hashNode);
+                    }
+
+                    if (hashNode.getRightNode() != HashNode.NULL) {
+                        nextAddress.push(hashNode.getRightNode());
+                        navigator.nodeHasRight(currentPosition, hashNode);
+                    }
+                }
+            }
+        }
+    }
+
     public static void navigateThrough(
             long hashNodeAddress, byte[] bytesKey,
             FileChannel file, HashNodeNavigator navigator) throws IOException {
 
         assert bytesKey != null && bytesKey.length == 16;
 
-        if (hashNodeAddress != 0L) {
+        if (hashNodeAddress != HashNode.NULL) {
             long currentPosition = hashNodeAddress;
             boolean end = false;
 
@@ -183,14 +232,14 @@ public class HashNode extends Node {
                         navigator.whenTheKeyIsEqual(currentPosition, hashNode);
                         end = true;
                     } else if (compareResult < 0
-                            && hashNode.getLeftNode() != 0L) {
+                            && hashNode.getLeftNode() != HashNode.NULL) {
 
                         navigator.interceptGoingToLeftNode(
                                 currentPosition, hashNode);
 
                         currentPosition = hashNode.getLeftNode();
                     } else if (compareResult > 0
-                            && hashNode.getRightNode() != 0L) {
+                            && hashNode.getRightNode() != HashNode.NULL) {
 
                         navigator.interceptGoingToRightNode(
                                 currentPosition, hashNode);

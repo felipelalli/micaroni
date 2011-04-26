@@ -152,11 +152,11 @@ public class Index {
                 this.channelIndex.read(node, indexPosition);
                 IndexNode indexNode = new IndexNode(node);
 
-                if (indexNode.isCorruptedNode()) {
+                if (indexNode.isEmpty()) {
+                    this.freeSlots.put(n, (byte) 1);
+                } else if (indexNode.isCorruptedNode()) {
                     log.error("The node '" + indexNode + "' is corrupted "
                             + " at " + DebugUtil.niceName(indexPosition));
-                } else {
-                    this.freeSlots.put(n, (byte) 1);
                 }
             }
         }
@@ -244,41 +244,24 @@ public class Index {
                     final AtomicInteger count = new AtomicInteger();
                     count.incrementAndGet();
 
-                    HashNode.navigateThrough(indexNode.getHashNodeAddress(),
-                            null, this.channelHashNode,
+                    HashNode.navigateThroughFully(indexNode.getHashNodeAddress(),
+                            this.channelHashNode,
 
-                        new HashNode.HashNodeNavigator() {
+                        new HashNode.HashNodeFullyNavigator() {
+
                             @Override
-                            public void whenTheKeyIsEqual(
-                                    long currentPosition,
-                                    HashNode currentHashNode) throws IOException {
+                            public void updateCurrentNode(long currentPosition, HashNode currentHashNode) throws IOException {
+                                keys.incrementAndGet();
                             }
 
                             @Override
-                            public void interceptGoingToLeftNode(
-                                    long currentPosition,
-                                    HashNode currentHashNode) throws IOException {
-
+                            public void nodeHasLeft(long currentPosition, HashNode currentHashNode) throws IOException {
                                 count.incrementAndGet();
-                                keys.incrementAndGet();
                             }
 
                             @Override
-                            public void interceptGoingToRightNode(
-                                    long currentPosition,
-                                    HashNode currentHashNode) throws IOException {
-                                
+                            public void nodeHasRight(long currentPosition, HashNode currentHashNode) throws IOException {
                                 count.incrementAndGet();
-                                keys.incrementAndGet();
-                            }
-
-                            @Override
-                            public void whenTheKeyWasNotFound(
-                                    boolean isLeft,
-                                    long currentPosition,
-                                    HashNode currentHashNode) throws IOException {
-
-                                keys.incrementAndGet();
                             }
 
                             @Override
@@ -289,11 +272,12 @@ public class Index {
                                 log.error("The hash node '"
                                         + currentHashNode + "' is corrupted "
                                         + " at " + DebugUtil.niceName(
-                                            currentPosition));
+                                        currentPosition));
 
                                 corruptedHashNodes.incrementAndGet();
-                            }
-                        });
+                            }                            
+                        }
+                    );
 
                     if (!sizes.containsKey(count.get())) {
                         sizes.put(count.get(), 0);
@@ -340,7 +324,7 @@ public class Index {
             byte address1, long address2, long left, long right) throws IOException {
 
         HashNode hashNode = new HashNode(key, flags,
-                address1, address2, 0L, left, right);
+                address1, address2, HashNode.NOW, left, right);
 
         long nodeAddress = this.allocateAndPut(hashNode);
         IndexNode indexNode = new IndexNode(nodeAddress);
@@ -377,7 +361,7 @@ public class Index {
 
             this.freeSlots.put(slotPosition, (byte) 0);
             writeNewNodeAtIndex(indexPosition, bytesKey, flags,
-                    address1, address2, 0L, 0L);
+                    address1, address2, HashNode.NULL, HashNode.NULL);
         } else {
             if (TRACE_ENABLED) {
                 log.trace("The slot " + DebugUtil.niceName(indexPosition)
@@ -416,7 +400,7 @@ public class Index {
                                 // needs to replace (update) the hashNode
                                 HashNode newHashNode = new HashNode(
                                         bytesKey, flags, address1, address2,
-                                        0L, currentHashNode.getLeftNode(),
+                                        HashNode.NOW, currentHashNode.getLeftNode(),
                                         currentHashNode.getRightNode());
 
                                 Index.this.channelHashNode.write(
@@ -455,10 +439,11 @@ public class Index {
                                     boolean isLeft, long currentPosition,
                                     HashNode currentHashNode) throws IOException {
 
-                                // needs to update the nextAddress of currentHashNode
+                                // needs to update the left or right of currentHashNode
                                 HashNode newHashNode = new HashNode(
                                         bytesKey, flags, address1, address2,
-                                        0L, 0L, 0L);
+                                        HashNode.NOW, HashNode.NULL,
+                                        HashNode.NULL);
 
                                 long newHashNodeAddress
                                         = allocateAndPut(newHashNode);
@@ -474,8 +459,11 @@ public class Index {
                                         currentHashNode.getFlags(),
                                         currentHashNode.getAddress1(),
                                         currentHashNode.getAddress2(),
-                                        0L, isLeft ? newHashNodeAddress : 0L,
-                                        !isLeft ? newHashNodeAddress : 0L);
+                                        HashNode.NOW,
+                                        isLeft ? newHashNodeAddress
+                                                : currentHashNode.getLeftNode(),
+                                        !isLeft ? newHashNodeAddress
+                                                : currentHashNode.getRightNode());
 
                                 Index.this.channelHashNode.write(
                                         newCurrentHashNode.getHashNode(),

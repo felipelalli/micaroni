@@ -3,6 +3,8 @@ package br.eti.fml.campinas.index;
 import br.eti.fml.campinas.util.DebugUtil;
 
 import java.nio.ByteBuffer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 /**
@@ -20,6 +22,7 @@ public class IndexNode extends Node {
 
     private long hashNodeAddress;
     private int hashNodeChecksumAddress;
+    private boolean empty;
 
     private ByteBuffer indexNode;
 
@@ -31,16 +34,21 @@ public class IndexNode extends Node {
         hashNodeChecksumAddress = indexNode.getInt();
 
         this.indexNode = indexNode;
+        int realChecksum = getChecksum(hashNodeAddress);
 
-        int realChecksum = (int) (hashNodeAddress % Integer.MAX_VALUE);
-        this.setCorruptedNode(realChecksum != hashNodeChecksumAddress);
+        this.empty = hashNodeChecksumAddress == 0 && hashNodeAddress == 0L;
+        this.setCorruptedNode(!this.empty && realChecksum != hashNodeChecksumAddress);
+    }
+
+    private int getChecksum(long number) {
+        return (int) ((~number) % Integer.MAX_VALUE);
     }
 
     public IndexNode(long hashNodeAddress) {
         super(Node.NodeType.INDEX_NODE);
 
         this.hashNodeAddress = hashNodeAddress;
-        this.hashNodeChecksumAddress = (int) (hashNodeAddress % Integer.MAX_VALUE);
+        this.hashNodeChecksumAddress = getChecksum(hashNodeAddress);
 
         this.indexNode = ByteBuffer
                 .allocate(INDEX_NODE_SIZE).putLong(hashNodeAddress)
@@ -53,6 +61,10 @@ public class IndexNode extends Node {
 
     public int getHashNodeChecksumAddress() {
         return hashNodeChecksumAddress;
+    }
+
+    public boolean isEmpty() {
+        return empty;
     }
 
     public ByteBuffer getIndexNode() {
