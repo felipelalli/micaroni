@@ -4,6 +4,7 @@ import br.eti.fml.campinas.index.CorruptedIndex;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,22 +18,26 @@ public class Test {
         Map<String, byte[]> values = new HashMap<String, byte[]>();
 
         System.out.println(db.getInfo());
-        int tests = 300000;
+        int tests = 10000000;
+
+        DecimalFormat format = new DecimalFormat("#,###");
+        final ByteBuffer buffer = ByteBuffer.allocate(4);
 
         try {
             long now = System.currentTimeMillis();
 
             for (int i = 0; i < tests; i++) {
                 String key = "key" + i;
-                ByteBuffer buffer = ByteBuffer.allocate(4).putInt(i);
+
                 buffer.position(0);
+                buffer.putInt(i);
                 byte[] value = buffer.array();
 
                 db.put(key, value);
                 values.put(key, value);
 
-                if (i % 10000 == 0) {
-                    System.out.print(".");
+                if (i % 100000 == 0) {
+                    System.out.println(format.format(i));
                 }
             }
 
@@ -49,8 +54,8 @@ public class Test {
                 byte[] readValue = values.get(key);
 
                 if (Arrays.equals(readValue, value)) {
-                    if (i % 10000 == 0) {
-                        System.out.print(".");
+                    if (i % 100000 == 0) {
+                        System.out.println(format.format(i));
                     }
                 } else {
                     System.out.println(

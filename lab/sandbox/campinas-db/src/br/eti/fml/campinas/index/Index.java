@@ -1,6 +1,7 @@
 package br.eti.fml.campinas.index;
 
 import br.eti.fml.campinas.MetaInfo;
+import br.eti.fml.campinas.util.BufferPool;
 import br.eti.fml.campinas.util.ByteUtil;
 import br.eti.fml.campinas.util.DebugUtil;
 import br.eti.fml.campinas.util.FileUtil;
@@ -139,6 +140,8 @@ public class Index {
             long now = System.currentTimeMillis();
 
             for (int n = 0; n < slots; n++) {
+                final int finalPosition = n;
+
                 if (System.currentTimeMillis() - now > 5000) {
                     log.info("Caching index yet... "
                             + percentage(n, slots) + " done");
@@ -146,18 +149,24 @@ public class Index {
                     now = System.currentTimeMillis();
                 }
 
-                long indexPosition = this.getIndexPositionByNumber(n);
+                final long indexPosition = this.getIndexPositionByNumber(n);
 
-                ByteBuffer node = ByteBuffer.allocate(IndexNode.INDEX_NODE_SIZE);
-                this.channelIndex.read(node, indexPosition);
-                IndexNode indexNode = new IndexNode(node);
+                BufferPool.getInstance().doWithATemporaryBuffer(
+                    IndexNode.INDEX_NODE_SIZE, new BufferPool.Action() {
+                        @Override
+                        public void doWithTemporaryBuffer(ByteBuffer buffer) throws IOException {
+                            channelIndex.read(buffer, indexPosition);
+                            IndexNode indexNode = new IndexNode(buffer);
 
-                if (indexNode.isEmpty()) {
-                    this.freeSlots.put(n, (byte) 1);
-                } else if (indexNode.isCorruptedNode()) {
-                    log.error("The node '" + indexNode + "' is corrupted "
-                            + " at " + DebugUtil.niceName(indexPosition));
-                }
+                            if (indexNode.isEmpty()) {
+                                freeSlots.put(finalPosition, (byte) 1);
+                            } else if (indexNode.isCorruptedNode()) {
+                                log.error("The node '" + indexNode + "' is corrupted "
+                                        + " at " + DebugUtil.niceName(indexPosition));
+                            }
+                        }
+                    }
+                );
             }
         }
 
@@ -209,7 +218,7 @@ public class Index {
         long slots = (indexSizeInBytes / IndexNode.INDEX_NODE_SIZE);
         long freeSlots = 0L;
         final AtomicInteger keys = new AtomicInteger();
-        Map<Integer, Integer> sizes = new HashMap<Integer, Integer>();
+        final Map<Integer, Integer> sizes = new HashMap<Integer, Integer>();
         final AtomicInteger corruptedNodes = new AtomicInteger();
         final AtomicInteger corruptedHashNodes = new AtomicInteger();
 
@@ -223,68 +232,88 @@ public class Index {
                 now = System.currentTimeMillis();
             }
 
-            long indexPosition = this.getIndexPositionByNumber(n);
+            final long indexPosition = this.getIndexPositionByNumber(n);
 
             if (this.freeSlots.get(n) != (byte) 0) {
                 freeSlots++;
             } else {
-                ByteBuffer indexNodeRaw = ByteBuffer.allocate(
-                        IndexNode.INDEX_NODE_SIZE);
+                BufferPool.getInstance().doWithATemporaryBuffer(
+                    IndexNode.INDEX_NODE_SIZE, new BufferPool.Action() {
+                        @Override
+                        public void doWithTemporaryBuffer(ByteBuffer nodeBuffer) throws IOException {
+                            channelIndex.read(nodeBuffer, indexPosition);
+                            IndexNode indexNode = new IndexNode(nodeBuffer);
 
-                this.channelIndex.read(indexNodeRaw, indexPosition);
-                IndexNode indexNode = new IndexNode(indexNodeRaw);
+                            if (indexNode.isCorruptedNode()) {
+                                log.error("The index node '" + indexNode
+                                        + "' is corrupted at "
+                                        + DebugUtil.niceName(indexPosition));
 
-                if (indexNode.isCorruptedNode()) {
-                    log.error("The index node '" + indexNode
-                            + "' is corrupted at "
-                            + DebugUtil.niceName(indexPosition));
-
-                    corruptedNodes.incrementAndGet();
-                } else {
-                    final AtomicInteger count = new AtomicInteger();
-                    count.incrementAndGet();
-
-                    HashNode.navigateThroughFully(indexNode.getHashNodeAddress(),
-                            this.channelHashNode,
-
-                        new HashNode.HashNodeFullyNavigator() {
-
-                            @Override
-                            public void updateCurrentNode(long currentPosition, HashNode currentHashNode) throws IOException {
-                                keys.incrementAndGet();
-                            }
-
-                            @Override
-                            public void nodeHasLeft(long currentPosition, HashNode currentHashNode) throws IOException {
+                                corruptedNodes.incrementAndGet();
+                            } else {
+                                final AtomicInteger count = new AtomicInteger();
                                 count.incrementAndGet();
+
+                                HashNode.navigateThroughFully(
+                                        indexNode.getHashNodeAddress(),
+                                        channelHashNode,
+
+                                    new HashNode.HashNodeFullyNavigator() {
+
+                                        @Override
+                                        public void updateCurrentNode(
+                                                long currentPosition,
+                                                HashNode currentHashNode)
+                                                    throws IOException {
+
+                                            keys.incrementAndGet();
+                                        }
+
+                                        @Override
+                                        public void nodeHasLeft(
+                                                long currentPosition,
+                                                HashNode currentHashNode)
+                                                    throws IOException {
+
+                                            count.incrementAndGet();
+                                        }
+
+                                        @Override
+                                        public void nodeHasRight(
+                                                long currentPosition,
+                                                HashNode currentHashNode)
+                                                    throws IOException {
+
+                                            count.incrementAndGet();
+                                        }
+
+                                        @Override
+                                        public void corruptedHashNode(
+                                                long currentPosition,
+                                                HashNode currentHashNode)
+                                                    throws IOException {
+
+                                            log.error("The hash node '"
+                                                    + currentHashNode
+                                                    + "' is corrupted "
+                                                    + " at "
+                                                    + DebugUtil.niceName(
+                                                    currentPosition));
+
+                                            corruptedHashNodes.incrementAndGet();
+                                        }
+                                    }
+                                );
+
+                                if (!sizes.containsKey(count.get())) {
+                                    sizes.put(count.get(), 0);
+                                }
+
+                                sizes.put(count.get(), sizes.get(count.get()) + 1);
                             }
-
-                            @Override
-                            public void nodeHasRight(long currentPosition, HashNode currentHashNode) throws IOException {
-                                count.incrementAndGet();
-                            }
-
-                            @Override
-                            public void corruptedHashNode(
-                                    long currentPosition,
-                                    HashNode currentHashNode) throws IOException {
-
-                                log.error("The hash node '"
-                                        + currentHashNode + "' is corrupted "
-                                        + " at " + DebugUtil.niceName(
-                                        currentPosition));
-
-                                corruptedHashNodes.incrementAndGet();
-                            }                            
                         }
-                    );
-
-                    if (!sizes.containsKey(count.get())) {
-                        sizes.put(count.get(), 0);
                     }
-
-                    sizes.put(count.get(), sizes.get(count.get()) + 1);
-                }
+                );
             }
         }
 
@@ -320,16 +349,37 @@ public class Index {
     }
 
     private void writeNewNodeAtIndex(
-            long indexPosition, byte[] key, byte flags,
-            byte address1, long address2, long left, long right) throws IOException {
+            final long indexPosition, final byte[] key, final byte flags,
+            final byte address1, final long address2,
+            final long left, final long right) throws IOException {
 
-        HashNode hashNode = new HashNode(key, flags,
-                address1, address2, HashNode.NOW, left, right);
+        BufferPool.getInstance().doWithATemporaryBuffer(
+                HashNode.HASH_NODE_SIZE, new BufferPool.Action() {
+                    @Override
+                    public void doWithTemporaryBuffer(ByteBuffer buffer) throws IOException {
+                        HashNode hashNode = new HashNode(buffer, key, flags,
+                                address1, address2, HashNode.NOW, left, right);
 
-        long nodeAddress = this.allocateAndPut(hashNode);
-        IndexNode indexNode = new IndexNode(nodeAddress);
+                        final long nodeAddress = allocateAndPut(hashNode);
 
-        this.channelIndex.write(indexNode.getIndexNode(), indexPosition);
+                        BufferPool.getInstance().doWithATemporaryBuffer(
+                                IndexNode.INDEX_NODE_SIZE, new BufferPool.Action() {
+                                    @Override
+                                    public void doWithTemporaryBuffer(
+                                            ByteBuffer temp) throws IOException {
+
+                                        IndexNode indexNode = new IndexNode(
+                                                temp, nodeAddress);
+
+                                        channelIndex.write(
+                                                indexNode.getIndexNode(),
+                                                indexPosition);
+                                    }
+                                }
+                        );
+                    }
+                }
+        );
     }
 
     private long allocateAndPut(HashNode hashNode) throws IOException {
@@ -341,7 +391,7 @@ public class Index {
 
     public void updateIndex(
             final UUID key, final byte flags, final byte address1,
-            final long address2) throws IOException, CorruptedIndex {
+            final long address2) throws IOException {
 
         if (key == null) {
             log.warn("The key can't be null!");
@@ -368,44 +418,217 @@ public class Index {
                         + " is used. Trying to find the key or a free slot.");
             }
 
-            ByteBuffer indexNodeRaw = ByteBuffer
-                    .allocate(IndexNode.INDEX_NODE_SIZE);
+            BufferPool.getInstance().doWithATemporaryBuffer(
+                IndexNode.INDEX_NODE_SIZE, new BufferPool.Action() {
+                    @Override
+                    public void doWithTemporaryBuffer(ByteBuffer nodeBuffer)
+                            throws IOException {
 
-            this.channelIndex.read(indexNodeRaw, indexPosition);
-            IndexNode indexNode = new IndexNode(indexNodeRaw);
+                        channelIndex.read(nodeBuffer, indexPosition);
+                        IndexNode indexNode = new IndexNode(nodeBuffer);
 
-            if (indexNode.isCorruptedNode()) {
-                throw new CorruptedIndex(indexPosition, indexNode);
-            } else {
-                final AtomicBoolean isCorrupted = new AtomicBoolean(false);
-                final Pair<Long, HashNode> corruptedHashNode
-                        = new Pair<Long, HashNode>(null, null);
+                        if (indexNode.isCorruptedNode()) {
+                            throw new CorruptedIndex(indexPosition, indexNode);
+                        } else {
+                            final AtomicBoolean isCorrupted = new AtomicBoolean(false);
+                            final Pair<Long, HashNode> corruptedHashNode
+                                    = new Pair<Long, HashNode>(null, null);
 
-                HashNode.navigateThrough(indexNode.getHashNodeAddress(),
-                        bytesKey, this.channelHashNode, new HashNode.HashNodeNavigator() {
+                            HashNode.navigateThrough(indexNode.getHashNodeAddress(),
+                                    bytesKey, channelHashNode,
+                                    new HashNode.HashNodeNavigator() {
+
+                                        @Override
+                                        public void whenTheKeyIsEqual(
+                                                final long currentPosition,
+                                                final HashNode currentHashNode)
+                                                    throws IOException {
+
+                                            if (TRACE_ENABLED) {
+                                                log.trace("The key "
+                                                        + DebugUtil.niceName(key)
+                                                        + " was used before and will be updated at "
+                                                        + DebugUtil
+                                                            .niceName(
+                                                                    currentPosition));
+                                            }
+
+                                            // TODO: need to free address1 & address2 of currentHashNode
+
+                                            BufferPool.getInstance().doWithATemporaryBuffer(
+                                                HashNode.HASH_NODE_SIZE, new BufferPool.Action() {
+                                                    @Override
+                                                    public void doWithTemporaryBuffer(
+                                                            ByteBuffer buffer)
+                                                                throws IOException {
+
+                                                        // needs to replace (update) the hashNode
+                                                        HashNode newHashNode = new HashNode(
+                                                                buffer, bytesKey, flags,
+                                                                address1, address2,
+                                                                HashNode.NOW,
+                                                                currentHashNode.getLeftNode(),
+                                                                currentHashNode.getRightNode());
+
+                                                        Index.this.channelHashNode.write(
+                                                                newHashNode.getHashNode(),
+                                                                currentPosition);
+                                                    }
+                                                }
+                                            );
+                                        }
+
+                                        @Override
+                                        public void interceptGoingToLeftNode(
+                                                long currentPosition,
+                                                HashNode currentHashNode) throws IOException {
+
+                                            if (TRACE_ENABLED) {
+                                                log.trace("The key "
+                                                        + DebugUtil.niceName(key)
+                                                        + " was not found yet. Going to the left node: "
+                                                        + DebugUtil.niceName(
+                                                            currentHashNode
+                                                                    .getLeftNode()));
+                                            }
+                                        }
+
+                                        @Override
+                                        public void interceptGoingToRightNode(
+                                                long currentPosition,
+                                                HashNode currentHashNode) throws IOException {
+
+                                            if (TRACE_ENABLED) {
+                                                log.trace("The key " + DebugUtil.niceName(key)
+                                                        + " was not found yet. Going to the right node: "
+                                                        + DebugUtil.niceName(
+                                                            currentHashNode.getLeftNode()));
+                                            }
+                                        }
+
+                                        @Override
+                                        public void whenTheKeyWasNotFound(
+                                                final boolean isLeft,
+                                                final long currentPosition,
+                                                final HashNode currentHashNode) throws IOException {
+
+                                                BufferPool.getInstance().doWithATemporaryBuffer(
+                                                    HashNode.HASH_NODE_SIZE, new BufferPool.Action() {
+                                                        @Override
+                                                        public void doWithTemporaryBuffer(
+                                                                ByteBuffer tempBuffer) throws IOException {
+
+                                                            // needs to update the left or right of currentHashNode
+                                                            HashNode newHashNode
+                                                                    = new HashNode(
+                                                                    tempBuffer,
+                                                                    bytesKey,
+                                                                    flags,
+                                                                    address1,
+                                                                    address2,
+                                                                    HashNode.NOW,
+                                                                    HashNode.NULL,
+                                                                    HashNode.NULL);
+
+                                                            final long newHashNodeAddress
+                                                                    = allocateAndPut(newHashNode);
+
+                                                            if (TRACE_ENABLED) {
+                                                                log.trace("The key " + DebugUtil.niceName(key)
+                                                                        + " was not found. Creating a new node at "
+                                                                        + DebugUtil.niceName(newHashNodeAddress));
+                                                            }
+
+                                                            BufferPool.getInstance().doWithATemporaryBuffer(
+                                                                HashNode.HASH_NODE_SIZE, new BufferPool.Action() {
+                                                                    @Override
+                                                                    public void doWithTemporaryBuffer(
+                                                                        ByteBuffer tempBufferNewCurrentHashNode) throws IOException {
+                                                                        HashNode newCurrentHashNode = new HashNode(
+                                                                                tempBufferNewCurrentHashNode,
+                                                                                currentHashNode.getKey(),
+                                                                                currentHashNode.getFlags(),
+                                                                                currentHashNode.getAddress1(),
+                                                                                currentHashNode.getAddress2(),
+                                                                                HashNode.NOW,
+                                                                                isLeft ? newHashNodeAddress
+                                                                                        : currentHashNode.getLeftNode(),
+                                                                                !isLeft ? newHashNodeAddress
+                                                                                        : currentHashNode.getRightNode());
+
+                                                                        Index.this.channelHashNode.write(
+                                                                                newCurrentHashNode.getHashNode(),
+                                                                                currentPosition);
+                                                                    }
+                                                                }
+                                                            );
+                                                        }
+                                                    }
+                                                );
+                                        }
+
+                                        @Override
+                                        public void corruptedHashNode(
+                                                long currentPosition,
+                                                HashNode currentHashNode) throws IOException {
+
+                                            isCorrupted.set(true);
+                                            corruptedHashNode.car = currentPosition;
+                                            corruptedHashNode.cdr = currentHashNode;
+                                        }
+                                    }
+                            );
+
+                            if (isCorrupted.get()) {
+                                throw new CorruptedIndex(
+                                        corruptedHashNode.car, corruptedHashNode.cdr);
+                            }
+                        }
+                    }
+                }
+            );                        
+        }
+    }
+
+    public HashNode find(final UUID key) throws IOException {
+        if (key == null) {
+            return null;
+        }
+
+        final HashNode[] result = new HashNode[1]; // boxing
+        final AtomicBoolean isCorrupted = new AtomicBoolean(false);
+        final Pair<Long, HashNode> corruptedHashNode
+                = new Pair<Long, HashNode>(null, null);
+
+        result[0] = null;
+
+        final byte[] bytesKey = ByteUtil.UUID2bytes(key);
+        final long indexPosition = getIndexPositionByKey(key);
+
+        BufferPool.getInstance().doWithATemporaryBuffer(
+            IndexNode.INDEX_NODE_SIZE, new BufferPool.Action() {
+                @Override
+                public void doWithTemporaryBuffer(ByteBuffer nodeBuffer) throws IOException {
+
+                    channelIndex.read(nodeBuffer, indexPosition);
+                    IndexNode indexNode = new IndexNode(nodeBuffer);
+
+                    if (indexNode.isCorruptedNode()) {
+                        throw new CorruptedIndex(indexPosition, indexNode);
+                    } else {
+                        HashNode.navigateThrough(indexNode.getHashNodeAddress(),
+                                bytesKey, channelHashNode, new HashNode.HashNodeNavigator() {
 
                             @Override
-                            public void whenTheKeyIsEqual(
-                                    long currentPosition,
-                                    HashNode currentHashNode) throws IOException {
+                            public void whenTheKeyIsEqual(long currentPosition,
+                                            HashNode currentHashNode)  throws IOException {
 
                                 if (TRACE_ENABLED) {
                                     log.trace("The key " + DebugUtil.niceName(key)
-                                            + " was used before and will be updated at "
-                                            + DebugUtil.niceName(currentPosition));
+                                            + " was found at " + DebugUtil.niceName(currentPosition));
                                 }
 
-                                // TODO: need to free address1 & address2 of currentHashNode
-
-                                // needs to replace (update) the hashNode
-                                HashNode newHashNode = new HashNode(
-                                        bytesKey, flags, address1, address2,
-                                        HashNode.NOW, currentHashNode.getLeftNode(),
-                                        currentHashNode.getRightNode());
-
-                                Index.this.channelHashNode.write(
-                                        newHashNode.getHashNode(),
-                                        currentPosition);
+                                result[0] = currentHashNode;
                             }
 
                             @Override
@@ -425,7 +648,7 @@ public class Index {
                             public void interceptGoingToRightNode(
                                     long currentPosition,
                                     HashNode currentHashNode) throws IOException {
-                                
+
                                 if (TRACE_ENABLED) {
                                     log.trace("The key " + DebugUtil.niceName(key)
                                             + " was not found yet. Going to the right node: "
@@ -439,36 +662,13 @@ public class Index {
                                     boolean isLeft, long currentPosition,
                                     HashNode currentHashNode) throws IOException {
 
-                                // needs to update the left or right of currentHashNode
-                                HashNode newHashNode = new HashNode(
-                                        bytesKey, flags, address1, address2,
-                                        HashNode.NOW, HashNode.NULL,
-                                        HashNode.NULL);
-
-                                long newHashNodeAddress
-                                        = allocateAndPut(newHashNode);
-
                                 if (TRACE_ENABLED) {
                                     log.trace("The key " + DebugUtil.niceName(key)
-                                            + " was not found. Creating a new node at "
-                                            + DebugUtil.niceName(newHashNodeAddress));
+                                            + " was not found!");
                                 }
 
-                                HashNode newCurrentHashNode = new HashNode(
-                                        currentHashNode.getKey(),
-                                        currentHashNode.getFlags(),
-                                        currentHashNode.getAddress1(),
-                                        currentHashNode.getAddress2(),
-                                        HashNode.NOW,
-                                        isLeft ? newHashNodeAddress
-                                                : currentHashNode.getLeftNode(),
-                                        !isLeft ? newHashNodeAddress
-                                                : currentHashNode.getRightNode());
-
-                                Index.this.channelHashNode.write(
-                                        newCurrentHashNode.getHashNode(),
-                                        currentPosition);
-                            }                                
+                                result[0] = null;
+                            }
 
                             @Override
                             public void corruptedHashNode(
@@ -479,110 +679,17 @@ public class Index {
                                 corruptedHashNode.car = currentPosition;
                                 corruptedHashNode.cdr = currentHashNode;
                             }
+                        });
+
+                        if (isCorrupted.get()) {
+                            throw new CorruptedIndex(
+                                    corruptedHashNode.car, corruptedHashNode.cdr);
                         }
-                );
-
-                if (isCorrupted.get()) {
-                    throw new CorruptedIndex(
-                            corruptedHashNode.car, corruptedHashNode.cdr);
+                    }
                 }
             }
-        }
-    }
+        );
 
-    public HashNode find(final UUID key) throws IOException, CorruptedIndex {
-        if (key == null) {
-            return null;
-        }
-
-        final HashNode[] result = new HashNode[1]; // boxing
-        final AtomicBoolean isCorrupted = new AtomicBoolean(false);
-        final Pair<Long, HashNode> corruptedHashNode
-                = new Pair<Long, HashNode>(null, null);
-
-        result[0] = null;
-
-        final byte[] bytesKey = ByteUtil.UUID2bytes(key);
-        final long indexPosition = getIndexPositionByKey(key);
-
-        ByteBuffer indexNodeRaw = ByteBuffer.allocate(IndexNode.INDEX_NODE_SIZE);
-        this.channelIndex.read(indexNodeRaw, indexPosition);
-        IndexNode indexNode = new IndexNode(indexNodeRaw);
-
-        if (indexNode.isCorruptedNode()) {
-            throw new CorruptedIndex(indexPosition, indexNode);
-        } else {
-            HashNode.navigateThrough(indexNode.getHashNodeAddress(),
-                    bytesKey, this.channelHashNode, new HashNode.HashNodeNavigator() {
-
-                @Override
-                public void whenTheKeyIsEqual(long currentPosition,
-                                HashNode currentHashNode)  throws IOException {
-
-                    if (TRACE_ENABLED) {
-                        log.trace("The key " + DebugUtil.niceName(key)
-                                + " was found at " + DebugUtil.niceName(currentPosition));
-                    }
-
-                    result[0] = currentHashNode;
-                }
-
-                @Override
-                public void interceptGoingToLeftNode(
-                        long currentPosition,
-                        HashNode currentHashNode) throws IOException {
-
-                    if (TRACE_ENABLED) {
-                        log.trace("The key " + DebugUtil.niceName(key)
-                                + " was not found yet. Going to the left node: "
-                                + DebugUtil.niceName(
-                                    currentHashNode.getLeftNode()));
-                    }
-                }
-
-                @Override
-                public void interceptGoingToRightNode(
-                        long currentPosition,
-                        HashNode currentHashNode) throws IOException {
-
-                    if (TRACE_ENABLED) {
-                        log.trace("The key " + DebugUtil.niceName(key)
-                                + " was not found yet. Going to the right node: "
-                                + DebugUtil.niceName(
-                                    currentHashNode.getLeftNode()));
-                    }
-                }
-
-                @Override
-                public void whenTheKeyWasNotFound(
-                        boolean isLeft, long currentPosition,
-                        HashNode currentHashNode) throws IOException {
-
-                    if (TRACE_ENABLED) {
-                        log.trace("The key " + DebugUtil.niceName(key)
-                                + " was not found!");
-                    }
-
-                    result[0] = null;
-                }
-
-                @Override
-                public void corruptedHashNode(
-                        long currentPosition,
-                        HashNode currentHashNode) throws IOException {
-
-                    isCorrupted.set(true);
-                    corruptedHashNode.car = currentPosition;
-                    corruptedHashNode.cdr = currentHashNode;
-                }
-            });
-
-            if (isCorrupted.get()) {
-                throw new CorruptedIndex(
-                        corruptedHashNode.car, corruptedHashNode.cdr);
-            }
-
-            return result[0];
-        }
+        return result[0];
     }
 }

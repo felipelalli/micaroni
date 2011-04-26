@@ -1,5 +1,6 @@
 package br.eti.fml.campinas.index;
 
+import br.eti.fml.campinas.util.BufferPool;
 import br.eti.fml.campinas.util.ByteUtil;
 import br.eti.fml.campinas.util.DebugUtil;
 
@@ -8,6 +9,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Arrays;
 import java.util.Stack;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
@@ -66,16 +69,16 @@ public class HashNode extends Node {
         this.timestamp = hashNode.getLong();
         this.checksum = hashNode.getInt();
 
-        ByteBuffer nodeBuffer = getNodeBufferWithoutChecksum(
+        final byte[] nodeBuffer = getNodeBufferWithoutChecksum(
                 key, flags, address1, address2, leftNode, rightNode, timestamp);
 
-        int realChecksum = Arrays.hashCode(nodeBuffer.array());
+        int realChecksum = Arrays.hashCode(nodeBuffer);
         this.setCorruptedNode(realChecksum != checksum);
 
         this.hashNode = hashNode;
     }
 
-    public HashNode(byte[] key,
+    public HashNode(ByteBuffer tempBuffer, byte[] key,
                     byte flags, byte address1, long address2,
                     long timestamp, long leftNode, long rightNode) {
         
@@ -96,24 +99,42 @@ public class HashNode extends Node {
             this.timestamp = timestamp;
         }
 
-        ByteBuffer nodeBuffer = getNodeBufferWithoutChecksum(
+        final byte[] nodeBuffer = getNodeBufferWithoutChecksum(
                 key, flags, address1, address2, leftNode, rightNode, timestamp);
 
-        this.checksum = Arrays.hashCode(nodeBuffer.array());
+        this.checksum = Arrays.hashCode(nodeBuffer);
 
-        nodeBuffer.putInt(this.checksum);
-        this.hashNode = nodeBuffer;
+        tempBuffer.put(nodeBuffer);
+        tempBuffer.putInt(this.checksum);
+        this.hashNode = tempBuffer;
     }
 
-    private ByteBuffer getNodeBufferWithoutChecksum(
-            byte[] key, byte flags, byte address1, long address2,
-            long leftNode, long rightNode, long timestamp) {
+    private byte[] getNodeBufferWithoutChecksum(
+            final byte[] key, final byte flags, final byte address1,
+            final long address2, final long leftNode, final long rightNode,
+            final long timestamp) {
 
-        return ByteBuffer.allocate(HASH_NODE_SIZE)
-                    .put(key).put(flags)
-                    .put(address1).putLong(address2)
-                    .putLong(leftNode).putLong(rightNode)
-                    .putLong(timestamp);
+        final byte[] hashNode = new byte[HASH_NODE_SIZE - CHECKSUM_SIZE];
+
+        try {
+            BufferPool.getInstance().doWithATemporaryBuffer(
+                    HASH_NODE_SIZE, new BufferPool.Action() {
+                        @Override
+                        public void doWithTemporaryBuffer(ByteBuffer buffer) {
+                            buffer.put(key).put(flags)
+                                    .put(address1).putLong(address2)
+                                    .putLong(leftNode).putLong(rightNode)
+                                    .putLong(timestamp);
+
+                            buffer.position(0);
+                            buffer.get(hashNode);
+                        }
+                    });
+        } catch (IOException e) {
+            // never happens
+        }
+
+        return hashNode;
     }
 
     public byte[] getKey() {
@@ -172,96 +193,119 @@ public class HashNode extends Node {
 
     public static void navigateThroughFully(
             long hashNodeAddress,
-            FileChannel file, HashNodeFullyNavigator navigator) throws IOException {
+            final FileChannel file,
+            final HashNodeFullyNavigator navigator) throws IOException {
 
-        Stack<Long> nextAddress = new Stack<Long>();
+        final Stack<Long> nextAddress = new Stack<Long>();
 
         if (hashNodeAddress != HashNode.NULL) {
             nextAddress.push(hashNodeAddress);
 
             while (nextAddress.size() > 0) {
-                long currentPosition = nextAddress.pop();
+                final long currentPosition = nextAddress.pop();
 
-                ByteBuffer hashNodeRaw = ByteBuffer.allocate(HASH_NODE_SIZE);
-                file.read(hashNodeRaw, currentPosition);
+                BufferPool.getInstance().doWithATemporaryBuffer(
+                    HASH_NODE_SIZE, new BufferPool.Action() {
+                        @Override
+                        public void doWithTemporaryBuffer(ByteBuffer buffer) throws IOException {
+                            file.read(buffer, currentPosition);
 
-                final HashNode hashNode = new HashNode(hashNodeRaw);
-                navigator.updateCurrentNode(currentPosition, hashNode);
+                            final HashNode hashNode = new HashNode(buffer);
+                            navigator.updateCurrentNode(currentPosition, hashNode);
 
-                if (hashNode.isCorruptedNode()) {
-                    navigator.corruptedHashNode(currentPosition, hashNode);
-                } else {
-                    if (hashNode.getLeftNode() != HashNode.NULL) {
-                        nextAddress.push(hashNode.getLeftNode());
-                        navigator.nodeHasLeft(currentPosition, hashNode);
+                            if (hashNode.isCorruptedNode()) {
+                                navigator.corruptedHashNode(currentPosition, hashNode);
+                            } else {
+                                if (hashNode.getLeftNode() != HashNode.NULL) {
+                                    nextAddress.push(hashNode.getLeftNode());
+                                    navigator.nodeHasLeft(currentPosition, hashNode);
+                                }
+
+                                if (hashNode.getRightNode() != HashNode.NULL) {
+                                    nextAddress.push(hashNode.getRightNode());
+                                    navigator.nodeHasRight(currentPosition, hashNode);
+                                }
+                            }
+                        }
                     }
-
-                    if (hashNode.getRightNode() != HashNode.NULL) {
-                        nextAddress.push(hashNode.getRightNode());
-                        navigator.nodeHasRight(currentPosition, hashNode);
-                    }
-                }
+                );
             }
         }
     }
 
     public static void navigateThrough(
-            long hashNodeAddress, byte[] bytesKey,
-            FileChannel file, HashNodeNavigator navigator) throws IOException {
+            long hashNodeAddress,
+            final byte[] bytesKey,
+            final FileChannel file,
+            final HashNodeNavigator navigator) throws IOException {
 
         assert bytesKey != null && bytesKey.length == 16;
 
         if (hashNodeAddress != HashNode.NULL) {
-            long currentPosition = hashNodeAddress;
-            boolean end = false;
+            final AtomicLong currentPosition = new AtomicLong(hashNodeAddress);
+            final AtomicBoolean end = new AtomicBoolean(false);
 
-            while (!end) {
-                ByteBuffer hashNodeRaw = ByteBuffer.allocate(HASH_NODE_SIZE);
-                file.read(hashNodeRaw, currentPosition);
+            while (!end.get()) {
+                BufferPool.getInstance().doWithATemporaryBuffer(
+                    HASH_NODE_SIZE, new BufferPool.Action() {
+                        @Override
+                        public void doWithTemporaryBuffer(ByteBuffer buffer) throws IOException {
+                            file.read(buffer, currentPosition.get());
 
-                final HashNode hashNode = new HashNode(hashNodeRaw);
+                            final HashNode hashNode = new HashNode(buffer);
 
-                if (hashNode.isCorruptedNode()) {
-                    navigator.corruptedHashNode(currentPosition, hashNode);
-                    end = true;
-                } else {
-                    int compareResult = ByteUtil.compare(
-                            hashNode.getKey(), bytesKey);
+                            if (hashNode.isCorruptedNode()) {
+                                navigator.corruptedHashNode(
+                                        currentPosition.get(), hashNode);
 
-                    if (compareResult == 0) {
-                        navigator.whenTheKeyIsEqual(currentPosition, hashNode);
-                        end = true;
-                    } else if (compareResult < 0
-                            && hashNode.getLeftNode() != HashNode.NULL) {
+                                end.set(true);
+                            } else {
+                                int compareResult = ByteUtil.compare(
+                                        hashNode.getKey(), bytesKey);
 
-                        navigator.interceptGoingToLeftNode(
-                                currentPosition, hashNode);
+                                if (compareResult == 0) {
+                                    navigator.whenTheKeyIsEqual(
+                                            currentPosition.get(), hashNode);
+                                    end.set(true);
+                                } else if (compareResult < 0
+                                        && hashNode.getLeftNode()
+                                        != HashNode.NULL) {
 
-                        currentPosition = hashNode.getLeftNode();
-                    } else if (compareResult > 0
-                            && hashNode.getRightNode() != HashNode.NULL) {
+                                    navigator.interceptGoingToLeftNode(
+                                            currentPosition.get(), hashNode);
 
-                        navigator.interceptGoingToRightNode(
-                                currentPosition, hashNode);
+                                    currentPosition.set(
+                                            hashNode.getLeftNode());
+                                } else if (compareResult > 0
+                                        && hashNode.getRightNode()
+                                        != HashNode.NULL) {
 
-                        currentPosition = hashNode.getRightNode();
-                    } else {
-                        navigator.whenTheKeyWasNotFound(
-                                compareResult < 0, currentPosition, hashNode);
+                                    navigator.interceptGoingToRightNode(
+                                            currentPosition.get(), hashNode);
 
-                        end = true;
+                                    currentPosition.set(
+                                            hashNode.getRightNode());
+                                } else {
+                                    navigator.whenTheKeyWasNotFound(
+                                            compareResult < 0,
+                                            currentPosition.get(), hashNode);
+
+                                    end.set(true);
+                                }
+                            }
+                        }
                     }
-                }
+                );
             }
         }
     }
 
     @Override
     public String toString() {
-        ByteBuffer nodeBuffer = getNodeBufferWithoutChecksum(
+        final byte[] nodeBuffer = getNodeBufferWithoutChecksum(
                 key, flags, address1, address2, leftNode, rightNode, timestamp);
 
-        int realChecksum = Arrays.hashCode(nodeBuffer.array());
+        int realChecksum = Arrays.hashCode(nodeBuffer);
 
         return "HashNode{" +
                 "hashNode=" + Arrays.toString(hashNode.array()) +

@@ -2,11 +2,13 @@ package br.eti.fml.campinas.index;
 
 import br.eti.fml.campinas.util.DebugUtil;
 
+import java.io.IOException;
+
 /**
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
  */
 @SuppressWarnings("unused")
-public class CorruptedIndex extends Exception {
+public class CorruptedIndex extends IOException {
     private long position;
     private Node node;
 

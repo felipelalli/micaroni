@@ -3,6 +3,7 @@ package br.eti.fml.campinas;
 import br.eti.fml.campinas.index.CorruptedIndex;
 import br.eti.fml.campinas.index.HashNode;
 import br.eti.fml.campinas.index.Index;
+import br.eti.fml.campinas.util.BufferPool;
 import br.eti.fml.campinas.util.ByteUtil;
 import org.apache.log4j.Logger;
 
@@ -10,6 +11,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
@@ -57,13 +60,13 @@ public class CampinasDB {
         });
     }
 
-    public void put(String key, byte[] value) throws IOException, CorruptedIndex {
+    public void put(String key, final byte[] value) throws IOException, CorruptedIndex {
         UUID k = UUID.nameUUIDFromBytes(
                 ByteUtil.stringToBytesUTFNIO(key));
 
         byte flags = 0;
         byte address1 = 0;
-        long address2 = 0;
+        final AtomicLong address2 = new AtomicLong(0L);
 
         if (value == null || value.length == 0) {
             flags |= Flag.DELETED.getValue();
@@ -72,27 +75,32 @@ public class CampinasDB {
                 assert value.length <= ByteUtil.GB;
                 flags |= Flag.POINTER.getValue();
                 address1 = 1; // TODO
-                address2 = 0L; // TODO
+                address2.set(0L); // TODO
             } else {
                 flags |= Flag.N_BYTES.getValue();
                 address1 = (byte) value.length;
 
-                ByteBuffer buffer = ByteBuffer.allocate(8);
-                buffer.put(value);
-                buffer.position(0);
-                address2 = buffer.getLong();
+                BufferPool.getInstance().doWithATemporaryBuffer(
+                        8, new BufferPool.Action() {
+                            @Override
+                            public void doWithTemporaryBuffer(ByteBuffer buffer) {
+                                buffer.put(value);
+                                buffer.position(0);
+                                address2.set(buffer.getLong());
+                            }
+                        });
             }
         }
 
-        this.index.updateIndex(k, flags, address1, address2);
+        this.index.updateIndex(k, flags, address1, address2.get());
     }
 
     public byte[] get(String key) throws IOException, CorruptedIndex {
         UUID k = UUID.nameUUIDFromBytes(
                 ByteUtil.stringToBytesUTFNIO(key));
 
-        HashNode node = this.index.find(k);
-        byte[] result = null;
+        final HashNode node = this.index.find(k);
+        final AtomicReference<byte[]> result = new AtomicReference<byte[]>();
 
         if (node != null) {
             byte flags = node.getFlags();
@@ -101,17 +109,23 @@ public class CampinasDB {
                 if (Flag.POINTER.isInside(flags)) {
                     // TODO: search on Bodies
                 } else if (Flag.N_BYTES.isInside(flags)) {
-                    ByteBuffer buffer = ByteBuffer.allocate(8);
-                    buffer.putLong(node.getAddress2());
-                    buffer.position(0);
-                    int n = node.getAddress1();
-                    result = new byte[n];
-                    buffer.get(result);
+                    BufferPool.getInstance().doWithATemporaryBuffer(
+                            8, new BufferPool.Action() {
+                                @Override
+                                public void doWithTemporaryBuffer(ByteBuffer buffer) {
+                                    buffer.putLong(node.getAddress2());
+                                    buffer.position(0);
+                                    int n = node.getAddress1();
+                                    byte[] b = new byte[n];
+                                    buffer.get(b);
+                                    result.set(b);
+                                }
+                            });
                 }
             }
         }
 
-        return result;
+        return result.get();
 
 //        HashNode node = this.index.find(key);
 //

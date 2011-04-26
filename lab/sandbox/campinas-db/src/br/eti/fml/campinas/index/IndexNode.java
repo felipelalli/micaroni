@@ -44,14 +44,14 @@ public class IndexNode extends Node {
         return (int) ((~number) % Integer.MAX_VALUE);
     }
 
-    public IndexNode(long hashNodeAddress) {
+    public IndexNode(ByteBuffer tempBuffer, long hashNodeAddress) {
         super(Node.NodeType.INDEX_NODE);
 
         this.hashNodeAddress = hashNodeAddress;
         this.hashNodeChecksumAddress = getChecksum(hashNodeAddress);
 
-        this.indexNode = ByteBuffer
-                .allocate(INDEX_NODE_SIZE).putLong(hashNodeAddress)
+        tempBuffer.position(0);
+        this.indexNode = tempBuffer.putLong(hashNodeAddress)
                 .putInt(hashNodeChecksumAddress);
     }
 
@@ -74,9 +74,12 @@ public class IndexNode extends Node {
 
     @Override
     public String toString() {
+        int realChecksum = getChecksum(hashNodeAddress);
+
         return "IndexNode{" +
                 "hashNodeAddress=" + DebugUtil.niceName(hashNodeAddress) +
-                ", hashNodeChecksumAddress=" + DebugUtil.niceName(hashNodeChecksumAddress) +
+                ", hashNodeChecksumAddress=" + hashNodeChecksumAddress +
+                ", realHashNodeChecksumAddress*=" + realChecksum +
                 ", indexNode=" + Arrays.toString(indexNode.array()) +
                 '}';
     }

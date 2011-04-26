@@ -1,8 +1,10 @@
 package br.eti.fml.campinas.util;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
@@ -18,20 +20,51 @@ public final class ByteUtil {
     public static final int KB = 1024;
     public static final int B = 1;
 
-    public static byte[] UUID2bytes(UUID uuid) {
-        byte[] bytes = ByteBuffer.allocate(16).putLong(
-                uuid.getMostSignificantBits()).putLong(
-                uuid.getLeastSignificantBits()).array();
+    public static byte[] UUID2bytes(final UUID uuid) {
+        final byte[] bytes = new byte[16];
 
-        assert bytes.length == 16;
+        try {
+            BufferPool.getInstance().doWithATemporaryBuffer(
+                    16, new BufferPool.Action() {
+                        @Override
+                        public void doWithTemporaryBuffer(ByteBuffer buffer) {
+                            buffer.putLong(
+                                    uuid.getMostSignificantBits()).putLong(
+                                    uuid.getLeastSignificantBits());
+
+                            buffer.get(bytes);
+                        }
+                    }
+            );
+        } catch (IOException e) {
+            // never happens
+        }
+
         return bytes;
     }
 
-    public static UUID bytes2UUID(byte[] bytes) {
-        ByteBuffer bb = ByteBuffer.allocate(16).put(bytes);
-        long most = bb.getLong();
-        long least = bb.getLong();
-        return new UUID(most, least);
+    public static UUID bytes2UUID(final byte[] bytes) {
+
+        final AtomicReference<UUID> result = new AtomicReference<UUID>();
+
+        try {
+            BufferPool.getInstance().doWithATemporaryBuffer(
+                16, new BufferPool.Action() {
+                    @Override
+                    public void doWithTemporaryBuffer(ByteBuffer buffer) {
+                        buffer.put(bytes);
+                        buffer.position(0);
+                        long most = buffer.getLong();
+                        long least = buffer.getLong();
+                        result.set(new UUID(most, least));
+                    }
+                }
+            );
+        } catch (IOException e) {
+            // never happens
+        }
+
+        return result.get();
     }
 
     /**
