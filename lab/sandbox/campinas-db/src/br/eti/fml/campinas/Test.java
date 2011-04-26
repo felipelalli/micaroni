@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public class Test {
     public static void main(String[] args) throws IOException, CorruptedIndex {
-        CampinasDB db = new CampinasDB("my database", "db", 12);
+        CampinasDB db = new CampinasDB("my database", "db", 1);
         Map<String, String> values = new HashMap<String, String>();
 
         System.out.println(db.getInfo());

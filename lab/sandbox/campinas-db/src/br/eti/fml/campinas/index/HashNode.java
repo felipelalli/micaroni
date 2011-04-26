@@ -57,9 +57,9 @@ public class HashNode extends Node {
         this.flags = hashNode.get();
         this.address1 = hashNode.get();
         this.address2 = hashNode.getLong();
-        this.timestamp = hashNode.getLong();
         this.leftNode = hashNode.getLong();
         this.rightNode = hashNode.getLong();
+        this.timestamp = hashNode.getLong();
         this.checksum = hashNode.getInt();
 
         ByteBuffer nodeBuffer = getNodeBufferWithoutChecksum(
@@ -67,6 +67,8 @@ public class HashNode extends Node {
 
         int realChecksum = Arrays.hashCode(nodeBuffer.array());
         this.setCorruptedNode(realChecksum != checksum);
+
+        this.hashNode = hashNode;
     }
 
     public HashNode(byte[] key,
@@ -207,6 +209,11 @@ public class HashNode extends Node {
 
     @Override
     public String toString() {
+        ByteBuffer nodeBuffer = getNodeBufferWithoutChecksum(
+                key, flags, address1, address2, leftNode, rightNode, timestamp);
+
+        int realChecksum = Arrays.hashCode(nodeBuffer.array());
+
         return "HashNode{" +
                 "hashNode=" + Arrays.toString(hashNode.array()) +
                 ", key=" + Arrays.toString(key) +
@@ -216,7 +223,8 @@ public class HashNode extends Node {
                 ", timestamp=" + timestamp +
                 ", leftNode=" + DebugUtil.niceName(leftNode) +
                 ", rightNode=" + DebugUtil.niceName(rightNode) +
-                ", checksum=" + DebugUtil.niceName(checksum) +
+                ", checksum=" + checksum +
+                ", *realChecksum= " + realChecksum +
                 '}';
     }
 }

@@ -398,7 +398,7 @@ public class Index {
                         = new Pair<Long, HashNode>(null, null);
 
                 HashNode.navigateThrough(indexNode.getHashNodeAddress(),
-                        bytesKey, this.channelIndex, new HashNode.HashNodeNavigator() {
+                        bytesKey, this.channelHashNode, new HashNode.HashNodeNavigator() {
 
                             @Override
                             public void whenTheKeyIsEqual(
