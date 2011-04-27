@@ -11,14 +11,13 @@ import java.util.Map;
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
  */
 public class Test {
-    public static void main(String[] args) throws IOException {
-
+    public static void main(String[] args) throws IOException, InterruptedException {
         CampinasDB db = new CampinasDB("my database", "db", 1);
         Map<String, byte[]> values = new HashMap<String, byte[]>();
 
         System.out.println(db.getInfo());
-        //int tests = 10000000;
-        int tests = 300000;
+        int tests = 1000000000;
+        //int tests = 300000;
 
         DecimalFormat format = new DecimalFormat("#,###");
         final ByteBuffer buffer = ByteBuffer.allocate(4);
@@ -36,10 +35,10 @@ public class Test {
                 buffer.get(value);
 
                 db.put(key, value);
-                values.put(key, value);
 
                 if (i % 100000 == 0) {
                     System.out.println(format.format(i));
+                    values.put(key, value);
                 }
             }
 
@@ -52,17 +51,18 @@ public class Test {
 
             for (int i = 0; i < tests; i++) {
                 String key = "key" + i;
-                byte[] value = db.get(key);
-                byte[] readValue = values.get(key);
+                byte[] dataBaseValue = db.get(key);
 
-                if (Arrays.equals(readValue, value)) {
-                    if (i % 100000 == 0) {
+                if (i % 100000 == 0) {
+                    byte[] writtenValue = values.get(key);
+
+                    if (Arrays.equals(writtenValue, dataBaseValue)) {
                         System.out.println(format.format(i));
+                    } else {
+                        System.out.println(
+                                "*** ERROR " + Arrays.toString(dataBaseValue)
+                                        + " must be " + Arrays.toString(writtenValue));
                     }
-                } else {
-                    System.out.println(
-                            "*** ERROR " + Arrays.toString(value)
-                                    + " must be " + Arrays.toString(readValue));
                 }
             }
 

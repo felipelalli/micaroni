@@ -1,6 +1,5 @@
 package br.eti.fml.campinas;
 
-import br.eti.fml.campinas.index.CorruptedIndex;
 import br.eti.fml.campinas.index.HashNode;
 import br.eti.fml.campinas.index.Index;
 import br.eti.fml.campinas.util.BufferPool;
