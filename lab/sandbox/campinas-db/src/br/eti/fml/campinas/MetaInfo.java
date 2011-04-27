@@ -1,6 +1,5 @@
 package br.eti.fml.campinas;
 
-import br.eti.fml.campinas.util.BufferPool;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -10,7 +9,6 @@ import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
@@ -98,61 +96,50 @@ public class MetaInfo {
         }
 
         final byte[] finalName = nameBytes;
+        ByteBuffer buffer = ByteBuffer.allocate(META_INFO_SIZE);
 
-        BufferPool.getInstance().doWithATemporaryBuffer(
-            META_INFO_SIZE, new BufferPool.Action() {
-                @Override
-                public void doWith(ByteBuffer buffer) throws IOException {
-                    buffer.put((byte) 0) // not closeIndex
-                            .put(finalName)
-                            .putInt(indexSizeInMegabytes)
-                            .putLong(creationTimestamp)
-                            .putFloat(VERSION);
+        buffer.put((byte) 0) // not closeIndex
+                .put(finalName)
+                .putInt(indexSizeInMegabytes)
+                .putLong(creationTimestamp)
+                .putFloat(VERSION);
 
-                    buffer.position(0);
+        buffer.position(0);
 
-                    file.setLength(META_INFO_SIZE);
-                    channel.write(buffer, 0);
-                    channel.force(true);
-                }
-            }
-        );
+        file.setLength(META_INFO_SIZE);
+        channel.write(buffer, 0);
+        channel.force(true);
     }
 
     public void checkValues(final String name, final int indexSizeInMegabytes)
             throws RuntimeException, IOException {
 
-        BufferPool.getInstance().doWithATemporaryBuffer(
-            META_INFO_SIZE, new BufferPool.Action() {
-                @Override
-                public void doWith(ByteBuffer metaInfoBytes) throws IOException {
-                    channel.read(metaInfoBytes, 0);
+        ByteBuffer metaInfoBytes = ByteBuffer.allocate(META_INFO_SIZE);
 
-                    metaInfoBytes.position(0);
-                    metaInfoBytes.get(); // discard first byte
-                    byte[] nameBytes = new byte[512];
-                    metaInfoBytes.get(nameBytes);
-                    String oldName = new String(nameBytes, "ASCII");
+        channel.read(metaInfoBytes, 0);
 
-                    if (!oldName.trim().equals(name.trim())) {
-                        throw new RuntimeException(
-                                "The database name cannot change! The original name is '"
-                                + oldName.trim() + "' and the new one is '"
-                                + name.trim() + "'");
-                    }
+        metaInfoBytes.position(0);
+        metaInfoBytes.get(); // discard first byte
+        byte[] nameBytes = new byte[512];
+        metaInfoBytes.get(nameBytes);
+        String oldName = new String(nameBytes, "ASCII");
 
-                    int oldIndexSizeInMegabytes = metaInfoBytes.getInt();
+        if (!oldName.trim().equals(name.trim())) {
+            throw new RuntimeException(
+                    "The database name cannot change! The original name is '"
+                    + oldName.trim() + "' and the new one is '"
+                    + name.trim() + "'");
+        }
 
-                    if (oldIndexSizeInMegabytes != indexSizeInMegabytes) {
-                        throw new RuntimeException(
-                                "The database index size cannot change! The original size is "
-                                + oldIndexSizeInMegabytes
-                                + " and the new one is "
-                                + indexSizeInMegabytes);
-                    }
-                }
-            }
-        );
+        int oldIndexSizeInMegabytes = metaInfoBytes.getInt();
+
+        if (oldIndexSizeInMegabytes != indexSizeInMegabytes) {
+            throw new RuntimeException(
+                    "The database index size cannot change! The original size is "
+                    + oldIndexSizeInMegabytes
+                    + " and the new one is "
+                    + indexSizeInMegabytes);
+        }
     }
 
     public String getName() {

@@ -151,7 +151,7 @@ public class Index {
 
                 final long indexPosition = this.getIndexPositionByNumber(n);
 
-                BufferPool.getInstance().doWithATemporaryBuffer(
+                BufferPool.doWithATemporaryBuffer(
                     IndexNode.INDEX_NODE_SIZE, new BufferPool.Action() {
                         @Override
                         public void doWith(ByteBuffer buffer) throws IOException {
@@ -237,7 +237,7 @@ public class Index {
             if (this.freeSlots.get(n) != (byte) 0) {
                 freeSlots++;
             } else {
-                BufferPool.getInstance().doWithATemporaryBuffer(
+                BufferPool.doWithATemporaryBuffer(
                     IndexNode.INDEX_NODE_SIZE, new BufferPool.Action() {
                         @Override
                         public void doWith(ByteBuffer nodeBuffer) throws IOException {
@@ -360,7 +360,7 @@ public class Index {
             final byte address1, final long address2,
             final long left, final long right) throws IOException {
 
-        BufferPool.getInstance().doWithATemporaryBuffer(
+        BufferPool.doWithATemporaryBuffer(
                 HashNode.HASH_NODE_SIZE, new BufferPool.Action() {
                     @Override
                     public void doWith(ByteBuffer buffer) throws IOException {
@@ -369,7 +369,7 @@ public class Index {
 
                         final long nodeAddress = allocateAndPut(hashNode);
 
-                        BufferPool.getInstance().doWithATemporaryBuffer(
+                        BufferPool.doWithATemporaryBuffer(
                                 IndexNode.INDEX_NODE_SIZE, new BufferPool.Action() {
                                     @Override
                                     public void doWith(
@@ -425,7 +425,7 @@ public class Index {
                         + " is used. Trying to find the key or a free slot.");
             }
 
-            BufferPool.getInstance().doWithATemporaryBuffer(
+            BufferPool.doWithATemporaryBuffer(
                 IndexNode.INDEX_NODE_SIZE, new BufferPool.Action() {
                     @Override
                     public void doWith(ByteBuffer nodeBuffer)
@@ -484,7 +484,7 @@ public class Index {
 
                 // TODO: need to free address1 & address2 of currentHashNode
 
-                BufferPool.getInstance().doWithATemporaryBuffer(
+                BufferPool.doWithATemporaryBuffer(
                     HashNode.HASH_NODE_SIZE, new BufferPool.Action() {
                         @Override
                         public void doWith(
@@ -541,7 +541,7 @@ public class Index {
                     final long currentPosition,
                     final HashNode currentHashNode) throws IOException {
 
-                    BufferPool.getInstance().doWithATemporaryBuffer(
+                    BufferPool.doWithATemporaryBuffer(
                         HashNode.HASH_NODE_SIZE, new BufferPool.Action() {
                             @Override
                             public void doWith(
@@ -568,7 +568,7 @@ public class Index {
                                             + DebugUtil.niceName(newHashNodeAddress));
                                 }
 
-                                BufferPool.getInstance().doWithATemporaryBuffer(
+                                BufferPool.doWithATemporaryBuffer(
                                     HashNode.HASH_NODE_SIZE, new BufferPool.Action() {
                                         @Override
                                         public void doWith(
@@ -623,7 +623,7 @@ public class Index {
         final byte[] bytesKey = ByteUtil.UUID2bytes(key);
         final long indexPosition = getIndexPositionByKey(key);
 
-        BufferPool.getInstance().doWithATemporaryBuffer(
+        BufferPool.doWithATemporaryBuffer(
             IndexNode.INDEX_NODE_SIZE, new BufferPool.Action() {
                 @Override
                 public void doWith(ByteBuffer nodeBuffer) throws IOException {

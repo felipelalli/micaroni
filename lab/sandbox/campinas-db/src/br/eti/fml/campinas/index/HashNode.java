@@ -117,7 +117,7 @@ public class HashNode extends Node {
         final byte[] hashNode = new byte[HASH_NODE_SIZE - CHECKSUM_SIZE];
 
         try {
-            BufferPool.getInstance().doWithATemporaryBuffer(
+            BufferPool.doWithATemporaryBuffer(
                     HASH_NODE_SIZE, new BufferPool.Action() {
                         @Override
                         public void doWith(ByteBuffer buffer) {
@@ -204,7 +204,7 @@ public class HashNode extends Node {
             while (nextAddress.size() > 0) {
                 final long currentPosition = nextAddress.pop();
 
-                BufferPool.getInstance().doWithATemporaryBuffer(
+                BufferPool.doWithATemporaryBuffer(
                     HASH_NODE_SIZE, new BufferPool.Action() {
                         @Override
                         public void doWith(ByteBuffer buffer) throws IOException {
@@ -246,7 +246,7 @@ public class HashNode extends Node {
             final AtomicBoolean end = new AtomicBoolean(false);
 
             while (!end.get()) {
-                BufferPool.getInstance().doWithATemporaryBuffer(
+                BufferPool.doWithATemporaryBuffer(
                     HASH_NODE_SIZE, new BufferPool.Action() {
                         @Override
                         public void doWith(ByteBuffer buffer) throws IOException {

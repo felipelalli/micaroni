@@ -17,7 +17,8 @@ public class Test {
         Map<String, byte[]> values = new HashMap<String, byte[]>();
 
         System.out.println(db.getInfo());
-        int tests = 10000000;
+        //int tests = 10000000;
+        int tests = 300000;
 
         DecimalFormat format = new DecimalFormat("#,###");
         final ByteBuffer buffer = ByteBuffer.allocate(4);
@@ -59,7 +60,7 @@ public class Test {
                 } else {
                     System.out.println(
                             "*** ERROR " + Arrays.toString(value)
-                                    + " must be " + Arrays.toString(readValue));
+                                    + " should be " + Arrays.toString(readValue));
                 }
             }
 

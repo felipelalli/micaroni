@@ -3,14 +3,12 @@ package br.eti.fml.campinas.index;
 import br.eti.fml.campinas.util.DebugUtil;
 
 import java.nio.ByteBuffer;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 /**
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
  */
-public class IndexNode extends Node {
+public final class IndexNode extends Node {
     // 96 bits - 12 bytes
     // ______________________________
     // 64 bits - addr          - 8 bytes
@@ -78,7 +76,7 @@ public class IndexNode extends Node {
 
         return "IndexNode{" +
                 "hashNodeAddress=" + DebugUtil.niceName(hashNodeAddress) +
-                ", hashNodeChecksumAddress=" + hashNodeChecksumAddress +
+                ", hashNodeChecksumAddress=" + getHashNodeChecksumAddress() +
                 ", realHashNodeChecksumAddress*=" + realChecksum +
                 ", indexNode=" + Arrays.toString(indexNode.array()) +
                 '}';

@@ -24,7 +24,7 @@ public final class ByteUtil {
         final byte[] bytes = new byte[16];
 
         try {
-            BufferPool.getInstance().doWithATemporaryBuffer(
+            BufferPool.doWithATemporaryBuffer(
                     16, new BufferPool.Action() {
                         @Override
                         public void doWith(ByteBuffer buffer) {
@@ -48,7 +48,7 @@ public final class ByteUtil {
         final AtomicReference<UUID> result = new AtomicReference<UUID>();
 
         try {
-            BufferPool.getInstance().doWithATemporaryBuffer(
+            BufferPool.doWithATemporaryBuffer(
                 16, new BufferPool.Action() {
                     @Override
                     public void doWith(ByteBuffer buffer) {
