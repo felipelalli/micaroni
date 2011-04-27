@@ -306,9 +306,12 @@ public class HashNode extends Node {
                 key, flags, address1, address2, leftNode, rightNode, timestamp);
 
         int realChecksum = Arrays.hashCode(nodeBuffer);
+        byte[] hashNodeBytes = new byte[HASH_NODE_SIZE];
+        hashNode.position(0);
+        hashNode.get(hashNodeBytes);
 
         return "HashNode{" +
-                "hashNode=" + Arrays.toString(hashNode.array()) +
+                "hashNode=" + Arrays.toString(hashNodeBytes) +
                 ", key=" + Arrays.toString(key) +
                 ", flags=" + DebugUtil.niceName(flags) +
                 ", address1=" + DebugUtil.niceName(address1) +

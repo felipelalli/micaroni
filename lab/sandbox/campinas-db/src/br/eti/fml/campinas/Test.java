@@ -17,7 +17,8 @@ public class Test {
         Map<String, byte[]> values = new HashMap<String, byte[]>();
 
         System.out.println(db.getInfo());
-        int tests = 10000000;
+        //int tests = 10000000;
+        int tests = 300000;
 
         DecimalFormat format = new DecimalFormat("#,###");
         final ByteBuffer buffer = ByteBuffer.allocate(4);
@@ -30,7 +31,9 @@ public class Test {
 
                 buffer.position(0);
                 buffer.putInt(i);
-                byte[] value = buffer.array();
+                byte[] value = new byte[4];
+                buffer.position(0);
+                buffer.get(value);
 
                 db.put(key, value);
                 values.put(key, value);
