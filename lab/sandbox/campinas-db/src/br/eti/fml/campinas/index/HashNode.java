@@ -120,7 +120,7 @@ public class HashNode extends Node {
             BufferPool.getInstance().doWithATemporaryBuffer(
                     HASH_NODE_SIZE, new BufferPool.Action() {
                         @Override
-                        public void doWithTemporaryBuffer(ByteBuffer buffer) {
+                        public void doWith(ByteBuffer buffer) {
                             buffer.put(key).put(flags)
                                     .put(address1).putLong(address2)
                                     .putLong(leftNode).putLong(rightNode)
@@ -207,7 +207,7 @@ public class HashNode extends Node {
                 BufferPool.getInstance().doWithATemporaryBuffer(
                     HASH_NODE_SIZE, new BufferPool.Action() {
                         @Override
-                        public void doWithTemporaryBuffer(ByteBuffer buffer) throws IOException {
+                        public void doWith(ByteBuffer buffer) throws IOException {
                             file.read(buffer, currentPosition);
 
                             final HashNode hashNode = new HashNode(buffer);
@@ -249,7 +249,7 @@ public class HashNode extends Node {
                 BufferPool.getInstance().doWithATemporaryBuffer(
                     HASH_NODE_SIZE, new BufferPool.Action() {
                         @Override
-                        public void doWithTemporaryBuffer(ByteBuffer buffer) throws IOException {
+                        public void doWith(ByteBuffer buffer) throws IOException {
                             file.read(buffer, currentPosition.get());
 
                             final HashNode hashNode = new HashNode(buffer);

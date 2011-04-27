@@ -27,11 +27,11 @@ public final class ByteUtil {
             BufferPool.getInstance().doWithATemporaryBuffer(
                     16, new BufferPool.Action() {
                         @Override
-                        public void doWithTemporaryBuffer(ByteBuffer buffer) {
-                            buffer.putLong(
-                                    uuid.getMostSignificantBits()).putLong(
-                                    uuid.getLeastSignificantBits());
+                        public void doWith(ByteBuffer buffer) {
+                            buffer.putLong(uuid.getMostSignificantBits())
+                                  .putLong(uuid.getLeastSignificantBits());
 
+                            buffer.position(0);
                             buffer.get(bytes);
                         }
                     }
@@ -51,7 +51,7 @@ public final class ByteUtil {
             BufferPool.getInstance().doWithATemporaryBuffer(
                 16, new BufferPool.Action() {
                     @Override
-                    public void doWithTemporaryBuffer(ByteBuffer buffer) {
+                    public void doWith(ByteBuffer buffer) {
                         buffer.put(bytes);
                         buffer.position(0);
                         long most = buffer.getLong();

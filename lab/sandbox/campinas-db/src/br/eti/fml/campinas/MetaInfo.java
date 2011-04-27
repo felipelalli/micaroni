@@ -102,7 +102,7 @@ public class MetaInfo {
         BufferPool.getInstance().doWithATemporaryBuffer(
             META_INFO_SIZE, new BufferPool.Action() {
                 @Override
-                public void doWithTemporaryBuffer(ByteBuffer buffer) throws IOException {
+                public void doWith(ByteBuffer buffer) throws IOException {
                     buffer.put((byte) 0) // not closeIndex
                             .put(finalName)
                             .putInt(indexSizeInMegabytes)
@@ -125,7 +125,7 @@ public class MetaInfo {
         BufferPool.getInstance().doWithATemporaryBuffer(
             META_INFO_SIZE, new BufferPool.Action() {
                 @Override
-                public void doWithTemporaryBuffer(ByteBuffer metaInfoBytes) throws IOException {
+                public void doWith(ByteBuffer metaInfoBytes) throws IOException {
                     channel.read(metaInfoBytes, 0);
 
                     metaInfoBytes.position(0);

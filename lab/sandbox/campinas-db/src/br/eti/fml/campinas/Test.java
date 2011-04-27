@@ -1,7 +1,5 @@
 package br.eti.fml.campinas;
 
-import br.eti.fml.campinas.index.CorruptedIndex;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
@@ -13,7 +11,8 @@ import java.util.Map;
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
  */
 public class Test {
-    public static void main(String[] args) throws IOException, CorruptedIndex {
+    public static void main(String[] args) throws IOException {
+
         CampinasDB db = new CampinasDB("my database", "db", 1);
         Map<String, byte[]> values = new HashMap<String, byte[]>();
 
@@ -67,10 +66,9 @@ public class Test {
             System.out.println("\ntime 2 per key: " +  ((System.currentTimeMillis() - now) / (double) tests) + " ms");
 
             System.out.println(db.getInfo());
-            
+
         } finally {
             db.shutdown();
         }
-
     }
 }

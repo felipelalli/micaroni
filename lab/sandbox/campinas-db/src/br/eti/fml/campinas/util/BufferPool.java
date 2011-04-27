@@ -1,22 +1,26 @@
 package br.eti.fml.campinas.util;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
  */
 public class BufferPool {
+    private static final Logger log = Logger.getLogger(BufferPool.class);
     private static final BufferPool bufferPool = new BufferPool();
 
-    private final ConcurrentHashMap<Integer, ConcurrentLinkedQueue<Long>>
-            freeNameBuffers = new ConcurrentHashMap<
-                Integer, ConcurrentLinkedQueue<Long>>();
+    private final Map<Integer, Set<Long>> freeNameBuffers
+            = new HashMap<Integer, Set<Long>>();
 
-    private final ConcurrentHashMap<Long, NamedByteBuffer> freeBuffers
-            = new ConcurrentHashMap<Long, NamedByteBuffer>();
+    private final Map<Long, NamedByteBuffer> freeBuffers
+            = new HashMap<Long, NamedByteBuffer>();
 
     public static BufferPool getInstance() {
         return bufferPool;
@@ -29,38 +33,38 @@ public class BufferPool {
         NamedByteBuffer namedByteBuffer
                 = BufferPool.getInstance().getAByteBuffer(size);
 
-        action.doWithTemporaryBuffer(
-                namedByteBuffer.getByteBufferAndResetPosition());
-
+        action.doWith(namedByteBuffer.getByteBufferAndResetPosition());
         BufferPool.getInstance().free(namedByteBuffer);
     }
 
     public interface Action {
-        void doWithTemporaryBuffer(ByteBuffer buffer) throws IOException;
+        void doWith(ByteBuffer buffer) throws IOException;
     }
 
     public NamedByteBuffer getAByteBuffer(int size) {
         if (!freeNameBuffers.containsKey(size)) {
-            freeNameBuffers.put(size, new ConcurrentLinkedQueue<Long>());
+            freeNameBuffers.put(size, new HashSet<Long>());
         }
 
-        ConcurrentLinkedQueue<Long> buffersName = freeNameBuffers.get(size);
+        Set<Long> buffersName = freeNameBuffers.get(size);
 
         if (buffersName.size() == 0) {
+            log.trace("Creating buffer to size " + size + "...");
+
             for (int i = 0; i < 32; i++) {
                 NamedByteBuffer newBuffer = new NamedByteBuffer(size);
                 freeBuffers.put(newBuffer.getName(), newBuffer);
-                buffersName.offer(newBuffer.getName());
+                buffersName.add(newBuffer.getName());
             }
         }
 
-        return freeBuffers.get(buffersName.poll());
+        Long first = buffersName.iterator().next();
+        buffersName.remove(first);
+        return freeBuffers.get(first);
     }
 
     public void free(NamedByteBuffer buffer) {
-        ConcurrentLinkedQueue<Long> buffersName
-                = freeNameBuffers.get(buffer.getSize());
-
-        buffersName.offer(buffer.getName());
+        Set<Long> buffersName = freeNameBuffers.get(buffer.getSize());
+        buffersName.add(buffer.getName());
     }
 }

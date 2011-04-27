@@ -154,7 +154,7 @@ public class Index {
                 BufferPool.getInstance().doWithATemporaryBuffer(
                     IndexNode.INDEX_NODE_SIZE, new BufferPool.Action() {
                         @Override
-                        public void doWithTemporaryBuffer(ByteBuffer buffer) throws IOException {
+                        public void doWith(ByteBuffer buffer) throws IOException {
                             channelIndex.read(buffer, indexPosition);
                             IndexNode indexNode = new IndexNode(buffer);
 
@@ -240,7 +240,7 @@ public class Index {
                 BufferPool.getInstance().doWithATemporaryBuffer(
                     IndexNode.INDEX_NODE_SIZE, new BufferPool.Action() {
                         @Override
-                        public void doWithTemporaryBuffer(ByteBuffer nodeBuffer) throws IOException {
+                        public void doWith(ByteBuffer nodeBuffer) throws IOException {
                             channelIndex.read(nodeBuffer, indexPosition);
                             IndexNode indexNode = new IndexNode(nodeBuffer);
 
@@ -257,52 +257,8 @@ public class Index {
                                 HashNode.navigateThroughFully(
                                         indexNode.getHashNodeAddress(),
                                         channelHashNode,
-
-                                    new HashNode.HashNodeFullyNavigator() {
-
-                                        @Override
-                                        public void updateCurrentNode(
-                                                long currentPosition,
-                                                HashNode currentHashNode)
-                                                    throws IOException {
-
-                                            keys.incrementAndGet();
-                                        }
-
-                                        @Override
-                                        public void nodeHasLeft(
-                                                long currentPosition,
-                                                HashNode currentHashNode)
-                                                    throws IOException {
-
-                                            count.incrementAndGet();
-                                        }
-
-                                        @Override
-                                        public void nodeHasRight(
-                                                long currentPosition,
-                                                HashNode currentHashNode)
-                                                    throws IOException {
-
-                                            count.incrementAndGet();
-                                        }
-
-                                        @Override
-                                        public void corruptedHashNode(
-                                                long currentPosition,
-                                                HashNode currentHashNode)
-                                                    throws IOException {
-
-                                            log.error("The hash node '"
-                                                    + currentHashNode
-                                                    + "' is corrupted "
-                                                    + " at "
-                                                    + DebugUtil.niceName(
-                                                    currentPosition));
-
-                                            corruptedHashNodes.incrementAndGet();
-                                        }
-                                    }
+                                        getInfoNavigator(
+                                                count, keys, corruptedHashNodes)
                                 );
 
                                 if (!sizes.containsKey(count.get())) {
@@ -348,6 +304,57 @@ public class Index {
         return info.toString();
     }
 
+    private HashNode.HashNodeFullyNavigator getInfoNavigator(
+            final AtomicInteger count,
+            final AtomicInteger keys, final AtomicInteger corruptedHashNodes) {
+
+        return new HashNode.HashNodeFullyNavigator() {
+
+            @Override
+            public void updateCurrentNode(
+                    long currentPosition,
+                    HashNode currentHashNode)
+                    throws IOException {
+
+                keys.incrementAndGet();
+            }
+
+            @Override
+            public void nodeHasLeft(
+                    long currentPosition,
+                    HashNode currentHashNode)
+                    throws IOException {
+
+                count.incrementAndGet();
+            }
+
+            @Override
+            public void nodeHasRight(
+                    long currentPosition,
+                    HashNode currentHashNode)
+                    throws IOException {
+
+                count.incrementAndGet();
+            }
+
+            @Override
+            public void corruptedHashNode(
+                    long currentPosition,
+                    HashNode currentHashNode)
+                    throws IOException {
+
+                log.error("The hash node '"
+                        + currentHashNode
+                        + "' is corrupted "
+                        + " at "
+                        + DebugUtil.niceName(
+                        currentPosition));
+
+                corruptedHashNodes.incrementAndGet();
+            }
+        };
+    }
+
     private void writeNewNodeAtIndex(
             final long indexPosition, final byte[] key, final byte flags,
             final byte address1, final long address2,
@@ -356,7 +363,7 @@ public class Index {
         BufferPool.getInstance().doWithATemporaryBuffer(
                 HashNode.HASH_NODE_SIZE, new BufferPool.Action() {
                     @Override
-                    public void doWithTemporaryBuffer(ByteBuffer buffer) throws IOException {
+                    public void doWith(ByteBuffer buffer) throws IOException {
                         HashNode hashNode = new HashNode(buffer, key, flags,
                                 address1, address2, HashNode.NOW, left, right);
 
@@ -365,7 +372,7 @@ public class Index {
                         BufferPool.getInstance().doWithATemporaryBuffer(
                                 IndexNode.INDEX_NODE_SIZE, new BufferPool.Action() {
                                     @Override
-                                    public void doWithTemporaryBuffer(
+                                    public void doWith(
                                             ByteBuffer temp) throws IOException {
 
                                         IndexNode indexNode = new IndexNode(
@@ -421,7 +428,7 @@ public class Index {
             BufferPool.getInstance().doWithATemporaryBuffer(
                 IndexNode.INDEX_NODE_SIZE, new BufferPool.Action() {
                     @Override
-                    public void doWithTemporaryBuffer(ByteBuffer nodeBuffer)
+                    public void doWith(ByteBuffer nodeBuffer)
                             throws IOException {
 
                         channelIndex.read(nodeBuffer, indexPosition);
@@ -436,147 +443,9 @@ public class Index {
 
                             HashNode.navigateThrough(indexNode.getHashNodeAddress(),
                                     bytesKey, channelHashNode,
-                                    new HashNode.HashNodeNavigator() {
-
-                                        @Override
-                                        public void whenTheKeyIsEqual(
-                                                final long currentPosition,
-                                                final HashNode currentHashNode)
-                                                    throws IOException {
-
-                                            if (TRACE_ENABLED) {
-                                                log.trace("The key "
-                                                        + DebugUtil.niceName(key)
-                                                        + " was used before and will be updated at "
-                                                        + DebugUtil
-                                                            .niceName(
-                                                                    currentPosition));
-                                            }
-
-                                            // TODO: need to free address1 & address2 of currentHashNode
-
-                                            BufferPool.getInstance().doWithATemporaryBuffer(
-                                                HashNode.HASH_NODE_SIZE, new BufferPool.Action() {
-                                                    @Override
-                                                    public void doWithTemporaryBuffer(
-                                                            ByteBuffer buffer)
-                                                                throws IOException {
-
-                                                        // needs to replace (update) the hashNode
-                                                        HashNode newHashNode = new HashNode(
-                                                                buffer, bytesKey, flags,
-                                                                address1, address2,
-                                                                HashNode.NOW,
-                                                                currentHashNode.getLeftNode(),
-                                                                currentHashNode.getRightNode());
-
-                                                        Index.this.channelHashNode.write(
-                                                                newHashNode.getHashNode(),
-                                                                currentPosition);
-                                                    }
-                                                }
-                                            );
-                                        }
-
-                                        @Override
-                                        public void interceptGoingToLeftNode(
-                                                long currentPosition,
-                                                HashNode currentHashNode) throws IOException {
-
-                                            if (TRACE_ENABLED) {
-                                                log.trace("The key "
-                                                        + DebugUtil.niceName(key)
-                                                        + " was not found yet. Going to the left node: "
-                                                        + DebugUtil.niceName(
-                                                            currentHashNode
-                                                                    .getLeftNode()));
-                                            }
-                                        }
-
-                                        @Override
-                                        public void interceptGoingToRightNode(
-                                                long currentPosition,
-                                                HashNode currentHashNode) throws IOException {
-
-                                            if (TRACE_ENABLED) {
-                                                log.trace("The key " + DebugUtil.niceName(key)
-                                                        + " was not found yet. Going to the right node: "
-                                                        + DebugUtil.niceName(
-                                                            currentHashNode.getLeftNode()));
-                                            }
-                                        }
-
-                                        @Override
-                                        public void whenTheKeyWasNotFound(
-                                                final boolean isLeft,
-                                                final long currentPosition,
-                                                final HashNode currentHashNode) throws IOException {
-
-                                                BufferPool.getInstance().doWithATemporaryBuffer(
-                                                    HashNode.HASH_NODE_SIZE, new BufferPool.Action() {
-                                                        @Override
-                                                        public void doWithTemporaryBuffer(
-                                                                ByteBuffer tempBuffer) throws IOException {
-
-                                                            // needs to update the left or right of currentHashNode
-                                                            HashNode newHashNode
-                                                                    = new HashNode(
-                                                                    tempBuffer,
-                                                                    bytesKey,
-                                                                    flags,
-                                                                    address1,
-                                                                    address2,
-                                                                    HashNode.NOW,
-                                                                    HashNode.NULL,
-                                                                    HashNode.NULL);
-
-                                                            final long newHashNodeAddress
-                                                                    = allocateAndPut(newHashNode);
-
-                                                            if (TRACE_ENABLED) {
-                                                                log.trace("The key " + DebugUtil.niceName(key)
-                                                                        + " was not found. Creating a new node at "
-                                                                        + DebugUtil.niceName(newHashNodeAddress));
-                                                            }
-
-                                                            BufferPool.getInstance().doWithATemporaryBuffer(
-                                                                HashNode.HASH_NODE_SIZE, new BufferPool.Action() {
-                                                                    @Override
-                                                                    public void doWithTemporaryBuffer(
-                                                                        ByteBuffer tempBufferNewCurrentHashNode) throws IOException {
-                                                                        HashNode newCurrentHashNode = new HashNode(
-                                                                                tempBufferNewCurrentHashNode,
-                                                                                currentHashNode.getKey(),
-                                                                                currentHashNode.getFlags(),
-                                                                                currentHashNode.getAddress1(),
-                                                                                currentHashNode.getAddress2(),
-                                                                                HashNode.NOW,
-                                                                                isLeft ? newHashNodeAddress
-                                                                                        : currentHashNode.getLeftNode(),
-                                                                                !isLeft ? newHashNodeAddress
-                                                                                        : currentHashNode.getRightNode());
-
-                                                                        Index.this.channelHashNode.write(
-                                                                                newCurrentHashNode.getHashNode(),
-                                                                                currentPosition);
-                                                                    }
-                                                                }
-                                                            );
-                                                        }
-                                                    }
-                                                );
-                                        }
-
-                                        @Override
-                                        public void corruptedHashNode(
-                                                long currentPosition,
-                                                HashNode currentHashNode) throws IOException {
-
-                                            isCorrupted.set(true);
-                                            corruptedHashNode.car = currentPosition;
-                                            corruptedHashNode.cdr = currentHashNode;
-                                        }
-                                    }
+                                    getUpdateIndexNavigator(isCorrupted,
+                                            corruptedHashNode, key, bytesKey,
+                                            flags, address1, address2)
                             );
 
                             if (isCorrupted.get()) {
@@ -588,6 +457,155 @@ public class Index {
                 }
             );                        
         }
+    }
+
+    private HashNode.HashNodeNavigator getUpdateIndexNavigator(
+            final AtomicBoolean corrupted,
+            final Pair<Long, HashNode> corruptedHashNode, final UUID key,
+            final byte[] bytesKey, final byte flags, final byte address1,
+            final long address2) {
+        
+        return new HashNode.HashNodeNavigator() {
+
+            @Override
+            public void whenTheKeyIsEqual(
+                    final long currentPosition,
+                    final HashNode currentHashNode)
+                        throws IOException {
+
+                if (TRACE_ENABLED) {
+                    log.trace("The key "
+                            + DebugUtil.niceName(key)
+                            + " was used before and will be updated at "
+                            + DebugUtil
+                                .niceName(
+                                        currentPosition));
+                }
+
+                // TODO: need to free address1 & address2 of currentHashNode
+
+                BufferPool.getInstance().doWithATemporaryBuffer(
+                    HashNode.HASH_NODE_SIZE, new BufferPool.Action() {
+                        @Override
+                        public void doWith(
+                                ByteBuffer buffer)
+                                    throws IOException {
+
+                            // needs to replace (update) the hashNode
+                            HashNode newHashNode = new HashNode(
+                                    buffer, bytesKey, flags,
+                                    address1, address2,
+                                    HashNode.NOW,
+                                    currentHashNode.getLeftNode(),
+                                    currentHashNode.getRightNode());
+
+                            Index.this.channelHashNode.write(
+                                    newHashNode.getHashNode(),
+                                    currentPosition);
+                        }
+                    }
+                );
+            }
+
+            @Override
+            public void interceptGoingToLeftNode(
+                    long currentPosition,
+                    HashNode currentHashNode) throws IOException {
+
+                if (TRACE_ENABLED) {
+                    log.trace("The key "
+                            + DebugUtil.niceName(key)
+                            + " was not found yet. Going to the left node: "
+                            + DebugUtil.niceName(
+                                currentHashNode
+                                        .getLeftNode()));
+                }
+            }
+
+            @Override
+            public void interceptGoingToRightNode(
+                    long currentPosition,
+                    HashNode currentHashNode) throws IOException {
+
+                if (TRACE_ENABLED) {
+                    log.trace("The key " + DebugUtil.niceName(key)
+                            + " was not found yet. Going to the right node: "
+                            + DebugUtil.niceName(
+                                currentHashNode.getLeftNode()));
+                }
+            }
+
+            @Override
+            public void whenTheKeyWasNotFound(
+                    final boolean isLeft,
+                    final long currentPosition,
+                    final HashNode currentHashNode) throws IOException {
+
+                    BufferPool.getInstance().doWithATemporaryBuffer(
+                        HashNode.HASH_NODE_SIZE, new BufferPool.Action() {
+                            @Override
+                            public void doWith(
+                                    ByteBuffer tempBuffer) throws IOException {
+
+                                // needs to update the left or right of currentHashNode
+                                HashNode newHashNode
+                                        = new HashNode(
+                                        tempBuffer,
+                                        bytesKey,
+                                        flags,
+                                        address1,
+                                        address2,
+                                        HashNode.NOW,
+                                        HashNode.NULL,
+                                        HashNode.NULL);
+
+                                final long newHashNodeAddress
+                                        = allocateAndPut(newHashNode);
+
+                                if (TRACE_ENABLED) {
+                                    log.trace("The key " + DebugUtil.niceName(key)
+                                            + " was not found. Creating a new node at "
+                                            + DebugUtil.niceName(newHashNodeAddress));
+                                }
+
+                                BufferPool.getInstance().doWithATemporaryBuffer(
+                                    HashNode.HASH_NODE_SIZE, new BufferPool.Action() {
+                                        @Override
+                                        public void doWith(
+                                                ByteBuffer tempBufferNewCurrentHashNode) throws IOException {
+                                            HashNode newCurrentHashNode = new HashNode(
+                                                    tempBufferNewCurrentHashNode,
+                                                    currentHashNode.getKey(),
+                                                    currentHashNode.getFlags(),
+                                                    currentHashNode.getAddress1(),
+                                                    currentHashNode.getAddress2(),
+                                                    HashNode.NOW,
+                                                    isLeft ? newHashNodeAddress
+                                                            : currentHashNode.getLeftNode(),
+                                                    !isLeft ? newHashNodeAddress
+                                                            : currentHashNode.getRightNode());
+
+                                            Index.this.channelHashNode.write(
+                                                    newCurrentHashNode.getHashNode(),
+                                                    currentPosition);
+                                        }
+                                    }
+                                );
+                            }
+                        }
+                    );
+            }
+
+            @Override
+            public void corruptedHashNode(
+                    long currentPosition,
+                    HashNode currentHashNode) throws IOException {
+
+                corrupted.set(true);
+                corruptedHashNode.car = currentPosition;
+                corruptedHashNode.cdr = currentHashNode;
+            }
+        };
     }
 
     public HashNode find(final UUID key) throws IOException {
@@ -608,7 +626,7 @@ public class Index {
         BufferPool.getInstance().doWithATemporaryBuffer(
             IndexNode.INDEX_NODE_SIZE, new BufferPool.Action() {
                 @Override
-                public void doWithTemporaryBuffer(ByteBuffer nodeBuffer) throws IOException {
+                public void doWith(ByteBuffer nodeBuffer) throws IOException {
 
                     channelIndex.read(nodeBuffer, indexPosition);
                     IndexNode indexNode = new IndexNode(nodeBuffer);
@@ -617,69 +635,9 @@ public class Index {
                         throw new CorruptedIndex(indexPosition, indexNode);
                     } else {
                         HashNode.navigateThrough(indexNode.getHashNodeAddress(),
-                                bytesKey, channelHashNode, new HashNode.HashNodeNavigator() {
-
-                            @Override
-                            public void whenTheKeyIsEqual(long currentPosition,
-                                            HashNode currentHashNode)  throws IOException {
-
-                                if (TRACE_ENABLED) {
-                                    log.trace("The key " + DebugUtil.niceName(key)
-                                            + " was found at " + DebugUtil.niceName(currentPosition));
-                                }
-
-                                result[0] = currentHashNode;
-                            }
-
-                            @Override
-                            public void interceptGoingToLeftNode(
-                                    long currentPosition,
-                                    HashNode currentHashNode) throws IOException {
-
-                                if (TRACE_ENABLED) {
-                                    log.trace("The key " + DebugUtil.niceName(key)
-                                            + " was not found yet. Going to the left node: "
-                                            + DebugUtil.niceName(
-                                                currentHashNode.getLeftNode()));
-                                }
-                            }
-
-                            @Override
-                            public void interceptGoingToRightNode(
-                                    long currentPosition,
-                                    HashNode currentHashNode) throws IOException {
-
-                                if (TRACE_ENABLED) {
-                                    log.trace("The key " + DebugUtil.niceName(key)
-                                            + " was not found yet. Going to the right node: "
-                                            + DebugUtil.niceName(
-                                                currentHashNode.getLeftNode()));
-                                }
-                            }
-
-                            @Override
-                            public void whenTheKeyWasNotFound(
-                                    boolean isLeft, long currentPosition,
-                                    HashNode currentHashNode) throws IOException {
-
-                                if (TRACE_ENABLED) {
-                                    log.trace("The key " + DebugUtil.niceName(key)
-                                            + " was not found!");
-                                }
-
-                                result[0] = null;
-                            }
-
-                            @Override
-                            public void corruptedHashNode(
-                                    long currentPosition,
-                                    HashNode currentHashNode) throws IOException {
-
-                                isCorrupted.set(true);
-                                corruptedHashNode.car = currentPosition;
-                                corruptedHashNode.cdr = currentHashNode;
-                            }
-                        });
+                                bytesKey, channelHashNode,
+                                getSearchNavigator(key, result,
+                                        isCorrupted, corruptedHashNode));
 
                         if (isCorrupted.get()) {
                             throw new CorruptedIndex(
@@ -691,5 +649,74 @@ public class Index {
         );
 
         return result[0];
+    }
+
+    private HashNode.HashNodeNavigator getSearchNavigator(
+            final UUID key, final HashNode[] result,
+            final AtomicBoolean corrupted,
+            final Pair<Long, HashNode> corruptedHashNode) {
+
+        return new HashNode.HashNodeNavigator() {
+            @Override
+            public void whenTheKeyIsEqual(long currentPosition,
+                            HashNode currentHashNode)  throws IOException {
+
+                if (TRACE_ENABLED) {
+                    log.trace("The key " + DebugUtil.niceName(key)
+                            + " was found at " + DebugUtil.niceName(currentPosition));
+                }
+
+                result[0] = currentHashNode;
+            }
+
+            @Override
+            public void interceptGoingToLeftNode(
+                    long currentPosition,
+                    HashNode currentHashNode) throws IOException {
+
+                if (TRACE_ENABLED) {
+                    log.trace("The key " + DebugUtil.niceName(key)
+                            + " was not found yet. Going to the left node: "
+                            + DebugUtil.niceName(
+                                currentHashNode.getLeftNode()));
+                }
+            }
+
+            @Override
+            public void interceptGoingToRightNode(
+                    long currentPosition,
+                    HashNode currentHashNode) throws IOException {
+
+                if (TRACE_ENABLED) {
+                    log.trace("The key " + DebugUtil.niceName(key)
+                            + " was not found yet. Going to the right node: "
+                            + DebugUtil.niceName(
+                                currentHashNode.getLeftNode()));
+                }
+            }
+
+            @Override
+            public void whenTheKeyWasNotFound(
+                    boolean isLeft, long currentPosition,
+                    HashNode currentHashNode) throws IOException {
+
+                if (TRACE_ENABLED) {
+                    log.trace("The key " + DebugUtil.niceName(key)
+                            + " was not found!");
+                }
+
+                result[0] = null;
+            }
+
+            @Override
+            public void corruptedHashNode(
+                    long currentPosition,
+                    HashNode currentHashNode) throws IOException {
+
+                corrupted.set(true);
+                corruptedHashNode.car = currentPosition;
+                corruptedHashNode.cdr = currentHashNode;
+            }
+        };
     }
 }

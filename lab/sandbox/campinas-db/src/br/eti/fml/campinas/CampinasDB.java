@@ -60,7 +60,7 @@ public class CampinasDB {
         });
     }
 
-    public void put(String key, final byte[] value) throws IOException, CorruptedIndex {
+    public void put(String key, final byte[] value) throws IOException {
         UUID k = UUID.nameUUIDFromBytes(
                 ByteUtil.stringToBytesUTFNIO(key));
 
@@ -83,7 +83,7 @@ public class CampinasDB {
                 BufferPool.getInstance().doWithATemporaryBuffer(
                         8, new BufferPool.Action() {
                             @Override
-                            public void doWithTemporaryBuffer(ByteBuffer buffer) {
+                            public void doWith(ByteBuffer buffer) {
                                 buffer.put(value);
                                 buffer.position(0);
                                 address2.set(buffer.getLong());
@@ -95,7 +95,7 @@ public class CampinasDB {
         this.index.updateIndex(k, flags, address1, address2.get());
     }
 
-    public byte[] get(String key) throws IOException, CorruptedIndex {
+    public byte[] get(String key) throws IOException {
         UUID k = UUID.nameUUIDFromBytes(
                 ByteUtil.stringToBytesUTFNIO(key));
 
@@ -112,7 +112,7 @@ public class CampinasDB {
                     BufferPool.getInstance().doWithATemporaryBuffer(
                             8, new BufferPool.Action() {
                                 @Override
-                                public void doWithTemporaryBuffer(ByteBuffer buffer) {
+                                public void doWith(ByteBuffer buffer) {
                                     buffer.putLong(node.getAddress2());
                                     buffer.position(0);
                                     int n = node.getAddress1();
