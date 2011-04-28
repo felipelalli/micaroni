@@ -3,19 +3,25 @@ package br.eti.fml.campinas.index;
 import br.eti.fml.campinas.util.BufferPool;
 import br.eti.fml.campinas.util.ByteUtil;
 import br.eti.fml.campinas.util.DebugUtil;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
  */
 public class HashNode extends Node {
+    private static final Logger log = Logger.getLogger(HashNode.class);
+
     // 432 bits - 54 bytes
     // ______________________________
     // 128 bits - key          - 16 bytes
@@ -100,7 +106,7 @@ public class HashNode extends Node {
         }
 
         final byte[] nodeBuffer = getNodeBufferWithoutChecksum(
-                key, flags, address1, address2, leftNode, rightNode, timestamp);
+                key, flags, address1, address2, leftNode, rightNode, this.timestamp);
 
         this.checksum = Arrays.hashCode(nodeBuffer);
 
@@ -181,12 +187,12 @@ public class HashNode extends Node {
         void interceptGoingToLeftNode(long currentPosition, HashNode currentHashNode) throws IOException;
         void interceptGoingToRightNode(long currentPosition, HashNode currentHashNode) throws IOException;
         void whenTheKeyWasNotFound(boolean isLeft, long currentPosition, HashNode currentHashNode) throws IOException;
-        void corruptedHashNode(long currentPosition, HashNode currentHashNode) throws IOException;
+        void corruptedHashNode(long currentPosition, HashNode currentHashNode, int level) throws IOException;
     }
 
     public interface HashNodeFullyNavigator {
         void updateCurrentNode(long currentPosition, HashNode currentHashNode) throws IOException;
-        void corruptedHashNode(long currentPosition, HashNode currentHashNode) throws IOException;
+        void corruptedHashNode(long currentPosition, HashNode currentHashNode, int level) throws IOException;
         void nodeHasLeft(long currentPosition, HashNode currentHashNode) throws IOException;
         void nodeHasRight(long currentPosition, HashNode currentHashNode) throws IOException;
     }
@@ -197,12 +203,23 @@ public class HashNode extends Node {
             final HashNodeFullyNavigator navigator) throws IOException {
 
         final Stack<Long> nextAddress = new Stack<Long>();
+        final Set<Long> usedAddresses = new HashSet<Long>();
+
+        long now = System.currentTimeMillis();
 
         if (hashNodeAddress != HashNode.NULL) {
             nextAddress.push(hashNodeAddress);
 
             while (nextAddress.size() > 0) {
                 final long currentPosition = nextAddress.pop();
+                usedAddresses.add(currentPosition);
+
+                if (System.currentTimeMillis() - now > 10000) {
+                    log.trace("Navigating yet... stack size: " + nextAddress.size()
+                            + " currentPosition=" + currentPosition);
+
+                    now = System.currentTimeMillis();
+                }
 
                 BufferPool.getInstance().doWithATemporaryBuffer(
                     HASH_NODE_SIZE, new BufferPool.Action() {
@@ -214,16 +231,39 @@ public class HashNode extends Node {
                             navigator.updateCurrentNode(currentPosition, hashNode);
 
                             if (hashNode.isCorruptedNode()) {
-                                navigator.corruptedHashNode(currentPosition, hashNode);
+                                navigator.corruptedHashNode(currentPosition,
+                                        hashNode, usedAddresses.size());
                             } else {
-                                if (hashNode.getLeftNode() != HashNode.NULL) {
-                                    nextAddress.push(hashNode.getLeftNode());
-                                    navigator.nodeHasLeft(currentPosition, hashNode);
+                                long leftNode = hashNode.getLeftNode();
+
+                                if (leftNode != HashNode.NULL) {
+                                    if (usedAddresses.contains(leftNode)) {
+                                        log.error("Something is crazy here! The LEFT node "
+                                                + DebugUtil.niceName(leftNode)
+                                                + " was used before! current hash node: "
+                                                + hashNode + ". Level: "
+                                                + usedAddresses.size());
+                                    } else {
+                                        nextAddress.push(leftNode);
+                                        navigator.nodeHasLeft(
+                                                currentPosition, hashNode);
+                                    }
                                 }
 
-                                if (hashNode.getRightNode() != HashNode.NULL) {
-                                    nextAddress.push(hashNode.getRightNode());
-                                    navigator.nodeHasRight(currentPosition, hashNode);
+                                long rightNode = hashNode.getRightNode();
+
+                                if (rightNode != HashNode.NULL) {
+                                    if (usedAddresses.contains(rightNode)) {
+                                        log.error("Something is crazy here! The RIGHT node "
+                                                + DebugUtil.niceName(rightNode)
+                                                + " was used before! current hash node: "
+                                                + hashNode + ". Level: "
+                                                + usedAddresses.size());
+                                    } else {
+                                        nextAddress.push(rightNode);
+                                        navigator.nodeHasRight(
+                                                currentPosition, hashNode);
+                                    }
                                 }
                             }
                         }
@@ -233,7 +273,7 @@ public class HashNode extends Node {
         }
     }
 
-    public static void navigateThrough(
+    public static void navigateThroughToFindAKey(
             long hashNodeAddress,
             final byte[] bytesKey,
             final FileChannel file,
@@ -241,61 +281,77 @@ public class HashNode extends Node {
 
         assert bytesKey != null && bytesKey.length == 16;
 
+        final Set<Long> usedAddresses = new HashSet<Long>();
+
         if (hashNodeAddress != HashNode.NULL) {
+            final AtomicInteger level = new AtomicInteger(0);
             final AtomicLong currentPosition = new AtomicLong(hashNodeAddress);
             final AtomicBoolean end = new AtomicBoolean(false);
 
             while (!end.get()) {
-                BufferPool.getInstance().doWithATemporaryBuffer(
-                    HASH_NODE_SIZE, new BufferPool.Action() {
-                        @Override
-                        public void doWith(ByteBuffer buffer) throws IOException {
-                            file.read(buffer, currentPosition.get());
+                if (usedAddresses.contains(currentPosition.get())) {
+                        log.error("Something is crazy here! The index position "
+                                + DebugUtil.niceName(currentPosition.get())
+                                + " was used before! Level: " + level.get());
+                } else {
+                    usedAddresses.add(currentPosition.get());
 
-                            final HashNode hashNode = new HashNode(buffer);
+                    BufferPool.getInstance().doWithATemporaryBuffer(
+                        HASH_NODE_SIZE, new BufferPool.Action() {
+                            @Override
+                            public void doWith(ByteBuffer buffer) throws IOException {
+                                file.read(buffer, currentPosition.get());
+                                final HashNode hashNode = new HashNode(buffer);
 
-                            if (hashNode.isCorruptedNode()) {
-                                navigator.corruptedHashNode(
-                                        currentPosition.get(), hashNode);
+                                if (hashNode.isCorruptedNode()) {
+                                    navigator.corruptedHashNode(
+                                            currentPosition.get(), hashNode,
+                                            level.get());
 
-                                end.set(true);
-                            } else {
-                                int compareResult = ByteUtil.compare(
-                                        hashNode.getKey(), bytesKey);
-
-                                if (compareResult == 0) {
-                                    navigator.whenTheKeyIsEqual(
-                                            currentPosition.get(), hashNode);
                                     end.set(true);
-                                } else if (compareResult < 0
-                                        && hashNode.getLeftNode()
-                                        != HashNode.NULL) {
-
-                                    navigator.interceptGoingToLeftNode(
-                                            currentPosition.get(), hashNode);
-
-                                    currentPosition.set(
-                                            hashNode.getLeftNode());
-                                } else if (compareResult > 0
-                                        && hashNode.getRightNode()
-                                        != HashNode.NULL) {
-
-                                    navigator.interceptGoingToRightNode(
-                                            currentPosition.get(), hashNode);
-
-                                    currentPosition.set(
-                                            hashNode.getRightNode());
                                 } else {
-                                    navigator.whenTheKeyWasNotFound(
-                                            compareResult < 0,
-                                            currentPosition.get(), hashNode);
+                                    int compareResult = ByteUtil.compare(
+                                            hashNode.getKey(), bytesKey);
 
-                                    end.set(true);
+                                    if (compareResult == 0) {
+                                        navigator.whenTheKeyIsEqual(
+                                                currentPosition.get(), hashNode);
+
+                                        end.set(true);
+                                    } else if (compareResult < 0
+                                            && hashNode.getLeftNode()
+                                                != HashNode.NULL) {
+
+                                        navigator.interceptGoingToLeftNode(
+                                                currentPosition.get(), hashNode);
+
+                                        currentPosition.set(
+                                                hashNode.getLeftNode());
+
+                                        level.incrementAndGet();
+                                    } else if (compareResult > 0
+                                            && hashNode.getRightNode()
+                                                != HashNode.NULL) {
+
+                                        navigator.interceptGoingToRightNode(
+                                                currentPosition.get(), hashNode);
+
+                                        currentPosition.set(
+                                                hashNode.getRightNode());
+
+                                        level.incrementAndGet();
+                                    } else {
+                                        navigator.whenTheKeyWasNotFound(
+                                                compareResult < 0,
+                                                currentPosition.get(), hashNode);
+
+                                        end.set(true);
+                                    }
                                 }
                             }
                         }
-                    }
-                );
+                    );
+                }
             }
         }
     }

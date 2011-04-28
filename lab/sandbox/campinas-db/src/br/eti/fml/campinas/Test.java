@@ -1,77 +1,90 @@
 package br.eti.fml.campinas;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
  */
 public class Test {
+    private static final Logger log = Logger.getLogger(Test.class);
+
     public static void main(String[] args) throws IOException, InterruptedException {
         CampinasDB db = new CampinasDB("my database", "db", 1);
-        Map<String, byte[]> values = new HashMap<String, byte[]>();
 
-        System.out.println(db.getInfo());
+        log.info(db.getInfo());
         int tests = 1000000000;
         //int tests = 300000;
 
         DecimalFormat format = new DecimalFormat("#,###");
-        final ByteBuffer buffer = ByteBuffer.allocate(4);
+        AtomicLong checkpoint = new AtomicLong(System.currentTimeMillis());
+        AtomicLong count = new AtomicLong(0);
 
         try {
-            long now = System.currentTimeMillis();
+//            for (int i = 0; i < tests; i++) {
+//                count.incrementAndGet();
+//
+//                String key = "key" + i;
+//                byte[] value = getValue(i);
+//
+//                db.put(key, value);
+//
+//                if (i % 100000 == 0) {
+//                    log.info(format.format(i) + getSpeed(checkpoint, count));
+//                }
+//            }
+//
+            log.info("\n*** CHECKING... ");
 
             for (int i = 0; i < tests; i++) {
-                String key = "key" + i;
+                count.incrementAndGet();
 
-                buffer.position(0);
-                buffer.putInt(i);
-                byte[] value = new byte[4];
-                buffer.position(0);
-                buffer.get(value);
-
-                db.put(key, value);
-
-                if (i % 100000 == 0) {
-                    System.out.println(format.format(i));
-                    values.put(key, value);
-                }
-            }
-
-            System.out.println("\n\ntime 1 per key: "
-                    +  ((System.currentTimeMillis() - now) / (double) tests) + "ms");
-
-            System.out.println("\n*** CHECKING... ");
-
-            now = System.currentTimeMillis();
-
-            for (int i = 0; i < tests; i++) {
                 String key = "key" + i;
                 byte[] dataBaseValue = db.get(key);
+                byte[] writtenValue = getValue(i);
 
-                if (i % 100000 == 0) {
-                    byte[] writtenValue = values.get(key);
-
-                    if (Arrays.equals(writtenValue, dataBaseValue)) {
-                        System.out.println(format.format(i));
-                    } else {
-                        System.out.println(
-                                "*** ERROR " + Arrays.toString(dataBaseValue)
-                                        + " must be " + Arrays.toString(writtenValue));
+                if (Arrays.equals(writtenValue, dataBaseValue)) {
+                    if (i % 100000 == 0 ) {
+                        log.info(format.format(i) + " - "
+                                + getSpeed(checkpoint, count));
                     }
+                } else {
+                    log.info(format.format(i));
+                    log.info("*** ERROR " + Arrays.toString(dataBaseValue)
+                            + " must be " + Arrays.toString(writtenValue));
                 }
             }
 
-            System.out.println("\ntime 2 per key: " +  ((System.currentTimeMillis() - now) / (double) tests) + " ms");
-
-            System.out.println(db.getInfo());
+            log.info(db.getInfo());
 
         } finally {
             db.shutdown();
         }
+    }
+
+    private final static ByteBuffer buffer = ByteBuffer.allocate(4);
+    private final static DecimalFormat format = new DecimalFormat("#,##0");
+
+    private static String getSpeed(AtomicLong checkpoint, AtomicLong count) {
+        long now = System.currentTimeMillis();
+        double diffTimeInSec = now - checkpoint.get();
+        double registersPerSecond = ((double) count.get()) / (diffTimeInSec / 1000d);
+        checkpoint.set(now);
+        count.set(0);
+        return format.format(registersPerSecond) + " r/s";
+    }
+
+    private static byte[] getValue(int i) {
+        buffer.position(0);
+        buffer.putInt(i);
+        byte[] value = new byte[4];
+        buffer.position(0);
+        buffer.get(value);
+        return value;
     }
 }

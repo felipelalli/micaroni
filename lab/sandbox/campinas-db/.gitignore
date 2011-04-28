@@ -2,3 +2,4 @@ db/
 logs/
 out/
 jrat.*
+*.old

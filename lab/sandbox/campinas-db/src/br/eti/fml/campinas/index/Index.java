@@ -18,6 +18,7 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -211,6 +212,7 @@ public class Index {
     }    
 
     public String retrieveInfo() throws IOException {
+        final DecimalFormat format = new DecimalFormat("#,###");
         log.debug("Retrieving database info...");
 
         StringBuilder info = new StringBuilder();
@@ -275,29 +277,31 @@ public class Index {
 
         info.append("Name: ").append(this.metaInfo.getName()).append("\n");
         info.append("Index size: ").append(
-                this.indexSizeInBytes / ByteUtil.MB).append(" MB").append("\n");
+                format.format(this.indexSizeInBytes / ByteUtil.MB)).append(" MB").append("\n");
 
         info.append("Hash node size: ").append(
-                this.fileHashNode.length() / ByteUtil.MB)
+                format.format(this.fileHashNode.length() / ByteUtil.MB))
                     .append(" MB").append("\n");
 
         info.append("Corrupted index nodes: ")
-                .append(corruptedNodes.get()).append("\n");
+                .append(format.format(corruptedNodes.get())).append("\n");
 
         info.append("Corrupted hash nodes: ")
-                .append(corruptedHashNodes.get()).append("\n");
+                .append(format.format(corruptedHashNodes.get())).append("\n");
 
-        info.append("Keys: ").append(keys.get()).append("\n");
-        info.append("Total slots: ").append(slots).append("\n");
-        info.append("Free slots: ").append(freeSlots).append(" ")
+        info.append("Keys: ").append(format.format(keys.get())).append("\n");
+        info.append("Total slots: ").append(format.format(slots)).append("\n");
+        info.append("Free slots: ").append(format.format(freeSlots)).append(" ")
                 .append(percentage(freeSlots, slots)).append("\n");
 
-        info.append("Used slots: ").append(slots - freeSlots).append(" ")
+        info.append("Used slots: ").append(format.format(slots - freeSlots)).append(" ")
                 .append(percentage(slots - freeSlots, slots)).append("\n");
 
-        for (Integer n : sizes.keySet()) {
-            info.append("With: ").append(n).append(" keys: ")
-                    .append(sizes.get(n)).append(" ")
+        TreeSet<Integer> orderedSizes = new TreeSet<Integer>(sizes.keySet());
+        
+        for (Integer n : orderedSizes) {
+            info.append("Level ").append(n).append(": ")
+                    .append(format.format(sizes.get(n))).append(" ")
                 .append(percentage(sizes.get(n), slots)).append("\n");
         }
 
@@ -312,17 +316,15 @@ public class Index {
 
             @Override
             public void updateCurrentNode(
-                    long currentPosition,
-                    HashNode currentHashNode)
-                    throws IOException {
+                    long currentPosition, HashNode currentHashNode)
+                        throws IOException {
 
                 keys.incrementAndGet();
             }
 
             @Override
             public void nodeHasLeft(
-                    long currentPosition,
-                    HashNode currentHashNode)
+                    long currentPosition, HashNode currentHashNode)
                     throws IOException {
 
                 count.incrementAndGet();
@@ -330,9 +332,8 @@ public class Index {
 
             @Override
             public void nodeHasRight(
-                    long currentPosition,
-                    HashNode currentHashNode)
-                    throws IOException {
+                    long currentPosition, HashNode currentHashNode)
+                        throws IOException {
 
                 count.incrementAndGet();
             }
@@ -340,15 +341,13 @@ public class Index {
             @Override
             public void corruptedHashNode(
                     long currentPosition,
-                    HashNode currentHashNode)
-                    throws IOException {
+                    HashNode currentHashNode, int level)
+                        throws IOException {
 
-                log.error("The hash node '"
-                        + currentHashNode
-                        + "' is corrupted "
-                        + " at "
-                        + DebugUtil.niceName(
-                        currentPosition));
+                log.error("The hash node '" + currentHashNode
+                        + "' is corrupted " + " at "
+                        + DebugUtil.niceName(currentPosition)
+                        + " in level " + level);
 
                 corruptedHashNodes.incrementAndGet();
             }
@@ -437,11 +436,14 @@ public class Index {
                         if (indexNode.isCorruptedNode()) {
                             throw new CorruptedIndex(indexPosition, indexNode);
                         } else {
-                            final AtomicBoolean isCorrupted = new AtomicBoolean(false);
+                            final AtomicBoolean isCorrupted
+                                    = new AtomicBoolean(false);
+                            
                             final Pair<Long, HashNode> corruptedHashNode
                                     = new Pair<Long, HashNode>(null, null);
 
-                            HashNode.navigateThrough(indexNode.getHashNodeAddress(),
+                            HashNode.navigateThroughToFindAKey(
+                                    indexNode.getHashNodeAddress(),
                                     bytesKey, channelHashNode,
                                     getUpdateIndexNavigator(isCorrupted,
                                             corruptedHashNode, key, bytesKey,
@@ -469,17 +471,14 @@ public class Index {
 
             @Override
             public void whenTheKeyIsEqual(
-                    final long currentPosition,
-                    final HashNode currentHashNode)
+                    final long currentPosition, final HashNode currentHashNode)
                         throws IOException {
 
                 if (TRACE_ENABLED) {
                     log.trace("The key "
                             + DebugUtil.niceName(key)
                             + " was used before and will be updated at "
-                            + DebugUtil
-                                .niceName(
-                                        currentPosition));
+                            + DebugUtil.niceName(currentPosition));
                 }
 
                 // TODO: need to free address1 & address2 of currentHashNode
@@ -550,13 +549,9 @@ public class Index {
                                 // needs to update the left or right of currentHashNode
                                 HashNode newHashNode
                                         = new HashNode(
-                                        tempBuffer,
-                                        bytesKey,
-                                        flags,
-                                        address1,
-                                        address2,
-                                        HashNode.NOW,
-                                        HashNode.NULL,
+                                        tempBuffer, bytesKey,
+                                        flags, address1, address2,
+                                        HashNode.NOW, HashNode.NULL,
                                         HashNode.NULL);
 
                                 final long newHashNodeAddress
@@ -599,7 +594,7 @@ public class Index {
             @Override
             public void corruptedHashNode(
                     long currentPosition,
-                    HashNode currentHashNode) throws IOException {
+                    HashNode currentHashNode, int level) throws IOException {
 
                 corrupted.set(true);
                 corruptedHashNode.car = currentPosition;
@@ -631,10 +626,12 @@ public class Index {
                     channelIndex.read(nodeBuffer, indexPosition);
                     IndexNode indexNode = new IndexNode(nodeBuffer);
 
-                    if (indexNode.isCorruptedNode()) {
+                    if (indexNode.isEmpty()) {
+                        // returns null
+                    } else if (indexNode.isCorruptedNode()) {
                         throw new CorruptedIndex(indexPosition, indexNode);
                     } else {
-                        HashNode.navigateThrough(indexNode.getHashNodeAddress(),
+                        HashNode.navigateThroughToFindAKey(indexNode.getHashNodeAddress(),
                                 bytesKey, channelHashNode,
                                 getSearchNavigator(key, result,
                                         isCorrupted, corruptedHashNode));
@@ -711,7 +708,7 @@ public class Index {
             @Override
             public void corruptedHashNode(
                     long currentPosition,
-                    HashNode currentHashNode) throws IOException {
+                    HashNode currentHashNode, int level) throws IOException {
 
                 corrupted.set(true);
                 corruptedHashNode.car = currentPosition;
