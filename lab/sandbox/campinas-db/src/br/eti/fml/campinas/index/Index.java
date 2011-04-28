@@ -28,7 +28,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class Index {
     private static final Logger log = Logger.getLogger(Index.class);
-    public static final boolean TRACE_ENABLED = false;
 
     private RandomAccessFile fileIndex;
     private FileChannel channelIndex;
@@ -410,19 +409,15 @@ public class Index {
         final int slotPosition = getSlotPositionByKey(key);
 
         if (this.freeSlots.get(slotPosition) != (byte) 0) {
-            if (TRACE_ENABLED) {
-                log.trace("The slot is free, recording new node at "
-                        + DebugUtil.niceName(indexPosition) + " index position.");
-            }
+//            log.trace("The slot is free, recording new node at "
+//                    + DebugUtil.niceName(indexPosition) + " index position.");
 
             this.freeSlots.put(slotPosition, (byte) 0);
             writeNewNodeAtIndex(indexPosition, bytesKey, flags,
                     address1, address2, HashNode.NULL, HashNode.NULL);
         } else {
-            if (TRACE_ENABLED) {
-                log.trace("The slot " + DebugUtil.niceName(indexPosition)
-                        + " is used. Trying to find the key or a free slot.");
-            }
+//            log.trace("The slot " + DebugUtil.niceName(indexPosition)
+//                    + " is used. Trying to find the key or a free slot.");
 
             BufferPool.getInstance().doWithATemporaryBuffer(
                 IndexNode.INDEX_NODE_SIZE, new BufferPool.Action() {
@@ -446,7 +441,7 @@ public class Index {
                                     indexNode.getHashNodeAddress(),
                                     bytesKey, channelHashNode,
                                     getUpdateIndexNavigator(isCorrupted,
-                                            corruptedHashNode, key, bytesKey,
+                                            corruptedHashNode, bytesKey,
                                             flags, address1, address2)
                             );
 
@@ -463,7 +458,7 @@ public class Index {
 
     private HashNode.HashNodeNavigator getUpdateIndexNavigator(
             final AtomicBoolean corrupted,
-            final Pair<Long, HashNode> corruptedHashNode, final UUID key,
+            final Pair<Long, HashNode> corruptedHashNode,
             final byte[] bytesKey, final byte flags, final byte address1,
             final long address2) {
         
@@ -474,12 +469,10 @@ public class Index {
                     final long currentPosition, final HashNode currentHashNode)
                         throws IOException {
 
-                if (TRACE_ENABLED) {
-                    log.trace("The key "
-                            + DebugUtil.niceName(key)
-                            + " was used before and will be updated at "
-                            + DebugUtil.niceName(currentPosition));
-                }
+//                log.trace("The key "
+//                        + DebugUtil.niceName(key)
+//                        + " was used before and will be updated at "
+//                        + DebugUtil.niceName(currentPosition));
 
                 // TODO: need to free address1 & address2 of currentHashNode
 
@@ -511,14 +504,10 @@ public class Index {
                     long currentPosition,
                     HashNode currentHashNode) throws IOException {
 
-                if (TRACE_ENABLED) {
-                    log.trace("The key "
-                            + DebugUtil.niceName(key)
-                            + " was not found yet. Going to the left node: "
-                            + DebugUtil.niceName(
-                                currentHashNode
-                                        .getLeftNode()));
-                }
+//                log.trace("The key "
+//                        + DebugUtil.niceName(key)
+//                        + " was not found yet. Going to the left node: "
+//                        + DebugUtil.niceName(currentHashNode.getLeftNode()));
             }
 
             @Override
@@ -526,12 +515,9 @@ public class Index {
                     long currentPosition,
                     HashNode currentHashNode) throws IOException {
 
-                if (TRACE_ENABLED) {
-                    log.trace("The key " + DebugUtil.niceName(key)
-                            + " was not found yet. Going to the right node: "
-                            + DebugUtil.niceName(
-                                currentHashNode.getLeftNode()));
-                }
+//                    log.trace("The key " + DebugUtil.niceName(key)
+//                            + " was not found yet. Going to the right node: "
+//                            + DebugUtil.niceName(currentHashNode.getLeftNode()));
             }
 
             @Override
@@ -557,11 +543,9 @@ public class Index {
                                 final long newHashNodeAddress
                                         = allocateAndPut(newHashNode);
 
-                                if (TRACE_ENABLED) {
-                                    log.trace("The key " + DebugUtil.niceName(key)
-                                            + " was not found. Creating a new node at "
-                                            + DebugUtil.niceName(newHashNodeAddress));
-                                }
+//                                log.trace("The key " + DebugUtil.niceName(key)
+//                                        + " was not found. Creating a new node at "
+//                                        + DebugUtil.niceName(newHashNodeAddress));
 
                                 BufferPool.getInstance().doWithATemporaryBuffer(
                                     HashNode.HASH_NODE_SIZE, new BufferPool.Action() {
@@ -633,7 +617,7 @@ public class Index {
                     } else {
                         HashNode.navigateThroughToFindAKey(indexNode.getHashNodeAddress(),
                                 bytesKey, channelHashNode,
-                                getSearchNavigator(key, result,
+                                getSearchNavigator(result,
                                         isCorrupted, corruptedHashNode));
 
                         if (isCorrupted.get()) {
@@ -649,7 +633,7 @@ public class Index {
     }
 
     private HashNode.HashNodeNavigator getSearchNavigator(
-            final UUID key, final HashNode[] result,
+            final HashNode[] result,
             final AtomicBoolean corrupted,
             final Pair<Long, HashNode> corruptedHashNode) {
 
@@ -658,10 +642,8 @@ public class Index {
             public void whenTheKeyIsEqual(long currentPosition,
                             HashNode currentHashNode)  throws IOException {
 
-                if (TRACE_ENABLED) {
-                    log.trace("The key " + DebugUtil.niceName(key)
-                            + " was found at " + DebugUtil.niceName(currentPosition));
-                }
+//                log.trace("The key " + DebugUtil.niceName(key)
+//                        + " was found at " + DebugUtil.niceName(currentPosition));
 
                 result[0] = currentHashNode;
             }
@@ -671,12 +653,9 @@ public class Index {
                     long currentPosition,
                     HashNode currentHashNode) throws IOException {
 
-                if (TRACE_ENABLED) {
-                    log.trace("The key " + DebugUtil.niceName(key)
-                            + " was not found yet. Going to the left node: "
-                            + DebugUtil.niceName(
-                                currentHashNode.getLeftNode()));
-                }
+//                log.trace("The key " + DebugUtil.niceName(key)
+//                        + " was not found yet. Going to the left node: "
+//                        + DebugUtil.niceName(currentHashNode.getLeftNode()));
             }
 
             @Override
@@ -684,12 +663,9 @@ public class Index {
                     long currentPosition,
                     HashNode currentHashNode) throws IOException {
 
-                if (TRACE_ENABLED) {
-                    log.trace("The key " + DebugUtil.niceName(key)
-                            + " was not found yet. Going to the right node: "
-                            + DebugUtil.niceName(
-                                currentHashNode.getLeftNode()));
-                }
+//                log.trace("The key " + DebugUtil.niceName(key)
+//                        + " was not found yet. Going to the right node: "
+//                        + DebugUtil.niceName(currentHashNode.getLeftNode()));
             }
 
             @Override
@@ -697,11 +673,7 @@ public class Index {
                     boolean isLeft, long currentPosition,
                     HashNode currentHashNode) throws IOException {
 
-                if (TRACE_ENABLED) {
-                    log.trace("The key " + DebugUtil.niceName(key)
-                            + " was not found!");
-                }
-
+//                log.trace("The key " + DebugUtil.niceName(key) + " was not found!");
                 result[0] = null;
             }
 

@@ -15,30 +15,32 @@ public class Test {
     private static final Logger log = Logger.getLogger(Test.class);
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        CampinasDB db = new CampinasDB("my database", "db", 1);
+        CampinasDB db = new CampinasDB("my database", "db", 512);
 
         log.info(db.getInfo());
-        int tests = 1000000000;
+        //int tests = 1000000000;
         //int tests = 300000;
+        //int tests = 50000000;
+        int tests = 1000000;
 
         DecimalFormat format = new DecimalFormat("#,###");
         AtomicLong checkpoint = new AtomicLong(System.currentTimeMillis());
         AtomicLong count = new AtomicLong(0);
 
         try {
-//            for (int i = 0; i < tests; i++) {
-//                count.incrementAndGet();
-//
-//                String key = "key" + i;
-//                byte[] value = getValue(i);
-//
-//                db.put(key, value);
-//
-//                if (i % 100000 == 0) {
-//                    log.info(format.format(i) + getSpeed(checkpoint, count));
-//                }
-//            }
-//
+            for (int i = 0; i < tests; i++) {
+                count.incrementAndGet();
+
+                String key = "key" + i;
+                byte[] value = getValue(i);
+
+                db.put(key, value);
+
+                if (i % 100000 == 0) {
+                    log.info(format.format(i) + " - " + getSpeed(checkpoint, count));
+                }
+            }
+
             log.info("\n*** CHECKING... ");
 
             for (int i = 0; i < tests; i++) {
@@ -69,14 +71,18 @@ public class Test {
 
     private final static ByteBuffer buffer = ByteBuffer.allocate(4);
     private final static DecimalFormat format = new DecimalFormat("#,##0");
+    private final static DecimalFormat format2 = new DecimalFormat("#,##0.0000");
 
     private static String getSpeed(AtomicLong checkpoint, AtomicLong count) {
         long now = System.currentTimeMillis();
-        double diffTimeInSec = now - checkpoint.get();
-        double registersPerSecond = ((double) count.get()) / (diffTimeInSec / 1000d);
+        double diffTime = now - checkpoint.get();
+        double registersPerSecond = ((double) count.get()) / (diffTime / 1000d);
+        double millis = diffTime / count.get();
+
         checkpoint.set(now);
         count.set(0);
-        return format.format(registersPerSecond) + " r/s";
+        return format.format(registersPerSecond) + " r/s or "
+                + format2.format(millis) + " ms";
     }
 
     private static byte[] getValue(int i) {
