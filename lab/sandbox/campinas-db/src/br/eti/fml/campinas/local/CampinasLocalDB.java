@@ -1,9 +1,12 @@
 package br.eti.fml.campinas.local;
 
+import br.eti.fml.campinas.local.body.Body;
 import br.eti.fml.campinas.local.index.HashNode;
 import br.eti.fml.campinas.local.index.Index;
 import br.eti.fml.campinas.util.BufferPool;
 import br.eti.fml.campinas.util.ByteUtil;
+import br.eti.fml.campinas.util.Pair;
+import br.eti.fml.data.db.keyvalue.KeyValue;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -18,14 +21,14 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
  */
 @SuppressWarnings("unused")
-public class CampinasLocalDB {
+public class CampinasLocalDB implements KeyValue {
     private static final Logger log = Logger.getLogger(CampinasLocalDB.class);
 
     private volatile boolean down = false;
 
     private MetaInfo metaInfo;
     private Index index;
-    //private Body body;
+    private Body body;
 
     public CampinasLocalDB(String exclusiveName, String pathDirectory,
                            int indexSizeInMegabytes) throws IOException {
@@ -44,7 +47,7 @@ public class CampinasLocalDB {
 
         this.metaInfo = new MetaInfo(exclusiveName, directory);
         this.index = new Index(directory, metaInfo, indexSizeInMegabytes);
-        // TODO
+        this.body = new Body(directory);
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
@@ -72,10 +75,13 @@ public class CampinasLocalDB {
             flags |= Flag.DELETED.getValue();
         } else {
             if (value.length > 8) {
-                assert value.length <= ByteUtil.GB;
+                assert value.length < ByteUtil.GB;
+
                 flags |= Flag.POINTER.getValue();
-                address1 = 1; // TODO
-                address2.set(0L); // TODO
+                Pair<Byte, Long> address = this.body.allocateAndPut(value);
+
+                address1 = address.car;
+                address2.set(address.cdr);
             } else {
                 flags |= Flag.N_BYTES.getValue();
                 address1 = (byte) value.length;

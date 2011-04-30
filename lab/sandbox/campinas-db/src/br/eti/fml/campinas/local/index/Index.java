@@ -318,7 +318,8 @@ public class Index {
     }
 
     private void checkSizesConsistence() throws IOException {
-        this.checkFileSize("index", this.indexSizeInBytes, this.fileIndex);
+        FileUtil.checkFileSize("index", this.indexSizeInBytes,
+                this.fileIndex, IndexNode.INDEX_NODE_SIZE);
 
         this.currentHashNodeFileSize = this.fileHashNode.length();
 
@@ -326,7 +327,9 @@ public class Index {
                 this.currentHashNodeFileSize, HashNode.HASH_NODE_SIZE);
 
         if (rightHashNodeFileSize != currentHashNodeFileSize) {
-            this.checkFileSize("hash node", rightHashNodeFileSize, this.fileHashNode);
+            FileUtil.checkFileSize("hash node", rightHashNodeFileSize,
+                    this.fileHashNode, IndexNode.INDEX_NODE_SIZE);
+            
             this.currentHashNodeFileSize = rightHashNodeFileSize;
         }
     }
@@ -362,22 +365,6 @@ public class Index {
             throw new IOException(fileChannel + " in '"
                     + directoryPath.getAbsolutePath()
                     + "' is locked! Unlock it first.");
-        }
-    }
-
-    private void checkFileSize(String fileName, long size,
-                               RandomAccessFile file) throws IOException {
-
-        long currentIndexSize = file.length();
-
-        if (currentIndexSize != size) {
-            log.error("Something is really wrong with the file " + fileName +
-                    "size! Trying to fix it. Resizing from " + currentIndexSize
-                    + " to " + size + ". The size must be multiple of "
-                    + IndexNode.INDEX_NODE_SIZE + ". It's very probable that some"
-                    + " data is corrupted!");
-
-            file.setLength(size);
         }
     }
 
@@ -667,7 +654,8 @@ public class Index {
 
                             if (isCorrupted.get()) {
                                 throw new CorruptedIndexException(
-                                        corruptedHashNode.car, corruptedHashNode.cdr);
+                                        corruptedHashNode.car,
+                                        corruptedHashNode.cdr);
                             }
                         }
                     }

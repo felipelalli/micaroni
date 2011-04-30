@@ -1,6 +1,10 @@
 package br.eti.fml.campinas.util;
 
+import br.eti.fml.campinas.local.index.IndexNode;
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Arrays;
@@ -10,6 +14,8 @@ import java.util.Arrays;
  */
 @SuppressWarnings("unused")
 public final class FileUtil {
+    private static final Logger log = Logger.getLogger(FileUtil.class);
+
     private FileUtil() {
     }
 
@@ -41,5 +47,22 @@ public final class FileUtil {
                 filled += remaining;
             }
         } while (remaining > 0L);        
+    }
+
+    public static void checkFileSize(
+            String fileName, long size,
+            RandomAccessFile file, long multiple) throws IOException {
+
+        long currentSize = file.length();
+
+        if (currentSize != size) {
+            log.error("Something is really wrong with the file " + fileName +
+                    "size! Trying to fix it. Resizing from " + currentSize
+                    + " to " + size + ". The size must be multiple of "
+                    + multiple + ". It's very probable that some"
+                    + " data is corrupted!");
+
+            file.setLength(size);
+        }
     }
 }
