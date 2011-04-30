@@ -16,7 +16,8 @@ public class Test {
     private static final Logger log = Logger.getLogger(Test.class);
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        CampinasLocalDB db = new CampinasLocalDB("my database", "db", 1);
+        CampinasLocalDB db = new CampinasLocalDB("my database", "db",
+                1999999999);
 
         log.info(db.getInfo());
         //int tests = 1000000000;

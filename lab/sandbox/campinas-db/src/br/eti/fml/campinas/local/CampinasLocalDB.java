@@ -1,7 +1,7 @@
 package br.eti.fml.campinas.local;
 
-import br.eti.fml.campinas.index.HashNode;
-import br.eti.fml.campinas.index.Index;
+import br.eti.fml.campinas.local.index.HashNode;
+import br.eti.fml.campinas.local.index.Index;
 import br.eti.fml.campinas.util.BufferPool;
 import br.eti.fml.campinas.util.ByteUtil;
 import org.apache.log4j.Logger;

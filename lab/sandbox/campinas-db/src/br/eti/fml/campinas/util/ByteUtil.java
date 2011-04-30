@@ -1,7 +1,5 @@
 package br.eti.fml.campinas.util;
 
-import br.eti.fml.campinas.index.HashNode;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;

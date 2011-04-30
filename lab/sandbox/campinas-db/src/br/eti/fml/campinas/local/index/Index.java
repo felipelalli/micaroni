@@ -1,6 +1,7 @@
 package br.eti.fml.campinas.local.index;
 
 import br.eti.fml.campinas.local.MetaInfo;
+import br.eti.fml.campinas.local.NotEnoughSpaceInDiskException;
 import br.eti.fml.campinas.util.BufferPool;
 import br.eti.fml.campinas.util.ByteUtil;
 import br.eti.fml.campinas.util.DebugUtil;
@@ -22,6 +23,7 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
@@ -29,17 +31,22 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Index {
     private static final Logger log = Logger.getLogger(Index.class);
 
+    private static final byte FREE = (byte) 1;
+    private static final byte BUSY = (byte) 0;
+
     private RandomAccessFile fileIndex;
+    private RandomAccessFile fileLazyIndex;
     private FileChannel channelIndex;
-    private FileLock lockIndex;
+    private FileChannel channelLazyIndex;
+    private AtomicReference<FileLock> lockIndex = new AtomicReference<FileLock>();
+    private AtomicReference<FileLock> lockLazyIndex = new AtomicReference<FileLock>();
 
     private RandomAccessFile fileHashNode;
     private FileChannel channelHashNode;
-    private FileLock lockHashNode;
+    private AtomicReference<FileLock> lockHashNode = new AtomicReference<FileLock>();
     private long currentHashNodeFileSize;
 
     private MetaInfo metaInfo;
-
     private long indexSizeInBytes;
 
     // cache
@@ -47,6 +54,8 @@ public class Index {
 
     public Index(File directoryPath, MetaInfo metaInfo,
                  int indexSizeInMegabytes) throws IOException {
+
+        this.checkFreeDiskSpace(directoryPath);
 
         this.metaInfo = metaInfo;
         this.indexSizeInBytes = indexSizeInMegabytes * ByteUtil.MB;
@@ -61,53 +70,49 @@ public class Index {
         File fIndex = new File(directoryPath.getAbsolutePath()
                 + File.separator + "index");
 
+        File fIndexBackup = new File(directoryPath.getAbsolutePath()
+                + File.separator + "lazy-index");
+
         File fHashNode = new File(directoryPath.getAbsolutePath()
-                + File.separator + "hashnode");
+                + File.separator + "hash-node");
 
         this.fileIndex = new RandomAccessFile(fIndex, "rw");
+        this.fileLazyIndex = new RandomAccessFile(fIndexBackup, "rw");
         this.fileHashNode = new RandomAccessFile(fHashNode, "rw");
         this.channelIndex = this.fileIndex.getChannel();
+        this.channelLazyIndex = this.fileLazyIndex.getChannel();
         this.channelHashNode = this.fileHashNode.getChannel();
-        this.lockIndex = this.channelIndex.tryLock();
-        this.lockHashNode = this.channelHashNode.tryLock();
 
-        if (this.lockIndex == null) {
-            throw new IOException("Index in '"
-                    + directoryPath.getAbsolutePath()
-                    + "' is locked! Unlock it first.");
-        }
+        this.lock(this.lockIndex, this.channelIndex, directoryPath);
+        this.lock(this.lockHashNode, this.channelHashNode, directoryPath);
+        this.lock(this.lockLazyIndex, this.channelLazyIndex, directoryPath);
 
-        if (this.lockHashNode == null) {
-            throw new IOException("Hashnode index in '"
-                    + directoryPath.getAbsolutePath()
-                    + "' is locked! Unlock it first.");
-        }
+        this.checkFileSize("index", this.indexSizeInBytes, this.fileIndex);
+        this.checkFileSize("lazy index", this.indexSizeInBytes,
+                this.fileLazyIndex);
 
         this.currentHashNodeFileSize = this.fileHashNode.length();
 
-        if (this.currentHashNodeFileSize % HashNode.HASH_NODE_SIZE != 0) {
-            long newSize = ByteUtil.getNextMultiple(
-                    this.currentHashNodeFileSize, HashNode.HASH_NODE_SIZE);
+        long rightHashNodeFileSize = ByteUtil.getNextMultiple(
+                this.currentHashNodeFileSize, HashNode.HASH_NODE_SIZE);
 
-            log.error("Something is really wrong with the hash node file size! Trying"
-                    + " to fix it. Resizing from " + this.currentHashNodeFileSize
-                    + " to " + newSize + ". The size must be multiple of "
-                    + HashNode.HASH_NODE_SIZE + ". It's very probable that some"
-                    + " data is corrupted!");
-
-            this.currentHashNodeFileSize = newSize;
-            this.fileHashNode.setLength(newSize);
-
-            assert currentHashNodeFileSize % IndexNode.INDEX_NODE_SIZE == 0;
+        if (rightHashNodeFileSize != currentHashNodeFileSize) {
+            this.checkFileSize("hash node", rightHashNodeFileSize, this.fileHashNode);
+            this.currentHashNodeFileSize = rightHashNodeFileSize;
         }
 
         if (this.metaInfo.isFirstTime()) {
-            FileUtil.fillWithZero(this.channelIndex, 0L, indexSizeInBytes);
+            this.fileIndex.setLength(this.indexSizeInBytes);
+            this.fileLazyIndex.setLength(this.indexSizeInBytes);
+
+            FileUtil.fillWith((byte) 0xFF, this.channelIndex, 0L,
+                    indexSizeInBytes);
+
+            FileUtil.fillWith((byte) 0xFF, this.channelLazyIndex, 0L,
+                    indexSizeInBytes);
 
             metaInfo.writeFirstTime(indexSizeInMegabytes,
                     System.currentTimeMillis());
-
-            this.fileIndex.setLength(this.indexSizeInBytes);
         } else {
             metaInfo.checkValues(this.metaInfo.getName(), indexSizeInMegabytes);
 
@@ -131,11 +136,11 @@ public class Index {
             log.info("Your first time with this database. All "
                     + slots + " slots are free.");
 
-            Arrays.fill(freeSlotsTemp, (byte) 1);
+            Arrays.fill(freeSlotsTemp, FREE);
             this.freeSlots.put(freeSlotsTemp);
         } else {
             log.info("Caching index up to " + slots + " slots...");
-            Arrays.fill(freeSlotsTemp, (byte) 0);
+            Arrays.fill(freeSlotsTemp, BUSY);
             this.freeSlots.put(freeSlotsTemp);
 
             long now = System.currentTimeMillis();
@@ -160,7 +165,7 @@ public class Index {
                             IndexNode indexNode = new IndexNode(buffer);
 
                             if (indexNode.isEmpty()) {
-                                freeSlots.put(finalPosition, (byte) 1);
+                                freeSlots.put(finalPosition, FREE);
                             } else if (indexNode.isCorruptedNode()) {
                                 log.error("The node '" + indexNode + "' is corrupted "
                                         + " at " + DebugUtil.niceName(indexPosition));
@@ -175,11 +180,55 @@ public class Index {
         log.info("Ok! The database is ready!");
     }
 
+    private void checkFreeDiskSpace(File directoryPath)
+            throws NotEnoughSpaceInDiskException {
+
+        long min = this.indexSizeInBytes * 3;
+
+        if (directoryPath.getUsableSpace() < min) {
+            throw new NotEnoughSpaceInDiskException("The partition where " +
+                    "" + directoryPath.getAbsolutePath() + " is has no " +
+                    "enough disk space! You need at least " + (min /
+                    ByteUtil.MB) + " MB (index * 3).");
+        }
+    }
+
+    private void lock(AtomicReference<FileLock> lock,
+                      FileChannel fileChannel,
+                      File directoryPath) throws IOException {
+
+        lock.set(fileChannel.tryLock());
+
+        if (lock.get() == null) {
+            throw new IOException(fileChannel + " in '"
+                    + directoryPath.getAbsolutePath()
+                    + "' is locked! Unlock it first.");
+        }
+    }
+
+    private void checkFileSize(String fileName, long size,
+                               RandomAccessFile file) throws IOException {
+
+        long currentIndexSize = file.length();
+
+        if (currentIndexSize != size) {
+            log.error("Something is really wrong with the file " + fileName +
+                    "size! Trying to fix it. Resizing from " + currentIndexSize
+                    + " to " + size + ". The size must be multiple of "
+                    + IndexNode.INDEX_NODE_SIZE + ". It's very probable that some"
+                    + " data is corrupted!");
+
+            file.setLength(size);
+        }
+    }
+
     public void shutdown() throws IOException {
-        this.lockIndex.release();
-        this.lockHashNode.release();
+        this.lockIndex.get().release();
+        this.lockHashNode.get().release();
+        this.lockLazyIndex.get().release();
         this.fileIndex.close();
         this.fileHashNode.close();
+        this.fileLazyIndex.close();
     }
     
     private String percentage(long part, long total) {
@@ -236,7 +285,7 @@ public class Index {
 
             final long indexPosition = this.getIndexPositionByNumber(n);
 
-            if (this.freeSlots.get(n) != (byte) 0) {
+            if (this.freeSlots.get(n) != BUSY) {
                 freeSlots++;
             } else {
                 BufferPool.getInstance().doWithATemporaryBuffer(
@@ -409,11 +458,11 @@ public class Index {
         final long indexPosition = getIndexPositionByKey(key);
         final int slotPosition = getSlotPositionByKey(key);
 
-        if (this.freeSlots.get(slotPosition) != (byte) 0) {
+        if (this.freeSlots.get(slotPosition) != BUSY) {
 //            log.trace("The slot is free, recording new node at "
 //                    + DebugUtil.niceName(indexPosition) + " index position.");
 
-            this.freeSlots.put(slotPosition, (byte) 0);
+            this.freeSlots.put(slotPosition, BUSY);
             writeNewNodeAtIndex(indexPosition, bytesKey, flags,
                     address1, address2, HashNode.NULL, HashNode.NULL);
         } else {
@@ -430,7 +479,7 @@ public class Index {
                         IndexNode indexNode = new IndexNode(nodeBuffer);
 
                         if (indexNode.isCorruptedNode()) {
-                            throw new CorruptedIndex(indexPosition, indexNode);
+                            throw new CorruptedIndexException(indexPosition, indexNode);
                         } else {
                             final AtomicBoolean isCorrupted
                                     = new AtomicBoolean(false);
@@ -447,7 +496,7 @@ public class Index {
                             );
 
                             if (isCorrupted.get()) {
-                                throw new CorruptedIndex(
+                                throw new CorruptedIndexException(
                                         corruptedHashNode.car, corruptedHashNode.cdr);
                             }
                         }
@@ -614,7 +663,7 @@ public class Index {
                     if (indexNode.isEmpty()) {
                         // returns null
                     } else if (indexNode.isCorruptedNode()) {
-                        throw new CorruptedIndex(indexPosition, indexNode);
+                        throw new CorruptedIndexException(indexPosition, indexNode);
                     } else {
                         HashNode.navigateThroughToFindAKey(indexNode.getHashNodeAddress(),
                                 bytesKey, channelHashNode,
@@ -622,7 +671,7 @@ public class Index {
                                         isCorrupted, corruptedHashNode));
 
                         if (isCorrupted.get()) {
-                            throw new CorruptedIndex(
+                            throw new CorruptedIndexException(
                                     corruptedHashNode.car, corruptedHashNode.cdr);
                         }
                     }

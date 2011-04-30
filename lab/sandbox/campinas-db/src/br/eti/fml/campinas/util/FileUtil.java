@@ -13,14 +13,14 @@ public final class FileUtil {
     private FileUtil() {
     }
 
-    public static void fillWithZero(
-            FileChannel channel,
+    public static void fillWith(
+            byte whichOne, FileChannel channel,
             long position, long sizeInBytes) throws IOException {
 
         channel.position(position);
 
         byte[] b = new byte[512 * ByteUtil.KB];
-        Arrays.fill(b, (byte) 0);
+        Arrays.fill(b, whichOne);
         ByteBuffer buffer = ByteBuffer.wrap(b);
 
         int filled = 0;
