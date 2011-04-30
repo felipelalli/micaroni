@@ -79,7 +79,7 @@ public class HashNode extends Node {
                 key, flags, address1, address2, leftNode, rightNode, timestamp);
 
         int realChecksum = Arrays.hashCode(nodeBuffer);
-        this.setCorruptedNode(realChecksum != checksum);
+        this.setCorrupted(realChecksum != checksum);
 
         this.hashNode = hashNode;
     }
@@ -123,7 +123,7 @@ public class HashNode extends Node {
         final byte[] hashNode = new byte[HASH_NODE_SIZE - CHECKSUM_SIZE];
 
         try {
-            BufferPool.getInstance().doWithATemporaryBuffer(
+            BufferPool.INSTANCE.doWithATemporaryBuffer(
                     HASH_NODE_SIZE, new BufferPool.Action() {
                         @Override
                         public void doWith(ByteBuffer buffer) {
@@ -221,53 +221,53 @@ public class HashNode extends Node {
                     now = System.currentTimeMillis();
                 }
 
-                BufferPool.getInstance().doWithATemporaryBuffer(
-                    HASH_NODE_SIZE, new BufferPool.Action() {
-                        @Override
-                        public void doWith(ByteBuffer buffer) throws IOException {
-                            file.read(buffer, currentPosition);
+                BufferPool.INSTANCE.doWithATemporaryBuffer(
+                        HASH_NODE_SIZE, new BufferPool.Action() {
+                            @Override
+                            public void doWith(ByteBuffer buffer) throws IOException {
+                                file.read(buffer, currentPosition);
 
-                            final HashNode hashNode = new HashNode(buffer);
-                            navigator.updateCurrentNode(currentPosition, hashNode);
+                                final HashNode hashNode = new HashNode(buffer);
+                                navigator.updateCurrentNode(currentPosition, hashNode);
 
-                            if (hashNode.isCorruptedNode()) {
-                                navigator.corruptedHashNode(currentPosition,
-                                        hashNode, usedAddresses.size());
-                            } else {
-                                long leftNode = hashNode.getLeftNode();
+                                if (hashNode.isCorrupted()) {
+                                    navigator.corruptedHashNode(currentPosition,
+                                            hashNode, usedAddresses.size());
+                                } else {
+                                    long leftNode = hashNode.getLeftNode();
 
-                                if (leftNode != HashNode.NULL) {
-                                    if (usedAddresses.contains(leftNode)) {
-                                        log.error("Something is crazy here! The LEFT node "
-                                                + DebugUtil.niceName(leftNode)
-                                                + " was used before! current hash node: "
-                                                + hashNode + ". Level: "
-                                                + usedAddresses.size());
-                                    } else {
-                                        nextAddress.push(leftNode);
-                                        navigator.nodeHasLeft(
-                                                currentPosition, hashNode);
+                                    if (leftNode != HashNode.NULL) {
+                                        if (usedAddresses.contains(leftNode)) {
+                                            log.error("Something is crazy here! The LEFT node "
+                                                    + DebugUtil.niceName(leftNode)
+                                                    + " was used before! current hash node: "
+                                                    + hashNode + ". Level: "
+                                                    + usedAddresses.size());
+                                        } else {
+                                            nextAddress.push(leftNode);
+                                            navigator.nodeHasLeft(
+                                                    currentPosition, hashNode);
+                                        }
                                     }
-                                }
 
-                                long rightNode = hashNode.getRightNode();
+                                    long rightNode = hashNode.getRightNode();
 
-                                if (rightNode != HashNode.NULL) {
-                                    if (usedAddresses.contains(rightNode)) {
-                                        log.error("Something is crazy here! The RIGHT node "
-                                                + DebugUtil.niceName(rightNode)
-                                                + " was used before! current hash node: "
-                                                + hashNode + ". Level: "
-                                                + usedAddresses.size());
-                                    } else {
-                                        nextAddress.push(rightNode);
-                                        navigator.nodeHasRight(
-                                                currentPosition, hashNode);
+                                    if (rightNode != HashNode.NULL) {
+                                        if (usedAddresses.contains(rightNode)) {
+                                            log.error("Something is crazy here! The RIGHT node "
+                                                    + DebugUtil.niceName(rightNode)
+                                                    + " was used before! current hash node: "
+                                                    + hashNode + ". Level: "
+                                                    + usedAddresses.size());
+                                        } else {
+                                            nextAddress.push(rightNode);
+                                            navigator.nodeHasRight(
+                                                    currentPosition, hashNode);
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
                 );
             }
         }
@@ -296,60 +296,60 @@ public class HashNode extends Node {
                 } else {
                     usedAddresses.add(currentPosition.get());
 
-                    BufferPool.getInstance().doWithATemporaryBuffer(
-                        HASH_NODE_SIZE, new BufferPool.Action() {
-                            @Override
-                            public void doWith(ByteBuffer buffer) throws IOException {
-                                file.read(buffer, currentPosition.get());
-                                final HashNode hashNode = new HashNode(buffer);
+                    BufferPool.INSTANCE.doWithATemporaryBuffer(
+                            HASH_NODE_SIZE, new BufferPool.Action() {
+                                @Override
+                                public void doWith(ByteBuffer buffer) throws IOException {
+                                    file.read(buffer, currentPosition.get());
+                                    final HashNode hashNode = new HashNode(buffer);
 
-                                if (hashNode.isCorruptedNode()) {
-                                    navigator.corruptedHashNode(
-                                            currentPosition.get(), hashNode,
-                                            level.get());
-
-                                    end.set(true);
-                                } else {
-                                    int compareResult = ByteUtil.compare(
-                                            hashNode.getKey(), bytesKey);
-
-                                    if (compareResult == 0) {
-                                        navigator.whenTheKeyIsEqual(
-                                                currentPosition.get(), hashNode);
+                                    if (hashNode.isCorrupted()) {
+                                        navigator.corruptedHashNode(
+                                                currentPosition.get(), hashNode,
+                                                level.get());
 
                                         end.set(true);
-                                    } else if (compareResult < 0
-                                            && hashNode.getLeftNode()
-                                                != HashNode.NULL) {
-
-                                        navigator.interceptGoingToLeftNode(
-                                                currentPosition.get(), hashNode);
-
-                                        currentPosition.set(
-                                                hashNode.getLeftNode());
-
-                                        level.incrementAndGet();
-                                    } else if (compareResult > 0
-                                            && hashNode.getRightNode()
-                                                != HashNode.NULL) {
-
-                                        navigator.interceptGoingToRightNode(
-                                                currentPosition.get(), hashNode);
-
-                                        currentPosition.set(
-                                                hashNode.getRightNode());
-
-                                        level.incrementAndGet();
                                     } else {
-                                        navigator.whenTheKeyWasNotFound(
-                                                compareResult < 0,
-                                                currentPosition.get(), hashNode);
+                                        int compareResult = ByteUtil.compare(
+                                                hashNode.getKey(), bytesKey);
 
-                                        end.set(true);
+                                        if (compareResult == 0) {
+                                            navigator.whenTheKeyIsEqual(
+                                                    currentPosition.get(), hashNode);
+
+                                            end.set(true);
+                                        } else if (compareResult < 0
+                                                && hashNode.getLeftNode()
+                                                != HashNode.NULL) {
+
+                                            navigator.interceptGoingToLeftNode(
+                                                    currentPosition.get(), hashNode);
+
+                                            currentPosition.set(
+                                                    hashNode.getLeftNode());
+
+                                            level.incrementAndGet();
+                                        } else if (compareResult > 0
+                                                && hashNode.getRightNode()
+                                                != HashNode.NULL) {
+
+                                            navigator.interceptGoingToRightNode(
+                                                    currentPosition.get(), hashNode);
+
+                                            currentPosition.set(
+                                                    hashNode.getRightNode());
+
+                                            level.incrementAndGet();
+                                        } else {
+                                            navigator.whenTheKeyWasNotFound(
+                                                    compareResult < 0,
+                                                    currentPosition.get(), hashNode);
+
+                                            end.set(true);
+                                        }
                                     }
                                 }
                             }
-                        }
                     );
                 }
             }

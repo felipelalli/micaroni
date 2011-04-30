@@ -1,9 +1,6 @@
 package br.eti.fml.campinas.local.index;
 
-import br.eti.fml.campinas.util.DebugUtil;
-
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 /**
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
@@ -16,31 +13,51 @@ public class IndexNode extends Node {
     public static final int ADDRESS_SIZE = 8;
     public static final int INDEX_NODE_SIZE = ADDRESS_SIZE;
     public static final long NULL = -1L;
+    private static final long K = 38217372L;
 
     private long hashNodeAddress;
     private boolean empty;
 
     private ByteBuffer indexNode;
 
-    public IndexNode(ByteBuffer indexNode) {
-        super(Node.NodeType.INDEX_NODE);
-
-        indexNode.position(0);
-        hashNodeAddress = indexNode.getLong();
-        this.indexNode = indexNode;
-        this.empty = (hashNodeAddress == NULL);
+    public enum From {
+        BINARY,
+        VALUE
     }
 
-    public IndexNode(ByteBuffer tempBuffer, long hashNodeAddress) {
+    public IndexNode(ByteBuffer buffer, long address, From from) {
         super(Node.NodeType.INDEX_NODE);
 
-        this.hashNodeAddress = hashNodeAddress;
-        tempBuffer.position(0);
-        this.indexNode = tempBuffer.putLong(hashNodeAddress);
+        if (from.equals(From.VALUE)) {
+            this.hashNodeAddress = filter(address);
+            buffer.position(0);
+            this.indexNode = buffer.putLong(hashNodeAddress);
+        } else {
+            buffer.position(0);
+            hashNodeAddress = buffer.getLong();
+            this.indexNode = buffer;
+    
+            if (hashNodeAddress != address) {
+                setCorrupted(true);
+            }
+        }
+
+        this.empty = !isCorrupted() && (hashNodeAddress == NULL);
+    }
+
+    public static long filter(long address) {
+        return (address == NULL ? NULL : address ^ K);
+    }
+
+    public void fixNode(long newAddress) {
+        this.hashNodeAddress = filter(newAddress);
+        this.indexNode.position(0);
+        this.indexNode.putLong(this.hashNodeAddress);
+        setCorrupted(false);
     }
 
     public long getHashNodeAddress() {
-        return hashNodeAddress;
+        return filter(hashNodeAddress);
     }
 
     public boolean isEmpty() {
@@ -55,8 +72,11 @@ public class IndexNode extends Node {
     @Override
     public String toString() {
         return "IndexNode{" +
-                "hashNodeAddress=" + DebugUtil.niceName(hashNodeAddress) +
-                ", indexNode=" + Arrays.toString(indexNode.array()) +
+                "hashNodeAddress=" + hashNodeAddress +
+                ",^hashNodeAddress=" + getHashNodeAddress() +
+                ", empty=" + empty +
+                ", indexNode=" + indexNode +
+                ", isCorrupted=" + isCorrupted() +
                 '}';
     }
 }

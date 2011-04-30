@@ -15,16 +15,16 @@ public final class ByteUtil {
     }
 
     public static final long TB = 1024L * 1024L * 1024L * 1024L;
-    public static final int GB = 1024 * 1024 * 1024;
-    public static final int MB = 1024 * 1024;
-    public static final int KB = 1024;
-    public static final int B = 1;
+    public static final long GB = 1024L * 1024L * 1024L;
+    public static final long MB = 1024L * 1024L;
+    public static final long KB = 1024L;
+    public static final long B = 1L;
 
     public static byte[] UUID2bytes(final UUID uuid) {
         final byte[] bytes = new byte[16];
 
         try {
-            BufferPool.getInstance().doWithATemporaryBuffer(
+            BufferPool.INSTANCE.doWithATemporaryBuffer(
                     16, new BufferPool.Action() {
                         @Override
                         public void doWith(ByteBuffer buffer) {
@@ -48,7 +48,7 @@ public final class ByteUtil {
         final AtomicReference<UUID> result = new AtomicReference<UUID>();
 
         try {
-            BufferPool.getInstance().doWithATemporaryBuffer(
+            BufferPool.INSTANCE.doWithATemporaryBuffer(
                 16, new BufferPool.Action() {
                     @Override
                     public void doWith(ByteBuffer buffer) {

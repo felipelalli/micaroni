@@ -14,7 +14,7 @@ import java.util.Set;
  */
 public class BufferPool {
     private static final Logger log = Logger.getLogger(BufferPool.class);
-    private static final BufferPool bufferPool = new BufferPool();
+    public static final BufferPool INSTANCE = new BufferPool();
 
     private final Map<Integer, Set<Long>> freeNameBuffers
             = new HashMap<Integer, Set<Long>>();
@@ -22,19 +22,18 @@ public class BufferPool {
     private final Map<Long, NamedByteBuffer> freeBuffers
             = new HashMap<Long, NamedByteBuffer>();
 
-    public static BufferPool getInstance() {
-        return bufferPool;
-    }
-
     private BufferPool() {
     }
 
     public void doWithATemporaryBuffer(int size, Action action) throws IOException {
         NamedByteBuffer namedByteBuffer
-                = BufferPool.getInstance().getAByteBuffer(size);
-
-        action.doWith(namedByteBuffer.getByteBufferAndResetPosition());
-        BufferPool.getInstance().free(namedByteBuffer);
+                = BufferPool.INSTANCE.getAByteBuffer(size);
+        
+        try {
+            action.doWith(namedByteBuffer.getByteBufferAndResetPosition());
+        } finally {
+            BufferPool.INSTANCE.free(namedByteBuffer);
+        }
     }
 
     public interface Action {

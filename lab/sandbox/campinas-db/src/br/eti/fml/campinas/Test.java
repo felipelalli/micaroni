@@ -16,15 +16,14 @@ public class Test {
     private static final Logger log = Logger.getLogger(Test.class);
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        CampinasLocalDB db = new CampinasLocalDB("my database", "db",
-                1999999999);
+        CampinasLocalDB db = new CampinasLocalDB("my database", "db", 512);
 
         log.info(db.getInfo());
         //int tests = 1000000000;
         //int tests = 300000;
         //int tests = 50000000;
         //int tests = 1000000;
-        int tests = 100000;
+        int tests = 800000;
 
         DecimalFormat format = new DecimalFormat("#,###");
         AtomicLong checkpoint = new AtomicLong(System.currentTimeMillis());

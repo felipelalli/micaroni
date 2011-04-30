@@ -80,7 +80,7 @@ public class CampinasLocalDB {
                 flags |= Flag.N_BYTES.getValue();
                 address1 = (byte) value.length;
 
-                BufferPool.getInstance().doWithATemporaryBuffer(
+                BufferPool.INSTANCE.doWithATemporaryBuffer(
                         8, new BufferPool.Action() {
                             @Override
                             public void doWith(ByteBuffer buffer) {
@@ -109,7 +109,7 @@ public class CampinasLocalDB {
                 if (Flag.POINTER.isInside(flags)) {
                     // TODO: search on Bodies
                 } else if (Flag.N_BYTES.isInside(flags)) {
-                    BufferPool.getInstance().doWithATemporaryBuffer(
+                    BufferPool.INSTANCE.doWithATemporaryBuffer(
                             8, new BufferPool.Action() {
                                 @Override
                                 public void doWith(ByteBuffer buffer) {

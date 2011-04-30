@@ -19,19 +19,19 @@ public abstract class Node {
         }
     }
 
-    private boolean corruptedNode = false;
+    private boolean corrupted = false;
     private NodeType type;
 
     protected Node(NodeType type) {
         this.type = type;
     }
 
-    public boolean isCorruptedNode() {
-        return corruptedNode;
+    public boolean isCorrupted() {
+        return corrupted;
     }
 
-    public void setCorruptedNode(boolean corruptedNode) {
-        this.corruptedNode = corruptedNode;
+    public void setCorrupted(boolean corruptedNode) {
+        this.corrupted = corruptedNode;
     }
 
     public NodeType getType() {

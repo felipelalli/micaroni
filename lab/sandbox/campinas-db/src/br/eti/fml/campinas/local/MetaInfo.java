@@ -43,7 +43,7 @@ public class MetaInfo {
         this.name = name;
 
         File f = new File(directoryPath.getAbsolutePath()
-                + File.separator + "metainfo");
+                + File.separator + "meta-info");
 
         this.file = new RandomAccessFile(f, "rw");
         this.channel = this.file.getChannel();
@@ -98,7 +98,7 @@ public class MetaInfo {
 
         final byte[] finalName = nameBytes;
 
-        BufferPool.getInstance().doWithATemporaryBuffer(
+        BufferPool.INSTANCE.doWithATemporaryBuffer(
             META_INFO_SIZE, new BufferPool.Action() {
                 @Override
                 public void doWith(ByteBuffer buffer) throws IOException {
@@ -121,7 +121,7 @@ public class MetaInfo {
     public void checkValues(final String name, final int indexSizeInMegabytes)
             throws RuntimeException, IOException {
 
-        BufferPool.getInstance().doWithATemporaryBuffer(
+        BufferPool.INSTANCE.doWithATemporaryBuffer(
             META_INFO_SIZE, new BufferPool.Action() {
                 @Override
                 public void doWith(ByteBuffer metaInfoBytes) throws IOException {

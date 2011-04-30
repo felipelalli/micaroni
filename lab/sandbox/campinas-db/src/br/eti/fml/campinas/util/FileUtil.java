@@ -19,7 +19,7 @@ public final class FileUtil {
 
         channel.position(position);
 
-        byte[] b = new byte[512 * ByteUtil.KB];
+        byte[] b = new byte[(int) (512 * ByteUtil.KB)];
         Arrays.fill(b, whichOne);
         ByteBuffer buffer = ByteBuffer.wrap(b);
 
@@ -30,6 +30,7 @@ public final class FileUtil {
             remaining = sizeInBytes - filled;
 
             if (remaining >= b.length) {
+                buffer.position(0);
                 channel.write(buffer);
                 filled += b.length;
             } else {
