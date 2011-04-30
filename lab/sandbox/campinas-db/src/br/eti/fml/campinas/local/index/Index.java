@@ -1,6 +1,6 @@
-package br.eti.fml.campinas.index;
+package br.eti.fml.campinas.local.index;
 
-import br.eti.fml.campinas.MetaInfo;
+import br.eti.fml.campinas.local.MetaInfo;
 import br.eti.fml.campinas.util.BufferPool;
 import br.eti.fml.campinas.util.ByteUtil;
 import br.eti.fml.campinas.util.DebugUtil;
@@ -50,8 +50,10 @@ public class Index {
 
         this.metaInfo = metaInfo;
         this.indexSizeInBytes = indexSizeInMegabytes * ByteUtil.MB;
+        this.indexSizeInBytes = ByteUtil.getNextMultiple(
+                this.indexSizeInBytes, IndexNode.INDEX_NODE_SIZE);
 
-        assert this.indexSizeInBytes % 8 == 0;
+        assert this.indexSizeInBytes % IndexNode.INDEX_NODE_SIZE == 0;
 
         log.info("Starting '" + metaInfo.getName() + "' with "
                 + indexSizeInMegabytes + " MB index...");
@@ -84,11 +86,8 @@ public class Index {
         this.currentHashNodeFileSize = this.fileHashNode.length();
 
         if (this.currentHashNodeFileSize % HashNode.HASH_NODE_SIZE != 0) {
-            long newSize = this.currentHashNodeFileSize;
-
-            while (newSize % HashNode.HASH_NODE_SIZE != 0) {
-                newSize++;
-            }
+            long newSize = ByteUtil.getNextMultiple(
+                    this.currentHashNodeFileSize, HashNode.HASH_NODE_SIZE);
 
             log.error("Something is really wrong with the hash node file size! Trying"
                     + " to fix it. Resizing from " + this.currentHashNodeFileSize
@@ -98,6 +97,8 @@ public class Index {
 
             this.currentHashNodeFileSize = newSize;
             this.fileHashNode.setLength(newSize);
+
+            assert currentHashNodeFileSize % IndexNode.INDEX_NODE_SIZE == 0;
         }
 
         if (this.metaInfo.isFirstTime()) {

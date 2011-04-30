@@ -1,5 +1,6 @@
 package br.eti.fml.campinas;
 
+import br.eti.fml.campinas.local.CampinasLocalDB;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -15,13 +16,14 @@ public class Test {
     private static final Logger log = Logger.getLogger(Test.class);
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        CampinasDB db = new CampinasDB("my database", "db", 512);
+        CampinasLocalDB db = new CampinasLocalDB("my database", "db", 1);
 
         log.info(db.getInfo());
         //int tests = 1000000000;
         //int tests = 300000;
         //int tests = 50000000;
-        int tests = 1000000;
+        //int tests = 1000000;
+        int tests = 100000;
 
         DecimalFormat format = new DecimalFormat("#,###");
         AtomicLong checkpoint = new AtomicLong(System.currentTimeMillis());

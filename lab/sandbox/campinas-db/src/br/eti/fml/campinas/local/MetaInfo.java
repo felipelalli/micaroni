@@ -1,4 +1,4 @@
-package br.eti.fml.campinas;
+package br.eti.fml.campinas.local;
 
 import br.eti.fml.campinas.util.BufferPool;
 import org.apache.log4j.Logger;
@@ -10,7 +10,6 @@ import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)

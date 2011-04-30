@@ -1,4 +1,4 @@
-package br.eti.fml.campinas.index;
+package br.eti.fml.campinas.local.index;
 
 import br.eti.fml.campinas.util.DebugUtil;
 

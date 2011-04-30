@@ -1,5 +1,7 @@
 package br.eti.fml.campinas.util;
 
+import br.eti.fml.campinas.index.HashNode;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -103,5 +105,13 @@ public final class ByteUtil {
     public static String bytesToStringUTFNIO(byte[] bytes) {
         CharBuffer cBuffer = ByteBuffer.wrap(bytes).asCharBuffer();
         return cBuffer.toString();
+    }
+
+    public static long getNextMultiple(long number, long multiple) {
+        if (number % multiple == 0) {
+            return number;
+        } else {
+            return number + (multiple - number % multiple);
+        }
     }
 }

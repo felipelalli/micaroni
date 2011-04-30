@@ -1,4 +1,4 @@
-package br.eti.fml.campinas.index;
+package br.eti.fml.campinas.local.index;
 
 /**
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)

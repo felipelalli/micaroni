@@ -1,4 +1,4 @@
-package br.eti.fml.campinas;
+package br.eti.fml.campinas.local;
 
 import br.eti.fml.campinas.index.HashNode;
 import br.eti.fml.campinas.index.Index;
@@ -14,11 +14,12 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
+ * 
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
  */
 @SuppressWarnings("unused")
-public class CampinasDB {
-    private static final Logger log = Logger.getLogger(CampinasDB.class);
+public class CampinasLocalDB {
+    private static final Logger log = Logger.getLogger(CampinasLocalDB.class);
 
     private volatile boolean down = false;
 
@@ -26,8 +27,8 @@ public class CampinasDB {
     private Index index;
     //private Body body;
 
-    public CampinasDB(String exclusiveName, String pathDirectory,
-                      int indexSizeInMegabytes) throws IOException {
+    public CampinasLocalDB(String exclusiveName, String pathDirectory,
+                           int indexSizeInMegabytes) throws IOException {
 
         File directory = new File(pathDirectory);
 
@@ -48,9 +49,9 @@ public class CampinasDB {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 try {
-                    if (!CampinasDB.this.down) {
+                    if (!CampinasLocalDB.this.down) {
                         log.fatal("CAUTION in shutdownHook: You MUST to call shutdown() or you can LOOSE DATA! Trying to shutdown...");
-                        CampinasDB.this.shutdown();
+                        CampinasLocalDB.this.shutdown();
                     }
                 } catch (Throwable e) {
                     log.error("Error on automatic finalize of CampinasDB", e);
