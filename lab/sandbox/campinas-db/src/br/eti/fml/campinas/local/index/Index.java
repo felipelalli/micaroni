@@ -6,7 +6,6 @@ import br.eti.fml.campinas.util.BufferPool;
 import br.eti.fml.campinas.util.ByteUtil;
 import br.eti.fml.campinas.util.DebugUtil;
 import br.eti.fml.campinas.util.FileUtil;
-import br.eti.fml.campinas.util.NamedByteBuffer;
 import br.eti.fml.campinas.util.Pair;
 import org.apache.log4j.Logger;
 
@@ -37,11 +36,8 @@ public class Index {
     private static final byte BUSY = (byte) 0;
 
     private RandomAccessFile fileIndex;
-    private RandomAccessFile fileLazyIndex;
     private FileChannel channelIndex;
-    private FileChannel channelLazyIndex;
     private AtomicReference<FileLock> lockIndex = new AtomicReference<FileLock>();
-    private AtomicReference<FileLock> lockLazyIndex = new AtomicReference<FileLock>();
 
     private RandomAccessFile fileHashNode;
     private FileChannel channelHashNode;
@@ -83,31 +79,21 @@ public class Index {
         File fIndex = new File(directoryPath.getAbsolutePath()
                 + File.separator + "index");
 
-        File fIndexBackup = new File(directoryPath.getAbsolutePath()
-                + File.separator + "lazy-index");
-
         File fHashNode = new File(directoryPath.getAbsolutePath()
                 + File.separator + "hash-node");
 
         this.fileIndex = new RandomAccessFile(fIndex, "rw");
-        this.fileLazyIndex = new RandomAccessFile(fIndexBackup, "rw");
         this.fileHashNode = new RandomAccessFile(fHashNode, "rw");
         this.channelIndex = this.fileIndex.getChannel();
-        this.channelLazyIndex = this.fileLazyIndex.getChannel();
         this.channelHashNode = this.fileHashNode.getChannel();
 
         this.lock(this.lockIndex, this.channelIndex, directoryPath);
         this.lock(this.lockHashNode, this.channelHashNode, directoryPath);
-        this.lock(this.lockLazyIndex, this.channelLazyIndex, directoryPath);
 
         if (this.metaInfo.isFirstTime()) {
             this.fileIndex.setLength(this.indexSizeInBytes);
-            this.fileLazyIndex.setLength(this.indexSizeInBytes);
 
             FileUtil.fillWith((byte) 0xFF, this.channelIndex, 0L,
-                    indexSizeInBytes);
-
-            FileUtil.fillWith((byte) 0xFF, this.channelLazyIndex, 0L,
                     indexSizeInBytes);
 
             metaInfo.writeFirstTime(indexSizeInMegabytes,
@@ -171,36 +157,19 @@ public class Index {
                             public void doWith(ByteBuffer buffer) throws IOException {
                                 channelIndex.read(buffer, indexPosition);
 
-                                NamedByteBuffer lazyNamedBuffer
-                                        = BufferPool.INSTANCE.getAByteBuffer
-                                            (IndexNode.INDEX_NODE_SIZE);
+                                IndexNode indexNode = new IndexNode(buffer);
 
-                                try {
-                                    ByteBuffer lazyBuffer = lazyNamedBuffer
-                                            .getByteBufferAndResetPosition();
+                                if (indexNode.isEmpty()) {
+                                    freeSlots.put(finalPosition, FREE);
+                                } else if (indexNode.isCorrupted()) {
+                                    log.error("The node '" + indexNode
+                                            + "' is corrupted "
+                                            + " at "
+                                            + DebugUtil.niceName(
+                                            indexPosition));
 
-                                    channelLazyIndex.read(lazyBuffer, indexPosition);
-                                    lazyBuffer.position(0);
-                                    long lazyAddress = lazyBuffer.getLong();
-
-                                    IndexNode indexNode = new IndexNode(
-                                            buffer, lazyAddress,
-                                            IndexNode.From.BINARY);
-
-                                    if (indexNode.isEmpty()) {
-                                        freeSlots.put(finalPosition, FREE);
-                                    } else if (indexNode.isCorrupted()) {
-                                        log.error("The node '" + indexNode
-                                                + "' is corrupted "
-                                                + " at "
-                                                + DebugUtil.niceName(
-                                                indexPosition));
-
-                                        tryToFixCorruptedIndex(indexNode,
-                                                lazyAddress, indexPosition);
-                                    }
-                                } finally {
-                                    BufferPool.INSTANCE.free(lazyNamedBuffer);
+                                    tryToFixCorruptedIndex(indexNode,
+                                            indexPosition);
                                 }
                             }
                         }
@@ -213,10 +182,7 @@ public class Index {
     }
 
     private boolean tryToFixCorruptedIndex(
-            final IndexNode indexNode, long lazyAddressOriginal,
-            long indexPosition) {
-
-        final long lazyAddress = IndexNode.filter(lazyAddressOriginal);
+            final IndexNode indexNode, long indexPosition) {
 
         if (errors.incrementAndGet() == 100) {
             log.error("Too many errors! Now I'll show only a line per error.");
@@ -232,8 +198,9 @@ public class Index {
         if (errors.get() <= 10) {
             log.info("Trying to fix corrupted index... "
                     + indexNode.getHashNodeAddress()
-                    + " is different of " + lazyAddress + ". Oh my God, " +
-                    "which one is the right one? Let me see...");
+                    + " is different of " + indexNode.getLazyHashNodeAddress()
+                    + ". Oh my God, which one is the right one? Let me see.." +
+                    ".");
         }
 
         final AtomicBoolean mainCorrupted = new AtomicBoolean(false);
@@ -264,13 +231,15 @@ public class Index {
         }
 
         try {
-            if (lazyAddress != IndexNode.NULL) {
+            if (indexNode.getLazyHashNodeAddress() != IndexNode.NULL) {
                 BufferPool.INSTANCE.doWithATemporaryBuffer(
                         HashNode.HASH_NODE_SIZE,
                         new BufferPool.Action() {
                             @Override
                             public void doWith(ByteBuffer buffer) throws IOException {
-                                channelHashNode.read(buffer, lazyAddress);
+                                channelHashNode.read(buffer,
+                                        indexNode.getLazyHashNodeAddress());
+
                                 final HashNode hashNode = new HashNode(buffer);
 
                                 if (hashNode.isCorrupted()) {
@@ -295,7 +264,7 @@ public class Index {
                     log.info("The main index is corrupted! Copying lazy to main...");
                 }
 
-                indexNode.fixNode(lazyAddress);
+                indexNode.fixNode(indexNode.getLazyHashNodeAddress());
 
                 this.channelIndex.write(
                         indexNode.getIndexNode(), indexPosition);
@@ -308,7 +277,9 @@ public class Index {
                             "to lazy...");
                 }
 
-                this.channelLazyIndex.write(
+                indexNode.fixNode(indexNode.getHashNodeAddress());
+
+                this.channelIndex.write(
                         indexNode.getIndexNode(), indexPosition);
 
                 result = true;
@@ -334,8 +305,6 @@ public class Index {
 
     private void checkSizesConsistence() throws IOException {
         this.checkFileSize("index", this.indexSizeInBytes, this.fileIndex);
-        this.checkFileSize("lazy index", this.indexSizeInBytes,
-                this.fileLazyIndex);
 
         this.currentHashNodeFileSize = this.fileHashNode.length();
 
@@ -401,10 +370,8 @@ public class Index {
     public void shutdown() throws IOException {
         this.lockIndex.get().release();
         this.lockHashNode.get().release();
-        this.lockLazyIndex.get().release();
         this.fileIndex.close();
         this.fileHashNode.close();
-        this.fileLazyIndex.close();
     }
     
     private String percentage(long part, long total) {
@@ -470,51 +437,32 @@ public class Index {
                             public void doWith(ByteBuffer nodeBuffer) throws IOException {
                                 channelIndex.read(nodeBuffer, indexPosition);
 
-                                NamedByteBuffer lazyNamedBuffer
-                                        = BufferPool.INSTANCE.getAByteBuffer
-                                            (IndexNode.INDEX_NODE_SIZE);
+                                IndexNode indexNode = new IndexNode(nodeBuffer);
 
-                                try {
-                                    ByteBuffer lazyBuffer = lazyNamedBuffer
-                                            .getByteBufferAndResetPosition();
+                                if (indexNode.isCorrupted()) {
+                                    log.error("The index node '" + indexNode
+                                            + "' is corrupted at "
+                                            + DebugUtil.niceName(indexPosition));
 
-                                    channelLazyIndex.read(
-                                            lazyBuffer, indexPosition);
-                                    
-                                    lazyBuffer.position(0);
-                                    long lazyAddress = lazyBuffer.getLong();
+                                    corruptedNodes.incrementAndGet();
+                                    tryToFixCorruptedIndex(
+                                            indexNode, indexPosition);
+                                } else {
+                                    final AtomicInteger count = new AtomicInteger();
+                                    count.incrementAndGet();
 
-                                    IndexNode indexNode = new IndexNode(
-                                            nodeBuffer, lazyAddress,
-                                            IndexNode.From.BINARY);
+                                    HashNode.navigateThroughFully(
+                                            indexNode.getHashNodeAddress(),
+                                            channelHashNode,
+                                            getInfoNavigator(
+                                                    count, keys, corruptedHashNodes)
+                                    );
 
-                                    if (indexNode.isCorrupted()) {
-                                        log.error("The index node '" + indexNode
-                                                + "' is corrupted at "
-                                                + DebugUtil.niceName(indexPosition));
-
-                                        corruptedNodes.incrementAndGet();
-                                        tryToFixCorruptedIndex(
-                                                indexNode, lazyAddress, indexPosition);
-                                    } else {
-                                        final AtomicInteger count = new AtomicInteger();
-                                        count.incrementAndGet();
-
-                                        HashNode.navigateThroughFully(
-                                                indexNode.getHashNodeAddress(),
-                                                channelHashNode,
-                                                getInfoNavigator(
-                                                        count, keys, corruptedHashNodes)
-                                        );
-
-                                        if (!sizes.containsKey(count.get())) {
-                                            sizes.put(count.get(), 0);
-                                        }
-
-                                        sizes.put(count.get(), sizes.get(count.get()) + 1);
+                                    if (!sizes.containsKey(count.get())) {
+                                        sizes.put(count.get(), 0);
                                     }
-                                } finally {
-                                    BufferPool.INSTANCE.free(lazyNamedBuffer);
+
+                                    sizes.put(count.get(), sizes.get(count.get()) + 1);
                                 }
                             }
                         }
@@ -622,14 +570,9 @@ public class Index {
                                             ByteBuffer temp) throws IOException {
 
                                         IndexNode indexNode = new IndexNode(
-                                                temp, nodeAddress,
-                                                IndexNode.From.VALUE);
+                                                temp, nodeAddress);
 
                                         channelIndex.write(
-                                                indexNode.getIndexNode(),
-                                                indexPosition);
-
-                                        channelLazyIndex.write(
                                                 indexNode.getIndexNode(),
                                                 indexPosition);
                                     }
@@ -679,57 +622,38 @@ public class Index {
                                 throws IOException {
 
                             channelIndex.read(nodeBuffer, indexPosition);
+                            IndexNode indexNode = new IndexNode(nodeBuffer);
 
-                            NamedByteBuffer lazyNamedBuffer
-                                    = BufferPool.INSTANCE.getAByteBuffer
-                                    (IndexNode.INDEX_NODE_SIZE);
+                            if (indexNode.isCorrupted()) {
+                                log.error("The index node '" + indexNode
+                                        + "' is corrupted at "
+                                        + DebugUtil.niceName(indexPosition));
 
-                            try {
-                                ByteBuffer lazyBuffer = lazyNamedBuffer
-                                        .getByteBufferAndResetPosition();
+                                if (!tryToFixCorruptedIndex(indexNode,
+                                        indexPosition)) {
 
-                                channelLazyIndex.read(
-                                        lazyBuffer, indexPosition);
-
-                                lazyBuffer.position(0);
-                                long lazyAddress = lazyBuffer.getLong();
-
-                                IndexNode indexNode = new IndexNode(nodeBuffer,
-                                        lazyAddress, IndexNode.From.BINARY);
-
-                                if (indexNode.isCorrupted()) {
-                                    log.error("The index node '" + indexNode
-                                            + "' is corrupted at "
-                                            + DebugUtil.niceName(indexPosition));
-
-                                    if (!tryToFixCorruptedIndex(indexNode,
-                                            lazyAddress, indexPosition)) {
-
-                                        throw new CorruptedIndexException(
-                                                indexPosition, indexNode);
-                                    }
-                                }
-
-                                final AtomicBoolean isCorrupted
-                                        = new AtomicBoolean(false);
-
-                                final Pair<Long, HashNode> corruptedHashNode
-                                        = new Pair<Long, HashNode>(null, null);
-
-                                HashNode.navigateThroughToFindAKey(
-                                        indexNode.getHashNodeAddress(),
-                                        bytesKey, channelHashNode,
-                                        getUpdateIndexNavigator(isCorrupted,
-                                                corruptedHashNode, bytesKey,
-                                                flags, address1, address2)
-                                );
-
-                                if (isCorrupted.get()) {
                                     throw new CorruptedIndexException(
-                                            corruptedHashNode.car, corruptedHashNode.cdr);
+                                            indexPosition, indexNode);
                                 }
-                            } finally {
-                                BufferPool.INSTANCE.free(lazyNamedBuffer);
+                            }
+
+                            final AtomicBoolean isCorrupted
+                                    = new AtomicBoolean(false);
+
+                            final Pair<Long, HashNode> corruptedHashNode
+                                    = new Pair<Long, HashNode>(null, null);
+
+                            HashNode.navigateThroughToFindAKey(
+                                    indexNode.getHashNodeAddress(),
+                                    bytesKey, channelHashNode,
+                                    getUpdateIndexNavigator(isCorrupted,
+                                            corruptedHashNode, bytesKey,
+                                            flags, address1, address2)
+                            );
+
+                            if (isCorrupted.get()) {
+                                throw new CorruptedIndexException(
+                                        corruptedHashNode.car, corruptedHashNode.cdr);
                             }
                         }
                     }
@@ -889,54 +813,38 @@ public class Index {
                     public void doWith(final ByteBuffer nodeBuffer) throws
                             IOException {
 
-                        NamedByteBuffer lazyNamedBuffer
-                                = BufferPool.INSTANCE.getAByteBuffer
-                                    (IndexNode.INDEX_NODE_SIZE);
+                        channelIndex.read(nodeBuffer, indexPosition);
 
-                        try {
-                            final ByteBuffer lazyBuffer = lazyNamedBuffer
-                                    .getByteBufferAndResetPosition();
+                        IndexNode indexNode = new IndexNode(nodeBuffer);
 
-                            channelIndex.read(nodeBuffer, indexPosition);
-                            channelLazyIndex.read(lazyBuffer, indexPosition);
+                        if (indexNode.isEmpty()) {
+                            // returns null
+                        } else if (indexNode.isCorrupted()) {
+                            log.error("The index node '" + indexNode
+                                    + "' is corrupted at "
+                                    + DebugUtil.niceName(indexPosition));
 
-                            lazyBuffer.position(0);
-                            long lazyAddress = lazyBuffer.getLong();
-
-                            IndexNode indexNode = new IndexNode(nodeBuffer,
-                                    lazyAddress, IndexNode.From.BINARY);
-
-                            if (indexNode.isEmpty()) {
-                                // returns null
-                            } else if (indexNode.isCorrupted()) {
-                                log.error("The index node '" + indexNode
-                                        + "' is corrupted at "
-                                        + DebugUtil.niceName(indexPosition));
-
-                                if (!tryToFixCorruptedIndex(indexNode,
-                                        lazyAddress, indexPosition))
-                                {
-                                    throw new CorruptedIndexException(
-                                            indexPosition, indexNode);
-                                }
+                            if (!tryToFixCorruptedIndex(indexNode,
+                                    indexPosition))
+                            {
+                                throw new CorruptedIndexException(
+                                        indexPosition, indexNode);
                             }
+                        }
 
-                            if (!indexNode.isEmpty()) {
-                                HashNode.navigateThroughToFindAKey(
-                                        indexNode.getHashNodeAddress(),
-                                        bytesKey, channelHashNode,
-                                        getSearchNavigator(result,
-                                                isCorrupted,
-                                                corruptedHashNode));
+                        if (!indexNode.isEmpty()) {
+                            HashNode.navigateThroughToFindAKey(
+                                    indexNode.getHashNodeAddress(),
+                                    bytesKey, channelHashNode,
+                                    getSearchNavigator(result,
+                                            isCorrupted,
+                                            corruptedHashNode));
 
-                                if (isCorrupted.get()) {
-                                    throw new CorruptedIndexException(
-                                            corruptedHashNode.car,
-                                            corruptedHashNode.cdr);
-                                }
+                            if (isCorrupted.get()) {
+                                throw new CorruptedIndexException(
+                                        corruptedHashNode.car,
+                                        corruptedHashNode.cdr);
                             }
-                        } finally {
-                            BufferPool.INSTANCE.free(lazyNamedBuffer);
                         }
                     }
                 }

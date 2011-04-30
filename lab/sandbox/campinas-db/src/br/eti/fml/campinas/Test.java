@@ -73,7 +73,8 @@ public class Test {
 
     private final static ByteBuffer buffer = ByteBuffer.allocate(4);
     private final static DecimalFormat format = new DecimalFormat("#,##0");
-    private final static DecimalFormat format2 = new DecimalFormat("#,##0.0000");
+    private final static DecimalFormat format2 = new DecimalFormat("#," +
+            "##0.00000");
 
     private static String getSpeed(AtomicLong checkpoint, AtomicLong count) {
         long now = System.currentTimeMillis();
