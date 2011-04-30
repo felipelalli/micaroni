@@ -210,20 +210,26 @@ public class Index {
             final long address = indexNode.getHashNodeAddress();
 
             if (address != IndexNode.NULL) {
-                BufferPool.INSTANCE.doWithATemporaryBuffer(
-                        HashNode.HASH_NODE_SIZE,
-                        new BufferPool.Action() {
-                            @Override
-                            public void doWith(ByteBuffer buffer) throws IOException {
-                                channelHashNode.read(buffer, address);
+                if (address < 0L
+                    || address >= this.currentHashNodeFileSize) {
 
-                                final HashNode hashNode = new HashNode(buffer);
+                    mainCorrupted.set(true);
+                } else {
+                    BufferPool.INSTANCE.doWithATemporaryBuffer(
+                            HashNode.HASH_NODE_SIZE,
+                            new BufferPool.Action() {
+                                @Override
+                                public void doWith(ByteBuffer buffer) throws IOException {
+                                    channelHashNode.read(buffer, address);
 
-                                if (hashNode.isCorrupted()) {
-                                    mainCorrupted.set(true);
+                                    final HashNode hashNode = new HashNode(buffer);
+
+                                    if (hashNode.isCorrupted()) {
+                                        mainCorrupted.set(true);
+                                    }
                                 }
-                            }
-                        });
+                            });
+                }
             }
         } catch (IOException e) {
             log.error(e);
@@ -232,21 +238,29 @@ public class Index {
 
         try {
             if (indexNode.getLazyHashNodeAddress() != IndexNode.NULL) {
-                BufferPool.INSTANCE.doWithATemporaryBuffer(
-                        HashNode.HASH_NODE_SIZE,
-                        new BufferPool.Action() {
-                            @Override
-                            public void doWith(ByteBuffer buffer) throws IOException {
-                                channelHashNode.read(buffer,
-                                        indexNode.getLazyHashNodeAddress());
 
-                                final HashNode hashNode = new HashNode(buffer);
+                if (indexNode.getLazyHashNodeAddress() < 0L
+                        || indexNode.getLazyHashNodeAddress() >=
+                            this.currentHashNodeFileSize) {
 
-                                if (hashNode.isCorrupted()) {
-                                    lazyCorrupted.set(true);
+                    lazyCorrupted.set(true);
+                } else {
+                    BufferPool.INSTANCE.doWithATemporaryBuffer(
+                            HashNode.HASH_NODE_SIZE,
+                            new BufferPool.Action() {
+                                @Override
+                                public void doWith(ByteBuffer buffer) throws IOException {
+                                    channelHashNode.read(buffer,
+                                            indexNode.getLazyHashNodeAddress());
+
+                                    final HashNode hashNode = new HashNode(buffer);
+
+                                    if (hashNode.isCorrupted()) {
+                                        lazyCorrupted.set(true);
+                                    }
                                 }
-                            }
-                        });
+                            });
+                }
             }
         } catch (IOException e) {
             log.error(e);
@@ -320,7 +334,7 @@ public class Index {
     private void checkFreeDiskSpace(File directoryPath)
             throws NotEnoughSpaceInDiskException {
 
-        long min = this.indexSizeInBytes * 3;
+        long min = this.indexSizeInBytes * 2;
         long freeSpace = directoryPath.getUsableSpace();
 
         if (freeSpace >= min) {
@@ -334,7 +348,7 @@ public class Index {
             throw new NotEnoughSpaceInDiskException("The partition where " +
                     "" + directoryPath.getAbsolutePath() + " is has no " +
                     "enough disk space! You need at least " + (min /
-                    ByteUtil.MB) + " MB (index_size * 3).");
+                    ByteUtil.MB) + " MB (index_size * 2).");
         }
     }
 
@@ -684,18 +698,17 @@ public class Index {
                 BufferPool.INSTANCE.doWithATemporaryBuffer(
                         HashNode.HASH_NODE_SIZE, new BufferPool.Action() {
                             @Override
-                            public void doWith(
-                                    ByteBuffer buffer)
+                            public void doWith(ByteBuffer buffer)
                                     throws IOException {
 
                                 // needs to replace (update) the hashNode
                                 HashNode newHashNode = new HashNode(
                                         buffer, bytesKey, flags,
-                                        address1, address2,
-                                        HashNode.NOW,
+                                        address1, address2, HashNode.NOW,
                                         currentHashNode.getLeftNode(),
                                         currentHashNode.getRightNode());
 
+                                // in this point the hash node can be corrupted
                                 Index.this.channelHashNode.write(
                                         newHashNode.getHashNode(),
                                         currentPosition);
