@@ -1,8 +1,11 @@
 package br.eti.fml.campinas.local.body;
 
+import br.eti.fml.campinas.local.index.HashNode;
+import br.eti.fml.campinas.util.BufferPool;
 import br.eti.fml.campinas.util.ByteUtil;
 import br.eti.fml.campinas.util.FileUtil;
 import br.eti.fml.campinas.util.Pair;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,8 +18,11 @@ import java.nio.channels.FileLock;
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
  */
 public class Body {
+    private static final Logger log = Logger.getLogger(Body.class);
+
     public final static long[] CONVERSION = new long[] {12L, 24L, 56L, 96L};
     public final static byte MAX_INDEX = (byte) (getIndexBySize(ByteUtil.GB) + 1);
+    private static final int START = 4;
 
     private RandomAccessFile[] file = new RandomAccessFile[MAX_INDEX];
     private FileChannel[] channel = new FileChannel[MAX_INDEX];
@@ -30,7 +36,7 @@ public class Body {
     public static long getSizeByIndex(byte index) {
         assert index >= 0;
 
-        if (index < 4) {
+        if (index < START) {
             return CONVERSION[index];
         } else {
             return (long) Math.pow(2d, (double) index);
@@ -51,9 +57,9 @@ public class Body {
     }
 
     public Body(File directoryPath) throws IOException {
-        for (int i = 4; i < MAX_INDEX; i++) {
+        for (int i = START; i < MAX_INDEX; i++) {
             File f = new File(directoryPath.getAbsolutePath()
-                    + File.separator + "b" + Integer.toHexString(i));
+                    + getFileNameByIndex(i));
 
             this.file[i] = new RandomAccessFile(f, "rw");            
             this.channel[i] = this.file[i].getChannel();
@@ -80,6 +86,10 @@ public class Body {
         }
     }
 
+    private String getFileNameByIndex(int i) {
+        return File.separator + "b" + Integer.toHexString(i);
+    }
+
     public Pair<Byte, Long> allocateAndPut(byte[] value) throws IOException {
         byte address1 = getIndexBySize(value.length);
         long realSize = getSizeByIndex(address1);
@@ -91,5 +101,33 @@ public class Body {
         return new Pair<Byte, Long>(address1, address2);
     }
 
-    //public byte[] read(long address)
+    public void shutdown() throws IOException {
+        for (int i = START; i < MAX_INDEX; i++) {
+            this.lock[i].release();
+            this.file[i].close();
+            //log.trace("Closed " + getFileNameByIndex(i) + " file.");
+        }
+    }
+
+    public byte[] read(HashNode node) throws IOException {
+        byte[] result = null;
+
+        byte address1 = node.getAddress1();
+        long address2 = node.getAddress2();
+
+        long realSize = getSizeByIndex(address1);
+        assert realSize < Integer.MAX_VALUE;
+
+        BufferPool.INSTANCE.doWithATemporaryBuffer(
+                (int) realSize, new BufferPool.Action() {
+                    @Override
+                    public void doWith(ByteBuffer buffer) throws IOException {
+                        //channel[address1].re
+                        // TODO: read size
+                    }
+                }
+        );
+
+        return result;
+    }
 }

@@ -21,8 +21,8 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
  */
 @SuppressWarnings("unused")
-public class CampinasLocalDB implements KeyValue {
-    private static final Logger log = Logger.getLogger(CampinasLocalDB.class);
+public class CampinasDBLocal implements KeyValue {
+    private static final Logger log = Logger.getLogger(CampinasDBLocal.class);
 
     private volatile boolean down = false;
 
@@ -30,7 +30,7 @@ public class CampinasLocalDB implements KeyValue {
     private Index index;
     private Body body;
 
-    public CampinasLocalDB(String exclusiveName, String pathDirectory,
+    public CampinasDBLocal(String exclusiveName, String pathDirectory,
                            int indexSizeInMegabytes) throws IOException {
 
         File directory = new File(pathDirectory);
@@ -52,9 +52,9 @@ public class CampinasLocalDB implements KeyValue {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 try {
-                    if (!CampinasLocalDB.this.down) {
+                    if (!CampinasDBLocal.this.down) {
                         log.fatal("CAUTION in shutdownHook: You MUST to call shutdown() or you can LOOSE DATA! Trying to shutdown...");
-                        CampinasLocalDB.this.shutdown();
+                        CampinasDBLocal.this.shutdown();
                     }
                 } catch (Throwable e) {
                     log.error("Error on automatic finalize of CampinasDB", e);
@@ -113,7 +113,7 @@ public class CampinasLocalDB implements KeyValue {
 
             if (!Flag.DELETED.isInside(flags)) {
                 if (Flag.POINTER.isInside(flags)) {
-                    // TODO: search on Bodies
+                    result.set(this.body.read(node));
                 } else if (Flag.N_BYTES.isInside(flags)) {
                     BufferPool.INSTANCE.doWithATemporaryBuffer(
                             8, new BufferPool.Action() {
@@ -132,22 +132,6 @@ public class CampinasLocalDB implements KeyValue {
         }
 
         return result.get();
-
-//        HashNode node = this.index.find(key);
-//
-//        if (node == null) {
-//            return null;
-//        } else {
-//            byte[] data = this.body.read(node.getAddress(), node.getSize());
-//            int realChecksumData = Arrays.hashCode(data);
-//
-//            if (realChecksumData != node.getChecksumData()) {
-//                throw new CorruptedDataException(
-//                        data, node.getChecksumData(), realChecksumData);
-//            }
-//
-//            return data;
-//        }
     }
 
     public void shutdown() throws IOException {
@@ -156,14 +140,16 @@ public class CampinasLocalDB implements KeyValue {
             log.info("Shutting down...");
 
             this.index.shutdown();
-            log.debug("1/4 Index down...");
+            log.debug("1/5 Index is down...");
             this.metaInfo.setShutdown(true);
             this.metaInfo.shutdown();
-            log.debug("2/4 Metainfo down...");
+            log.debug("2/5 Metainfo is down...");
+            this.body.shutdown();
+            log.debug("3/5 Body is down...");
             System.runFinalization();
-            log.debug("3/4 Finalization called...");
+            log.debug("4/5 Finalization was called...");
             System.gc();
-            log.debug("4/4 Free memory...");
+            log.debug("5/5 Free memory...");
 
             log.info("Shutdown OK!");
         }

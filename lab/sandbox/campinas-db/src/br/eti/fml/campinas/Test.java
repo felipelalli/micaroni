@@ -1,12 +1,13 @@
 package br.eti.fml.campinas;
 
-import br.eti.fml.campinas.local.CampinasLocalDB;
+import br.eti.fml.campinas.local.CampinasDBLocal;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -16,15 +17,15 @@ public class Test {
     private static final Logger log = Logger.getLogger(Test.class);
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        CampinasLocalDB db = new CampinasLocalDB("my database", "db", 1);
+        CampinasDBLocal db = new CampinasDBLocal("my database", "db", 512);
 
         log.info(db.getInfo());
-        //int tests = 1000000000;
+        //int tests = 100000000;
         //int tests = 300000;
         //int tests = 50000000;
         //int tests = 1000000;
-        int tests = 800000;
-        //int tests = 100000;
+        //int tests = 800000;
+        int tests = 500000;
 
         DecimalFormat format = new DecimalFormat("#,###");
         AtomicLong checkpoint = new AtomicLong(System.currentTimeMillis());
@@ -44,28 +45,28 @@ public class Test {
                 }
             }
 
-//            log.info("\n*** CHECKING... ");
-//
-//            for (int i = 0; i < tests; i++) {
-//                count.incrementAndGet();
-//
-//                String key = "key" + i;
-//                byte[] dataBaseValue = db.get(key);
-//                byte[] writtenValue = getValue(i);
-//
-//                if (Arrays.equals(writtenValue, dataBaseValue)) {
-//                    if (i % 100000 == 0 ) {
-//                        log.info(format.format(i) + " - "
-//                                + getSpeed(checkpoint, count));
-//                    }
-//                } else {
-//                    log.info(format.format(i));
-//                    log.info("*** ERROR " + Arrays.toString(dataBaseValue)
-//                            + " must be " + Arrays.toString(writtenValue));
-//                }
-//            }
-//
-//            log.info(db.getInfo());
+            log.info("\n*** CHECKING... ");
+
+            for (int i = 0; i < tests; i++) {
+                count.incrementAndGet();
+
+                String key = "key" + i;
+                byte[] dataBaseValue = db.get(key);
+                byte[] writtenValue = getValue(i);
+
+                if (Arrays.equals(writtenValue, dataBaseValue)) {
+                    if (i % 100000 == 0 ) {
+                        log.info(format.format(i) + " - "
+                                + getSpeed(checkpoint, count));
+                    }
+                } else {
+                    log.info(format.format(i));
+                    log.info("*** ERROR " + Arrays.toString(dataBaseValue)
+                            + " must be " + Arrays.toString(writtenValue));
+                }
+            }
+
+            log.info(db.getInfo());
 
         } finally {
             db.shutdown();
@@ -90,13 +91,22 @@ public class Test {
                 + format2.format(millis) + " ms";
     }
 
+    private static Random random = new Random(10);
+
     private static byte[] getValue(int i) {
-        /*buffer.position(0);
+        buffer.position(0);
         buffer.putInt(i);
         byte[] value = new byte[4];
         buffer.position(0);
         buffer.get(value);
-        return value;*/
-        return new String("value i jadl asdad asdj " + i).getBytes();
+        return value;
+        
+//        int size = random.nextInt(512);
+//        StringBuilder value = new StringBuilder();
+//        for (int j = 0; j < size; j++) {
+//            value.append(j);
+//        }
+//
+//        return value.toString().getBytes();
     }
 }
