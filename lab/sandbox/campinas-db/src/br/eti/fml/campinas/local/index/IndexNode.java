@@ -1,6 +1,7 @@
 package br.eti.fml.campinas.local.index;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 /**
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
@@ -21,14 +22,16 @@ public class IndexNode extends Node {
     private boolean empty;
 
     private ByteBuffer indexNode;
+    private int initialPosition;
 
-    public IndexNode(ByteBuffer buffer) {
+    public IndexNode(ByteBuffer buffer, int initialPosition) {
         super(Node.NodeType.INDEX_NODE);
 
-        buffer.position(0);
+        buffer.position(initialPosition);
         hashNodeAddress = buffer.getLong();
         lazyHashNodeAddress = buffer.getLong();
         this.indexNode = buffer;
+        this.initialPosition = initialPosition;
 
         if (hashNodeAddress != lazyHashNodeAddress) {
             setCorrupted(true);
@@ -37,13 +40,14 @@ public class IndexNode extends Node {
         this.empty = !isCorrupted() && (hashNodeAddress == NULL);
     }
 
-    public IndexNode(ByteBuffer buffer, long address) {
+    public IndexNode(ByteBuffer buffer, int initialPosition, long address) {
         super(Node.NodeType.INDEX_NODE);
 
         this.hashNodeAddress = filter(address);
         this.lazyHashNodeAddress = this.hashNodeAddress;
-        buffer.position(0);
+        buffer.position(initialPosition);
         this.indexNode = buffer.putLong(hashNodeAddress).putLong(hashNodeAddress);
+        this.initialPosition = initialPosition;
 
         this.empty = !isCorrupted() && (hashNodeAddress == NULL);
     }
@@ -55,7 +59,7 @@ public class IndexNode extends Node {
     public void fixNode(long newAddress) {
         this.hashNodeAddress = filter(newAddress);
         this.lazyHashNodeAddress = this.hashNodeAddress;
-        this.indexNode.position(0);
+        this.indexNode.position(initialPosition);
         this.indexNode.putLong(this.hashNodeAddress).putLong(this.hashNodeAddress);
         setCorrupted(false);
     }
@@ -73,19 +77,27 @@ public class IndexNode extends Node {
     }
 
     public ByteBuffer getIndexNode() {
-        indexNode.position(0);
+        indexNode.position(initialPosition);
         return indexNode;
+    }
+
+    public int getInitialPosition() {
+        return initialPosition;
     }
 
     @Override
     public String toString() {
+        byte[] raw = new byte[INDEX_NODE_SIZE];
+        this.getIndexNode().get(raw);
+
         return "IndexNode{" +
                 "hashNodeAddress=" + hashNodeAddress +
                 ",^hashNodeAddress=" + getHashNodeAddress() +
                 ",lazyHashNodeAddress=" + lazyHashNodeAddress +
                 ",^lazyHashNodeAddress=" + getLazyHashNodeAddress() +
                 ", empty=" + empty +
-                ", indexNode=" + indexNode +
+                ", initialPosition=" + getInitialPosition() +
+                ", indexNode=" + Arrays.toString(raw) +
                 ", isCorrupted=" + isCorrupted() +
                 '}';
     }

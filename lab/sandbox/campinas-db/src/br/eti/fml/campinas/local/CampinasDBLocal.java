@@ -3,7 +3,6 @@ package br.eti.fml.campinas.local;
 import br.eti.fml.campinas.local.body.Body;
 import br.eti.fml.campinas.local.index.HashNode;
 import br.eti.fml.campinas.local.index.Index;
-import br.eti.fml.campinas.util.BufferPool;
 import br.eti.fml.campinas.util.ByteUtil;
 import br.eti.fml.campinas.util.Pair;
 import br.eti.fml.data.db.keyvalue.KeyValue;
@@ -29,6 +28,9 @@ public class CampinasDBLocal implements KeyValue {
     private MetaInfo metaInfo;
     private Index index;
     private Body body;
+
+    private ByteBuffer tempBufferW = ByteBuffer.allocateDirect(8);
+    private ByteBuffer tempBufferR = ByteBuffer.allocateDirect(8);
 
     public CampinasDBLocal(String exclusiveName, String pathDirectory,
                            int indexSizeInMegabytes) throws IOException {
@@ -86,15 +88,10 @@ public class CampinasDBLocal implements KeyValue {
                 flags |= Flag.N_BYTES.getValue();
                 address1 = (byte) value.length;
 
-                BufferPool.INSTANCE.doWithATemporaryBuffer(
-                        8, new BufferPool.Action() {
-                            @Override
-                            public void doWith(ByteBuffer buffer) {
-                                buffer.put(value);
-                                buffer.position(0);
-                                address2.set(buffer.getLong());
-                            }
-                        });
+                tempBufferW.position(0);
+                tempBufferW.put(value);
+                tempBufferW.position(0);
+                address2.set(tempBufferW.getLong());
             }
         }
 
@@ -115,18 +112,13 @@ public class CampinasDBLocal implements KeyValue {
                 if (Flag.POINTER.isInside(flags)) {
                     result.set(this.body.read(node));
                 } else if (Flag.N_BYTES.isInside(flags)) {
-                    BufferPool.INSTANCE.doWithATemporaryBuffer(
-                            8, new BufferPool.Action() {
-                                @Override
-                                public void doWith(ByteBuffer buffer) {
-                                    buffer.putLong(node.getAddress2());
-                                    buffer.position(0);
-                                    int n = node.getAddress1();
-                                    byte[] b = new byte[n];
-                                    buffer.get(b);
-                                    result.set(b);
-                                }
-                            });
+                    tempBufferR.position(0);
+                    tempBufferR.putLong(node.getAddress2());
+                    tempBufferR.position(0);
+                    int n = node.getAddress1();
+                    byte[] b = new byte[n];
+                    tempBufferR.get(b);
+                    result.set(b);
                 }
             }
         }

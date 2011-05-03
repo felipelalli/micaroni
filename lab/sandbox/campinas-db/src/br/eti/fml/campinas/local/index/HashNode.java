@@ -1,6 +1,5 @@
 package br.eti.fml.campinas.local.index;
 
-import br.eti.fml.campinas.util.BufferPool;
 import br.eti.fml.campinas.util.ByteUtil;
 import br.eti.fml.campinas.util.DebugUtil;
 import org.apache.log4j.Logger;
@@ -63,6 +62,10 @@ public class HashNode extends Node {
     public HashNode(ByteBuffer hashNode) {
         super(Node.NodeType.HASH_NODE);
 
+        final byte[] fullNode = new byte[HASH_NODE_SIZE];
+        hashNode.position(0);
+        hashNode.get(fullNode);
+
         hashNode.position(0);
 
         this.key = new byte[KEY_SIZE];
@@ -75,16 +78,17 @@ public class HashNode extends Node {
         this.timestamp = hashNode.getLong();
         this.checksum = hashNode.getInt();
 
-        final byte[] nodeBuffer = getNodeBufferWithoutChecksum(
-                key, flags, address1, address2, leftNode, rightNode, timestamp);
+        final byte[] hashNodeWithoutChecksum
+                = new byte[HASH_NODE_SIZE - CHECKSUM_SIZE];
+        
+        hashNode.position(0);
+        hashNode.get(hashNodeWithoutChecksum);
 
-        int realChecksum = Arrays.hashCode(nodeBuffer);
+        int realChecksum = Arrays.hashCode(hashNodeWithoutChecksum);
         this.setCorrupted(realChecksum != checksum);
-
-        this.hashNode = hashNode;
     }
 
-    public HashNode(ByteBuffer tempBuffer, byte[] key,
+    public HashNode(byte[] key,
                     byte flags, byte address1, long address2,
                     long timestamp, long leftNode, long rightNode) {
         
@@ -105,42 +109,19 @@ public class HashNode extends Node {
             this.timestamp = timestamp;
         }
 
-        final byte[] nodeBuffer = getNodeBufferWithoutChecksum(
-                key, flags, address1, address2, leftNode, rightNode, this.timestamp);
+        ByteBuffer newBuffer = ByteBuffer.allocate(HASH_NODE_SIZE);
 
+        newBuffer.put(this.key).put(this.flags).put(this.address1)
+                .putLong(this.address2).putLong(this.leftNode).putLong(this
+                .rightNode).putLong(this.timestamp);
+
+        newBuffer.position(0);
+        final byte[] nodeBuffer = new byte[HASH_NODE_SIZE - CHECKSUM_SIZE];
+        newBuffer.get(nodeBuffer);
         this.checksum = Arrays.hashCode(nodeBuffer);
 
-        tempBuffer.put(nodeBuffer);
-        tempBuffer.putInt(this.checksum);
-        this.hashNode = tempBuffer;
-    }
-
-    private byte[] getNodeBufferWithoutChecksum(
-            final byte[] key, final byte flags, final byte address1,
-            final long address2, final long leftNode, final long rightNode,
-            final long timestamp) {
-
-        final byte[] hashNode = new byte[HASH_NODE_SIZE - CHECKSUM_SIZE];
-
-        try {
-            BufferPool.INSTANCE.doWithATemporaryBuffer(
-                    HASH_NODE_SIZE, new BufferPool.Action() {
-                        @Override
-                        public void doWith(ByteBuffer buffer) {
-                            buffer.put(key).put(flags)
-                                    .put(address1).putLong(address2)
-                                    .putLong(leftNode).putLong(rightNode)
-                                    .putLong(timestamp);
-
-                            buffer.position(0);
-                            buffer.get(hashNode);
-                        }
-                    });
-        } catch (IOException e) {
-            // never happens
-        }
-
-        return hashNode;
+        newBuffer.putInt(this.checksum);
+        this.hashNode = newBuffer;
     }
 
     public byte[] getKey() {
@@ -178,6 +159,7 @@ public class HashNode extends Node {
     }
 
     public ByteBuffer getHashNode() {
+        assert hashNode != null;
         hashNode.position(0);
         return hashNode;
     }
@@ -221,54 +203,50 @@ public class HashNode extends Node {
                     now = System.currentTimeMillis();
                 }
 
-                BufferPool.INSTANCE.doWithATemporaryBuffer(
-                        HASH_NODE_SIZE, new BufferPool.Action() {
-                            @Override
-                            public void doWith(ByteBuffer buffer) throws IOException {
-                                file.read(buffer, currentPosition);
+                ByteBuffer tempBuffer = ByteBuffer.allocate(HASH_NODE_SIZE);
+                file.read(tempBuffer, currentPosition);
 
-                                final HashNode hashNode = new HashNode(buffer);
-                                navigator.updateCurrentNode(currentPosition, hashNode);
+                final HashNode hashNode = new HashNode(tempBuffer);
+                navigator.updateCurrentNode(currentPosition, hashNode);
 
-                                if (hashNode.isCorrupted()) {
-                                    navigator.corruptedHashNode(currentPosition,
-                                            hashNode, usedAddresses.size());
-                                } else {
-                                    long leftNode = hashNode.getLeftNode();
+                if (hashNode.isCorrupted()) {
+                    navigator.corruptedHashNode(currentPosition,
+                            hashNode, usedAddresses.size());
+                } else {
+                    long leftNode = hashNode.getLeftNode();
 
-                                    if (leftNode != HashNode.NULL) {
-                                        if (usedAddresses.contains(leftNode)) {
-                                            log.error("Something is crazy here! The LEFT node "
-                                                    + DebugUtil.niceName(leftNode)
-                                                    + " was used before! current hash node: "
-                                                    + hashNode + ". Level: "
-                                                    + usedAddresses.size());
-                                        } else {
-                                            nextAddress.push(leftNode);
-                                            navigator.nodeHasLeft(
-                                                    currentPosition, hashNode);
-                                        }
-                                    }
-
-                                    long rightNode = hashNode.getRightNode();
-
-                                    if (rightNode != HashNode.NULL) {
-                                        if (usedAddresses.contains(rightNode)) {
-                                            log.error("Something is crazy here! The RIGHT node "
-                                                    + DebugUtil.niceName(rightNode)
-                                                    + " was used before! current hash node: "
-                                                    + hashNode + ". Level: "
-                                                    + usedAddresses.size());
-                                        } else {
-                                            nextAddress.push(rightNode);
-                                            navigator.nodeHasRight(
-                                                    currentPosition, hashNode);
-                                        }
-                                    }
-                                }
-                            }
+                    if (leftNode != HashNode.NULL) {
+                        if (usedAddresses.contains(leftNode)) {
+                            log.error("Something is crazy here! The LEFT node "
+                                    + DebugUtil.niceName(leftNode)
+                                    + " was used before! current hash node: "
+                                    + hashNode + ". Level: "
+                                    + usedAddresses.size());
+                        } else {
+                            nextAddress.push(leftNode);
+                            navigator.nodeHasLeft(
+                                    currentPosition, hashNode);
                         }
-                );
+                    }
+
+                    long rightNode = hashNode.getRightNode();
+
+                    if (rightNode != HashNode.NULL) {
+                        if (usedAddresses.contains(rightNode)) {
+                            log.error("Something is crazy here! The RIGHT node "
+                                    + DebugUtil.niceName(rightNode)
+                                    + " was used before! current hash node: "
+                                    + hashNode + ". Level: "
+                                    + usedAddresses.size());
+                        } else {
+                            nextAddress.push(rightNode);
+                            navigator.nodeHasRight(
+                                    currentPosition, hashNode);
+                        }
+                    }
+                }
+
+                tempBuffer.clear();
             }
         }
     }
@@ -296,61 +274,57 @@ public class HashNode extends Node {
                 } else {
                     usedAddresses.add(currentPosition.get());
 
-                    BufferPool.INSTANCE.doWithATemporaryBuffer(
-                            HASH_NODE_SIZE, new BufferPool.Action() {
-                                @Override
-                                public void doWith(ByteBuffer buffer) throws IOException {
-                                    file.read(buffer, currentPosition.get());
-                                    final HashNode hashNode = new HashNode(buffer);
+                    ByteBuffer tempBuffer = ByteBuffer.allocate(HASH_NODE_SIZE);
+                    file.read(tempBuffer, currentPosition.get());
+                    final HashNode hashNode = new HashNode(tempBuffer);
 
-                                    if (hashNode.isCorrupted()) {
-                                        navigator.corruptedHashNode(
-                                                currentPosition.get(), hashNode,
-                                                level.get());
+                    if (hashNode.isCorrupted()) {
+                        navigator.corruptedHashNode(
+                                currentPosition.get(), hashNode,
+                                level.get());
 
-                                        end.set(true);
-                                    } else {
-                                        int compareResult = ByteUtil.compare(
-                                                hashNode.getKey(), bytesKey);
+                        end.set(true);
+                    } else {
+                        int compareResult = ByteUtil.compare(
+                                hashNode.getKey(), bytesKey);
 
-                                        if (compareResult == 0) {
-                                            navigator.whenTheKeyIsEqual(
-                                                    currentPosition.get(), hashNode);
+                        if (compareResult == 0) {
+                            navigator.whenTheKeyIsEqual(
+                                    currentPosition.get(), hashNode);
 
-                                            end.set(true);
-                                        } else if (compareResult < 0
-                                                && hashNode.getLeftNode()
-                                                != HashNode.NULL) {
+                            end.set(true);
+                        } else if (compareResult < 0
+                                && hashNode.getLeftNode()
+                                != HashNode.NULL) {
 
-                                            navigator.interceptGoingToLeftNode(
-                                                    currentPosition.get(), hashNode);
+                            navigator.interceptGoingToLeftNode(
+                                    currentPosition.get(), hashNode);
 
-                                            currentPosition.set(
-                                                    hashNode.getLeftNode());
+                            currentPosition.set(
+                                    hashNode.getLeftNode());
 
-                                            level.incrementAndGet();
-                                        } else if (compareResult > 0
-                                                && hashNode.getRightNode()
-                                                != HashNode.NULL) {
+                            level.incrementAndGet();
+                        } else if (compareResult > 0
+                                && hashNode.getRightNode()
+                                != HashNode.NULL) {
 
-                                            navigator.interceptGoingToRightNode(
-                                                    currentPosition.get(), hashNode);
+                            navigator.interceptGoingToRightNode(
+                                    currentPosition.get(), hashNode);
 
-                                            currentPosition.set(
-                                                    hashNode.getRightNode());
+                            currentPosition.set(
+                                    hashNode.getRightNode());
 
-                                            level.incrementAndGet();
-                                        } else {
-                                            navigator.whenTheKeyWasNotFound(
-                                                    compareResult < 0,
-                                                    currentPosition.get(), hashNode);
+                            level.incrementAndGet();
+                        } else {
+                            navigator.whenTheKeyWasNotFound(
+                                    compareResult < 0,
+                                    currentPosition.get(), hashNode);
 
-                                            end.set(true);
-                                        }
-                                    }
-                                }
-                            }
-                    );
+                            end.set(true);
+                        }
+                    }
+
+                    tempBuffer.clear();
                 }
             }
         }
@@ -358,16 +332,22 @@ public class HashNode extends Node {
 
     @Override
     public String toString() {
-        final byte[] nodeBuffer = getNodeBufferWithoutChecksum(
-                key, flags, address1, address2, leftNode, rightNode, timestamp);
+        int realChecksum = -1;
+        byte[] hashNodeBytes = null;
 
-        int realChecksum = Arrays.hashCode(nodeBuffer);
-        byte[] hashNodeBytes = new byte[HASH_NODE_SIZE];
-        hashNode.position(0);
-        hashNode.get(hashNodeBytes);
+        if (this.hashNode != null) {
+            final byte[] hashNodeWithoutChecksum = new byte[HASH_NODE_SIZE - CHECKSUM_SIZE];
+            this.getHashNode().get(hashNodeWithoutChecksum);
+            realChecksum = Arrays.hashCode(hashNodeWithoutChecksum);
+
+            hashNodeBytes = new byte[HASH_NODE_SIZE];
+            hashNode.position(0);
+            hashNode.get(hashNodeBytes);
+        }
 
         return "HashNode{" +
-                "hashNode=" + Arrays.toString(hashNodeBytes) +
+                "hashNode=" + (this.hashNode == null ? null : Arrays.toString
+                                (hashNodeBytes)) +
                 ", key=" + Arrays.toString(key) +
                 ", flags=" + DebugUtil.niceName(flags) +
                 ", address1=" + DebugUtil.niceName(address1) +

@@ -1,7 +1,6 @@
 package br.eti.fml.campinas.local.body;
 
 import br.eti.fml.campinas.local.index.HashNode;
-import br.eti.fml.campinas.util.BufferPool;
 import br.eti.fml.campinas.util.ByteUtil;
 import br.eti.fml.campinas.util.FileUtil;
 import br.eti.fml.campinas.util.Pair;
@@ -28,6 +27,8 @@ public class Body {
     private FileChannel[] channel = new FileChannel[MAX_INDEX];
     private FileLock[] lock = new FileLock[MAX_INDEX];
     private long[] currentFileSize = new long[MAX_INDEX];
+
+    private ByteBuffer[] buffers = new ByteBuffer[MAX_INDEX];
 
     public static double log2(double num) {
         return (Math.log(num) / Math.log(2d));
@@ -61,6 +62,7 @@ public class Body {
             File f = new File(directoryPath.getAbsolutePath()
                     + getFileNameByIndex(i));
 
+            this.buffers[i] = null;
             this.file[i] = new RandomAccessFile(f, "rw");            
             this.channel[i] = this.file[i].getChannel();
             this.lock[i] = this.channel[i].tryLock();
@@ -118,15 +120,11 @@ public class Body {
         long realSize = getSizeByIndex(address1);
         assert realSize < Integer.MAX_VALUE;
 
-        BufferPool.INSTANCE.doWithATemporaryBuffer(
-                (int) realSize, new BufferPool.Action() {
-                    @Override
-                    public void doWith(ByteBuffer buffer) throws IOException {
-                        //channel[address1].re
-                        // TODO: read size
-                    }
-                }
-        );
+        if (this.buffers[address1] == null) {
+            this.buffers[address1] = ByteBuffer.allocateDirect((int) realSize);
+        }
+
+        // TODO: read size, checksum
 
         return result;
     }
