@@ -25,7 +25,8 @@ public class Test {
         //int tests = 50000000;
         //int tests = 1000000;
         //int tests = 800000;
-        int tests = 1000000;
+        //int tests = 100000000;
+        int tests = 100000;
 
         DecimalFormat format = new DecimalFormat("#,###");
         AtomicLong checkpoint = new AtomicLong(System.currentTimeMillis());

@@ -56,8 +56,8 @@ public final class FileUtil {
         long currentSize = file.length();
 
         if (currentSize != size) {
-            log.error("Something is really wrong with the file " + fileName +
-                    "size! Trying to fix it. Resizing from " + currentSize
+            log.error("Something is really wrong with the file '" + fileName +
+                    "' size! Trying to fix it. Resizing from " + currentSize
                     + " to " + size + ". The size must be multiple of "
                     + multiple + ". It's very probable that some"
                     + " data is corrupted!");

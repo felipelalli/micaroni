@@ -12,6 +12,7 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
@@ -74,7 +75,8 @@ public class Body {
             }
 
             this.currentFileSize[i] = this.file[i].length();
-            long size = getSizeByIndex((byte) i);
+            long size = getSizeByIndex((byte) i) + BodyNode.CHECKSUM_SIZE
+                    + BodyNode.FLAGS_SIZE + BodyNode.SIZE_SIZE;
 
             long rightSize = ByteUtil.getNextMultiple(
                     this.currentFileSize[i], size);
@@ -97,8 +99,16 @@ public class Body {
         long realSize = getSizeByIndex(address1);
 
         long address2 = this.currentFileSize[address1];
-        this.channel[address1].write(ByteBuffer.wrap(value), address2);
+
+        assert realSize < Integer.MAX_VALUE;
+        BodyNode bodyNode = new BodyNode((int) realSize);
+        ByteBuffer buffer = bodyNode.getNewByteBuffer(value,
+                (byte) 0); // TODO: change flags
+
+        this.channel[address1].write(buffer, address2);
         this.currentFileSize[address1] += realSize;
+        
+        buffer.clear();
 
         return new Pair<Byte, Long>(address1, address2);
     }
