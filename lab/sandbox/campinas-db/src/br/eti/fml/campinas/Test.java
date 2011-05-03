@@ -47,25 +47,25 @@ public class Test {
 
             log.info("\n*** CHECKING... ");
 
-            for (int i = 0; i < tests; i++) {
-                count.incrementAndGet();
-
-                String key = "key" + i;
-                byte[] dataBaseValue = db.get(key);
-                byte[] writtenValue = getValue(i);
-
-                if (Arrays.equals(writtenValue, dataBaseValue)) {
-                    if (i % 100000 == 0 ) {
-                        log.info(format.format(i) + " - "
-                                + getSpeed(checkpoint, count));
-                    }
-                } else {
-                    log.info(format.format(i));
-                    log.info("*** ERROR " + Arrays.toString(dataBaseValue)
-                            + " must be " + Arrays.toString(writtenValue));
-                }
-            }
-
+//            for (int i = 0; i < tests; i++) {
+//                count.incrementAndGet();
+//
+//                String key = "key" + i;
+//                byte[] dataBaseValue = db.get(key);
+//                byte[] writtenValue = getValue(i);
+//
+//                if (Arrays.equals(writtenValue, dataBaseValue)) {
+//                    if (i % 100000 == 0 ) {
+//                        log.info(format.format(i) + " - "
+//                                + getSpeed(checkpoint, count));
+//                    }
+//                } else {
+//                    log.info(format.format(i));
+//                    log.info("*** ERROR " + Arrays.toString(dataBaseValue)
+//                            + " must be " + Arrays.toString(writtenValue));
+//                }
+//            }
+//
             log.info(db.getInfo());
 
         } finally {
@@ -94,19 +94,20 @@ public class Test {
     private static Random random = new Random(10);
 
     private static byte[] getValue(int i) {
-        buffer.position(0);
-        buffer.putInt(i);
-        byte[] value = new byte[4];
-        buffer.position(0);
-        buffer.get(value);
-        return value;
-        
-//        int size = random.nextInt(512);
-//        StringBuilder value = new StringBuilder();
-//        for (int j = 0; j < size; j++) {
-//            value.append(j);
-//        }
-//
-//        return value.toString().getBytes();
+//        buffer.position(0);
+//        buffer.putInt(i);
+//        byte[] value = new byte[4];
+//        buffer.position(0);
+//        buffer.get(value);
+//        return value;
+
+        int size = random.nextInt(1024); // 1K
+        StringBuilder value = new StringBuilder();
+        while (value.length() < size) {
+            value.append("key:").append(i).append("," +
+                    "size:").append(size).append(";");
+        }
+
+        return value.toString().getBytes();
     }
 }

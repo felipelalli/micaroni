@@ -58,7 +58,7 @@ public class Body {
     }
 
     public Body(File directoryPath) throws IOException {
-        for (int i = START; i < MAX_INDEX; i++) {
+        for (int i = 0; i < MAX_INDEX; i++) {
             File f = new File(directoryPath.getAbsolutePath()
                     + getFileNameByIndex(i));
 
@@ -104,7 +104,7 @@ public class Body {
     }
 
     public void shutdown() throws IOException {
-        for (int i = START; i < MAX_INDEX; i++) {
+        for (int i = 0; i < MAX_INDEX; i++) {
             this.lock[i].release();
             this.file[i].close();
             //log.trace("Closed " + getFileNameByIndex(i) + " file.");
