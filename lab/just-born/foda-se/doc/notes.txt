@@ -1,0 +1,12 @@
+To create alternative bitmap drawables for different densities,
+you should follow the 3:4:6:8 scaling ratio between the four generalized
+densities. For example, if you have a bitmap drawable that's 48x48 pixels
+for medium-density screen (the size for a launcher icon), all the different
+sizes should be:
+
+36x36 for low-density          (.75)
+48x48 for medium-density       (1)
+72x72 for high-density         (1.5)
+96x96 for extra high-density   (2)
+
+=======================================

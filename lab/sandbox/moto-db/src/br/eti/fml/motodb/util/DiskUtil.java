@@ -15,17 +15,17 @@ import java.util.Random;
  */
 public class DiskUtil {
     private static final Logger log = Logger.getLogger(DiskUtil.class);
-    public static final int MEGAS_TO_TEST = 1000;
+    public static final int MEGAS_TO_TEST = 100;
 
     public static void main(String[] args) throws IOException {
         File[] files = new File[] {
-//                File.createTempFile("test", ".tmp"),
-//                File.createTempFile("test", ".tmp",
-//                        new File("/media/eSataOne")),
-//                File.createTempFile("test", ".tmp",
-//                        new File("/media/6758e8c7-2151-4388-8148-0626b6634700")),
-//                File.createTempFile("test", ".tmp",
-//                        new File("/media/NTFS500")),
+                File.createTempFile("test", ".tmp"),
+                File.createTempFile("test", ".tmp",
+                        new File("/media/eSataOne")),
+                File.createTempFile("test", ".tmp",
+                        new File("/media/6758e8c7-2151-4388-8148-0626b6634700")),
+                File.createTempFile("test", ".tmp",
+                        new File("/media/NTFS500")),
                 File.createTempFile("test", ".tmp",
                         new File("/media/Heyko32"))
         };

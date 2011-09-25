@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Wifi Eraser</string>
+    <string name="description">It erases all the Wi-Fi
+            configurations in your Android system.
+            It is useful when you have a long list of
+            remembered Wi-Fi and wants to erase ALL. The Android native
+            system (at least so far 2.3.3) does not have a way to erase ALL,
+            you must to erase one by one, what is really sucks.</string>
+</resources>
