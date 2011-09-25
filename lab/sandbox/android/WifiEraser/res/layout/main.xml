@@ -1,7 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="fill_parent"
-              android:layout_height="fill_parent">
+              android:layout_height="fill_parent"
+              android:padding="20dp">
 
-</LinearLayout>
+    <TextView android:id="@+id/title"
+             android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:text="@string/app_name"
+             style="@style/Title"
+             android:padding="10dp"
+             android:gravity="center_horizontal"/>
+
+    <Button android:id="@+id/go"
+                android:layout_marginTop="10dp"
+                android:layout_below="@+id/title"
+                android:layout_centerInParent="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/forget_button_text"
+                style="@android:style/TextAppearance.Large"/>
+
+    <WebView android:id="@+id/label"
+             android:layout_marginTop="10dp"
+             android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:layout_below="@id/go"
+             android:layout_centerInParent="true" />
+
+</RelativeLayout>

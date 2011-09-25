@@ -4,6 +4,17 @@
             configurations in your Android system.
             It is useful when you have a long list of
             remembered Wi-Fi and wants to erase ALL. The Android native
-            system (at least so far 2.3.3) does not have a way to erase ALL,
-            you must to erase one by one, what is really sucks.</string>
+            system (at least so far 2.3.3) does not have an easy way to erase
+            ALL. You must to erase one by one, and this is really sucks.</string>
+    <string name="be_warned"><![CDATA[<strong>BE WARNED:</strong>]]></string>
+    <string name="forget_button_text">Forget ALL Wi-Fi configurations now</string>
+    <string name="are_you_sure">Are you sure that you want to erase %s
+        Wi-Fi configurations?</string>
+    <string name="zero_configuration">Wow! You already have no Wi-Fi
+        configurations! This is amazing! Click "OK" to close the APP,
+        thanks for use! Good bye!</string>
+    <string name="OK">OK</string>
+    <string name="Yes">Yes</string>
+    <string name="No">Not sure</string>
+    <string name="done">This is amazing! %1$s configs of %2$s was removed successfully. Press OK to close the APP.</string>
 </resources>
