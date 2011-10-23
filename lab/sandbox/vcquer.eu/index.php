@@ -3,6 +3,7 @@
 <head>
 <title>Vc vc vc quer?</title>
 <meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="http://www.mollio.org/css/main.css" media="screen" />
 </head>
 
 <body style="text-align:center;">
