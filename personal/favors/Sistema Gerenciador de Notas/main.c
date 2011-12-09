@@ -6,13 +6,6 @@
 #define MAX_ALUNOS 50
 #define MAX_NOME_ALUNO 30
 
-/* Materias em caracter, para identificar na persistencia dos dados */
-#define POR 'P'
-#define MAT 'M'
-#define FIS 'F'
-#define QUI 'Q'
-#define ING 'I'
-
 /* Sexos */
 #define MASC 'M'
 #define FEM 'F'
