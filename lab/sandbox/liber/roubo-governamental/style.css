@@ -1,0 +1,60 @@
+@import url(http://fonts.googleapis.com/css?family=Arapey);
+
+body {
+    margin:0 auto;
+    background-image: url("wall.jpg");
+}
+
+#main {
+    padding-left: 10%;
+    padding-right: 10%;
+    font-family: 'Arapey', serif;
+    font-weight: lighter;
+    font-size: 22pt;
+    text-align: center;
+}
+
+h1 { font-size: 26pt; font-weight: bold; }
+
+.default-input {
+    border: 1px solid #a9a9a9; height: 30px; font-family: 'Arapey', serif; font-size: 22pt;
+    background-color:rgba(255,255,255,0.2);
+    margin-top: 20px;
+    width: 95px;
+    text-align: right;
+}
+
+small { font-size: 12pt; color: gray; }
+sup { color: gray; }
+
+.foot {
+    text-align: left;
+    color: #363636;
+    font-size: 16pt;
+}
+
+/* generated: */
+.myButton {
+    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #fcfcfc), color-stop(1, #a0baa1) );
+    background:-moz-linear-gradient( center top, #fcfcfc 5%, #a0baa1 100% );
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#fcfcfc', endColorstr='#a0baa1');
+    background-color:#fcfcfc;
+    -moz-border-radius:15px;
+    -webkit-border-radius:15px;
+    border-radius:15px;
+    display:inline-block;
+    color:#163b10;
+    font-family:'Arapey',Arial;
+    font-size:24px;
+    font-weight:bold;
+    padding:10px 26px;
+    text-decoration:none;
+}.myButton:hover {
+     background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #a0baa1), color-stop(1, #fcfcfc) );
+     background:-moz-linear-gradient( center top, #a0baa1 5%, #fcfcfc 100% );
+     filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#a0baa1', endColorstr='#fcfcfc');
+     background-color:#a0baa1;
+ }.myButton:active {
+      position:relative;
+      top:1px;
+  }
