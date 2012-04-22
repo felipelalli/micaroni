@@ -1,0 +1,214 @@
+http://www1.folha.uol.com.br/folha/dinheiro/ult91u74057.shtml
+
+http://www.ibge.gov.br/seculoxx/economia/contas_nacionais/4_setor_publico.xls
+http://veja.abril.com.br/infograficos/economia_brasileira/ 
+http://www.ipeadata.gov.br/
+
+Dados de 1900-2000
+O resto completa com os dados atuais.
+
+2:02 PM 
+ericcar@globo.com: E aí, Felipe?
+Você precisa dos dados, certo?
+2:03 PM 
+me: fala Eric!
+  
+sim
+  
+tudo que puder me enviar pra me ajudar
+  
+tipo, pensei em fazer algo separado por município
+  
+oq vc acha? ou acha q daria mto trabalho?
+ 
+ericcar@globo.com: Com imposto municipal?
+  
+Acho que sim...
+ 
+me: sim, municipal + estadual + federal
+2:04 PM 
+pelo menos estadual então, e aí a gente coloca uma média dos municipais para aquele estado
+ 
+ericcar@globo.com: Pois achar a carga tributária total já é difícil
+No site do IPEA por exemplo, só tem desde 1990...
+ 
+me: saquei!
+2:05 PM 
+estava pensando em fazer algo desde o nascimento da pessoa
+  
+rs
+ 
+ericcar@globo.com: http://www.ipeadata.gov.br/
+  
+kkkkk
+ 
+me: tipo, ela cadastra as mudanças de salario q ela teve
+ 
+ericcar@globo.com: pois é
+ 
+me: e calcular até os gastos q a mae da pessoa teve com o bebe, com impostos!
+  
+tem tudo nesse site?
+ 
+ericcar@globo.com: uhum
+2:06 PM 
+me: beleza!
+ 
+ericcar@globo.com: pelo menos tem os dados da carga tributária kkkk
+ 
+me: pensei q vc tivesse umas planilhas ehehe
+  
+blz!!
+  
+fechou
+  
+vlaeu!
+  
+vc é oq? advogado?
+ 
+ericcar@globo.com: http://www.google.com/publicdata/explore?ds=k3s92bru78li6_&hl=en&dl=en#ctype=l&strail=false&bcs=d&nselm=h&met_y=ggx_ngdp&scale_y=lin&ind_y=false&rdim=world&idim=world:Earth&idim=country:BR&ifdim=world&hl=en&dl=en
+  
+gráfico do FMI
+ 
+me: hmmm legal
+ 
+ericcar@globo.com: http://www.google.com/publicdata/explore?ds=d5bncppjof8f9_&hl=en&dl=en
+Gráfico do Banco Mundial
+2:07 PM 
+me: mas como eu usaria isso na app?
+ 
+ericcar@globo.com: acho que da'pra achar conteúdo suficiente nesses sites...
+mas vou tentar caçar a carga tributária do passado
+ 
+me: blz!!
+  
+valeu
+2:08 PM 
+vou entrar de ferias dia 13
+ 
+ericcar@globo.com: Olha, creio que vc usaria: Rendimento total - Carga Tributária
+  
+só que sem a carga tributária
+ 
+me: vc sabe calcular esses lances?
+ 
+ericcar@globo.com: creio que sim
+ 
+me: ok
+  
+entao eu vou fazer um prototipo da app
+  
+e depois te passo
+  
+pra vc me ajdar com os calculos
+2:09 PM 
+depois do dia 13
+ 
+ericcar@globo.com: você poderia usar os gastos do governo, mas nem sempre o que o governo gasta é o que ele arrecada
+  
+certo :D
+ 
+me: blzz!!
+2:10 PM 
+ericcar@globo.com: tinha no site da veja se não me engano...
+dados históricos do BR (desde 1910 + ou -)
+2:11 PM 
+vou ver se ainda tenho o link
+  
+http://www.facebook.com/l.php?u=http%3A%2F%2Fwww.mediafire.com%2F%3Foi2odwcr8efrxmu&h=qAQGmT5_PAQGEej8zOGwRi8S-yBrPkLcGMjDKTXpBvo75MQ
+Fiz esses gráficos uma vez
+2:12 PM 
+fórmula do Rothbard: PPB = PIB - Gastos do governo
+PPR = PPB - Gastos do Governo
+ 
+me: porra q show
+ 
+ericcar@globo.com: thanks :D
+7 minutes
+2:19 PM 
+ericcar@globo.com: http://veja.abril.com.br/infograficos/economia_brasileira/
+2:20 PM 
+achei \O/
+2:21 PM 
+me: animal! vamos ter mto trabalho! rs mas vai valer a pena!
+ 
+ericcar@globo.com: :D
+2:22 PM 
+interessante seria adicionar a inflação do meio do cálculo, só não sei como fazer isso kkk
+2:23 PM 
+me: heheh é verdade
+  
+mas vamos fazer uma coisa meio aprox.
+  
+e aí no final eu coloco tipo assim:
+  
+com esse dinheiro daria pra comprar: 4585 cervejas, 2 casas, 1 carro, 344 geladeiras eehehehe
+ 
+ericcar@globo.com: não sei se o adequado seria fazer correção ou somente somar ou subtrair (no caso de deflação)
+pois a carga tributária é em relação ao PIB, e a inflação em relação aos preços...
+ 
+me: q nem a globo faz!
+ 
+ericcar@globo.com: kkkkkk
+  
+VAI FICAR EXCELENTE!!!
+ 
+me: a veja sempre coloca 3 jetskis
+2:24 PM 
+como se todo mundo comprasse jetskis ehhhee
+ 
+ericcar@globo.com: kkkkkkk
+2:25 PM 
+vai ser necessário todos os salários diferentes que o cara já ganhou na vida + correção inflacionária...
+CHALLENGE ACCEPTED
+  
+aushuahsuahs
+ 
+me: uheuaehuaehu exato!
+2:26 PM 
+ericcar@globo.com: botar também quantas viagens pro exterior ele poderia ter feito...
+2:28 PM 
+pois seria muito bom pro sujeito refletir:
+"quer dizer que se o governo não tivesse me cobrado todos esses impostos, eu teria consumido tudo isso???"
+  
+aí as pessoas concluirão que o governo é uma instituição autoritária e escravocrata :D
+  
+até os mais estatistas pensarão nisso...
+2:30 PM 
+me: ehheheh
+2:32 PM 
+ericcar@globo.com: http://www.ibge.gov.br/seculoxx/economia/economia.shtm#
+Fonte dos dados da Veja :P
+  
+ops, link errado :x
+2:34 PM 
+http://ww.ibpt.com.br/img/_publicacao/13854/186.pdf
+  
+isso pode ser útil tbm
+2:36 PM 
+http://www.ibge.gov.br/seculoxx/economia/contas_nacionais/4_setor_publico.xls
+  
+finalmente achei a fonte :D
+ 
+me: hehehe
+  
+ta
+  
+vou perder esse historico
+  
+tem como mandar o link por email?
+  
+estou no trampo
+ 
+ericcar@globo.com: 1900-2000, aí mistura com os dados atuais 2000- , e fica tudo blz
+  
+sim, sim
+ 
+me: blz!!
+5 minutes
+2:41 PM 
+ericcar@globo.com: também podemos fazer o seguinte:
+além de dizer quanto o governo roubou...
+corrigir os salários antigos em valores atuais
+2:45 PM 
+me: mas aí corremos o risco de sermos mto imprecisos

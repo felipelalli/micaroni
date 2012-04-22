@@ -3,6 +3,7 @@
 body {
     margin:0 auto;
     background-image: url("wall.jpg");
+    background-color: #d3d3d3;
 }
 
 #main {
