@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Siga-me</string>
+    <string name="description">Siga-me é um aplicativo que permite uma pessoa visualizar o caminho de outra. Instale o Siga-me em dois celulares Android: cada um se torna capaz de seguir o outro e de ser seguido pelo outro. Preocupado onde está seu filho no caminho de volta da escola? Quer saber se alguém está a caminho ou se está perto? Esse aplicativo é pra você!</string>
+    <string name="type_number">Insira o número do telefone de quem deseja seguir:</string>
+    <string name="button_follow">Pedir para seguir (por SMS)</string>
+    <string-array name="minutes_array">
+        <item>por 5 min</item>
+        <item>por 10 min</item>
+        <item>por 15 min</item>
+    </string-array>
+    <string name="sending_sms">Enviando SMS, por favor aguarde...</string>
+    <string name="error">Erro</string>
+    <string name="error_number">Digite um número antes de enviar</string>
+    <string name="sms_sent">SMS enviado!</string>
+    <string name="sms_generic_error">Erro ao enviar SMS</string>
+    <string name="sms_no_service_error">Sem serviço</string>
+    <string name="internet_error">Sem Internet ou servidor down!</string>
+
+    <string name="stop_follow">Parar de seguir</string>
+    <string name="last_update_never">Última atualização: (aguardando...)</string>
+    <string name="last_update">Última atualização:</string>
+    <string name="position">Última posição:</string>
+    <string name="battery">Bateria:</string>
+</resources>

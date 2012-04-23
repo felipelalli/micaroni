@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="br.eti.fml.android.sigame"
+          android:versionCode="1"
+          android:versionName="0.1 beta"
+          android:installLocation="auto">
+
+    <uses-sdk android:minSdkVersion="3" android:targetSdkVersion="10" /> <!-- 3 = 1.5, 10 = 2.3.3 and 2.3.4 -->
+
+    <application
+            android:icon="@drawable/icon"
+            android:label="@string/app_name"
+            android:debuggable="false"
+            android:description="@string/description"
+            android:theme="@android:style/Theme.Light.NoTitleBar"
+            >
+
+        <activity android:name=".ui.activities.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.activities.MapActivity"/>
+        <service android:name=".services.UpdatingPositionService" />
+
+        <receiver android:name="br.eti.fml.android.sigame.receivers.CustomReceiver" android:exported="true">
+            <intent-filter android:priority="999999">
+                <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="br.eti.fml.android.sigame.SMS_SENT"/>
+            </intent-filter>
+        </receiver>
+
+    </application>
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+</manifest>

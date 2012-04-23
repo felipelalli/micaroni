@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Follow Me Now</string>
+    <string name="description">Follow Me Now is an application that allows a person to visualize the path of another. Install Follow Me Now on two Android phones: each one is able to follow the other and be followed by another. Concerned about where your kids are on the way back from school? Want to know if someone is coming or if it is near? This application is for you!</string>
+    <string name="type_number">Enter the phone number from who you want to follow:</string>
+    <string name="button_follow">Ask to follow (by SMS)</string>
+    <string-array name="minutes_array">
+        <item>for 5 min</item>
+        <item>for 10 min</item>
+        <item>for 15 min</item>
+    </string-array>
+    <string name="sending_sms">Sending SMS, please wait...</string>
+    <string name="error">Error</string>
+    <string name="error_number">Enter a number before ask to follow</string>
+    <string name="sms_sent">SMS sent!</string>
+    <string name="sms_generic_error">Error when trying to send SMS</string>
+    <string name="sms_no_service_error">No service</string>
+    <string name="internet_error">No Internet or db server down!</string>
+
+    <string name="stop_follow">Stop follow</string>
+    <string name="last_update_never">Last update: (waiting...)</string>
+    <string name="last_update">Last update:</string>
+    <string name="position">Last position:</string>
+    <string name="battery">Battery:</string>
+
+</resources>
