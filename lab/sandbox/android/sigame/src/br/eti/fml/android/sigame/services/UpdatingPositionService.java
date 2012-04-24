@@ -4,10 +4,13 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.*;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.os.BatteryManager;
+import android.os.Bundle;
 import android.os.IBinder;
 import br.eti.fml.android.sigame.R;
 import br.eti.fml.android.sigame.bean.SharedInfo;
@@ -20,6 +23,13 @@ public class UpdatingPositionService extends Service {
 
     private AsyncTask mainTask;
     private String session;
+    private Float battery = 0f;
+    private Integer temperature = 0;
+    private Float lat, lon, accur;
+    private String lastProvider = "?";
+    private LocationListener locationListenerGps;
+    private LocationListener locationListenerNetwork;
+    private Location currentBestLocation;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -36,10 +46,7 @@ public class UpdatingPositionService extends Service {
 
     @Override
     public void onDestroy() {
-        if (mainTask != null) {
-            mainTask.cancel(true);
-        }
-
+        stopGettingLocation();
         Log.debug(this, "Service destroyed!");
 
         super.onDestroy();
@@ -60,6 +67,8 @@ public class UpdatingPositionService extends Service {
         final Long updateSoFar = settings.getLong("updateSoFar", System.currentTimeMillis());
         session = settings.getString("updateSession", "");
 
+        registerBattery();
+        registerLocation();
         showNotificationWhenFollowed();
 
         if (session == null || "".equals(session)) {
@@ -76,12 +85,13 @@ public class UpdatingPositionService extends Service {
 
                     while (!isCancelled()) {
                         try {
-                            float lat = (float) Math.random();
-                            float lon = (float) Math.random();                            
-
                             sharedInfo.setLast_update(System.currentTimeMillis());
                             sharedInfo.setLat(lat);
                             sharedInfo.setLon(lon);
+                            sharedInfo.setLast_provider(lastProvider);
+                            sharedInfo.setAccur(accur);
+                            sharedInfo.setBattery(battery);
+                            sharedInfo.setTemperature(temperature);
 
                             Storage.put(key, gson.toJson(sharedInfo));
 
@@ -109,19 +119,165 @@ public class UpdatingPositionService extends Service {
         }
     }
 
+    private void stopGettingLocation() {
+        Log.debug(this, "Stopping to get location...");
+
+        if (mainTask != null) {
+            mainTask.cancel(true);
+        }
+
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+        if (locationListenerNetwork != null) {
+            locationManager.removeUpdates(locationListenerNetwork);
+        }
+
+        if (locationListenerGps != null) {
+            locationManager.removeUpdates(locationListenerGps);
+        }
+    }
+
+    private void registerLocation() {
+        Log.debug(this, "Start to get location...");
+
+        // Acquire a reference to the system Location Manager
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+        if (lat == null || lon == null) {
+            Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            makeUseOfNewLocation(lastKnownLocation);
+        }
+
+        // Define a listener that responds to location updates
+        locationListenerNetwork = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                // Called when a new location is found by the network location provider.
+                makeUseOfNewLocation(location);
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+            public void onProviderEnabled(String provider) {}
+            public void onProviderDisabled(String provider) {}
+        };
+
+        locationListenerGps = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                // Called when a new location is found by the network location provider.
+                makeUseOfNewLocation(location);
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+            public void onProviderEnabled(String provider) {}
+            public void onProviderDisabled(String provider) {}
+        };
+
+        // Register the listener with the Location Manager to receive location updates
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListenerNetwork);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListenerGps);
+    }
+
+    private static final int TIME_TO_OLD = 1000 * 2 * 60; // 2 min
+
+    /** Determines whether one Location reading is better than the current Location fix
+     * @param newLocation  The new Location that you want to evaluate
+     * @param currentBestLocation  The current Location fix, to which you want to compare the new one
+     * @return if the new is better
+     */
+    protected boolean isBetterLocation(Location newLocation, Location currentBestLocation) {
+        if (currentBestLocation == null) {
+            // A new location is always better than no location
+            return true;
+        }
+
+        // Check whether the new location fix is newer or older
+        long timeDelta = newLocation.getTime() - currentBestLocation.getTime();
+        boolean isSignificantlyNewer = timeDelta > TIME_TO_OLD;
+        boolean isSignificantlyOlder = timeDelta < -TIME_TO_OLD;
+        boolean isNewer = timeDelta > 0;
+
+        // If it's been more than two minutes since the current location, use the new location
+        // because the user has likely moved
+        if (isSignificantlyNewer) {
+            return true;
+            // If the new location is more than two minutes older, it must be worse
+        } else if (isSignificantlyOlder) {
+            return false;
+        }
+
+        // Check whether the new location fix is more or less accurate
+        int accuracyDelta = (int) (newLocation.getAccuracy() - currentBestLocation.getAccuracy());
+        boolean isLessAccurate = accuracyDelta > 0;
+        boolean isMoreAccurate = accuracyDelta < 0;
+        boolean isSignificantlyLessAccurate = accuracyDelta > 200;
+
+        // Check if the old and new location are from the same provider
+        boolean isFromSameProvider = isSameProvider(newLocation.getProvider(),
+                currentBestLocation.getProvider());
+
+        // Determine location quality using a combination of timeliness and accuracy
+        if (isMoreAccurate) {
+            return true;
+        } else if (isNewer && !isLessAccurate) {
+            return true;
+        } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
+            return true;
+        }
+        return false;
+    }
+
+    /** Checks whether two providers are the same
+     * @param provider1 provider1
+     * @param provider2 provider2
+     * @return if is the same
+     */
+    private boolean isSameProvider(String provider1, String provider2) {
+        if (provider1 == null) {
+            return provider2 == null;
+        }
+        return provider1.equals(provider2);
+    }
+
+    private void makeUseOfNewLocation(Location location) {
+        if (isBetterLocation(location, currentBestLocation)) {
+            currentBestLocation = location;
+            Log.debug(this, "New best location: " + currentBestLocation);
+        }
+
+        lastProvider = currentBestLocation.getProvider();
+        lat = (float) currentBestLocation.getLatitude();
+        lon = (float) currentBestLocation.getLongitude();
+        accur = currentBestLocation.getAccuracy();
+    }
+
+    private void registerBattery() {
+        BroadcastReceiver batteryLevelReceiver = new BroadcastReceiver() {
+            public void onReceive(Context context, Intent intent) {
+                context.unregisterReceiver(this);
+                int rawlevel = intent.getIntExtra("level", 0);
+                int scale = intent.getIntExtra("scale", 1);
+                int level = 0;
+                if (rawlevel >= 0 && scale > 0) {
+                    level = (rawlevel * 100) / scale;
+                }
+
+                battery = level / 100f;
+
+                if (Integer.valueOf(android.os.Build.VERSION.SDK) >= 5) {
+                    temperature = intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, 0);
+                }
+            }
+        };
+
+        IntentFilter batteryLevelFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        registerReceiver(batteryLevelReceiver, batteryLevelFilter);
+    }
+
     public static String getKey(String session) {
         return MainActivity.PACKAGE + "." + session + ".shared_info";
     }
 
     private void stopToBeFollowed() {
         Log.debug(this, "Stop updating service!");
-
-        // TODO: stop update location
-
-        if (mainTask != null) {
-            mainTask.cancel(true);
-        }
-
         stopSelf();
     }
 

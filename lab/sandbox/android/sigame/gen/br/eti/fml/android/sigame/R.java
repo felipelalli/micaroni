@@ -22,13 +22,14 @@ public final class R {
         public static final int stop=0x7f020005;
     }
     public static final class id {
+        public static final int battery=0x7f060005;
         public static final int button_follow=0x7f060002;
         public static final int last_update=0x7f060003;
         public static final int minutes=0x7f060001;
         public static final int number_to_follow=0x7f060000;
         public static final int position=0x7f060004;
-        public static final int stop_follow=0x7f060006;
-        public static final int time_left=0x7f060005;
+        public static final int provider=0x7f060006;
+        public static final int stop_follow=0x7f060007;
     }
     public static final class layout {
         public static final int main=0x7f030000;
@@ -49,6 +50,7 @@ public final class R {
         public static final int last_update=0x7f04000d;
         public static final int last_update_never=0x7f04000c;
         public static final int position=0x7f04000e;
+        public static final int provider=0x7f040019;
         public static final int sending_sms=0x7f040004;
         public static final int sms_generic_error=0x7f040008;
         public static final int sms_no_service_error=0x7f040009;

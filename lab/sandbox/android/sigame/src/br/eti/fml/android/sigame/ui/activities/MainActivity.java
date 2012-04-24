@@ -22,7 +22,7 @@ public class MainActivity extends Activity {
     public final static int NOTIFICATION_ID = 948249821;
 
     public static MainActivity instance;
-    private ProgressDialog dialog;
+    private ProgressDialog progressDialog;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,11 +78,11 @@ public class MainActivity extends Activity {
     
     private void sendTheSMSInThread(final String realNumber) {
         final UiHelper uiHelper = new UiHelper(this);
-        dialog = ProgressDialog.show(this, "",
+        progressDialog = ProgressDialog.show(this, "",
                 getString(R.string.sending_sms), true);
 
-        dialog.show();
-        dialog.setCancelable(false);
+        progressDialog.show();
+        progressDialog.setCancelable(false);
 
         long random = (long) (Math.random() * Long.MAX_VALUE);
         final String session = Long.toString(random, Character.MAX_RADIX);
@@ -107,6 +107,10 @@ public class MainActivity extends Activity {
                         public void onClick(DialogInterface dialogInterface, int i) {
                             //System.exit(56);
                             dialogInterface.dismiss();
+                            
+                            if (progressDialog != null) {
+                                progressDialog.dismiss();
+                            }
                         }
                     });
                 } else {
@@ -130,8 +134,8 @@ public class MainActivity extends Activity {
     }
 
     public void dismissDialog() {
-        if (dialog != null) {
-            dialog.dismiss();
+        if (progressDialog != null) {
+            progressDialog.dismiss();
         }
     }
 }

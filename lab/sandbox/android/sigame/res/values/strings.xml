@@ -25,10 +25,11 @@
     <string name="you_are_being_followed">You are being followed!</string>
     <string name="title_arrived_notification">You are being followed</string>
     <string name="body_arrived_notification">Tap here when you arrived</string>
-    <string name="arrived_title">Info</string>
-    <string name="arrived_body">Your friend arrived!</string>
+    <string name="arrived_title">Beautiful</string>
+    <string name="arrived_body">Your friend arrived the destination!</string>
     <string name="you_are_not_being_followed_anymore">You are not being followed anymore</string>
     <string name="title_you_are_not_being_followed_anymore">Nobody is following you</string>
     <string name="body_you_are_not_being_followed_anymore">Tap to clean this message</string>
+    <string name="provider">Position provider:</string>
 
 </resources>

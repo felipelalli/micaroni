@@ -4,9 +4,27 @@ public class SharedInfo {
     private Float lat;
     private Float lon;
     private Float accur;
+    private String last_provider;
     private Float battery;
+    private Integer temperature = 0;
     private Long last_update;
     private Boolean arrived = false;
+
+    public String getLast_provider() {
+        return last_provider;
+    }
+
+    public void setLast_provider(String last_provider) {
+        this.last_provider = last_provider;
+    }
+
+    public Integer getTemperature() {
+        return temperature;
+    }
+
+    public void setTemperature(Integer temperature) {
+        this.temperature = temperature;
+    }
 
     public Float getLat() {
         return lat;
@@ -59,12 +77,14 @@ public class SharedInfo {
     @Override
     public String toString() {
         return "SharedInfo{" +
-                "lat=" + lat +
-                ", lon=" + lon +
-                ", accur=" + accur +
-                ", battery=" + battery +
+                "arrived=" + arrived +
                 ", last_update=" + last_update +
-                ", arrived=" + arrived +
+                ", temperature=" + temperature +
+                ", battery=" + battery +
+                ", last_provider='" + last_provider + '\'' +
+                ", accur=" + accur +
+                ", lon=" + lon +
+                ", lat=" + lat +
                 '}';
     }
 }

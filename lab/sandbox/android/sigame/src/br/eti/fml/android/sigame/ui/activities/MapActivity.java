@@ -1,10 +1,6 @@
 package br.eti.fml.android.sigame.ui.activities;
 
 import android.app.Activity;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -57,7 +53,8 @@ public class MapActivity extends Activity {
         
         final TextView position = (TextView) findViewById(R.id.position);
         final TextView lastUpdate = (TextView) findViewById(R.id.last_update);
-        final TextView timeLeft = (TextView) findViewById(R.id.time_left);
+        final TextView battery = (TextView) findViewById(R.id.battery);
+        final TextView provider = (TextView) findViewById(R.id.provider);
         
         //noinspection unchecked
         updatingScreen = new AsyncTask() {
@@ -73,6 +70,14 @@ public class MapActivity extends Activity {
                         
                         if (json == null) {
                             Log.debug(this, "json of key " + key + " is null yet!");
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    // clear the battery field (to append time left after)
+                                    battery.setText(getString(R.string.battery) + " ?");
+                                }
+                            });
                         } else {
                             lastSharedInfo = gson.fromJson(json, SharedInfo.class);
 
@@ -82,7 +87,8 @@ public class MapActivity extends Activity {
                                     if (lastSharedInfo.getLat() != null && lastSharedInfo.getLon() != null) {
                                         position.setText(getString(R.string.position)
                                                 + " lat: " + lastSharedInfo.getLat()
-                                                + "; lon: " + lastSharedInfo.getLon());
+                                                + "; lon: " + lastSharedInfo.getLon()
+                                                + "; acc: " + lastSharedInfo.getAccur());
                                     }
 
                                     if (lastSharedInfo.getLast_update() != null) {
@@ -92,6 +98,17 @@ public class MapActivity extends Activity {
                                                  + " " + simpleDateFormat.format(
                                                     new Date(lastSharedInfo.getLast_update())));
                                     }
+
+                                    if (lastSharedInfo.getBattery() != null) {
+                                        battery.setText(getString(R.string.battery) + " "
+                                                + Math.round(lastSharedInfo.getBattery() * 100f) + "% "
+                                                + (lastSharedInfo.getTemperature() / 10f) + " ºC");
+                                    }
+                                    
+                                    if (lastSharedInfo.getLast_provider() != null) {
+                                        provider.setText(getString(R.string.provider)
+                                                + " " + lastSharedInfo.getLast_provider());
+                                    }
                                 }
                             });
                         }
@@ -99,7 +116,11 @@ public class MapActivity extends Activity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                timeLeft.setText(getString(R.string.time_left) + " " + getTimeLeftInSeconds() + "s");
+                                // append time left on battery field
+                                battery.setText(battery.getText()
+                                        + " - "
+                                        + getString(R.string.time_left)
+                                        + " " + getTimeLeftInSeconds() + "s");
                             }
                         });
 
