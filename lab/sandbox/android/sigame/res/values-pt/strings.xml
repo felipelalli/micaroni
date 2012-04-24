@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">Siga-me</string>
-    <string name="description">Siga-me é um aplicativo que permite uma pessoa visualizar o caminho de outra. Instale o Siga-me em dois celulares Android: cada um se torna capaz de seguir o outro e de ser seguido pelo outro. Preocupado onde está seu filho no caminho de volta da escola? Quer saber se alguém está a caminho ou se está perto? Esse aplicativo é pra você!</string>
+    <string name="app_name">Follow Now!</string>
+    <string name="description">Follow Now! é um aplicativo que permite uma pessoa visualizar o caminho de outra. Instale o Follow Now! em dois celulares Android: cada um se torna capaz de seguir o outro e de ser seguido pelo outro. Preocupado onde está seu filho no caminho de volta da escola? Quer saber se alguém está a caminho ou se está perto? Esse aplicativo é pra você!</string>
     <string name="type_number">Insira o número do telefone de quem deseja seguir:</string>
     <string name="button_follow">Pedir para seguir (por SMS)</string>
     <string-array name="minutes_array">
@@ -21,4 +21,13 @@
     <string name="last_update">Última atualização:</string>
     <string name="position">Última posição:</string>
     <string name="battery">Bateria:</string>
+    <string name="time_left">Tempo restante:</string>
+    <string name="you_are_being_followed">Você está sendo seguido!</string>
+    <string name="title_arrived_notification">Você está sendo seguido</string>
+    <string name="body_arrived_notification">Toque aqui quando chegar</string>
+    <string name="arrived_title">Aviso</string>
+    <string name="arrived_body">Seu amigo chegou!</string>
+    <string name="you_are_not_being_followed_anymore">Você não está mais sendo seguido...</string>
+    <string name="title_you_are_not_being_followed_anymore">Ninguém está te seguindo</string>
+    <string name="body_you_are_not_being_followed_anymore">Toque aqui para limpar</string>
 </resources>

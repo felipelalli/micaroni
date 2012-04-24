@@ -19,6 +19,7 @@ import br.eti.fml.android.sigame.ui.UiHelper;
 
 public class MainActivity extends Activity {
     public final static String PACKAGE = "br.eti.fml.android.sigame";
+    public final static int NOTIFICATION_ID = 948249821;
 
     public static MainActivity instance;
     private ProgressDialog dialog;
@@ -98,19 +99,14 @@ public class MainActivity extends Activity {
         new AsyncTask() {
             @Override
             protected Object doInBackground(Object... objects) {
-                PendingIntent sentPI = PendingIntent.getBroadcast(MainActivity.this, 0,
-                        new Intent(PACKAGE + ".SMS_SENT"), 0);
-
-                SmsManager sm = SmsManager.getDefault();
-                sm.sendTextMessage(realNumber, null, message, sentPI, null);
-
                 if (!Storage.put(PACKAGE + "." + session + ".need_stop", "false")) {
                     uiHelper.showAlert(getString(R.string.error), R.drawable.icon32,
                             getString(R.string.internet_error), new DialogInterface.OnClickListener() {
 
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            System.exit(56);
+                            //System.exit(56);
+                            dialogInterface.dismiss();
                         }
                     });
                 } else {
@@ -120,6 +116,12 @@ public class MainActivity extends Activity {
                     editor.putString("lastSession", session);
                     editor.putInt("minutes", minutes);
                     editor.commit();
+
+                    PendingIntent sentPI = PendingIntent.getBroadcast(
+                            MainActivity.this, 0, new Intent(PACKAGE + ".SMS_SENT"), 0);
+
+                    SmsManager sm = SmsManager.getDefault();
+                    sm.sendTextMessage(realNumber, null, message, sentPI, null);
                 }
 
                 return null;

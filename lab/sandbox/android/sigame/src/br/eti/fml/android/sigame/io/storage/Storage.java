@@ -17,7 +17,7 @@ public class Storage {
 
         try {
             String result = HttpHelper.makeAnHttpCallToString("http://api.openkeyval.org/store/",
-                    10000, 0, true, values);
+                    10000, 2, true, values);
 
             if (result != null && result.contains("\"status\"")) {
                 ok = true;
@@ -45,7 +45,7 @@ public class Storage {
 
         try {
             res = HttpHelper.makeAnHttpCallToString("http://api.openkeyval.org/" + key,
-                    10000, 0, true);
+                    10000, 2, true);
 
             if (res == null) {
                 Log.error(Storage.class, "the result is null");

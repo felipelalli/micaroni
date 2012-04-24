@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">Follow Me Now</string>
-    <string name="description">Follow Me Now is an application that allows a person to visualize the path of another. Install Follow Me Now on two Android phones: each one is able to follow the other and be followed by another. Concerned about where your kids are on the way back from school? Want to know if someone is coming or if it is near? This application is for you!</string>
+    <string name="app_name">Follow Now!</string>
+    <string name="description">Follow Now! is an application that allows a person to visualize the path of another. Install Follow Me Now on two Android phones: each one is able to follow the other and be followed by another. Concerned about where your kids are on the way back from school? Want to know if someone is coming or if it is near? This application is for you!</string>
     <string name="type_number">Enter the phone number from who you want to follow:</string>
     <string name="button_follow">Ask to follow (by SMS)</string>
     <string-array name="minutes_array">
@@ -21,5 +21,14 @@
     <string name="last_update">Last update:</string>
     <string name="position">Last position:</string>
     <string name="battery">Battery:</string>
+    <string name="time_left">Time left:</string>
+    <string name="you_are_being_followed">You are being followed!</string>
+    <string name="title_arrived_notification">You are being followed</string>
+    <string name="body_arrived_notification">Tap here when you arrived</string>
+    <string name="arrived_title">Info</string>
+    <string name="arrived_body">Your friend arrived!</string>
+    <string name="you_are_not_being_followed_anymore">You are not being followed anymore</string>
+    <string name="title_you_are_not_being_followed_anymore">Nobody is following you</string>
+    <string name="body_you_are_not_being_followed_anymore">Tap to clean this message</string>
 
 </resources>

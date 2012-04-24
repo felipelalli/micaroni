@@ -59,6 +59,7 @@ public class SmsReceived {
                 editor.putString("updateSession", session);
                 editor.commit();
 
+                context.stopService(new Intent(context, UpdatingPositionService.class));
                 context.startService(new Intent(context, UpdatingPositionService.class));
                 Log.debug(this, "Should service start?");
 

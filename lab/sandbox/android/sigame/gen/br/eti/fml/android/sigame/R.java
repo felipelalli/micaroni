@@ -16,8 +16,10 @@ public final class R {
     public static final class drawable {
         public static final int back=0x7f020000;
         public static final int background=0x7f020001;
-        public static final int icon=0x7f020002;
-        public static final int icon32=0x7f020003;
+        public static final int followed=0x7f020002;
+        public static final int icon=0x7f020003;
+        public static final int icon32=0x7f020004;
+        public static final int stop=0x7f020005;
     }
     public static final class id {
         public static final int button_follow=0x7f060002;
@@ -25,7 +27,8 @@ public final class R {
         public static final int minutes=0x7f060001;
         public static final int number_to_follow=0x7f060000;
         public static final int position=0x7f060004;
-        public static final int stop_follow=0x7f060005;
+        public static final int stop_follow=0x7f060006;
+        public static final int time_left=0x7f060005;
     }
     public static final class layout {
         public static final int main=0x7f030000;
@@ -33,7 +36,11 @@ public final class R {
     }
     public static final class string {
         public static final int app_name=0x7f040000;
+        public static final int arrived_body=0x7f040015;
+        public static final int arrived_title=0x7f040014;
         public static final int battery=0x7f04000f;
+        public static final int body_arrived_notification=0x7f040013;
+        public static final int body_you_are_not_being_followed_anymore=0x7f040018;
         public static final int button_follow=0x7f040003;
         public static final int description=0x7f040001;
         public static final int error=0x7f040005;
@@ -47,6 +54,11 @@ public final class R {
         public static final int sms_no_service_error=0x7f040009;
         public static final int sms_sent=0x7f040007;
         public static final int stop_follow=0x7f04000b;
+        public static final int time_left=0x7f040010;
+        public static final int title_arrived_notification=0x7f040012;
+        public static final int title_you_are_not_being_followed_anymore=0x7f040017;
         public static final int type_number=0x7f040002;
+        public static final int you_are_being_followed=0x7f040011;
+        public static final int you_are_not_being_followed_anymore=0x7f040016;
     }
 }
