@@ -107,7 +107,7 @@ public class MainActivity extends Activity {
                         public void onClick(DialogInterface dialogInterface, int i) {
                             //System.exit(56);
                             dialogInterface.dismiss();
-                            
+
                             if (progressDialog != null) {
                                 progressDialog.dismiss();
                             }

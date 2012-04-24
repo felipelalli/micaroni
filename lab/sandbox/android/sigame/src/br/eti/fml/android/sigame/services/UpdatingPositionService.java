@@ -97,7 +97,7 @@ public class UpdatingPositionService extends Service {
 
                             Log.debug(this, "Updated position: " + sharedInfo);
 
-                            Thread.sleep(5000); // TODO: CONFIGURE THIS UPDATE INTERVAL
+                            Thread.sleep(10000); // TODO: CONFIGURE THIS UPDATE INTERVAL
                         } catch (InterruptedException e) {
                             Log.debug(this, "" + e);
                         }
