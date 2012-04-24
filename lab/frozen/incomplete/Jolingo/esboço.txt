@@ -1,0 +1,44 @@
+Apresentação.....................................................	03
+Jolingo
+	Ações............................................................	06
+	Alimentação.................................................	05
+	Genética........................................................	07
+	Luta.............................................................	20
+	Vida..............................................................	08
+Babá Virtual........................................................	21
+Comunidade Virtual.............................................	27
+Histórico..............................................................	23
+Internet...............................................................	04
+Servidor 24h.......................................................	23
+Publicidade..........................................................	22
+
+Relatório Técnico
+	Objetivo........................................................	56
+	Desenvolvimento...........................................	58
+		Classes / Interfaces.................................	59
+			GeneFun...........................................	60
+			Alimento...........................................	61
+			Ação.................................................	62
+			Jolingo..............................................	60
+			Comunidade Virtual.........................	62
+			Babá Virtual.....................................	64
+		Protocolo JP3 (Jolingo Protocol 3.0).........	80
+			Comando Jp3....................................	81
+			Interpretador de Comandos JP3........	82
+		Exceções.................................................	45
+	Conclusão.....................................................	90
+
+
+	Seja bem vindo ao mundo de Jolingo!
+	Você está preparado para criar um? Seria um bom pai ou mataria-o por causa de sua feiúra? Confiaria na Babá-Virtual? Abandonaria e esqueceria o seu bichinho só porque está doente? Qual é o melhor método para a educação? O estudo ou o chicote?
+	Essas e muitas outras dúvidas surgirão quando você criar o seu jolingo. Criar um jolingo não é para qualquer um: tem que educar, dar banho, comida, brincar, mantê-lo sempre satisfeito para que ele não morra.
+
+	Jolingo é um bichinho virtual que vive 24h por dia. Cada um tem uma aparência diferente, um DNA diferente, herdado do pai e da mãe. Ele pode ter o formato de uma bolinha ou pode ser comprido. Pode ter cabelo liso ou crespo, olhos e cabelos claros ou escuros, pode ser duro ou fofinho. Pode ser forte ou fraquinho.
+	Esse bichinho pode ficar doente, ficar triste, alegre, pode se reproduzir, pode brincar, dormir etc. Você pode levá-lo ao médico, dar banho ou simplesmente fazê-lo pular. Se você quiser pode até matá-lo, mas todos ficarão sabendo e assim aparecerá no histórico:
+	Fulano de Tal assassina o seu próprio jolingo, o Joãozinho.
+	E depois, para esconder o corpo, você pode até enterrá-lo, mas os rastros no histórico são inevitáveis:
+	Fulano de Tal enterra o corpo de Joãozinho.
+
+	Depois que alguma pessoa cria um jolingo, é difícil largá-lo. Não o deixaria nas mãos da Babá Virtual por muito tempo. As melhores Babás são ocupadíssimas! E ela poderia cuidar mal de seu jolingo. Uma característica interessante do Jolingo é que ele pode ser acessado de qualquer lugar do mundo, bastando apenas de um computador com internet. Na Comunidade Virtual em que ele vive pode haver muitos outros jolingos, muitas comidas e algumas Babás Virtuais cuidando de outros jolingos. Seu local físico é um computador com significante memória que fica 24h por dia ligado na internet.
+
+	Quem criaria um jolingo? O jolingo foi especialmente projetado para os jovens, mas qualquer pessoa que saiba ler é capaz de cuidá-lo. E com certeza aparecerão muitos jovens de 30/40 anos para criar um jolingo!
