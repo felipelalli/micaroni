@@ -9,6 +9,7 @@ private/
 *.eml
 .project
 .classpath
+out/
 
 # Compilation result
 deploy/

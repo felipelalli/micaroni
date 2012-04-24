@@ -175,7 +175,7 @@ public class MapActivity extends Activity {
         }
 
         final Button buttonStopFollow = (Button) findViewById(R.id.stop_follow);
-        buttonStopFollow.setEnabled(false);
+        buttonStopFollow.setVisibility(View.GONE);
     }
 
     @Override
