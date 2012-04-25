@@ -8,10 +8,7 @@ import android.content.*;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.AsyncTask;
-import android.os.BatteryManager;
-import android.os.Bundle;
-import android.os.IBinder;
+import android.os.*;
 import br.eti.fml.android.sigame.R;
 import br.eti.fml.android.sigame.bean.SharedInfo;
 import br.eti.fml.android.sigame.io.storage.Storage;
@@ -46,6 +43,9 @@ public class UpdatingPositionService extends Service {
 
     @Override
     public void onDestroy() {
+        ((NotificationManager) getSystemService(
+                Context.NOTIFICATION_SERVICE)).cancel(MainActivity.NOTIFICATION_FOLLOW_ID);
+
         stopGettingLocation();
         Log.debug(this, "Service destroyed!");
 
@@ -83,31 +83,40 @@ public class UpdatingPositionService extends Service {
                     String key = getKey(session);
                     Gson gson = new Gson();
 
-                    while (!isCancelled()) {
-                        try {
-                            sharedInfo.setLast_update(System.currentTimeMillis());
-                            sharedInfo.setLat(lat);
-                            sharedInfo.setLon(lon);
-                            sharedInfo.setLast_provider(lastProvider);
-                            sharedInfo.setAccur(accur);
-                            sharedInfo.setBattery(battery);
-                            sharedInfo.setTemperature(temperature);
+                    PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                    PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "SIGAME Service");
 
-                            Storage.put(key, gson.toJson(sharedInfo));
+                    try {
+                        wl.acquire();
 
-                            Log.debug(this, "Updated position: " + sharedInfo);
+                        while (!isCancelled()) {
+                            try {
+                                sharedInfo.setLast_update(System.currentTimeMillis());
+                                sharedInfo.setLat(lat);
+                                sharedInfo.setLon(lon);
+                                sharedInfo.setLast_provider(lastProvider);
+                                sharedInfo.setAccur(accur);
+                                sharedInfo.setBattery(battery);
+                                sharedInfo.setTemperature(temperature);
 
-                            Thread.sleep(10000); // TODO: CONFIGURE THIS UPDATE INTERVAL
-                        } catch (InterruptedException e) {
-                            Log.debug(this, "" + e);
+                                Storage.put(key, gson.toJson(sharedInfo));
+
+                                Log.debug(this, "Updated position: " + sharedInfo);
+
+                                Thread.sleep(10000); // TODO: CONFIGURE THIS UPDATE INTERVAL
+                            } catch (InterruptedException e) {
+                                Log.debug(this, "" + e);
+                            }
+
+                            if (System.currentTimeMillis() > updateSoFar
+                                || "true".equals(Storage.get(MainActivity.PACKAGE + "." + session + ".need_stop"))) {
+
+                                showNotificationWhenStopToBeFollowed();
+                                stopToBeFollowed();
+                            }
                         }
-
-                        if (System.currentTimeMillis() > updateSoFar
-                            || "true".equals(Storage.get(MainActivity.PACKAGE + "." + session + ".need_stop"))) {
-
-                            showNotificationWhenStopToBeFollowed();
-                            stopToBeFollowed();
-                        }
+                    } finally {
+                        wl.release();
                     }
 
                     sharedInfo.setArrived(true);
@@ -285,30 +294,33 @@ public class UpdatingPositionService extends Service {
         NotificationManager notificationManager
                 = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
+        notificationManager.cancel(MainActivity.NOTIFICATION_FOLLOW_ID);
+
         Notification notification = new Notification(
                 R.drawable.stop, getString(R.string.you_are_not_being_followed_anymore), System.currentTimeMillis());
 
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
-        notification.defaults |= Notification.DEFAULT_SOUND;
-        notification.defaults |= Notification.DEFAULT_LIGHTS;
+        notification.defaults |= Notification.DEFAULT_ALL;
         
         PendingIntent arrivedPI = PendingIntent.getActivity(this, 0, null, PendingIntent.FLAG_ONE_SHOT);
         notification.setLatestEventInfo(this, getString(R.string.title_you_are_not_being_followed_anymore),
                 getString(R.string.body_you_are_not_being_followed_anymore), arrivedPI);
 
-        notificationManager.notify(MainActivity.NOTIFICATION_ID, notification);
+        notificationManager.notify(MainActivity.NOTIFICATION_STOP_ID, notification);
     }
 
     private void showNotificationWhenFollowed() {
         NotificationManager notificationManager
                 = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
+        notificationManager.cancel(MainActivity.NOTIFICATION_STOP_ID);
+
         Notification notification = new Notification(
                 R.drawable.followed, getString(R.string.you_are_being_followed), System.currentTimeMillis());
 
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
-        notification.defaults |= Notification.DEFAULT_SOUND;
-        notification.defaults |= Notification.DEFAULT_LIGHTS;
+        notification.flags |= Notification.FLAG_ONGOING_EVENT;
+        notification.defaults |= Notification.DEFAULT_ALL;
 
         Intent intent = new Intent(MainActivity.PACKAGE + ".ARRIVED");
         intent.putExtra("session", session);
@@ -317,6 +329,6 @@ public class UpdatingPositionService extends Service {
         notification.setLatestEventInfo(this, getString(R.string.title_arrived_notification),
                 getString(R.string.body_arrived_notification), arrivedPI);
 
-        notificationManager.notify(MainActivity.NOTIFICATION_ID, notification);
+        notificationManager.notify(MainActivity.NOTIFICATION_FOLLOW_ID, notification);
     }
 }

@@ -1,6 +1,5 @@
 package br.eti.fml.android.sigame.receivers;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -50,7 +49,7 @@ public class SmsReceived {
                 Log.debug(this, "Minutes " + minutes);
 
                 SharedPreferences settings
-                        = MainActivity.instance.getSharedPreferences(MainActivity.PACKAGE, 0);
+                        = context.getSharedPreferences(MainActivity.PACKAGE, 0);
 
                 long updateSoFar = System.currentTimeMillis() + (minutes * 60 * 1000);
 

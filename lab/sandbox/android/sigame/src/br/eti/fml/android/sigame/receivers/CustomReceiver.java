@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 import br.eti.fml.android.sigame.bean.SharedInfo;
 import br.eti.fml.android.sigame.io.storage.Storage;
 import br.eti.fml.android.sigame.services.UpdatingPositionService;
-import br.eti.fml.android.sigame.ui.activities.MainActivity;
 import br.eti.fml.android.sigame.util.Log;
 import com.google.gson.Gson;
 

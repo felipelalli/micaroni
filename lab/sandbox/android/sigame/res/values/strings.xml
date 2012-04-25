@@ -7,6 +7,7 @@
         <item>for 5 min</item>
         <item>for 10 min</item>
         <item>for 15 min</item>
+        <item>for 1 min</item>
     </string-array>
     <string name="sending_sms">Sending SMS, please wait...</string>
     <string name="error">Error</string>
@@ -17,7 +18,7 @@
     <string name="internet_error">No Internet or db server down!</string>
 
     <string name="stop_follow">Stop follow</string>
-    <string name="last_update_never">Last update: (waiting...)</string>
+    <string name="last_update_never">Last update: (searching...)</string>
     <string name="last_update">Last update:</string>
     <string name="position">Last position:</string>
     <string name="battery">Battery:</string>
@@ -31,5 +32,13 @@
     <string name="title_you_are_not_being_followed_anymore">Nobody is following you</string>
     <string name="body_you_are_not_being_followed_anymore">Tap to clean this message</string>
     <string name="provider">Position provider:</string>
-
+    <string name="finish_title">Info</string>
+    <string name="finish_body">Your time is up, follow again!</string>
+    <string name="stop_before">Stop to follow before back...</string>
+    <string name="closing">Finishing everything, please wait...</string>
+    <string name="no_answer">Searching your friend yet...</string>
+    <string name="no_answer_2">Oh God... Where is your friend?</string>
+    <string name="no_answer_3">OK, I will give up to search your friend!</string>
+    <string name="not_found_title">Warn</string>
+    <string name="not_found_body">Your friend was not found. There are several possibilities for that. It could be him does not have the app (ask him to install), he does not have Internet connection now or his mobile is turned off.</string>
 </resources>

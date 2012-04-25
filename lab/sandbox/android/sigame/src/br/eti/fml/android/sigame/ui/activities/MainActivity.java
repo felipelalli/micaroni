@@ -19,7 +19,8 @@ import br.eti.fml.android.sigame.ui.UiHelper;
 
 public class MainActivity extends Activity {
     public final static String PACKAGE = "br.eti.fml.android.sigame";
-    public final static int NOTIFICATION_ID = 948249821;
+    public final static int NOTIFICATION_STOP_ID = 948249821;
+    public final static int NOTIFICATION_FOLLOW_ID = 348728712;
 
     public static MainActivity instance;
     private ProgressDialog progressDialog;
@@ -89,7 +90,8 @@ public class MainActivity extends Activity {
 
         final Spinner spinner = (Spinner) findViewById(R.id.minutes);
         final int minutes = spinner.getSelectedItemPosition() == 0 ? 5
-                          : spinner.getSelectedItemPosition() == 1 ? 10 : 15;
+                          : spinner.getSelectedItemPosition() == 1 ? 10
+                          : spinner.getSelectedItemPosition() == 2 ? 15 : 1;
 
         final String message =
                 "Download Follow Me Now app: http://bit.ly/siga_me       ~" +

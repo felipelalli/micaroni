@@ -7,6 +7,7 @@
         <item>por 5 min</item>
         <item>por 10 min</item>
         <item>por 15 min</item>
+        <item>por 1 min</item>
     </string-array>
     <string name="sending_sms">Enviando SMS, por favor aguarde...</string>
     <string name="error">Erro</string>
@@ -17,7 +18,7 @@
     <string name="internet_error">Sem Internet ou servidor down!</string>
 
     <string name="stop_follow">Parar de seguir</string>
-    <string name="last_update_never">Última atualização: (aguardando...)</string>
+    <string name="last_update_never">Última atualização: (procurando...)</string>
     <string name="last_update">Última atualização:</string>
     <string name="position">Última posição:</string>
     <string name="battery">Bateria:</string>
@@ -31,4 +32,13 @@
     <string name="title_you_are_not_being_followed_anymore">Ninguém está te seguindo</string>
     <string name="body_you_are_not_being_followed_anymore">Toque aqui para limpar</string>
     <string name="provider">Provedor da posição:</string>
+    <string name="finish_title">Aviso</string>
+    <string name="finish_body">Seu tempo acabou, siga novamente!</string>
+    <string name="stop_before">Pare de seguir antes de voltar...</string>
+    <string name="closing">Parando tudo, por favor aguarde...</string>
+    <string name="no_answer">Procurando seu amigo ainda...</string>
+    <string name="no_answer_2">Poxa... Cadê seu amigo?</string>
+    <string name="no_answer_3">OK, vou desistir de procurar seu amigo!</string>
+    <string name="not_found_title">Aviso</string>
+    <string name="not_found_body">Seu amigo não foi encontrado. Há inúmeras razões possíveis para tal. Pode ser que ele não tenha o aplicativo instalado (peça para ele instalar), pode ser que ele esteja numa área sem sinal de Internet ou com o celular desligado.</string>
 </resources>

@@ -9,10 +9,14 @@ import br.eti.fml.android.sigame.R;
 import br.eti.fml.android.sigame.ui.UiHelper;
 import br.eti.fml.android.sigame.ui.activities.MainActivity;
 import br.eti.fml.android.sigame.ui.activities.MapActivity;
+import br.eti.fml.android.sigame.util.Log;
 
 public class SmsSentReceiver {
+    @SuppressWarnings("UnusedParameters")
     public void onReceive(Context context, Intent intent, int resultCode) {
-        if (MainActivity.instance != null) {
+        if (MainActivity.instance == null) {
+            Log.error(this, "The MainActivity.instance is null!");
+        } else {
             UiHelper uiHelper = new UiHelper(MainActivity.instance);
             MainActivity.instance.dismissDialog();
 
