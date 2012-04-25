@@ -10,6 +10,7 @@ public class ItemsMap extends com.google.android.maps.ItemizedOverlay {
 
     public ItemsMap(Drawable defaultMarker) {
         super(boundCenterBottom(defaultMarker));
+        populate();
     }
 
     public void addOverlay(OverlayItem overlay) {

@@ -248,7 +248,7 @@ public class MapActivity extends com.google.android.maps.MapActivity {
             @Override
             protected Object doInBackground(Object... objects) {
                 if (updatingScreen != null) {
-                    updatingScreen.cancel(true);
+                    updatingScreen.cancel(false);
                 }
 
                 if (!Storage.put(MainActivity.PACKAGE + "." + lastSession + ".need_stop", "true")) {
