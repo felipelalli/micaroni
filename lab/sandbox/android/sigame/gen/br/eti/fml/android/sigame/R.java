@@ -19,22 +19,25 @@ public final class R {
         public static final int followed=0x7f020002;
         public static final int icon=0x7f020003;
         public static final int icon32=0x7f020004;
-        public static final int stop=0x7f020005;
+        public static final int marker=0x7f020005;
+        public static final int stop=0x7f020006;
     }
     public static final class id {
-        public static final int ableToBeFollowed=0x7f060003;
+        public static final int ableToBeFollowed=0x7f060004;
         public static final int battery=0x7f060006;
-        public static final int button_follow=0x7f060002;
-        public static final int last_update=0x7f060004;
-        public static final int minutes=0x7f060001;
-        public static final int number_to_follow=0x7f060000;
-        public static final int position=0x7f060005;
+        public static final int button_follow=0x7f060003;
+        public static final int last_update=0x7f060005;
+        public static final int mainlayout=0x7f060009;
+        public static final int mapview=0x7f060000;
+        public static final int minutes=0x7f060002;
+        public static final int number_to_follow=0x7f060001;
         public static final int provider=0x7f060007;
         public static final int stop_follow=0x7f060008;
     }
     public static final class layout {
-        public static final int main=0x7f030000;
-        public static final int map=0x7f030001;
+        public static final int canvasmap=0x7f030000;
+        public static final int main=0x7f030001;
+        public static final int map=0x7f030002;
     }
     public static final class string {
         public static final int app_name=0x7f040000;
@@ -53,6 +56,7 @@ public final class R {
         public static final int internet_error=0x7f04000a;
         public static final int last_update=0x7f04000d;
         public static final int last_update_never=0x7f04000c;
+        public static final int low_battery=0x7f040023;
         public static final int no_answer=0x7f04001e;
         public static final int no_answer_2=0x7f04001f;
         public static final int no_answer_3=0x7f040020;

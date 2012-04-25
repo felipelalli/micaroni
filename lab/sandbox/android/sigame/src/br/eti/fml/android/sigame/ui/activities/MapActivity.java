@@ -1,6 +1,5 @@
 package br.eti.fml.android.sigame.ui.activities;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -15,6 +14,9 @@ import br.eti.fml.android.sigame.bean.SharedInfo;
 import br.eti.fml.android.sigame.io.storage.Storage;
 import br.eti.fml.android.sigame.ui.UiHelper;
 import br.eti.fml.android.sigame.util.Log;
+import com.google.android.maps.GeoPoint;
+import com.google.android.maps.MapView;
+import com.google.android.maps.OverlayItem;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
@@ -23,14 +25,19 @@ import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MapActivity extends Activity {
+public class MapActivity extends com.google.android.maps.MapActivity {
+    public static final float BATTERY = .3f;
     private AsyncTask updatingScreen;
     private String lastSession;
     private int minutes;
     private long startTime;
     private SharedInfo lastSharedInfo = new SharedInfo();
     private AtomicBoolean noAnswer = new AtomicBoolean(true);
-    private AtomicInteger messageLevel = new AtomicInteger(0);
+    private AtomicInteger notFoundMessageLevel = new AtomicInteger(0);
+    private AtomicInteger batteryMessageLevel = new AtomicInteger(0);
+    private OverlayItem theGuy;
+
+    private ItemsMap itemizedOverlay;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,14 +57,19 @@ public class MapActivity extends Activity {
             finish();
         }
 
+        final MapView mapView = (MapView) findViewById(R.id.mapview);
+
+        itemizedOverlay = new ItemsMap(this.getResources().getDrawable(R.drawable.marker));
+        mapView.getOverlays().add(itemizedOverlay);
+        mapView.getController().setZoom(16);
+
         buttonStopFollow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                stopFollow(Reason.USER_BACK);
+                stopFollow(Reason.USER_BUTTON);
             }
         });
-        
-        final TextView position = (TextView) findViewById(R.id.position);
+
         final TextView lastUpdate = (TextView) findViewById(R.id.last_update);
         final TextView battery = (TextView) findViewById(R.id.battery);
         final TextView provider = (TextView) findViewById(R.id.provider);
@@ -75,20 +87,20 @@ public class MapActivity extends Activity {
                     
                     if (noAnswer.get()) {
                         if ((System.currentTimeMillis() - startTime) > 1000 * 10
-                                && messageLevel.get() == 0) {
+                                && notFoundMessageLevel.get() == 0) {
 
                             uiHelper.showToast(getString(R.string.no_answer), Toast.LENGTH_LONG);
-                            messageLevel.incrementAndGet();
+                            notFoundMessageLevel.incrementAndGet();
                         } else if ((System.currentTimeMillis() - startTime) > 1000 * 20
-                                && messageLevel.get() == 1) {
+                                && notFoundMessageLevel.get() == 1) {
 
                             uiHelper.showToast(getString(R.string.no_answer_2), Toast.LENGTH_LONG);
-                            messageLevel.incrementAndGet();
+                            notFoundMessageLevel.incrementAndGet();
                         } if ((System.currentTimeMillis() - startTime) > 1000 * 40
-                                && messageLevel.get() == 2) {
+                                && notFoundMessageLevel.get() == 2) {
 
                             uiHelper.showToast(getString(R.string.no_answer_3), Toast.LENGTH_LONG);
-                            messageLevel.incrementAndGet();
+                            notFoundMessageLevel.incrementAndGet();
 
                             Log.debug(this, "Stop follow because the other does not answer!");
                             stopFollow(Reason.NOT_FOUND);
@@ -118,10 +130,22 @@ public class MapActivity extends Activity {
                                 @Override
                                 public void run() {
                                     if (lastSharedInfo.getLat() != null && lastSharedInfo.getLon() != null) {
-                                        position.setText(getString(R.string.position)
-                                                + " lat: " + lastSharedInfo.getLat()
-                                                + "; lon: " + lastSharedInfo.getLon()
-                                                + "; acc: " + lastSharedInfo.getAccur());
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                GeoPoint point = new GeoPoint(
+                                                        (int) (lastSharedInfo.getLat().doubleValue() * 1000000),
+                                                        (int) (lastSharedInfo.getLon().doubleValue() * 1000000));
+
+                                                if (theGuy != null) {
+                                                    itemizedOverlay.removeOverlay(theGuy);
+                                                }
+
+                                                theGuy = new OverlayItem(point, "", "");                                                                                                
+                                                itemizedOverlay.addOverlay(theGuy);
+                                                mapView.getController().animateTo(point);
+                                            }
+                                        });
                                     }
 
                                     if (lastSharedInfo.getLast_update() != null) {
@@ -136,6 +160,13 @@ public class MapActivity extends Activity {
                                         battery.setText(getString(R.string.battery) + " "
                                                 + Math.round(lastSharedInfo.getBattery() * 100f) + "% "
                                                 + (lastSharedInfo.getTemperature() / 10f) + " ºC");
+
+                                        if (lastSharedInfo.getBattery() < BATTERY
+                                                && batteryMessageLevel.get() <= 1) {
+
+                                            uiHelper.showToast(getString(R.string.low_battery), Toast.LENGTH_LONG);
+                                            batteryMessageLevel.incrementAndGet();
+                                        }
                                     }
                                     
                                     if (lastSharedInfo.getLast_provider() != null) {
@@ -184,6 +215,11 @@ public class MapActivity extends Activity {
         }.execute();
     }
 
+    @Override
+    protected boolean isRouteDisplayed() {
+        return false;
+    }
+
     private int getTimeLeftInSeconds() {
         int secondsElapsed = (int) ((System.currentTimeMillis() - startTime) / 1000);
         int secondsTotal = minutes * 60;
@@ -194,7 +230,8 @@ public class MapActivity extends Activity {
         TIME_IS_UP,
         USER_BACK,
         ARRIVED,
-        NOT_FOUND
+        NOT_FOUND,
+        USER_BUTTON
     }
 
     private void stopFollow(final Reason reason) {
@@ -202,8 +239,10 @@ public class MapActivity extends Activity {
         new AsyncTask() {
             @Override
             protected void onPreExecute() {
-                UiHelper uiHelper = new UiHelper(MapActivity.this);
-                uiHelper.showToast(getString(R.string.closing), Toast.LENGTH_SHORT);
+                if (!reason.equals(Reason.USER_BACK)) {
+                    UiHelper uiHelper = new UiHelper(MapActivity.this);
+                    uiHelper.showToast(getString(R.string.closing), Toast.LENGTH_SHORT);
+                }
             }
 
             @Override
@@ -228,11 +267,11 @@ public class MapActivity extends Activity {
 
                 DialogInterface.OnClickListener closeSelf = new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                    public void onClick(final DialogInterface dialogInterface, int i) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                finish();
+                                dialogInterface.dismiss();
                             }
                         });
                     }
@@ -254,6 +293,8 @@ public class MapActivity extends Activity {
                             finish();
                         }
                     });
+                } else if (reason.equals(Reason.USER_BUTTON)) {
+
                 }
             }
         }.execute();

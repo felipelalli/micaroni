@@ -33,12 +33,14 @@
     <string name="body_you_are_not_being_followed_anymore">Tap to clean this message</string>
     <string name="provider">Position provider:</string>
     <string name="finish_title">Info</string>
-    <string name="finish_body">Your time is up, follow again!</string>
+    <string name="finish_body">Your time is up. Press back button and follow again.</string>
     <string name="stop_before">Stop to follow before back...</string>
-    <string name="closing">Finishing everything, please wait...</string>
+    <string name="closing">Stopping to follow...</string>
     <string name="no_answer">Searching your friend yet...</string>
     <string name="no_answer_2">Oh God... Where is your friend?</string>
     <string name="no_answer_3">OK, I will give up to search your friend!</string>
     <string name="not_found_title">Warn</string>
     <string name="not_found_body">Your friend was not found. There are several possibilities for that. It could be him does not have the app (ask him to install), he does not have Internet connection now or his mobile is turned off.</string>
+    <string name="low_battery">Tip: stop to follow to save your friend\'s battery</string>
+
 </resources>

@@ -33,12 +33,13 @@
     <string name="body_you_are_not_being_followed_anymore">Toque aqui para limpar</string>
     <string name="provider">Provedor da posição:</string>
     <string name="finish_title">Aviso</string>
-    <string name="finish_body">Seu tempo acabou, siga novamente!</string>
+    <string name="finish_body">Seu tempo acabou. Pressione voltar e siga novamente.</string>
     <string name="stop_before">Pare de seguir antes de voltar...</string>
-    <string name="closing">Parando tudo, por favor aguarde...</string>
+    <string name="closing">Parando de seguir...</string>
     <string name="no_answer">Procurando seu amigo ainda...</string>
     <string name="no_answer_2">Poxa... Cadê seu amigo?</string>
     <string name="no_answer_3">OK, vou desistir de procurar seu amigo!</string>
     <string name="not_found_title">Aviso</string>
     <string name="not_found_body">Seu amigo não foi encontrado. Há inúmeras razões possíveis para tal. Pode ser que ele não tenha o aplicativo instalado (peça para ele instalar), pode ser que ele esteja numa área sem sinal de Internet ou com o celular desligado.</string>
+    <string name="low_battery">Dica: pare de seguir para economizar bateria do seu amigo</string>
 </resources>
