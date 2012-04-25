@@ -62,6 +62,9 @@ public class MapActivity extends com.google.android.maps.MapActivity {
         itemizedOverlay = new ItemsMap(this.getResources().getDrawable(R.drawable.marker));
         mapView.getOverlays().add(itemizedOverlay);
         mapView.getController().setZoom(16);
+        mapView.setBuiltInZoomControls(true);
+        mapView.setSatellite(true);
+        mapView.setTraffic(true);
 
         buttonStopFollow.setOnClickListener(new View.OnClickListener() {
             @Override
