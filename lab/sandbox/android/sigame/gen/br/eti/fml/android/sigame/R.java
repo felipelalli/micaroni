@@ -20,14 +20,16 @@ public final class R {
         public static final int icon=0x7f020003;
         public static final int icon32=0x7f020004;
         public static final int marker=0x7f020005;
-        public static final int stop=0x7f020006;
+        public static final int me=0x7f020006;
+        public static final int stop=0x7f020007;
     }
     public static final class id {
         public static final int ableToBeFollowed=0x7f060004;
         public static final int battery=0x7f060006;
         public static final int button_follow=0x7f060003;
+        public static final int close_window=0x7f060009;
         public static final int last_update=0x7f060005;
-        public static final int mainlayout=0x7f060009;
+        public static final int mainlayout=0x7f06000a;
         public static final int mapview=0x7f060000;
         public static final int minutes=0x7f060002;
         public static final int number_to_follow=0x7f060001;
@@ -40,6 +42,7 @@ public final class R {
         public static final int map=0x7f030002;
     }
     public static final class string {
+        public static final int accuracy=0x7f040019;
         public static final int app_name=0x7f040000;
         public static final int arrived_body=0x7f040015;
         public static final int arrived_title=0x7f040014;
@@ -47,6 +50,8 @@ public final class R {
         public static final int body_arrived_notification=0x7f040013;
         public static final int body_you_are_not_being_followed_anymore=0x7f040018;
         public static final int button_follow=0x7f040003;
+        public static final int can_be_followed=0x7f040024;
+        public static final int close_window=0x7f040025;
         public static final int closing=0x7f04001d;
         public static final int description=0x7f040001;
         public static final int error=0x7f040005;
@@ -63,7 +68,6 @@ public final class R {
         public static final int not_found_body=0x7f040022;
         public static final int not_found_title=0x7f040021;
         public static final int position=0x7f04000e;
-        public static final int provider=0x7f040019;
         public static final int sending_sms=0x7f040004;
         public static final int sms_generic_error=0x7f040008;
         public static final int sms_no_service_error=0x7f040009;

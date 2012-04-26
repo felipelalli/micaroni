@@ -18,9 +18,11 @@ import com.google.gson.Gson;
 
 public class UpdatingPositionService extends Service {
 
+    public static final int MIN_INTERVAL = 1000;
+    public static final int MAX_INTERVAL = 10000;
     private AsyncTask mainTask;
     private String session;
-    private Float battery = 0f;
+    private Float battery = 1f;
     private Integer temperature = 0;
     private Float lat, lon, accur;
     private String lastProvider = "?";
@@ -99,11 +101,13 @@ public class UpdatingPositionService extends Service {
                                 sharedInfo.setBattery(battery);
                                 sharedInfo.setTemperature(temperature);
 
+                                long startTime = System.currentTimeMillis();
                                 Storage.put(key, gson.toJson(sharedInfo));
-
                                 Log.debug(this, "Updated position: " + sharedInfo);
+                                long sleepTime = Math.max(MIN_INTERVAL, MAX_INTERVAL - (System.currentTimeMillis() - startTime));
 
-                                Thread.sleep(10000); // TODO: CONFIGURE THIS UPDATE INTERVAL
+                                Thread.sleep(sleepTime); // TODO: CONFIGURE THIS UPDATE INTERVAL
+                                Log.debug(this, "Sleeping for " + sleepTime + " ms...");
                             } catch (InterruptedException e) {
                                 Log.debug(this, "" + e);
                             }
@@ -120,6 +124,7 @@ public class UpdatingPositionService extends Service {
                     }
 
                     sharedInfo.setArrived(true);
+                    sharedInfo.setLast_update(System.currentTimeMillis());
                     Storage.put(key, gson.toJson(sharedInfo));
 
                     return null;
@@ -301,7 +306,7 @@ public class UpdatingPositionService extends Service {
 
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
         notification.defaults |= Notification.DEFAULT_ALL;
-        
+
         PendingIntent arrivedPI = PendingIntent.getActivity(this, 0, null, PendingIntent.FLAG_ONE_SHOT);
         notification.setLatestEventInfo(this, getString(R.string.title_you_are_not_being_followed_anymore),
                 getString(R.string.body_you_are_not_being_followed_anymore), arrivedPI);

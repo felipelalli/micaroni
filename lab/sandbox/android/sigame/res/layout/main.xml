@@ -47,6 +47,6 @@
               android:layout_height="wrap_content"
               android:enabled="false"
               android:checked="true"
-              android:text="  I can be followed" />
+              android:text="@string/can_be_followed" />
 
 </LinearLayout>

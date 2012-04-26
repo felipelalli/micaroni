@@ -5,11 +5,15 @@ import com.google.android.maps.OverlayItem;
 
 import java.util.ArrayList;
 
-public class ItemsMap extends com.google.android.maps.ItemizedOverlay {
+public class MapOverlaySet extends com.google.android.maps.ItemizedOverlay {
     private ArrayList<OverlayItem> overlays = new ArrayList<OverlayItem>();
+    enum Position {
+        CENTER,
+        CENTER_BOTTOM
+    }
 
-    public ItemsMap(Drawable defaultMarker) {
-        super(boundCenterBottom(defaultMarker));
+    public MapOverlaySet(Drawable defaultMarker, Position position) {
+        super(position.equals(Position.CENTER_BOTTOM) ? boundCenterBottom(defaultMarker) : boundCenter(defaultMarker));
         populate();
     }
 

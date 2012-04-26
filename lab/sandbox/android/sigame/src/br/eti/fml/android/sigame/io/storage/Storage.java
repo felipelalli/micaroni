@@ -8,6 +8,9 @@ import br.eti.fml.android.sigame.util.Log;
 import java.util.Arrays;
 
 public class Storage {
+    // Access Key AKIAJYI2SX2FFBG55S5A
+    // Secret Key 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
+
     public static boolean put(PairParam ... values) {
         for (PairParam pp : values) {
             pp.name = pp.name.replaceAll("\\.", "\\_");
@@ -17,7 +20,7 @@ public class Storage {
 
         try {
             String result = HttpHelper.makeAnHttpCallToString("http://api.openkeyval.org/store/",
-                    10000, 2, true, values);
+                    3000, 2, true, values);
 
             if (result != null && result.contains("\"status\"")) {
                 ok = true;
@@ -45,7 +48,7 @@ public class Storage {
 
         try {
             res = HttpHelper.makeAnHttpCallToString("http://api.openkeyval.org/" + key,
-                    10000, 2, true);
+                    2000, 0, true);
 
             if (res == null) {
                 Log.error(Storage.class, "the result is null");

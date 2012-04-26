@@ -22,7 +22,7 @@
     <string name="last_update">Last update:</string>
     <string name="position">Last position:</string>
     <string name="battery">Battery:</string>
-    <string name="time_left">Time left:</string>
+    <string name="time_left"/>
     <string name="you_are_being_followed">You are being followed!</string>
     <string name="title_arrived_notification">You are being followed</string>
     <string name="body_arrived_notification">Tap here when you arrived</string>
@@ -31,7 +31,7 @@
     <string name="you_are_not_being_followed_anymore">You are not being followed anymore</string>
     <string name="title_you_are_not_being_followed_anymore">Nobody is following you</string>
     <string name="body_you_are_not_being_followed_anymore">Tap to clean this message</string>
-    <string name="provider">Position provider:</string>
+    <string name="accuracy">Accuracy:</string>
     <string name="finish_title">Info</string>
     <string name="finish_body">Your time is up. Press back button and follow again.</string>
     <string name="stop_before">Stop to follow before back...</string>
@@ -42,5 +42,7 @@
     <string name="not_found_title">Warn</string>
     <string name="not_found_body">Your friend was not found. There are several possibilities for that. It could be him does not have the app (ask him to install), he does not have Internet connection now or his mobile is turned off.</string>
     <string name="low_battery">Tip: stop to follow to save your friend\'s battery</string>
+    <string name="can_be_followed"> Let anyone follow me</string>
+    <string name="close_window">Back</string>
 
 </resources>
