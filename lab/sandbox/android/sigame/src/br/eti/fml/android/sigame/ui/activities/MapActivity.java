@@ -342,25 +342,11 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 
                     UiHelper uiHelper = new UiHelper(MapActivity.this);
                     uiHelper.showToast(getString(R.string.closing), Toast.LENGTH_SHORT);
-                }
 
-                @Override
-                protected Object doInBackground(Object... objects) {
-                    if (!Storage.put(MainActivity.PACKAGE + "." + lastSession + ".need_stop", "true")) {
-                        Log.error(this, "Unable to stop!");
-                    }
-
-                    return null;
-                }
-
-                @Override
-                protected void onPostExecute(Object o) {
                     final Button buttonStopFollow = (Button) findViewById(R.id.stop_follow);
                     final Button buttonClose = (Button) findViewById(R.id.close_window);
                     buttonStopFollow.setVisibility(View.GONE);
                     buttonClose.setVisibility(View.VISIBLE);
-
-                    UiHelper uiHelper = new UiHelper(MapActivity.this);
 
                     DialogInterface.OnClickListener closeSelf = new DialogInterface.OnClickListener() {
                         @Override
@@ -385,6 +371,16 @@ public class MapActivity extends com.google.android.maps.MapActivity {
                                 R.drawable.icon32, getString(R.string.not_found_body), closeSelf);
                     }  // ignores the Reason.USER_BACK and Reason.USER_BUTTON
                 }
+
+                @Override
+                protected Object doInBackground(Object... objects) {
+                    if (!Storage.put(MainActivity.PACKAGE + "." + lastSession + ".need_stop", "true")) {
+                        Log.error(this, "Unable to stop!");
+                    }
+
+                    return null;
+                }
+
             }.execute();
         } else {
             runOnUiThread(new Runnable() {
