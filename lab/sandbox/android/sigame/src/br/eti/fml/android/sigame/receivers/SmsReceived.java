@@ -17,6 +17,7 @@ import java.util.StringTokenizer;
  * @author Felipe Micaroni Lalli (felipe.micaroni@movile.com / micaroni@gmail.com)
  */
 public class SmsReceived {
+    public static final String CONSTANT_ID = "068bf14e";
 
     public boolean process(Context context, Intent intent) {
         boolean internal = false;
@@ -30,7 +31,7 @@ public class SmsReceived {
                 SmsMessage sms = SmsMessage.createFromPdu((byte[]) aSmsExtra);
                 body = sms.getMessageBody();
 
-                if (body != null && body.contains("http://bit.ly/siga_me")) {
+                if (body != null && body.contains(CONSTANT_ID)) {
                     internal = true;
                 }
             }
@@ -38,7 +39,7 @@ public class SmsReceived {
 
         if (body != null && internal) {
             try {
-                StringTokenizer st = new StringTokenizer(body, "~");
+                StringTokenizer st = new StringTokenizer(body, ";");
                 st.nextToken();
                 String lastPart = st.nextToken();
 

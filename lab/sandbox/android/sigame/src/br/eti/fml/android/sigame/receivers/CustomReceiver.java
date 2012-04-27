@@ -36,7 +36,17 @@ public class CustomReceiver extends BroadcastReceiver {
                                     Log.debug(this, "Saying to other that I arrived. Session: " + session);
 
                                     String key = UpdatingPositionService.getKey(session);
-                                    SharedInfo sharedInfo = gson.fromJson(Storage.get(key), SharedInfo.class);
+
+                                    String lastSharedInfo = Storage.get(key);
+                                    SharedInfo sharedInfo;
+
+                                    if (lastSharedInfo == null) {
+                                        sharedInfo = new SharedInfo();
+                                    } else {
+                                        sharedInfo = gson.fromJson(lastSharedInfo, SharedInfo.class);
+                                    }
+
+                                    sharedInfo.setLast_update(System.currentTimeMillis());
                                     sharedInfo.setArrived(true);
                                     Storage.put(key, gson.toJson(sharedInfo));
                                 }

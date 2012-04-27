@@ -87,4 +87,16 @@ public class SharedInfo {
                 ", lat=" + lat +
                 '}';
     }
+
+    public boolean almostEqual(SharedInfo that) {
+        return this == that || that != null
+                && !(accur != null ? !accur.equals(that.accur) : that.accur != null)
+                && !(arrived != null ? !arrived.equals(that.arrived) : that.arrived != null)
+                && !(battery != null ? !battery.equals(that.battery) : that.battery != null)
+                && !(last_provider != null ? !last_provider.equals(that.last_provider) : that.last_provider != null)
+                && !(lat != null ? !lat.equals(that.lat) : that.lat != null)
+                && !(lon != null ? !lon.equals(that.lon) : that.lon != null)
+                && !(temperature != null ? !temperature.equals(that.temperature) : that.temperature != null);
+
+    }
 }

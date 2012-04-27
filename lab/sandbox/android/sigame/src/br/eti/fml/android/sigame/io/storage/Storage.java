@@ -1,72 +1,83 @@
 package br.eti.fml.android.sigame.io.storage;
 
-import br.eti.fml.android.sigame.io.http.ConnectionException;
-import br.eti.fml.android.sigame.io.http.HttpHelper;
-import br.eti.fml.android.sigame.io.http.PairParam;
 import br.eti.fml.android.sigame.util.Log;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.simpledb.AmazonSimpleDB;
+import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
+import com.amazonaws.services.simpledb.model.*;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Storage {
-    // Access Key AKIAJYI2SX2FFBG55S5A
-    // Secret Key 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
+    private static AmazonSimpleDB db;
+    private static final String DOMAIN_NAME = "sigame";
 
-    public static boolean put(PairParam ... values) {
-        for (PairParam pp : values) {
-            pp.name = pp.name.replaceAll("\\.", "\\_");
-        }
+    static {
+        BasicAWSCredentials credentials
+                = new BasicAWSCredentials("AKIAJYI2SX2FFBG55S5A", "glWMRea6pCTsvCkYB2ESPgw8L8QSpG4/XQ4qfoOI");
 
+        db = new AmazonSimpleDBClient(credentials);
+    }
+
+    public static boolean put(String key, String value) {
         boolean ok;
+        long startTime = System.currentTimeMillis();
 
         try {
-            String result = HttpHelper.makeAnHttpCallToString("http://api.openkeyval.org/store/",
-                    3000, 2, true, values);
-
-            if (result != null && result.contains("\"status\"")) {
-                ok = true;
-                Log.debug(Storage.class, "PUT: " + Arrays.toString(values));
-            } else {
-                ok = false;
-                Log.error(Storage.class, "Result not expected: " + result + "; Error to put " + Arrays.toString(values));
-            }
-
-        } catch (ConnectionException e) {
-            Log.error(Storage.class, "Connection error! Error to put " + Arrays.toString(values));
+            List<ReplaceableAttribute> attributes = new ArrayList<ReplaceableAttribute>();
+            ReplaceableAttribute attr = new ReplaceableAttribute("v", value, true);
+            attributes.add(attr);
+            PutAttributesRequest putAttributesRequest = new PutAttributesRequest(DOMAIN_NAME, key, attributes);
+            db.putAttributes(putAttributesRequest);
+            ok = true;
+        } catch (Exception e) {
             ok = false;
+            Log.warn(Storage.class, "Error on PUT " + key + ": " + e);
         }
+
+        Log.debug(Storage.class, "[PUT] " + key + "=" + value + " - ok? " + ok + " - " + (System.currentTimeMillis() - startTime) + " ms");
+        return ok;
+    }
+
+    public static boolean delete(String key) {
+        boolean ok;
+        long startTime = System.currentTimeMillis();
+
+        try {
+            DeleteAttributesRequest deleteAttributesRequest = new DeleteAttributesRequest(DOMAIN_NAME, key);
+            db.deleteAttributes(deleteAttributesRequest);
+            ok = true;
+        } catch (Exception e) {
+            ok = false;
+            Log.warn(Storage.class, "Error on DELETE " + key + ": " + e);
+        }
+
+        Log.debug(Storage.class, "[DELETE] " + key + "=" + key + " - ok? "
+                + ok + " - " + (System.currentTimeMillis() - startTime) + " ms");
 
         return ok;
     }
 
-    public static boolean put(String key, String value) {
-        return put(new PairParam(key, value));
-    }
-
     public static String get(String key) {
-        key = key.replaceAll("\\.", "\\_");
+        long startTime = System.currentTimeMillis();
         String res = null;
 
         try {
-            res = HttpHelper.makeAnHttpCallToString("http://api.openkeyval.org/" + key,
-                    2000, 0, true);
+            GetAttributesRequest getAttributesRequest = new GetAttributesRequest(DOMAIN_NAME, key);
+            GetAttributesResult getAttributesResult = db.getAttributes(getAttributesRequest);
 
-            if (res == null) {
-                Log.error(Storage.class, "the result is null");
-            } else {
-                res = res.trim();
-
-                if (res.contains("\"error\"")) {
-                    Log.error(Storage.class, "Error on GET " + key + ": " + res);
-                    res = null;
-                } else {
-                    Log.debug(Storage.class, "GET " + key + "=" + res);
-                }
+            @SuppressWarnings("unchecked")
+            List<Attribute> attributes = getAttributesResult.getAttributes();
+    
+            if (attributes.size() > 0) {
+                res = attributes.get(0).getValue();
             }
-
-        } catch (ConnectionException e) {
-            Log.error(Storage.class, "Connection error! Error to get " + key);
+        } catch (Exception e) {
+            Log.warn(Storage.class, "Error on GET " + key + ": " + e);
         }
 
+        Log.debug(Storage.class, "[GET] " + key + "=" + res + " - " + (System.currentTimeMillis() - startTime) + " ms");
         return res;
     }
 }

@@ -1,6 +1,8 @@
 package br.eti.fml.android.sigame.ui.activities;
 
+import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
 
 import java.util.ArrayList;
@@ -35,5 +37,16 @@ public class MapOverlaySet extends com.google.android.maps.ItemizedOverlay {
     @Override
     public int size() {
         return overlays.size();
+    }
+
+    @Override
+    public void draw(Canvas canvas, MapView mapView, boolean b) {
+        super.draw(canvas, mapView, b);
+
+        if (mapView.getZoomLevel() < 5) {
+            mapView.getController().setZoom(5);
+        } else if (mapView.getZoomLevel() > 20) {
+            mapView.getController().setZoom(20);
+        }
     }
 }

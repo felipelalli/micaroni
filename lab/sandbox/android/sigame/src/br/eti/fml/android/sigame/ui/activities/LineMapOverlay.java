@@ -34,6 +34,7 @@ public class LineMapOverlay extends com.google.android.maps.Overlay {
         projection.toPixels(mGpt1, pt1);
         projection.toPixels(mGpt2, pt2);
         canvas.drawLine(pt1.x, pt1.y, pt2.x, pt2.y, paint);
+
         return true;
     }
 }

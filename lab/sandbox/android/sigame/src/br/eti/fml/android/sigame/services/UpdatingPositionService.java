@@ -18,8 +18,11 @@ import com.google.gson.Gson;
 
 public class UpdatingPositionService extends Service {
 
-    public static final int MIN_INTERVAL = 1000;
-    public static final int MAX_INTERVAL = 10000;
+    public static final int MIN_INTERVAL = 100;
+    public static final int MAX_INTERVAL = 1000;
+
+    private static final int TIME_TO_OLD = 1000 * 2 * 60; // 2 min
+
     private AsyncTask mainTask;
     private String session;
     private Float battery = 1f;
@@ -48,7 +51,7 @@ public class UpdatingPositionService extends Service {
         ((NotificationManager) getSystemService(
                 Context.NOTIFICATION_SERVICE)).cancel(MainActivity.NOTIFICATION_FOLLOW_ID);
 
-        stopGettingLocation();
+        stopGettingLocation(); // just to ensure
         Log.debug(this, "Service destroyed!");
 
         super.onDestroy();
@@ -81,7 +84,7 @@ public class UpdatingPositionService extends Service {
             mainTask = new AsyncTask() {
                 @Override
                 protected Object doInBackground(Object... objects) {
-                    SharedInfo sharedInfo = new SharedInfo();
+                    SharedInfo sharedInfo = null;
                     String key = getKey(session);
                     Gson gson = new Gson();
 
@@ -93,20 +96,37 @@ public class UpdatingPositionService extends Service {
 
                         while (!isCancelled()) {
                             try {
-                                sharedInfo.setLast_update(System.currentTimeMillis());
-                                sharedInfo.setLat(lat);
-                                sharedInfo.setLon(lon);
-                                sharedInfo.setLast_provider(lastProvider);
-                                sharedInfo.setAccur(accur);
-                                sharedInfo.setBattery(battery);
-                                sharedInfo.setTemperature(temperature);
+                                SharedInfo newSharedInfo = new SharedInfo();
 
-                                long startTime = System.currentTimeMillis();
-                                Storage.put(key, gson.toJson(sharedInfo));
-                                Log.debug(this, "Updated position: " + sharedInfo);
-                                long sleepTime = Math.max(MIN_INTERVAL, MAX_INTERVAL - (System.currentTimeMillis() - startTime));
+                                newSharedInfo.setLast_update(System.currentTimeMillis());
+                                newSharedInfo.setLat(lat);
+                                newSharedInfo.setLon(lon);
+                                newSharedInfo.setLast_provider(lastProvider);
+                                newSharedInfo.setAccur(accur);
+                                newSharedInfo.setBattery(battery);
+                                newSharedInfo.setTemperature(temperature);
 
-                                Thread.sleep(sleepTime); // TODO: CONFIGURE THIS UPDATE INTERVAL
+                                long sleepTime;
+
+                                if (newSharedInfo.almostEqual(sharedInfo)) {
+                                    Log.debug(this, "newSharedInfo=" + newSharedInfo
+                                            + " is almost the same of newSharedInfo=" + sharedInfo);
+
+                                    sleepTime = MAX_INTERVAL;
+                                } else {
+                                    sharedInfo = newSharedInfo;
+
+                                    long startTime = System.currentTimeMillis();
+
+                                    if (!isCancelled()) {
+                                        Storage.put(key, gson.toJson(sharedInfo));
+                                        Log.debug(this, "Updated position: " + sharedInfo);
+                                    }
+
+                                    sleepTime = Math.max(MIN_INTERVAL, MAX_INTERVAL - (System.currentTimeMillis() - startTime));
+                                }
+
+                                Thread.sleep(sleepTime);
                                 Log.debug(this, "Sleeping for " + sleepTime + " ms...");
                             } catch (InterruptedException e) {
                                 Log.debug(this, "" + e);
@@ -115,17 +135,12 @@ public class UpdatingPositionService extends Service {
                             if (System.currentTimeMillis() > updateSoFar
                                 || "true".equals(Storage.get(MainActivity.PACKAGE + "." + session + ".need_stop"))) {
 
-                                showNotificationWhenStopToBeFollowed();
-                                stopToBeFollowed();
+                                stopToBeFollowed(session);
                             }
                         }
                     } finally {
                         wl.release();
                     }
-
-                    sharedInfo.setArrived(true);
-                    sharedInfo.setLast_update(System.currentTimeMillis());
-                    Storage.put(key, gson.toJson(sharedInfo));
 
                     return null;
                 }
@@ -136,7 +151,7 @@ public class UpdatingPositionService extends Service {
     private void stopGettingLocation() {
         Log.debug(this, "Stopping to get location...");
 
-        if (mainTask != null) {
+        if (mainTask != null && !mainTask.isCancelled()) {
             mainTask.cancel(true);
         }
 
@@ -144,10 +159,12 @@ public class UpdatingPositionService extends Service {
 
         if (locationListenerNetwork != null) {
             locationManager.removeUpdates(locationListenerNetwork);
+            locationListenerNetwork = null;
         }
 
         if (locationListenerGps != null) {
             locationManager.removeUpdates(locationListenerGps);
+            locationListenerGps = null;
         }
     }
 
@@ -189,8 +206,6 @@ public class UpdatingPositionService extends Service {
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListenerNetwork);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListenerGps);
     }
-
-    private static final int TIME_TO_OLD = 1000 * 2 * 60; // 2 min
 
     /** Determines whether one Location reading is better than the current Location fix
      * @param newLocation  The new Location that you want to evaluate
@@ -248,6 +263,7 @@ public class UpdatingPositionService extends Service {
         if (provider1 == null) {
             return provider2 == null;
         }
+
         return provider1.equals(provider2);
     }
 
@@ -290,9 +306,30 @@ public class UpdatingPositionService extends Service {
         return MainActivity.PACKAGE + "." + session + ".shared_info";
     }
 
-    private void stopToBeFollowed() {
-        Log.debug(this, "Stop updating service!");
-        stopSelf();
+    private void stopToBeFollowed(final String session) {
+        Log.debug(this, "Stopping updating service...");
+
+        Log.debug(this, "Before getting location");
+        stopGettingLocation();
+
+        Log.debug(this, "Before show notification");
+        showNotificationWhenStopToBeFollowed();
+
+        //noinspection unchecked
+        new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object... objects) {
+                Storage.delete(getKey(session));
+                Storage.delete(MainActivity.PACKAGE + "." + session + ".need_stop");
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                stopSelf();
+                Log.debug(this, "Stopped updating service!");
+            }
+        }.execute();
     }
 
     private void showNotificationWhenStopToBeFollowed() {
@@ -305,7 +342,7 @@ public class UpdatingPositionService extends Service {
                 R.drawable.stop, getString(R.string.you_are_not_being_followed_anymore), System.currentTimeMillis());
 
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
-        notification.defaults |= Notification.DEFAULT_ALL;
+        notification.defaults |= Notification.DEFAULT_VIBRATE;
 
         PendingIntent arrivedPI = PendingIntent.getActivity(this, 0, null, PendingIntent.FLAG_ONE_SHOT);
         notification.setLatestEventInfo(this, getString(R.string.title_you_are_not_being_followed_anymore),
@@ -325,7 +362,7 @@ public class UpdatingPositionService extends Service {
 
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
         notification.flags |= Notification.FLAG_ONGOING_EVENT;
-        notification.defaults |= Notification.DEFAULT_ALL;
+        notification.defaults |= Notification.DEFAULT_VIBRATE;
 
         Intent intent = new Intent(MainActivity.PACKAGE + ".ARRIVED");
         intent.putExtra("session", session);

@@ -47,8 +47,10 @@ public class MapActivity extends com.google.android.maps.MapActivity {
     private AtomicInteger notFoundMessageLevel;
     private AtomicInteger batteryMessageLevel;
     private OverlayItem theOtherGuy;
+    private OverlayItem myPosition;
 
-    private MapOverlaySet theOtherGuyPosition;
+    private MapOverlaySet theOtherGuyOverlaySet;
+    private MapOverlaySet myPositionOverlaySet;
 
     enum Reason {
         TIME_IS_UP,
@@ -71,8 +73,7 @@ public class MapActivity extends com.google.android.maps.MapActivity {
         setContentView(R.layout.map);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        final Button buttonStopFollow = (Button) findViewById(R.id.stop_follow);
-        final Button buttonClose = (Button) findViewById(R.id.close_window);
+        final Button buttonMyPosition = (Button) findViewById(R.id.my_position);
 
         SharedPreferences settings = getSharedPreferences(MainActivity.PACKAGE, 0);
         lastSession = settings.getString("lastSession", "");
@@ -85,30 +86,23 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 
         final MapView mapView = (MapView) findViewById(R.id.mapview);
 
-        theOtherGuyPosition = new MapOverlaySet(
+        theOtherGuyOverlaySet = new MapOverlaySet(
                 this.getResources().getDrawable(R.drawable.marker), MapOverlaySet.Position.CENTER_BOTTOM);
 
-        MapOverlaySet myPosition = new MapOverlaySet(
+        myPositionOverlaySet = new MapOverlaySet(
                 this.getResources().getDrawable(R.drawable.me), MapOverlaySet.Position.CENTER);
 
-        mapView.getOverlays().add(theOtherGuyPosition);
-        mapView.getOverlays().add(myPosition);
-        mapView.getController().setZoom(START_ZOOM);
+        mapView.getOverlays().add(myPositionOverlaySet);
+        mapView.getOverlays().add(theOtherGuyOverlaySet);
         mapView.setBuiltInZoomControls(true);
         mapView.setSatellite(false);
-        mapView.setTraffic(true);
 
-        buttonStopFollow.setOnClickListener(new View.OnClickListener() {
+        defineMainButtonBehavior(true);
+
+        buttonMyPosition.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                stopFollow(Reason.USER_BUTTON);
-            }
-        });
-
-        buttonClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
+                goToUserPosition(mapView);
             }
         });
 
@@ -117,19 +111,7 @@ public class MapActivity extends com.google.android.maps.MapActivity {
         final TextView provider = (TextView) findViewById(R.id.provider);
         
         final UiHelper uiHelper = new UiHelper(this);
-        
-        // put the user position:
-        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
-        if (lastKnownLocation != null) {
-            GeoPoint point = new GeoPoint((int) (lastKnownLocation.getLatitude() * 1000000),
-                    (int) (lastKnownLocation.getLongitude() * 1000000));
-
-            OverlayItem me = new OverlayItem(point, "", "");
-            myPosition.addOverlay(me);
-            mapView.getController().animateTo(point);
-        }
+        goToUserPosition(mapView);
 
         //noinspection unchecked
         updateScreenInThread = new AsyncTask() {
@@ -138,6 +120,7 @@ public class MapActivity extends com.google.android.maps.MapActivity {
                 final AtomicReference<GeoPoint> lastPoint = new AtomicReference<GeoPoint>();
 
                 while (!isCancelled()) {
+                    Log.debug(this, "Starting loop of update screen...");
                     final SharedInfo sharedInfo = lastSharedInfo;
                     
                     runOnUiThread(new Runnable() {
@@ -162,17 +145,17 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 
                                         if (lastPoint.get() != null) {
                                             LineMapOverlay lineMapOverlay = new LineMapOverlay(lastPoint.get(), point);
-                                            mapView.getOverlays().add(lineMapOverlay);
+                                            mapView.getOverlays().add(0, lineMapOverlay);
                                         }
-                                        
+
                                         lastPoint.set(point);
     
                                         if (theOtherGuy != null) {
-                                            theOtherGuyPosition.removeOverlay(theOtherGuy);
+                                            theOtherGuyOverlaySet.removeOverlay(theOtherGuy);
                                         }
     
                                         theOtherGuy = new OverlayItem(point, "", "");
-                                        theOtherGuyPosition.addOverlay(theOtherGuy);
+                                        theOtherGuyOverlaySet.addOverlay(theOtherGuy);
                                         mapView.getController().animateTo(point);
                                     }
 
@@ -238,18 +221,11 @@ public class MapActivity extends com.google.android.maps.MapActivity {
         //noinspection unchecked
         gettingInfoInThread = new AsyncTask() {
             @Override
-            protected void onCancelled() {
-                if (updateScreenInThread != null) {
-                    updateScreenInThread.cancel(true);
-                }
-            }
-
-            @Override
             protected Object doInBackground(Object... objects) {
                 noAnswer.set(true);
 
                 while (!isCancelled()) {
-                    Log.debug(this, "Starting loop of update...");
+                    Log.debug(this, "Starting loop of update geolocation...");
                     
                     try {
                         long startTime = System.currentTimeMillis();
@@ -293,6 +269,26 @@ public class MapActivity extends com.google.android.maps.MapActivity {
         }.execute();
     }
 
+    private void goToUserPosition(MapView mapView) {
+        // put the user position:
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        mapView.getController().setZoom(START_ZOOM);
+
+        if (lastKnownLocation != null) {
+            GeoPoint point = new GeoPoint((int) (lastKnownLocation.getLatitude() * 1000000),
+                    (int) (lastKnownLocation.getLongitude() * 1000000));
+
+            if (myPosition != null) {
+                myPositionOverlaySet.removeOverlay(myPosition);
+            }
+            
+            myPosition = new OverlayItem(point, "", "");
+            myPositionOverlaySet.addOverlay(myPosition);
+            mapView.getController().animateTo(point);
+        }
+    }
+
     private void checkIfNeedToStopDueToNotFound() {
         UiHelper uiHelper = new UiHelper(this);
 
@@ -332,51 +328,62 @@ public class MapActivity extends com.google.android.maps.MapActivity {
 
     private void stopFollow(final Reason reason) {
         if (running.compareAndSet(true, false)) {
+            UiHelper uiHelper = new UiHelper(MapActivity.this);
+            uiHelper.showToast(getString(R.string.closing), Toast.LENGTH_SHORT);
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (gettingInfoInThread != null) {
+                        gettingInfoInThread.cancel(true);
+                    }
+
+                    if (updateScreenInThread != null) {
+                        updateScreenInThread.cancel(true);
+                    }
+
+                    final TextView lastUpdate = (TextView) findViewById(R.id.last_update);
+                    lastUpdate.setText(R.string.last_update_stop);
+                    defineMainButtonBehavior(false);
+                }
+            });
+
+            DialogInterface.OnClickListener closeSelf = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(final DialogInterface dialogInterface, int i) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            dialogInterface.dismiss();
+                        }
+                    });
+                }
+            };
+
+            if (reason.equals(Reason.ARRIVED)) {
+                uiHelper.showAlert(getString(R.string.arrived_title),
+                        R.drawable.icon32, getString(R.string.arrived_body), closeSelf);
+            } else if (reason.equals(Reason.TIME_IS_UP)) {
+                uiHelper.showAlert(getString(R.string.finish_title),
+                        R.drawable.icon32, getString(R.string.finish_body), closeSelf);
+            } else if (reason.equals(Reason.NOT_FOUND)) {
+                uiHelper.showAlert(getString(R.string.not_found_title),
+                        R.drawable.icon32, getString(R.string.not_found_body), closeSelf);
+            }  // ignores the Reason.USER_BACK and Reason.USER_BUTTON
+
             //noinspection unchecked
             new AsyncTask() {
                 @Override
-                protected void onPreExecute() {
-                    if (gettingInfoInThread != null) {
-                        gettingInfoInThread.cancel(false);
-                    }
-
-                    UiHelper uiHelper = new UiHelper(MapActivity.this);
-                    uiHelper.showToast(getString(R.string.closing), Toast.LENGTH_SHORT);
-
-                    final Button buttonStopFollow = (Button) findViewById(R.id.stop_follow);
-                    final Button buttonClose = (Button) findViewById(R.id.close_window);
-                    buttonStopFollow.setVisibility(View.GONE);
-                    buttonClose.setVisibility(View.VISIBLE);
-
-                    DialogInterface.OnClickListener closeSelf = new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(final DialogInterface dialogInterface, int i) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    dialogInterface.dismiss();
-                                }
-                            });
-                        }
-                    };
-
-                    if (reason.equals(Reason.ARRIVED)) {
-                        uiHelper.showAlert(getString(R.string.arrived_title),
-                                R.drawable.icon32, getString(R.string.arrived_body), closeSelf);
-                    } else if (reason.equals(Reason.TIME_IS_UP)) {
-                        uiHelper.showAlert(getString(R.string.finish_title),
-                                R.drawable.icon32, getString(R.string.finish_body), closeSelf);
-                    } else if (reason.equals(Reason.NOT_FOUND)) {
-                        uiHelper.showAlert(getString(R.string.not_found_title),
-                                R.drawable.icon32, getString(R.string.not_found_body), closeSelf);
-                    }  // ignores the Reason.USER_BACK and Reason.USER_BUTTON
-                }
-
-                @Override
                 protected Object doInBackground(Object... objects) {
-                    if (!Storage.put(MainActivity.PACKAGE + "." + lastSession + ".need_stop", "true")) {
-                        Log.error(this, "Unable to stop!");
+                    if (!reason.equals(Reason.USER_BUTTON)) {
+                        Storage.delete(MainActivity.PACKAGE + "." + lastSession + ".need_stop");
+                    } else {
+                        if (!Storage.put(MainActivity.PACKAGE + "." + lastSession + ".need_stop", "true")) {
+                            Log.error(this, "Unable to stop!");
+                        }
                     }
+
+                    Storage.delete(MainActivity.PACKAGE + "." + lastSession + ".shared_info");
 
                     return null;
                 }
@@ -389,6 +396,30 @@ public class MapActivity extends com.google.android.maps.MapActivity {
                     finish();
                 }
             });
+        }
+    }
+
+    private void defineMainButtonBehavior(boolean stopFollow) {
+        final Button buttonStopFollow = (Button) findViewById(R.id.stop_follow);
+
+        if (stopFollow) {
+            buttonStopFollow.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    stopFollow(Reason.USER_BUTTON);
+                }
+            });
+
+            buttonStopFollow.setText(getString(R.string.stop_follow));
+        } else {
+            buttonStopFollow.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    finish();
+                }
+            });
+
+            buttonStopFollow.setText(R.string.close_window);
         }
     }
 

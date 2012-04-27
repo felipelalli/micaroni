@@ -19,6 +19,7 @@
 
     <string name="stop_follow">Stop follow</string>
     <string name="last_update_never">Last update: (searching...)</string>
+    <string name="last_update_stop">Showing the last update</string>
     <string name="last_update">Last update:</string>
     <string name="position">Last position:</string>
     <string name="battery">Battery:</string>
@@ -40,9 +41,10 @@
     <string name="no_answer_2">Oh God... Where is your friend?</string>
     <string name="no_answer_3">OK, I will give up to search your friend!</string>
     <string name="not_found_title">Warn</string>
-    <string name="not_found_body">Your friend was not found. There are several possibilities for that. It could be him does not have the app (ask him to install), he does not have Internet connection now or his mobile is turned off.</string>
+    <string name="not_found_body">Your friend was not found. There are several possibilities for that:\n\n- He does not have the app (ask him to install)\n- He does not have Internet connection now\n- His mobile is turned off.\n- He does not have data plan</string>
     <string name="low_battery">Tip: stop to follow to save your friend\'s battery</string>
     <string name="can_be_followed"> Let anyone follow me</string>
     <string name="close_window">Back</string>
+    <string name="sms_message">Hi! Look how cool this app for Android: http://goo.gl/2np0q ;</string>
 
 </resources>

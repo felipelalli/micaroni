@@ -15,6 +15,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import br.eti.fml.android.sigame.R;
 import br.eti.fml.android.sigame.io.storage.Storage;
+import br.eti.fml.android.sigame.receivers.SmsReceived;
 import br.eti.fml.android.sigame.ui.UiHelper;
 
 public class MainActivity extends Activity {
@@ -94,8 +95,8 @@ public class MainActivity extends Activity {
                           : spinner.getSelectedItemPosition() == 2 ? 15 : 1;
 
         final String message =
-                "Download Follow Me Now app: http://bit.ly/siga_me       ~" +
-                session + "," + minutes;
+                getString(R.string.sms_message) +
+                session + "," + minutes + "," + SmsReceived.CONSTANT_ID;
 
         //noinspection unchecked
         new AsyncTask() {

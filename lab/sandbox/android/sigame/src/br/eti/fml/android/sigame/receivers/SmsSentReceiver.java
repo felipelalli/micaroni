@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.telephony.SmsManager;
 import android.widget.Toast;
 import br.eti.fml.android.sigame.R;
+import br.eti.fml.android.sigame.io.storage.Storage;
 import br.eti.fml.android.sigame.ui.UiHelper;
 import br.eti.fml.android.sigame.ui.activities.MainActivity;
 import br.eti.fml.android.sigame.ui.activities.MapActivity;
