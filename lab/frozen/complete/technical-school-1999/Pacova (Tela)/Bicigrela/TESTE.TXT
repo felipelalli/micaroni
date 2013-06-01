@@ -1,0 +1,62 @@
+  obj_figura a("doutorno.fml");
+  obj_figura b("b.fml");
+  obj_figura pato("c.fml");
+
+  if (a.edita())
+    clrscr();
+
+  if (b.edita())
+    clrscr();
+
+  if (pato.edita())
+    clrscr();
+
+  b.defraio(4);
+
+  a.defraio(0.05);
+
+  for (tipo_angulo angulo = 0; (angulo <= 360 * 1000) && (!keypressed); angulo += 2)
+  {
+/*
+    a.defangulo(angulo);
+    b.defangulo(angulo * 2);
+    pato.defangulo(angulo * 8);
+
+    a.defraio(a.raio() - 0.001);
+*/
+    a.defxy(a.x() + random(2) - random(2), a.y() + random(2) - random(2));
+//    a.defangulo(angulo);
+
+    a.exibe();
+    //b.exibe();
+    //pato.exibe();
+
+    delay(20);
+
+    a.apaga(0);
+    //b.apaga(0);
+    //pato.apaga(0);
+  }
+
+  for (angulo = 0; (angulo <= 360 * 1000) && (!keypressed); angulo += 2)
+  {
+/*
+    a.defangulo(angulo);
+    b.defangulo(angulo * 2);
+    pato.defangulo(angulo * 8);
+
+    a.defraio(a.raio() - 0.001);
+*/
+    a.defxy(a.x() + random(2) - random(2), a.y() + random(2) - random(2));
+    a.defraio(a.raio() + 0.01);
+//    a.defangulo(angulo);
+
+    a.exibe();
+    //b.exibe();
+    //pato.exibe();
+
+    delay(20);
+
+    a.apaga(0);
+    //b.apaga(0);
+    //pato.apaga(0);

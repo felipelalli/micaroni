@@ -1,0 +1,67 @@
+#include <stdlib.h>
+#include "pacova.h"
+#include "mousefun.h"
+
+void main()
+{
+  pacova tela;
+  MouseFun mouse(tela.max_x / 2, tela.max_y / 2, 0);
+
+  MOUSE_EVENTO evento = FALSO;
+
+  BOLEANO pinta = FALSO;
+  COORDENADA antx, anty;
+
+  while (!kbhit())
+  {
+    {
+      COORDENADA ax, ay;
+      ax = mouse.x();
+      ay = mouse.y();
+
+      setcolor(7);
+      setlinestyle(1, 0, 0);
+      setwritemode(XOR_PUT);
+      line(ax, 0, ax, tela.max_y);
+      line(0, ay, tela.max_x, ay);
+
+      evento = mouse.evento_pause();
+
+      line(ax, 0, ax, tela.max_y);
+      line(0, ay, tela.max_x, ay);
+      setwritemode(COPY_PUT);
+      setlinestyle(SOLID_LINE, 0, 0);
+    }
+
+    if (evento == MOUSE_DOWN)
+    {
+      pinta = VERDADEIRO;
+      antx = mouse.x();
+      anty = mouse.y();
+    }
+    else
+      if (evento == MOUSE_UP)
+        pinta = FALSO;
+      else
+        if (evento == MOUSE_UP_DIREITO)
+        {
+          cleardevice();
+        }
+        else
+          if (evento == MOUSE_DOWN_DIREITO)
+          {
+            setcolor(4);
+            line(0, 0, tela.max_x, tela.max_y);
+            line(tela.max_x, 0, 0, tela.max_y);
+          }
+
+    if (pinta)
+    {
+      COORDENADA x = mouse.x(), y = mouse.y();
+      setcolor(15);
+      line(antx, anty, x, y);
+      antx = x;
+      anty = y;
+    }
+  }
+}

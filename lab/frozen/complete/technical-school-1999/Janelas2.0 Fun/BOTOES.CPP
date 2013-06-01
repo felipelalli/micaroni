@@ -1,0 +1,117 @@
+#include "botoes.h"
+
+BotaoSimplesCalhau::BotaoSimplesCalhau
+             (const COORDENADA& x, const COORDENADA& y,
+              const COORDENADA& xtam, const COORDENADA& ytam,
+              tipo_funcao f, tipo_funcao_desenho d)
+{
+  this->c_x1 = x;
+  this->c_x2 = x + xtam;
+  this->c_y1 = y;
+  this->c_y2 = y + ytam;
+  this->c.funcao = f;
+  this->c.desenho = d;
+  this->c.cor_de_fundo = COR_FUNDO_DIALOGO;
+}
+
+void BotaoSimplesCalhau::exibe(MouseFun& mouse, BOLEANO atualizacao)
+{
+  --mouse;
+
+  Acessorios a;
+
+  a.quadrado3d(this->x1(), this->y1(), this->x2(), this->y2(),
+               COR_BORDA_LUZ, COR_BORDA_SOMBRA);
+
+  if (!atualizacao)
+  {
+    a.limpeza(this->x1() + 1, this->y1() + 1, this->x2() - 1, this->y2(),
+              this->c.cor_de_fundo);
+  }
+
+  if (this->c.desenho)
+    (*(this->c.desenho))(this->x1(), this->y1(), this->x2(), this->y2());
+
+  ++mouse;
+}
+
+int BotaoSimplesCalhau::loop(MouseFun& mouse, MOUSE_EVENTO* evento)
+{
+  static COORDENADA antx1 = -1, anty1 = -1, antx2 = -1, anty2 = -1;
+  Acessorios a;
+  --mouse;
+
+  if (!mouse.botao())
+  {
+    antx1 = -1;
+    anty1 = -1;
+    antx2 = -1;
+    anty2 = -1;
+  }
+
+  if ((mouse.botao() == BOTAO_ESQUERDO) &&
+      (antx1 == this->x1() &&
+       anty1 == this->y1() &&
+       antx2 == this->x2() &&
+       anty2 == this->y2()))
+  {
+    a.quadrado3d(this->x1(), this->y1(), this->x2(), this->y2(),
+                 COR_BORDA_SOMBRA, COR_BORDA_LUZ);
+
+    a.limpeza(this->x1() + 1, this->y1() + 1, this->x2() - 1, this->y2(),
+                  this->c.cor_de_fundo);
+
+    if (this->c.desenho)
+      (*(this->c.desenho))(this->x1() + 1, this->y1() + 1, this->x2() + 1, this->y2() + 1);
+  }
+  else
+    a.quadrado3d(this->x1(), this->y1(), this->x2(), this->y2(),
+                 14, 0);
+
+  while (mouse.verifica(this->x1(), this->y1(), this->x2(), this->y2()))
+  {
+    --mouse;
+
+    if (*evento == MOUSE_DOWN)
+    {
+      a.quadrado3d(this->x1(), this->y1(), this->x2(), this->y2(),
+                   COR_BORDA_SOMBRA, COR_BORDA_LUZ);
+
+      a.limpeza(this->x1() + 1, this->y1() + 1, this->x2() - 1, this->y2(),
+                    this->c.cor_de_fundo);
+
+      if (this->c.desenho)
+        (*(this->c.desenho))(this->x1() + 1, this->y1() + 1, this->x2() + 1, this->y2() + 1);
+
+      antx1 = this->x1();
+      anty1 = this->y1();
+      antx2 = this->x2();
+      anty2 = this->y2();
+    }
+    else
+      if (*evento == MOUSE_UP)
+      {
+        a.quadrado3d(this->x1(), this->y1(), this->x2(), this->y2(),
+                     14, 0);
+
+        if (antx1 == this->x1() &&
+            anty1 == this->y1() &&
+            antx2 == this->x2() &&
+            anty2 == this->y2())
+        {
+          if (this->c.funcao)
+            (*(this->c.funcao))();
+
+          exibe(mouse);
+        }
+      }
+
+    ++mouse; ++mouse;
+    *evento = mouse.evento_pause();
+  }
+
+  exibe(mouse);
+
+  return VERDADEIRO;
+}
+

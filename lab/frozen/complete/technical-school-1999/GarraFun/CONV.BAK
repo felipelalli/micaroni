@@ -1,0 +1,84 @@
+#ifndef CONVERSOR_F&F_FUN
+#define CONVERSOR_F&F_FUN
+#include "math.h"
+
+#ifndef PI
+#define PI 3.1415
+#endif
+
+class ConversorFun
+{
+  public:
+
+  // CONVERSOR -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  void converte(const int& vx, const int& vy, double* vangulo, double* vraio, const int& cx, const int& cy)
+  {
+    if (vx == cx && vy == cy)
+    {
+      *vangulo = 0;
+      *vraio = 0;
+    }
+    else
+      if (vx == cx)
+      {
+        if (vy > cy)
+        {
+          *vraio = vy - cy;
+          *vangulo = 270;
+        }
+        else
+          if (vy < cy)
+          {
+            *vraio = cy - vy;
+            *vangulo = 90;
+          }
+      }
+      else
+        if (vy == cy)
+        {
+          if (vx > cx)
+          {
+            *vraio = vx - cx;
+            *vangulo = 0;
+          }
+          else
+           if (vx < cx)
+           {
+             *vraio = cx - vx;
+             *vangulo = 180;
+           }
+        }
+        else
+          if (vx > cx && vy < cy) /* Primeiro Quadrante */
+          {
+            *vraio = sqrt(pow((vx - cx), 2) + pow((cy - vy), 2));
+            *vangulo = atan2((cy - vy), (vx - cx)) * 180 / PI;
+          }
+          else
+            if (vx < cx && vy < cy) /* Segundo Quadrante */
+            {
+              *vraio = sqrt(pow((cx - vx), 2) + pow((cy - vy), 2));
+              *vangulo = 180 - (atan2((cy - vy), (cx - vx)) * 180 / PI);
+            }
+            else
+              if (vx < cx && vy > cy) /* Terceiro Quadrante */
+              {
+                *vraio = sqrt(pow((cx - vx), 2) + pow((vy - cy), 2));
+                *vangulo = 180 + (atan2((vy - cy), (cx - vx)) * 180 / PI);
+              }
+              else
+                if (vx > cx && vy > cy) /* Quarto Quadrante */
+                {
+                  *vraio = sqrt(pow((vx - cx), 2) + pow((vy - cy), 2));
+                  *vangulo = 360 - (atan2((vy - cy), (vx - cx)) * 180 / PI);
+                }
+  }
+
+  void converte(const double& vangulo, const double& vraio, int* vx, int* vy, const int& cx, const int& cy)
+  {
+    *vx = cos(vangulo * (PI / 180)) * vraio + cx;
+    *vy = sin(vangulo * (PI / 180)) * vraio + cy;
+  }
+};
+
+#endif

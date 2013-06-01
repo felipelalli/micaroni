@@ -1,0 +1,1000 @@
+#include "janelas.h"
+
+//////////////////////
+// CLASSE PRINCIPAL //
+//////////////////////
+
+JanelaMae::JanelaMae():c_tipo(OBJETO_PADRAO),
+                       c_x1(X1_PADRAO_CALHAU), c_y1(Y1_PADRAO_CALHAU),
+                       c_x2(X2_PADRAO_CALHAU), c_y2(Y2_PADRAO_CALHAU),
+                       c_marcado_para_excluir(FALSO),
+                       c_foco(FALSO)
+{}
+
+JanelaMae::~JanelaMae()
+{
+  fecha();
+}
+
+void JanelaMae::fecha()
+{
+  this->c_marcado_para_excluir = VERDADEIRO;
+}
+
+//////////////////
+// LISTA LIGADA //
+//////////////////
+
+ListaLigadaJanelas::ListaLigadaJanelas(): c_pri(NULL), c_ult(NULL),
+                                          c_atual(NULL)
+{}
+
+ListaLigadaJanelas::~ListaLigadaJanelas()
+{
+  apaga_tudo();
+}
+
+// Fun‡äes:
+void ListaLigadaJanelas::inicio()
+{
+  this->c_atual = this->c_pri;
+}
+
+void ListaLigadaJanelas::fim()
+{
+  this->c_atual = this->c_ult;
+}
+
+const BOLEANO ListaLigadaJanelas::ins(JanelaMae* componente)
+{
+  no_janelas* novo_no = new no_janelas;
+  novo_no->apont_classe = componente;
+  novo_no->prox = NULL;
+
+  if (vazia())
+  {
+    novo_no->ante = NULL;
+    this->c_pri = novo_no;
+  }
+  else
+    {
+      novo_no->ante = this->c_ult;
+      this->c_ult->prox = novo_no;
+    }
+
+  this->c_ult = novo_no;
+
+  return VERDADEIRO;
+}
+
+void ListaLigadaJanelas::apaga_tudo()
+{
+  inicio();
+
+  while (!vazia())
+    del_atual();
+}
+
+const BOLEANO ListaLigadaJanelas::del_atual()
+{
+  if (!vazia())
+  {
+    if (this->c_atual->ante)
+      this->c_atual->ante->prox = this->c_atual->prox;
+    else
+      this->c_pri = this->c_atual->prox;
+
+    if (this->c_atual->prox)
+      this->c_atual->prox->ante = this->c_atual->ante;
+    else
+      this->c_ult = this->c_atual->ante;
+
+    delete this->c_atual;
+    inicio();
+
+    return VERDADEIRO;
+  }
+  else
+    return FALSO;
+}
+
+const BOLEANO ListaLigadaJanelas::avanca()
+{
+  if (!vazia())
+  {
+    if (this->c_atual == this->c_ult)
+    {
+      this->c_atual = NULL;
+      return FALSO;
+    }
+    else
+    {
+      this->c_atual = this->c_atual->prox;
+      return VERDADEIRO;
+    }
+  }
+  else
+    return FALSO;
+}
+
+const BOLEANO ListaLigadaJanelas::volta()
+{
+  if (!vazia())
+  {
+    if (this->c_atual == this->c_pri)
+    {
+      this->c_atual = NULL;
+      return FALSO;
+    }
+    else
+    {
+      this->c_atual = this->c_atual->ante;
+      return VERDADEIRO;
+    }
+  }
+  else
+    return FALSO;
+}
+
+// Verifica‡äes:
+const BOLEANO ListaLigadaJanelas::vazia() const
+{
+  return !((BOLEANO) this->c_pri);
+}
+
+JanelaMae* ListaLigadaJanelas::atual() const
+{
+  return this->c_atual->apont_classe;
+}
+
+////////////////
+// FORMULARIO //
+////////////////
+
+FormularioCalhau::FormularioCalhau
+                (const COORDENADA& vx1, const COORDENADA& vy1,
+                 const COORDENADA& vx2, const COORDENADA& vy2,
+                 char* tit)
+{
+  this->c_x1 = vx1;
+  this->c_x2 = vx2;
+  this->c_y1 = vy1;
+  this->c_y2 = vy2;
+  this->c_antex2 = x2();
+  this->c_antey2 = y2();
+  this->c_tipo = FORMULARIO_CALHAU;
+  this->c.cor_de_fundo = COR_FUNDO_DIALOGO;
+  this->c.visivel = VERDADEIRO;
+  this->c.minimizado = FALSO;
+  this->c.pode_minimizar = VERDADEIRO;
+  this->c.pode_fechar = VERDADEIRO;
+  this->c.titulo = new char [strlen(tit) + 1];
+  strcpy(this->c.titulo, tit);
+}
+
+FormularioCalhau::~FormularioCalhau()
+{
+  delete this->c.titulo;
+}
+
+void FormularioCalhau::exibe(MouseFun& mouse, BOLEANO atualizacao)
+{
+  --mouse;
+  int altura = textheight(this->c.titulo);
+
+  if (this->c.visivel)
+  {
+    Acessorios a;
+
+    if (!atualizacao)
+    {
+      a.quadrado3d(x1(), y1(), x2(), y2(), COR_BORDA_LUZ, COR_BORDA_SOMBRA);
+      a.limpeza(x1() + 1, y1() + 1, x2() - 1, y2(), this->c.cor_de_fundo);
+      a.sombra(x2() + 1, y1() + 5, x2() + 5, y2() + 5);
+      a.sombra(x1() + 5, y2() + 1, x2(), y2() + 5);
+    }
+
+    if (this->foco())
+    {
+      a.limpeza(x1() + 4, y1() + 4, x2() - 14, y1() + altura + 7, COR_BARRA_TITULO_INATIVO);
+      a.quadrado3d(x1() + 3, y1() + 3, x2() - 34, y1() + altura + 7, COR_BORDA_SOMBRA, COR_BORDA_LUZ);
+      a.limpeza(x1() + 4, y1() + 4, x2() - 14, y1() + altura + 7, this->c.cor_de_fundo);
+      a.limpeza(x1() + 4, y1() + 4, x2() - 35, y1() + altura + 7, COR_BARRA_TITULO_ATIVO);
+      cor(COR_TITULO_ATIVO);
+      a.botao_fechar(x2() - 17, y1() + 9, VERDADEIRO);
+      a.botao_fechar(x2() - 27, y1() + 9, FALSO);
+    }
+    else
+    {
+      a.quadrado3d(x1() + 3, y1() + 3, x2() - 13, y1() + altura + 7, COR_BORDA_LUZ, COR_BORDA_SOMBRA);
+      a.limpeza(x1() + 4, y1() + 4, x2() - 14, y1() + altura + 7, COR_BARRA_TITULO_INATIVO);
+      cor(COR_TITULO_INATIVO);
+    }
+
+    a.gprintf(x1() + 7, y1() + 6, this->c.titulo);
+/*
+    if (!this->foco())
+      cor(COR_BORDA_SOMBRA);
+    else
+      cor(COR_BORDA_LUZ);
+
+    line(x2() - 3, y1() + altura - 2, x2() - 3, y2() - 3);
+    line(x2() - 6, y1() + altura - 2, x2() - 6, y2() - 3);
+    line(x2() - 9, y1() + altura - 2, x2() - 9, y2() - 3);
+
+    //-=-//
+
+    if (this->foco())
+      cor(COR_BORDA_SOMBRA);
+    else
+      cor(COR_BORDA_LUZ);
+
+    line(x2() - 4, y1() + altura - 3, x2() - 4, y2() - 4);
+    line(x2() - 7, y1() + altura - 3, x2() - 7, y2() - 4);
+    line(x2() - 10, y1() + altura - 3, x2() - 10, y2() - 4);*/
+    if (!atualizacao)
+    {
+      cor(COR_BORDA_SOMBRA);
+      line(x2() - 3, y1() + altura - 2, x2() - 3, y2() - 3);
+      line(x2() - 6, y1() + altura - 2, x2() - 6, y2() - 3);
+      line(x2() - 9, y1() + altura - 2, x2() - 9, y2() - 3);
+
+      cor(COR_BORDA_LUZ);
+      line(x2() - 4, y1() + altura - 3, x2() - 4, y2() - 4);
+      line(x2() - 7, y1() + altura - 3, x2() - 7, y2() - 4);
+      line(x2() - 10, y1() + altura - 3, x2() - 10, y2() - 4);
+    }
+  }
+
+  if (!this->c.minimizado)
+  {
+    JanelaMae* temp = NULL;
+
+    for (objetos.inicio(); !objetos.fora(); objetos++)
+    {
+      if (!(objetos.atual()->foco()))
+        objetos.atual()->exibe(mouse, atualizacao);
+      else
+        temp = objetos.atual();
+    }
+
+    if (temp)
+      temp->exibe(mouse, atualizacao);
+  }
+
+  ++mouse;
+}
+
+int FormularioCalhau::loop(MouseFun& mouse, MOUSE_EVENTO* evento)
+{
+  BOLEANO nao_atualizar, pode_fechar = FALSO, pode_minimizar = FALSO;
+  BOLEANO segurado = FALSO;
+  COORDENADA dif_x, dif_y, para_esquerda, para_cima;
+  int altura = textheight(this->c.titulo);
+  Acessorios a;
+
+//  if (*evento == MOUSE_UP)
+//  {
+    if (!this->foco())
+    {
+      this->c_foco = VERDADEIRO;
+      exibe(mouse);
+    }
+//  }
+
+  while ((mouse.verifica(this->x1(), this->y1(), this->x2(), this->y2()))
+         || ((*evento != MOUSE_DOWN) && (this->foco()) && segurado)
+         || (*evento == MOUSE_MOVE) || (*evento == FALSO))
+  {
+    nao_atualizar = VERDADEIRO;
+
+    if (*evento == MOUSE_DOWN)
+    {
+      if (!this->foco())
+      {
+        this->c_foco = VERDADEIRO;
+        exibe(mouse);
+      }
+
+      if (mouse.verifica(x2() - 10, y1() + altura - 3, x2() - 2, y2() - 3))
+      {
+        --mouse;
+        cor(COR_BORDA_LUZ);
+        line(x2() - 3, y1() + altura - 2, x2() - 3, y2() - 3);
+        line(x2() - 6, y1() + altura - 2, x2() - 6, y2() - 3);
+        line(x2() - 9, y1() + altura - 2, x2() - 9, y2() - 3);
+
+        cor(COR_BORDA_SOMBRA);
+        line(x2() - 4, y1() + altura - 3, x2() - 4, y2() - 4);
+        line(x2() - 7, y1() + altura - 3, x2() - 7, y2() - 4);
+        line(x2() - 10, y1() + altura - 3, x2() - 10, y2() - 4);
+        ++mouse;
+
+        segurado = VERDADEIRO;
+        dif_x = mouse.x() - this->x1();
+        dif_y = mouse.y() - this->y1();
+        para_esquerda = this->x1();
+        para_cima = this->y1();
+      }
+
+      if (mouse.verifica(x2() - 21, y1() + 5, x2() - 12, y1() + 13))
+        pode_fechar = VERDADEIRO;
+
+      if (mouse.verifica(x2() - 31, y1() + 5, x2() - 22, y1() + 13))
+        pode_minimizar = VERDADEIRO;
+
+      if (mouse.verifica(x1() + 4, y1() + 4, x2() - 35, y1() + altura + 7))
+      {
+        segurado = VERDADEIRO;
+        dif_x = mouse.x() - this->x1();
+        dif_y = mouse.y() - this->y1();
+        para_esquerda = this->x1();
+        para_cima = this->y1();
+      }
+    }
+    else
+      if (*evento == MOUSE_UP)
+      {
+        --mouse;
+        cor(COR_BORDA_SOMBRA);
+        line(x2() - 3, y1() + altura - 2, x2() - 3, y2() - 3);
+        line(x2() - 6, y1() + altura - 2, x2() - 6, y2() - 3);
+        line(x2() - 9, y1() + altura - 2, x2() - 9, y2() - 3);
+
+        cor(COR_BORDA_LUZ);
+        line(x2() - 4, y1() + altura - 3, x2() - 4, y2() - 4);
+        line(x2() - 7, y1() + altura - 3, x2() - 7, y2() - 4);
+        line(x2() - 10, y1() + altura - 3, x2() - 10, y2() - 4);
+        ++mouse;
+
+        if (mouse.verifica(x2() - 21, y1() + 5, x2() - 12, y1() + 13) &&
+            pode_fechar)
+        {
+          fecha();
+          return FALSO;
+        }
+        else
+          pode_fechar = FALSO;
+
+        if (mouse.verifica(x2() - 31, y1() + 5, x2() - 22, y1() + 13))
+          if (pode_minimizar && this->c.pode_minimizar)
+          {
+            if (!this->c.minimizado)
+            {
+              this->c_antey2 = y2();
+              this->c_antex2 = x2();
+              define(x1(), y1(), x1() + 100, y1() + altura + 10);
+              this->c.minimizado = VERDADEIRO;
+              this->c_foco = FALSO;
+              return FALSO;
+            }
+            else
+              {
+                define(x1(), y1(), this->c_antex2, this->c_antey2);
+                this->c.minimizado = FALSO;
+                this->c_foco = FALSO;
+                return FALSO;
+              }
+          }
+          else
+            pode_minimizar = FALSO;
+
+        if (segurado)
+        {
+          if ((this->x1() == mouse.x() - dif_x) &&
+              (this->y1() == mouse.y() - dif_y))
+            segurado = FALSO;
+          else
+            {
+              this->c_x2 = mouse.x() - dif_x + (this->x2() - this->x1());
+              this->c_y2 = mouse.y() - dif_y + (this->y2() - this->y1());
+              this->c_x1 = mouse.x() - dif_x;
+              this->c_y1 = mouse.y() - dif_y;
+              para_esquerda -= this->x1();
+              para_cima -= this->y1();
+
+              this->c_antex2 -= para_esquerda;
+              this->c_antey2 -= para_cima;
+
+              for (objetos.inicio(); !objetos.fora(); objetos++)
+                objetos.atual()->define(objetos.atual()->x1() - para_esquerda,
+                                        objetos.atual()->y1() - para_cima,
+                                        objetos.atual()->x2() - para_esquerda,
+                                        objetos.atual()->y2() - para_cima);
+
+              this->c_foco = FALSO;
+              return FALSO;
+            }
+        }
+      }
+
+    if (!segurado)
+      for (objetos.inicio(); !objetos.fora(); objetos++)
+      {
+        if (mouse.verifica(objetos.atual()->x1(), objetos.atual()->y1(),
+                           objetos.atual()->x2(), objetos.atual()->y2()))
+        {
+          if (!(objetos.atual()->fechado()))
+            nao_atualizar = objetos.atual()->loop(mouse, evento);
+
+          if (objetos.atual()->fechado())
+            objetos.del_atual();
+        }
+      }
+
+    if (nao_atualizar)
+    {
+      COORDENADA x = mouse.x(), y = mouse.y();
+
+      if (segurado)
+      {
+        --mouse;
+        setlinestyle(3, 0, 0);
+        setwritemode(XOR_PUT);
+
+        a.quadrado3d(x - dif_x, y - dif_y,
+                     x - dif_x + (this->x2() - this->x1()),
+                     y - dif_y + (this->y2() - this->y1()),
+                     15, 15);
+        ++mouse;
+      }
+
+      *evento = mouse.evento_pause();
+
+      if (segurado)
+      {
+        --mouse;
+        a.quadrado3d(x - dif_x, y - dif_y,
+                     x - dif_x + (this->x2() - this->x1()),
+                     y - dif_y + (this->y2() - this->y1()),
+                     15, 15);
+
+        setwritemode(COPY_PUT);
+        setlinestyle(0, 0, 0);
+        ++mouse;
+      }
+    }
+    else
+      exibe(mouse);
+  }
+
+  if (this->foco())
+  {
+    this->c_foco = FALSO;
+    exibe(mouse, VERDADEIRO);
+  }
+
+  return VERDADEIRO;
+}
+
+const BOLEANO FormularioCalhau::insere(JanelaMae* componente)
+{
+  return objetos.ins(componente);
+}
+
+/////////////
+// DESKTOP //
+/////////////
+
+DesktopCalhau::DesktopCalhau
+             (const COORDENADA& vx1, const COORDENADA& vy1,
+              const COORDENADA& vx2, const COORDENADA& vy2)
+{
+  this->c_x1 = vx1;
+  this->c_x2 = vx2;
+  this->c_y1 = vy1;
+  this->c_y2 = vy2;
+  this->c_tipo = DESKTOP_CALHAU;
+  this->c.cor_de_fundo = COR_FUNDO;
+  this->c.estilo = INTERLEAVE_FILL;
+}
+
+void DesktopCalhau::exibe(MouseFun& mouse, BOLEANO atualizacao)
+{
+  --mouse;
+
+  if (!atualizacao)
+  {
+    setfillstyle(this->c.estilo, this->c.cor_de_fundo);
+    bar(this->c_x1, this->c_y1, this->c_x2, this->c_y2);
+  }
+
+  JanelaMae* temp = NULL;
+
+  for (objetos.inicio(); !objetos.fora(); objetos++)
+  {
+    if (!(objetos.atual()->foco()))
+      objetos.atual()->exibe(mouse, atualizacao);
+    else
+      temp = objetos.atual();
+  }
+
+  if (temp)
+    temp->exibe(mouse, atualizacao);
+
+  ++mouse;
+}
+
+int DesktopCalhau::loop(MouseFun& mouse, MOUSE_EVENTO* evento)
+{
+  BOLEANO nao_atualizar;
+  BOLEANO clicado = FALSO;
+  COORDENADA antex, antey;
+
+  while (mouse.verifica(this->x1(), this->y1(), this->x2(), this->y2()))
+  {
+    nao_atualizar = VERDADEIRO;
+
+    if (*evento == MOUSE_UP_DIREITO)
+      exibe(mouse);
+    else
+      if (*evento == MOUSE_DOWN)
+      {
+        clicado = VERDADEIRO;
+        antex = mouse.x();
+        antey = mouse.y();
+      }
+      else
+        if (*evento == MOUSE_UP)
+          if (clicado)
+            clicado = FALSO;
+
+    if (!clicado)
+      for (objetos.inicio(); !objetos.fora(); objetos++)
+      {
+        if (mouse.verifica(objetos.atual()->x1(), objetos.atual()->y1(),
+                           objetos.atual()->x2(), objetos.atual()->y2()))
+        {
+          if (!(objetos.atual()->fechado()))
+            nao_atualizar = objetos.atual()->loop(mouse, evento);
+
+          if (objetos.atual()->fechado())
+            objetos.del_atual();
+        }
+      }
+
+    if (nao_atualizar)
+    {
+      COORDENADA x = mouse.x(), y = mouse.y();
+      Acessorios a;
+
+      if (clicado)
+      {
+        --mouse;
+        setwritemode(XOR_PUT);
+        setlinestyle(3, 0, 0);
+        a.quadrado3d(antex, antey, x, y, 15, 15);
+        ++mouse;
+      }
+
+      *evento = mouse.evento_pause();
+
+      if (clicado)
+      {
+        --mouse;
+        a.quadrado3d(antex, antey, x, y, 15, 15);
+        setlinestyle(0, 0, 0);
+        setwritemode(COPY_PUT);
+        ++mouse;
+      }
+    }
+    else
+      exibe(mouse);
+  }
+
+  return VERDADEIRO;
+}
+
+const BOLEANO DesktopCalhau::insere(JanelaMae* componente)
+{
+  return objetos.ins(componente);
+}
+
+////////////////
+// ACESSORIOS //
+////////////////
+
+void Acessorios::msg(char* txt)
+{
+  static char ult_msg[200] = "";
+
+  if (strcmp(txt, ult_msg))
+  {
+    quadrado3d(0, getmaxy() - 15, getmaxx(), getmaxy(), COR_BORDA_LUZ, COR_BORDA_SOMBRA);
+    limpeza(1, getmaxy() - 14, getmaxx() - 1, getmaxy(), COR_FUNDO_STATUS);
+    cor(COR_TEXTO_STATUS);
+    escreva(0, getmaxx(), getmaxy() - 10, txt);
+    strcpy(ult_msg, txt);
+  }
+}
+
+void Acessorios::quadrado3d(int x, int y, int x2, int y2, int cor1, int cor2)
+{
+  cor(cor1);
+  line(x, y, x2, y);
+  line(x, y, x, y2);
+  cor(cor2);
+  line(x, y2, x2, y2);
+  line(x2, y2, x2, y);
+}
+
+void Acessorios::limpeza(int x, int y, int x2, int y2, int core)
+{
+  int conty;
+  cor(core);
+
+  for (conty = y; conty < y2; conty++)
+    line(x, conty, x2, conty);
+}
+
+void Acessorios::escreva(int x, int x2, int y, char* texto)
+{
+   x = (int) ((x2 + x) / 2) - (textwidth(texto) / 2);
+   gprintf(x, y, texto);
+}
+
+void Acessorios::janela(int x, int y, int x2, int y2, char* titulo, char ativo)
+{
+    int altura = textheight(titulo);
+
+    quadrado3d(x, y, x2, y2, COR_BORDA_LUZ, COR_BORDA_SOMBRA);
+    limpeza(x + 1, y + 1, x2 - 1, y2, COR_FUNDO_DIALOGO);
+
+    sombra(x2 + 1, y + 5, x2 + 5, y2 + 5);
+    sombra(x + 5, y2 + 1, x2, y2 + 5);
+
+    if (ativo)
+    {
+      quadrado3d(x + 3, y + 3, x2 - 34, y + altura + 7, COR_BORDA_SOMBRA, COR_BORDA_LUZ);
+      limpeza(x + 4, y + 4, x2 - 35, y + altura + 7, COR_BARRA_TITULO_ATIVO);
+      cor(COR_TITULO_ATIVO);
+      botao_fechar(x2 - 17, y + 9, VERDADEIRO);
+      botao_fechar(x2 - 27, y + 9, FALSO);
+    }
+    else
+    {
+      quadrado3d(x + 3, y + 3, x2 - 13, y + altura + 7, COR_BORDA_LUZ, COR_BORDA_SOMBRA);
+      limpeza(x + 4, y + 4, x2 - 14, y + altura + 7, COR_BARRA_TITULO_INATIVO);
+      cor(COR_TITULO_INATIVO);
+    }
+
+    gprintf(x + 7, y + 6, titulo);
+
+    if (!ativo)
+      cor(COR_BORDA_SOMBRA);
+    else
+      cor(COR_BORDA_LUZ);
+
+    line(x2 - 3, y + altura - 2, x2 - 3, y2 - 3);
+    line(x2 - 6, y + altura - 2, x2 - 6, y2 - 3);
+    line(x2 - 9, y + altura - 2, x2 - 9, y2 - 3);
+
+    /*-=-*/
+
+    if (ativo)
+      cor(COR_BORDA_SOMBRA);
+    else
+      cor(COR_BORDA_LUZ);
+
+    line(x2 - 4, y + altura - 3, x2 - 4, y2 - 4);
+    line(x2 - 7, y + altura - 3, x2 - 7, y2 - 4);
+    line(x2 - 10, y + altura - 3, x2 - 10, y2 - 4);
+}
+
+void Acessorios::sombra(int x, int y, int x2, int y2)
+{
+    int contx, conty, cor_atual;
+
+    for (contx = x; contx <= x2; contx++)
+        for (conty = y; conty <= y2; conty++)
+        {
+            cor_atual = getpixel(contx, conty);
+
+            if (cor_atual <= 6)
+              cor_atual = COR_SOMBRA;
+            else
+              if (cor_atual == 7)
+                 cor_atual = 8;
+              else
+                if (cor_atual == 15)
+                  cor_atual = 8;
+                else
+                  if (cor_atual >= 8)
+                     cor_atual -= 8;
+
+            putpixel(contx, conty, cor_atual);
+        }
+}
+
+void Acessorios::botao_fechar(int x, int y, char fechar)
+{
+  cor(8);
+  setfillstyle(SOLID_FILL, 0);
+  fillellipse(x, y, 4, 4);
+  cor(15);
+  arc(x, y, 45, 180 + 45, 4);
+
+  cor(14);
+  if (fechar)
+  {
+    line(x - 1, y - 1, x + 1, y + 1);
+    line(x - 1, y + 1, x + 1, y - 1);
+  }
+  else
+     line(x - 1, y + 1, x + 1, y + 1);
+}
+
+void Acessorios::apaga(int x1, int y1, int x2, int y2)
+{
+  int contx, conty, cont;
+
+  for (contx = x1; contx <= x2 && !keypressed; contx++)
+    for (conty = y1; conty <= y2; conty++)
+    {
+      if (cont)
+        sombra(contx, conty, contx, conty);
+
+      cont = !cont;
+    }
+}
+
+void Acessorios::bip(int tem, int fre)
+{
+  sound(fre);
+  delay(tem);
+  sound(fre + 100);
+  delay(tem);
+
+  nosound();
+}
+
+char Acessorios::dialogob(int tamx, int tamy, tipo_mensagem msg)
+{
+  char cont;
+  char op = 1;
+  char sai = FALSO;
+  char caracter;
+//  TelaSalva tela_salva;
+
+  int y   = (int) (getmaxy() / 2) - (tamy / 2);
+  int x   = (int) (getmaxx() / 2) - (tamx / 2);
+  int y2  = (int) (getmaxy() / 2) + (tamy / 2);
+  int x2  = (int) (getmaxx() / 2) + (tamx / 2);
+  int px2 = (int) (getmaxx() / 2) - textwidth("NÆo") - 20;
+  int px1 = px2 - 60;
+  int px3 = px2 + 60;
+  int altura = textheight("H") + 4;
+
+//  tela_salva.salva(x, y, x2 + 5, y2 + 5);
+  janela(x, y, x2, y2, msg[0], V);
+
+  cor(COR_TEXTO_DIALOGO);
+  for (cont = 1; strcmp(msg[cont], FIM) != 0; cont++)
+    escreva(0, getmaxx() - 8, cont * altura + y + 15, msg[cont]);
+
+  exibe_botao(px1, y2 - altura - 15, 50, BOTAO_SIM);
+  exibe_botao(px2, y2 - altura - 15, 50, BOTAO_NAO);
+  exibe_botao(px3, y2 - altura - 15, 82, BOTAO_CANCELAR);
+
+  do
+  {
+    switch (op)
+    {
+      case 1:
+        if (botao(px1, y2 - altura - 15, 50, BOTAO_SIM, &caracter))
+          sai = V;
+
+      break;
+
+      case 2:
+        if (botao(px2, y2 - altura - 15, 50, BOTAO_NAO, &caracter))
+          sai = V;
+
+      break;
+
+      case 3:
+        if (botao(px3, y2 - altura - 15, 82, BOTAO_CANCELAR, &caracter))
+          sai = V;
+
+      break;
+    }
+
+    if (caracter == SETA_DIREITA)
+    {
+      op++;
+
+      if (op > 3)
+        op = 3;
+    }
+    else
+      if (caracter == SETA_ESQUERDA)
+      {
+        op--;
+
+        if (op < 1)
+          op = 1;
+      }
+      else
+        if (caracter == TAB)
+        {
+          op++;
+
+          if (op > 3)
+            op = 1;
+         }
+         else
+           if (caracter == ESC)
+           {
+             sai = V;
+             op = 3;
+           }
+  }
+  while(!sai);
+
+//  mouse.desliga();
+//  tela_salva.restaura();
+//  mouse.liga();
+  return op;
+}
+
+void Acessorios::limpa_teclado() const
+{
+  char ch;
+
+  while (keypressed)
+    le_teclado(&ch);
+}
+
+char Acessorios::botao(int x, int y, int tam, char* titulo, char* ch)
+{
+  char apertado, sai;
+
+  exibe_botao_ativo(x, y, tam, titulo);
+
+  do
+  {
+    le_teclado(ch);
+
+    if (*ch == NULL)
+       le_teclado(ch);
+
+#define ENTER (char) 13
+#define BARRA_DE_ESPACO (char) 32
+
+    if (*ch == ESC || *ch == ENTER || *ch == TAB ||
+    *ch == SETA_BAIXO || *ch == SETA_CIMA || *ch == BARRA_DE_ESPACO ||
+    *ch == SETA_DIREITA || *ch == SETA_ESQUERDA)
+       sai = V;
+    else
+        sai = FALSO;
+
+  } while (!sai);
+
+  if (*ch == ENTER || *ch == BARRA_DE_ESPACO)
+    apertado = V;
+  else
+      apertado = FALSO;
+
+  if (apertado)
+  {
+     exibe_botao_pressionado(x, y, tam, titulo);
+     delay(TEMPO);
+     exibe_botao_ativo(x, y, tam, titulo);
+  }
+  else
+     exibe_botao(x, y, tam, titulo);
+
+  return apertado;
+}
+
+void Acessorios::exibe_botao(int x, int y, int tam, char* titulo)
+{
+  quadrado3d(x, y, x + tam, y + textheight(titulo) + 14, COR_BORDA_LUZ, COR_BORDA_ATIVA_SOMBRA);
+  quadrado3d(x + 1, y + 1, x + tam - 1, y + textheight(titulo) + 13, COR_FUNDO_DIALOGO, COR_FUNDO_DIALOGO);
+  quadrado3d(x + 2, y + 2, x + tam - 2, y + textheight(titulo) + 12, COR_BORDA_LUZ, COR_BORDA_SOMBRA);
+  limpeza(x + 3, y + 3, x + tam - 3, y + textheight(titulo) + 12, COR_FUNDO_BOTAO_INATIVO);
+  cor(COR_BOTAO_INATIVO);
+  escreva(x, x + tam, y + 8, titulo);
+}
+
+void Acessorios::exibe_botao_ativo(int x, int y, int tam, char* titulo)
+{
+  quadrado3d(x, y, x + tam, y + textheight(titulo) + 14, COR_BORDA_ATIVA_LUZ, COR_BORDA_ATIVA_SOMBRA);
+  quadrado3d(x + 1, y + 1, x + tam - 1, y + textheight(titulo) + 13, COR_FUNDO_DIALOGO, COR_FUNDO_DIALOGO);
+  quadrado3d(x + 2, y + 2, x + tam - 2, y + textheight(titulo) + 12, COR_BORDA_ATIVA_SOMBRA, COR_BORDA_ATIVA_LUZ);
+  limpeza(x + 3, y + 3, x + tam - 3, y + textheight(titulo) + 12, COR_FUNDO_BOTAO_ATIVO);
+  cor(COR_BOTAO_ATIVO);
+  escreva(x, x + tam, y + 8, titulo);
+}
+
+void Acessorios::exibe_botao_pressionado(int x, int y, int tam, char* titulo)
+{
+  quadrado3d(x, y, x + tam, y + textheight(titulo) + 14, COR_BORDA_ATIVA_SOMBRA, COR_BORDA_LUZ);
+  quadrado3d(x + 1, y + 1, x + tam - 1, y + textheight(titulo) + 13, COR_BORDA_SOMBRA, COR_BORDA_LUZ);
+  quadrado3d(x + 2, y + 2, x + tam - 2, y + textheight(titulo) + 12, COR_BORDA_SOMBRA, COR_BORDA_LUZ);
+  limpeza(x + 3, y + 3, x + tam - 3, y + textheight(titulo) + 12, COR_FUNDO_BOTAO_ATIVO);
+  cor(COR_BOTAO_PRESSIONADO);
+  escreva(x + 2, x + tam + 2, y + 9, titulo);
+}
+
+void Acessorios::janela_vazia(int x, int y, int x2, int y2, char* titulo, char ativo)
+{
+    int altura = textheight(titulo);
+
+    quadrado3d(x, y, x2, y2, COR_BORDA_LUZ, COR_BORDA_SOMBRA);
+    limpeza(x + 1, y + 1, x2 - 1, y + 16, COR_FUNDO_DIALOGO);
+
+    if (ativo)
+    {
+      quadrado3d(x + 3, y + 3, x2 - 34, y + altura + 7, COR_BORDA_SOMBRA, COR_BORDA_LUZ);
+      limpeza(x + 4, y + 4, x2 - 35, y + altura + 7, COR_BARRA_TITULO_ATIVO);
+      cor(COR_TITULO_ATIVO);
+      botao_fechar(x2 - 17, y + 9, V);
+      botao_fechar(x2 - 27, y + 9, FALSO);
+    }
+    else
+    {
+      quadrado3d(x + 3, y + 3, x2 - 13, y + altura + 7, COR_BORDA_LUZ, COR_BORDA_SOMBRA);
+      limpeza(x + 4, y + 4, x2 - 14, y + altura + 7, COR_BARRA_TITULO_INATIVO);
+      cor(COR_TITULO_INATIVO);
+    }
+
+    gprintf(x + 7, y + 6, titulo);
+
+    if (!ativo)
+      cor(COR_BORDA_SOMBRA);
+    else
+      cor(COR_BORDA_LUZ);
+
+    line(x2 - 3, y + altura - 2, x2 - 3, y2 - 3);
+    line(x2 - 6, y + altura - 2, x2 - 6, y2 - 3);
+    line(x2 - 9, y + altura - 2, x2 - 9, y2 - 3);
+
+    /*-=-*/
+
+    if (ativo)
+      cor(COR_BORDA_SOMBRA);
+    else
+      cor(COR_BORDA_LUZ);
+
+    line(x2 - 4, y + altura - 3, x2 - 4, y2 - 4);
+    line(x2 - 7, y + altura - 3, x2 - 7, y2 - 4);
+    line(x2 - 10, y + altura - 3, x2 - 10, y2 - 4);
+}
+
+char Acessorios::tela_limpa()
+{
+  int contx, conty;
+
+  for (contx = 1; contx <= getmaxx(); contx++)
+    for (conty = 1; conty <= getmaxy(); conty++)
+      if (getpixel(contx, conty) != COR_SOMBRA)
+         return FALSO;
+
+  return V;
+}
+
+void Acessorios::dialogo(int tamx, int tamy, tipo_mensagem msg)
+{
+  int y   = (int) (getmaxy() / 2) - (tamy / 2);
+  int x   = (int) (getmaxx() / 2) - (tamx / 2);
+  int y2  = (int) (getmaxy() / 2) + (tamy / 2);
+  int x2  = (int) (getmaxx() / 2) + (tamx / 2);
+  int cont;
+  int altura = textheight("H") + 4;
+  char caracter;
+//  TelaSalva ant;
+
+//  ant.salva(x, y, x2 + 5, y2 + 5);
+  janela(x, y, x2, y2, msg[0], V);
+
+  cor(COR_TEXTO_DIALOGO);
+  for (cont = 1; strcmp(msg[cont], FIM) != 0; cont++)
+    escreva(0, getmaxx() - 8, cont * altura + y + 15, msg[cont]);
+
+  do
+  {}
+  while (!botao((int) (getmaxx() / 2) - textwidth(BOTAO_OK) - 15, y2 - altura - 15, textwidth(BOTAO_OK) + 50, BOTAO_OK, &caracter));
+
+//  ant.restaura();
+}
