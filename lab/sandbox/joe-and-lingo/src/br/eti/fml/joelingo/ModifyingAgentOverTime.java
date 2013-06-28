@@ -31,6 +31,17 @@ public class ModifyingAgentOverTime {
 
     private transient Interpreter interpreter;
 
+    /**
+     *
+     * @param uuid
+     * @param name
+     * @param description
+     * @param version
+     * @param secondDuration 0 is infinite or until be removed
+     * @param onAttachCode
+     * @param onCycleCode
+     * @param onRemoveCode
+     */
     public ModifyingAgentOverTime(String uuid, String name,
                                   String description, Long version,
                                   Long secondDuration,

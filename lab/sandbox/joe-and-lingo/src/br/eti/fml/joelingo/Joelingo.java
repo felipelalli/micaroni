@@ -11,7 +11,7 @@ public class Joelingo {
     private Genotype genotype;
     private Phenotype phenotype;
 
-    private long currentSecondCycle = 0;
+    private long currentSecondCycle = 0; // age in seconds
     private final Map<String, ModifyingAgentOverTime> activeAgents = new HashMap<>(50);
 
     public void arises() {
