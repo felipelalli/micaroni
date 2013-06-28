@@ -5,4 +5,5 @@ package br.eti.fml.joelingo;
  */
 public class Genotype {
     private Chromosome[] chromosomes;
+    private ModifyingAgentOverTime[] initialAgents;
 }

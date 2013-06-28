@@ -1,7 +1,8 @@
 package br.eti.fml.joelingo;
 
-import java.util.ArrayDeque;
-import java.util.Queue;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
@@ -10,27 +11,39 @@ public class Joelingo {
     private Genotype genotype;
     private Phenotype phenotype;
 
-    private Long currentSecondCycle;
-
-    private Queue<ExternalAction> actions = new ArrayDeque<>(10);
+    private long currentSecondCycle = 0;
+    private final Map<String, ModifyingAgentOverTime> activeAgents = new HashMap<>(50);
 
     public void arises() {
         // TODO: copy genotype characteristics to phenotype
+
     }
 
-    public OneSecondLifeResult liveOneSecond(RulesOverTime rulesOverTime,
-                                             ExternalAction ... externalActions) {
-        //actions.poll();
+    public void liveOneSecond() throws IOException, BadCodeException {
+        for (ModifyingAgentOverTime agent : activeAgents.values()) {
+            agent.executeCycle(this);
+        }
 
-        return null;
+        currentSecondCycle++;
     }
 
-    public void makesPuppy(Joelingo joelingo) {
-        actions.offer(new ExternalAction(Action.MAKES_PUPPY));
+    public void killModifyingAgent(String uuid) {
+        activeAgents.get(uuid).onKill(this);
     }
 
-    public void fightWith(Joelingo ... joelingo) {
-        actions.offer(new ExternalAction(Action.FIGHT));
+    public void removeModifyingAgent(String uuid) throws IOException, BadCodeException {
+        activeAgents.get(uuid).onRemove(this);
+    }
+
+    public void attachModifyingAgent(
+            ModifyingAgentOverTime modifyingAgentOverTime) throws IOException, BadCodeException {
+
+        activeAgents.put(modifyingAgentOverTime.getUuid(), modifyingAgentOverTime);
+        modifyingAgentOverTime.onAttach(this);
+    }
+
+    public long getCurrentSecondCycle() {
+        return this.currentSecondCycle;
     }
 }
 
