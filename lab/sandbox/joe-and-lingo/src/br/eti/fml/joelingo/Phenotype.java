@@ -5,4 +5,5 @@ package br.eti.fml.joelingo;
  */
 public class Phenotype {
     private Feature[] features;
+    private SpotToPutAccessory[] accessories;
 }

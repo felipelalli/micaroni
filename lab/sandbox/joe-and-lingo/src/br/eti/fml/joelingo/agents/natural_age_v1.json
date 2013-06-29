@@ -1,0 +1,10 @@
+{
+    "uuid" : "a3042f30-5097-4bb0-bf6f-183062378461",
+    "name" : "age",
+    "description" : "aging",
+    "version" : 1,
+    "accessory" : false,
+    "onAttachCode" : "(+ 1 1)",
+    "onCycleCode" : "(+ 1 1)",
+    "onRemoveCode" : "(+ 1 1)"
+}
