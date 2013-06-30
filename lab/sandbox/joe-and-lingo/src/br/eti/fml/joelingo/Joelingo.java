@@ -85,7 +85,17 @@ public class Joelingo extends JsonCapable {
         this.deathReason = reason;
     }
 
-    public void liveOneSecond() throws IOException, BadCodeException, DeathException {
+    public Joelingo crosses(Environment environment, Joelingo joelingo) throws DeathException {
+        assertIsAlive();
+        joelingo.assertIsAlive();
+
+        // TODO: create a new joelingo, arises it, crosses, make mutation etc.
+
+        return null;
+    }
+
+    public void liveOneSecond(Environment environment) throws IOException, BadCodeException, DeathException {
+        // TODO: use env
         assertIsAlive();
 
         try {

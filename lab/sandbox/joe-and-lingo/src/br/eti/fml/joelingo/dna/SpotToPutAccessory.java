@@ -6,17 +6,17 @@ import br.eti.fml.joelingo.JsonCapable;
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
 public class SpotToPutAccessory extends JsonCapable {
-    private String uuidModifier;
+    private String uuidAgent;
 
     public void take(String uuidModifier) {
-        this.uuidModifier = uuidModifier;
+        this.uuidAgent = uuidModifier;
     }
 
     public boolean isTaken() {
-        return this.uuidModifier != null;
+        return this.uuidAgent != null;
     }
 
     public void free() {
-        this.uuidModifier = null;
+        this.uuidAgent = null;
     }
 }

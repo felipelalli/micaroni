@@ -14,7 +14,7 @@ import java.io.IOException;
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
 public class Environment extends JsonCapable {
-    // private double temperatureInCelsius = 23; TODO: think about it, modifiers of env
+    private FeatureEnv[] featureEnvs = new FeatureEnv[LocusEnvironment.values().length];
 
     private long globalSecondCycle = 0; // seconds since begin
 
