@@ -33,7 +33,7 @@ public class Environment extends JsonCapable {
 
             for (long i = joelingoTime; i < globalSecondCycle; i++) {
                 try {
-                    joelingo.liveOneSecond();
+                    joelingo.liveOneSecond(this);
                 } catch (IOException | BadCodeException e) {
                     joelingo.die(this, DeathReason.SUDDEN_UNEXPLAINED_DEATH);
                     throw new DeathException(DeathReason.SUDDEN_UNEXPLAINED_DEATH);
