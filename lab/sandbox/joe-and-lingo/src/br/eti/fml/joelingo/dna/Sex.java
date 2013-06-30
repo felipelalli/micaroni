@@ -1,4 +1,4 @@
-package br.eti.fml.joelingo;
+package br.eti.fml.joelingo.dna;
 
 /**
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)

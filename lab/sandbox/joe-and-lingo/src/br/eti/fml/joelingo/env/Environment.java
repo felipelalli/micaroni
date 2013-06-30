@@ -1,4 +1,12 @@
-package br.eti.fml.joelingo;
+package br.eti.fml.joelingo.env;
+
+import br.eti.fml.joelingo.DeathException;
+import br.eti.fml.joelingo.DeathReason;
+import br.eti.fml.joelingo.dna.Genotype;
+import br.eti.fml.joelingo.Joelingo;
+import br.eti.fml.joelingo.JsonCapable;
+import br.eti.fml.joelingo.agent.ModifierAgentOverTime;
+import br.eti.fml.joelingo.engine.BadCodeException;
 
 import java.io.IOException;
 
@@ -11,7 +19,7 @@ public class Environment extends JsonCapable {
     private long globalSecondCycle = 0; // seconds since begin
 
     public ModifierAgentOverTime[] getInitialAgents(Genotype genotype) {
-        // TODO: read it from jsons initial agents
+        // TODO: read it from jsons initial agent
 
         return null;
     }

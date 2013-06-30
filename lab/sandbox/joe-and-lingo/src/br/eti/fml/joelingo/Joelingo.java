@@ -1,9 +1,17 @@
 package br.eti.fml.joelingo;
 
+import br.eti.fml.joelingo.agent.AttachmentResult;
+import br.eti.fml.joelingo.agent.ModifierAgentOverTime;
+import br.eti.fml.joelingo.dna.Genotype;
+import br.eti.fml.joelingo.dna.Phenotype;
+import br.eti.fml.joelingo.engine.BadCodeException;
+import br.eti.fml.joelingo.env.Environment;
+
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
@@ -21,23 +29,43 @@ public class Joelingo extends JsonCapable {
 
     private long currentSecondCycle = 0;  // age in seconds (94.608.000 = 3 years)
 
+    private transient Random random;
+
     /**
      * This list is like a history, always increasing and never decrease in size.
      */
     private final List<ModifierAgentOverTime> agents = new LinkedList<>();
 
     /**
-     * This is a cache built on Joelingo default constructor. It keeps the
-     * actives agents to fast access.
+     * This is a cache built on demand. It keeps the
+     * actives agent to fast access.
      */
-    private transient final List<ModifierAgentOverTime> activeAgentsCache = new LinkedList<>();
+    private transient List<ModifierAgentOverTime> activeAgentsCache;
 
-    public Joelingo() {
-        for (ModifierAgentOverTime agent : agents) {
-            if (agent.isActive(this)) {
-                activeAgentsCache.add(agent);
-            }
+    private Random getRandom() {
+        assert genotype != null;
+
+        if (random == null) {
+            random = new Random(genotype.getLuckyNumber());
         }
+
+        return random;
+    }
+
+    private List<ModifierAgentOverTime> getActiveAgentsCache() {
+        if (activeAgentsCache == null) {
+            List<ModifierAgentOverTime> newCache = new LinkedList<>();
+
+            for (ModifierAgentOverTime agent : agents) {
+                if (agent.isActive(this)) {
+                    newCache.add(agent);
+                }
+            }
+
+            activeAgentsCache = newCache;
+        }
+
+        return activeAgentsCache;
     }
 
     public void arises(Environment environment) throws AlreadyBornException {
@@ -61,7 +89,7 @@ public class Joelingo extends JsonCapable {
         assertIsAlive();
 
         try {
-            Iterator<ModifierAgentOverTime> agents = activeAgentsCache.iterator();
+            Iterator<ModifierAgentOverTime> agents = getActiveAgentsCache().iterator();
 
             while (agents.hasNext()) {
                 ModifierAgentOverTime agent = agents.next();
@@ -86,7 +114,7 @@ public class Joelingo extends JsonCapable {
             agents.add(agent);
 
             if (agent.isActive(this)) {
-                activeAgentsCache.add(agent);
+                getActiveAgentsCache().add(agent);
             }
         }
 
@@ -115,10 +143,12 @@ public class Joelingo extends JsonCapable {
     }
 
     public Description describe() {
-        return new Description(initialPhenotype, activeAgentsCache);
+        return new Description(initialPhenotype, getActiveAgentsCache());
     }
 
     public void assertIsAlive() throws DeathException {
+        assert name != null && lastName != null && genotype != null && initialPhenotype != null;
+
         if (!isBorn()) {
             throw new DeathException(DeathReason.NOT_BORN);
         }

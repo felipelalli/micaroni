@@ -1,5 +1,8 @@
 package br.eti.fml.joelingo;
 
+import br.eti.fml.joelingo.agent.ModifierAgentOverTime;
+import br.eti.fml.joelingo.dna.Phenotype;
+
 import java.util.ArrayList;
 import java.util.List;
 

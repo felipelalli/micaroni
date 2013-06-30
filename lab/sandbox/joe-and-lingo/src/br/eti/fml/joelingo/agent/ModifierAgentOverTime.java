@@ -1,5 +1,9 @@
-package br.eti.fml.joelingo;
+package br.eti.fml.joelingo.agent;
 
+import br.eti.fml.joelingo.Joelingo;
+import br.eti.fml.joelingo.JsonCapable;
+import br.eti.fml.joelingo.engine.BadCodeException;
+import br.eti.fml.joelingo.engine.LifeEngine;
 import sisc.data.ImmutableString;
 import sisc.interpreter.SchemeException;
 
@@ -9,18 +13,11 @@ import java.io.IOException;
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
 public final class ModifierAgentOverTime extends JsonCapable {
-    private final AgentType agentType;
+    private AgentType agentType;
 
     private boolean attached = false;
     private Long initialCycle;
     private Long lastCycle;
-
-    public ModifierAgentOverTime(AgentType agentType) {
-        assert agentType != null;
-        this.agentType = agentType;
-
-        // TODO: initialize interpreter before execute
-    }
 
     public AttachmentResult attachOn(Joelingo joelingo) throws BadCodeException, IOException {
         initialCycle = joelingo.getCurrentSecondCycle();
