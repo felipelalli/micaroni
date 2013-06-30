@@ -90,6 +90,7 @@ public class Joelingo extends JsonCapable {
         joelingo.assertIsAlive();
 
         // TODO: create a new joelingo, arises it, crosses, make mutation etc.
+        // TODO: if gene of parent is absent when crossing, make new genes random
 
         return null;
     }
