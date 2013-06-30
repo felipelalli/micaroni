@@ -9,15 +9,15 @@ import java.io.IOException;
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
 public final class ModifierAgentOverTime extends JsonCapable {
-    private final ModifierAgentType modifierAgentType;
+    private final AgentType agentType;
 
     private boolean attached = false;
     private Long initialCycle;
     private Long lastCycle;
 
-    public ModifierAgentOverTime(ModifierAgentType modifierAgentType) {
-        assert modifierAgentType != null;
-        this.modifierAgentType = modifierAgentType;
+    public ModifierAgentOverTime(AgentType agentType) {
+        assert agentType != null;
+        this.agentType = agentType;
 
         // TODO: initialize interpreter before execute
     }
@@ -29,7 +29,7 @@ public final class ModifierAgentOverTime extends JsonCapable {
         try {
             ImmutableString value
                     = (ImmutableString) LifeEngine.getDefaultLifeEngine()
-                        .eval(modifierAgentType.getOnAttachCode());
+                        .eval(agentType.getOnAttachCode());
 
             result = AttachmentResult.valueOf(value.asString());
         } catch (SchemeException | ClassCastException e) {
@@ -50,7 +50,7 @@ public final class ModifierAgentOverTime extends JsonCapable {
 
         try {
             ImmutableString value = (ImmutableString) LifeEngine
-                    .getDefaultLifeEngine().eval(modifierAgentType.getOnRemoveCode());
+                    .getDefaultLifeEngine().eval(agentType.getOnRemoveCode());
 
             result = AttachmentResult.valueOf(value.asString());
         } catch (SchemeException | ClassCastException e) {
@@ -69,7 +69,7 @@ public final class ModifierAgentOverTime extends JsonCapable {
         assert isActive(joelingo);
 
         try {
-            LifeEngine.getDefaultLifeEngine().eval(modifierAgentType.getOnCycleCode());
+            LifeEngine.getDefaultLifeEngine().eval(agentType.getOnCycleCode());
         } catch (SchemeException e) {
             throw new BadCodeException(e);
         }
@@ -80,11 +80,11 @@ public final class ModifierAgentOverTime extends JsonCapable {
                 && joelingo.getCurrentSecondCycle() < lastCycle;
     }
 
-    public ModifierAgentType getModifierAgentType() {
-        return modifierAgentType;
+    public AgentType getAgentType() {
+        return agentType;
     }
 
     public boolean isAccessory() {
-        return this.getModifierAgentType().isAccessory();
+        return this.getAgentType().isAccessory();
     }
 }

@@ -77,7 +77,7 @@ public class Joelingo extends JsonCapable {
         }
     }
 
-    public AttachmentResult tryAttachModifierAgent(
+    public AttachmentResult tryToAttachModifierAgent(
             ModifierAgentOverTime agent) throws IOException, BadCodeException {
 
         AttachmentResult result = agent.attachOn(this);

@@ -3,7 +3,7 @@ package br.eti.fml.joelingo;
 /**
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
-public final class ModifierAgentType extends JsonCapable {
+public final class AgentType extends JsonCapable {
     private final String uuid;
     private final String name;
     private final String description;
@@ -25,13 +25,13 @@ public final class ModifierAgentType extends JsonCapable {
      * @param onCycleCode what happens each second
      * @param onRemoveCode what happens when this modifier is removed from a joelingo
      */
-    public ModifierAgentType(String uuid, String name,
-                             String description,
-                             Long version,
-                             boolean accessory,
-                             String onAttachCode,
-                             String onCycleCode,
-                             String onRemoveCode) {
+    public AgentType(String uuid, String name,
+                     String description,
+                     Long version,
+                     boolean accessory,
+                     String onAttachCode,
+                     String onCycleCode,
+                     String onRemoveCode) {
 
         this.uuid = uuid;
         this.name = name;
