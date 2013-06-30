@@ -1,4 +1,4 @@
-package br.eti.fml.joelingo.locus;
+package br.eti.fml.joelingo.dna.locus;
 
 /**
  * Places to put accessories.

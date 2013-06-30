@@ -1,12 +1,12 @@
-package br.eti.fml.joelingo.locus;
+package br.eti.fml.joelingo.dna.locus;
 
-public enum LocusFeatures {
+public enum LocusGenes {
     EYE_GREENING(0, false);
 
     private final int position;
     private final boolean deprecated;
 
-    private LocusFeatures(int position, boolean deprecated) {
+    private LocusGenes(int position, boolean deprecated) {
         this.position = position;
         this.deprecated = deprecated;
     }

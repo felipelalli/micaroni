@@ -1,4 +1,4 @@
-package br.eti.fml.joelingo.locus;
+package br.eti.fml.joelingo.env;
 
 /**
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
