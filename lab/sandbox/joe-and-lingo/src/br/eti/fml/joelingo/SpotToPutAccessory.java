@@ -3,7 +3,7 @@ package br.eti.fml.joelingo;
 /**
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
-public class SpotToPutAccessory {
+public class SpotToPutAccessory extends JsonCapable {
     private String uuidModifier;
 
     public void take(String uuidModifier) {

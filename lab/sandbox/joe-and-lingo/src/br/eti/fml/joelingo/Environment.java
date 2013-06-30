@@ -5,7 +5,7 @@ import java.io.IOException;
 /**
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
-public class Environment {
+public class Environment extends JsonCapable {
     // private double temperatureInCelsius = 23; TODO: think about it, modifiers of env
 
     private long globalSecondCycle = 0; // seconds since begin
@@ -16,9 +16,9 @@ public class Environment {
         return null;
     }
 
-    public void liveUntilNow(Joelingo joelingo) throws Death {
+    public void liveUntilNow(Joelingo joelingo) throws DeathException {
         if (!joelingo.isBorn()) {
-            throw new Death(DeathReason.NOT_BORN);
+            throw new DeathException(DeathReason.NOT_BORN);
         } else {
             long joelingoTime = joelingo.getBirthdayDateSecondCycle()
                     + joelingo.getCurrentSecondCycle();
@@ -28,7 +28,7 @@ public class Environment {
                     joelingo.liveOneSecond();
                 } catch (IOException | BadCodeException e) {
                     joelingo.die(this, DeathReason.SUDDEN_UNEXPLAINED_DEATH);
-                    throw new Death(DeathReason.SUDDEN_UNEXPLAINED_DEATH);
+                    throw new DeathException(DeathReason.SUDDEN_UNEXPLAINED_DEATH);
                 }
             }
         }

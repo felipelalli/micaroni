@@ -1,28 +1,48 @@
 package br.eti.fml.joelingo;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
-public class Joelingo {
-    private Genotype genotype;
-    private Phenotype initialPhenotype;
+public class Joelingo extends JsonCapable {
+    private String name;                  // Generated name
+    private String lastName;              // Generated name
+
+    private Genotype genotype;            // DNA
+    private Phenotype initialPhenotype;   // The initial phenotype is immutable.
 
     private Long birthdayDateSecondCycle; // when this joelingo has born
-    private Long deathDateSecondCycle; // when this joelingo has died
-    private long currentSecondCycle = 0; // age in seconds (94.608.000 = 3 years)
+    private Long deathDateSecondCycle;    // when this joelingo has died
+    private DeathReason deathReason;      // if any
 
-    private final Map<String, ModifierAgentOverTime> activeAgents = new HashMap<>(50);
-    private final Set<ModifierAgentOverTime> archivedAgents = new HashSet<>(100);
+    private long currentSecondCycle = 0;  // age in seconds (94.608.000 = 3 years)
 
-    void arises(Environment environment) throws AlreadyAliveException {
+    /**
+     * This list is like a history, always increasing and never decrease in size.
+     */
+    private final List<ModifierAgentOverTime> agents = new LinkedList<>();
+
+    /**
+     * This is a cache built on Joelingo default constructor. It keeps the
+     * actives agents to fast access.
+     */
+    private transient final List<ModifierAgentOverTime> activeAgentsCache = new LinkedList<>();
+
+    public Joelingo() {
+        for (ModifierAgentOverTime agent : agents) {
+            if (agent.isActive(this)) {
+                activeAgentsCache.add(agent);
+            }
+        }
+    }
+
+    public void arises(Environment environment) throws AlreadyBornException {
         if (isBorn()) {
-            throw new AlreadyAliveException();
+            throw new AlreadyBornException();
         } else {
             birthdayDateSecondCycle = environment.getGlobalSecondCycle();
 
@@ -30,72 +50,46 @@ public class Joelingo {
         }
     }
 
-    void die(Environment environment, DeathReason reason) {
-        deathDateSecondCycle = environment.getGlobalSecondCycle();
+    public void die(Environment environment, DeathReason reason) throws DeathException {
+        assertIsAlive();
+
+        this.deathDateSecondCycle = environment.getGlobalSecondCycle();
+        this.deathReason = reason;
     }
 
-    void liveOneSecond() throws IOException, BadCodeException {
+    public void liveOneSecond() throws IOException, BadCodeException, DeathException {
+        assertIsAlive();
+
         try {
-            for (ModifierAgentOverTime agent : activeAgents.values()) {
-                agent.executeCycle(this);
+            Iterator<ModifierAgentOverTime> agents = activeAgentsCache.iterator();
+
+            while (agents.hasNext()) {
+                ModifierAgentOverTime agent = agents.next();
+
+                if (agent.isActive(this)) {
+                    agent.executeCycle(this);
+                } else {
+                    agents.remove();
+                }
             }
         } finally {
             currentSecondCycle++;
         }
     }
 
-    /**
-     * Kill can be called by another agent. The modifier is killed immediately
-     * even if it cannot be removed.
-     */
-    boolean killModifierAgent(String uuid) {
-        boolean removed;
-
-        if (!activeAgents.containsKey(uuid)) {
-            removed = false;
-        } else {
-            ModifierAgentOverTime agentOverTime = activeAgents.get(uuid);
-            agentOverTime.onKill(this);
-            archivedAgents.add(agentOverTime);
-            activeAgents.remove(uuid);
-            removed = true;
-        }
-
-        return removed;
-    }
-
-    // Public
-
-    /**
-     * An external action can remove this specific agent.
-     */
-    public AttachmentResult tryRemoveModifierAgent(String uuid) throws IOException, BadCodeException {
-        AttachmentResult result;
-
-        if (!activeAgents.containsKey(uuid)) {
-            result = AttachmentResult.NOT_FOUND;
-        } else {
-            result = activeAgents.get(uuid).onRemove(this);
-        }
-
-        return result;
-    }
-
-    /**
-     * Current known limitation: it is possible to add only one type of an modifier agent at once.
-     */
     public AttachmentResult tryAttachModifierAgent(
             ModifierAgentOverTime agent) throws IOException, BadCodeException {
 
-        AttachmentResult result;
+        AttachmentResult result = agent.attachOn(this);
 
-        if (activeAgents.containsKey(agent.getModifierAgentType().getUuid())) {
-            result = AttachmentResult.ALREADY_ATTACHED;
-        } else {
-            result = agent.onAttach(this);
+        if (result == AttachmentResult.SUCCESS) {
+            agents.add(agent);
+
+            if (agent.isActive(this)) {
+                activeAgentsCache.add(agent);
+            }
         }
 
-        activeAgents.put(agent.getModifierAgentType().getUuid(), agent);
         return result;
     }
 
@@ -110,6 +104,29 @@ public class Joelingo {
 
     public boolean isBorn() {
         return birthdayDateSecondCycle != null;
+    }
+
+    public boolean isDead() {
+        return deathDateSecondCycle != null;
+    }
+
+    public boolean isAlive() {
+        return isBorn() && !isDead();
+    }
+
+    public Description describe() {
+        return new Description(initialPhenotype, activeAgentsCache);
+    }
+
+    public void assertIsAlive() throws DeathException {
+        if (!isBorn()) {
+            throw new DeathException(DeathReason.NOT_BORN);
+        }
+
+        if (isDead()) {
+            assert deathReason != null;
+            throw new DeathException(deathReason);
+        }
     }
 }
 

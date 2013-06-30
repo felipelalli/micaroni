@@ -8,11 +8,10 @@ import java.io.IOException;
 /**
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
-public final class ModifierAgentOverTime {
+public final class ModifierAgentOverTime extends JsonCapable {
     private final ModifierAgentType modifierAgentType;
 
     private boolean attached = false;
-    private Long currentSecondCycle;
     private Long initialCycle;
     private Long lastCycle;
 
@@ -23,7 +22,7 @@ public final class ModifierAgentOverTime {
         // TODO: initialize interpreter before execute
     }
 
-    public AttachmentResult onAttach(Joelingo joelingo) throws BadCodeException, IOException {
+    public AttachmentResult attachOn(Joelingo joelingo) throws BadCodeException, IOException {
         initialCycle = joelingo.getCurrentSecondCycle();
         AttachmentResult result;
 
@@ -46,7 +45,7 @@ public final class ModifierAgentOverTime {
      * or not. If not, this modifier cannot be removed. See {@link #isAccessory()}.
      * Accessory generally can be removed.
      */
-    public AttachmentResult onRemove(Joelingo joelingo) throws IOException, BadCodeException {
+    public AttachmentResult removeFrom(Joelingo joelingo) throws IOException, BadCodeException {
         AttachmentResult result;
 
         try {
@@ -61,17 +60,24 @@ public final class ModifierAgentOverTime {
         return result;
     }
 
-    public void onKill(Joelingo joelingo) {
+    public void kill(Joelingo joelingo) {
         lastCycle = joelingo.getCurrentSecondCycle();
         attached = false;
     }
 
     public void executeCycle(Joelingo joelingo) throws IOException, BadCodeException {
+        assert isActive(joelingo);
+
         try {
             LifeEngine.getDefaultLifeEngine().eval(modifierAgentType.getOnCycleCode());
         } catch (SchemeException e) {
             throw new BadCodeException(e);
         }
+    }
+
+    public boolean isActive(Joelingo joelingo) {
+        return joelingo.getCurrentSecondCycle() >= initialCycle
+                && joelingo.getCurrentSecondCycle() < lastCycle;
     }
 
     public ModifierAgentType getModifierAgentType() {

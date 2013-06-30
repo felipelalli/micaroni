@@ -3,7 +3,7 @@ package br.eti.fml.joelingo;
 /**
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
-public final class ModifierAgentType {
+public final class ModifierAgentType extends JsonCapable {
     private final String uuid;
     private final String name;
     private final String description;
