@@ -13,28 +13,42 @@ public class Joelingo {
     private Genotype genotype;
     private Phenotype initialPhenotype;
 
+    private Long birthdayDateSecondCycle; // when this joelingo has born
+    private Long deathDateSecondCycle; // when this joelingo has died
     private long currentSecondCycle = 0; // age in seconds (94.608.000 = 3 years)
+
     private final Map<String, ModifierAgentOverTime> activeAgents = new HashMap<>(50);
     private final Set<ModifierAgentOverTime> archivedAgents = new HashSet<>(100);
 
-    public void arises() {
-        // TODO: copy genotype characteristics to phenotype
+    void arises(Environment environment) throws AlreadyAliveException {
+        if (isBorn()) {
+            throw new AlreadyAliveException();
+        } else {
+            birthdayDateSecondCycle = environment.getGlobalSecondCycle();
 
+            // TODO: copy genotype characteristics to phenotype
+        }
     }
 
-    public void liveOneSecond() throws IOException, BadCodeException {
-        for (ModifierAgentOverTime agent : activeAgents.values()) {
-            agent.executeCycle(this);
-        }
+    void die(Environment environment, DeathReason reason) {
+        deathDateSecondCycle = environment.getGlobalSecondCycle();
+    }
 
-        currentSecondCycle++;
+    void liveOneSecond() throws IOException, BadCodeException {
+        try {
+            for (ModifierAgentOverTime agent : activeAgents.values()) {
+                agent.executeCycle(this);
+            }
+        } finally {
+            currentSecondCycle++;
+        }
     }
 
     /**
      * Kill can be called by another agent. The modifier is killed immediately
      * even if it cannot be removed.
      */
-    private boolean killModifierAgent(String uuid) {
+    boolean killModifierAgent(String uuid) {
         boolean removed;
 
         if (!activeAgents.containsKey(uuid)) {
@@ -49,6 +63,8 @@ public class Joelingo {
 
         return removed;
     }
+
+    // Public
 
     /**
      * An external action can remove this specific agent.
@@ -85,6 +101,15 @@ public class Joelingo {
 
     public long getCurrentSecondCycle() {
         return this.currentSecondCycle;
+    }
+
+    public long getBirthdayDateSecondCycle() {
+        assert birthdayDateSecondCycle != null;
+        return birthdayDateSecondCycle;
+    }
+
+    public boolean isBorn() {
+        return birthdayDateSecondCycle != null;
     }
 }
 
