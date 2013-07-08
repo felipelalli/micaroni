@@ -5,5 +5,6 @@ import br.eti.fml.joelingo.JsonCapable;
 /**
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
-public class Gene extends JsonCapable {
+public class Gene extends JsonCapable<Gene> {
+
 }

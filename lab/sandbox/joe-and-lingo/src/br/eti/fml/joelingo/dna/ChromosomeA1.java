@@ -6,6 +6,6 @@ import br.eti.fml.joelingo.dna.locus.LocusGenesA1;
 /**
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
-public class ChromosomeA1 extends JsonCapable {
+public class ChromosomeA1 extends JsonCapable<ChromosomeA1> {
     private Gene[] genes = new Gene[LocusGenesA1.values().length];
 }

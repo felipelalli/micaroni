@@ -6,6 +6,6 @@ import br.eti.fml.joelingo.dna.locus.LocusGenesY;
 /**
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
-public class ChromosomeY extends JsonCapable {
+public class ChromosomeY extends JsonCapable<ChromosomeY> {
     private Gene[] genes = new Gene[LocusGenesY.values().length];
 }

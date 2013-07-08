@@ -16,7 +16,9 @@ import java.util.Random;
 /**
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
-public class Joelingo extends JsonCapable {
+public class Joelingo extends JsonCapable<Joelingo> {
+    private String uuid;                  // UUID
+
     private String name;                  // Generated name
     private String lastName;              // Generated name
 

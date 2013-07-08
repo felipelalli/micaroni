@@ -5,8 +5,10 @@ import br.eti.fml.joelingo.JsonCapable;
 /**
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
-public class Genotype extends JsonCapable {
+public class Genotype extends JsonCapable<Genotype> {
     private Long luckyNumber; // used to random seed
+
+    // 16 pairs of chromosomes, 32 chromosomes
 
     private ChromosomePair<ChromosomeX, ChromosomeY> xy;
     private ChromosomePair<ChromosomeX, ChromosomeX> xx;

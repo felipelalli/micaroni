@@ -8,16 +8,33 @@ import sisc.data.ImmutableString;
 import sisc.interpreter.SchemeException;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
-public final class ModifierAgentOverTime extends JsonCapable {
+public final class ModifierAgentOverTime extends JsonCapable<ModifierAgentOverTime> {
     private AgentType agentType;
 
     private boolean attached = false;
     private Long initialCycle;
     private Long lastCycle;
+
+    /**
+     * FeatureLocus position vs Changes
+     */
+    private transient Map<Integer, List<ModificationOverFeature>> featureChanges; // TODO: think in how this will be persisted or mounted
+    //private transient Map<Integer, List<ModificationOverFeature>> accessoriesChanges; // TODO: THINK ON IT
+
+    /**
+     * Immutable initial params.
+     */
+    private Map<String, String> initialParams;
+
+    public Map<Integer, List<ModificationOverFeature>> getFeatureChanges() {
+        return featureChanges;
+    }
 
     public AttachmentResult attachOn(Joelingo joelingo) throws BadCodeException, IOException {
         initialCycle = joelingo.getCurrentSecondCycle();

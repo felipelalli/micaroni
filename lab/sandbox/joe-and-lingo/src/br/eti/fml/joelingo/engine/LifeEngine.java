@@ -58,6 +58,7 @@ public class LifeEngine {
         }));
 
         // TODO: define here default functions on default app context
+        // TODO: example: (get-initial-param "key" "default_value")
 
         while (!exit) {
             Command command = pendentCommands.poll();

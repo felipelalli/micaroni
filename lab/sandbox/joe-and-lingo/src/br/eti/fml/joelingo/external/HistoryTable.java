@@ -1,10 +1,10 @@
 package br.eti.fml.joelingo.external;
 
-import br.eti.fml.joelingo.JsonCapable;
+import br.eti.fml.joelingo.engine.Command;
 
 /**
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
 public interface HistoryTable {
-    void insert(JsonCapable data);
+    void insert(Command command);
 }

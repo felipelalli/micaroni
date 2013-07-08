@@ -6,6 +6,6 @@ import br.eti.fml.joelingo.dna.locus.LocusGenesUnknown;
 /**
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
-public class ChromosomeUnknown extends JsonCapable {
+public class ChromosomeUnknown extends JsonCapable<ChromosomeUnknown> {
     private Gene[] genes = new Gene[LocusGenesUnknown.values().length];
 }

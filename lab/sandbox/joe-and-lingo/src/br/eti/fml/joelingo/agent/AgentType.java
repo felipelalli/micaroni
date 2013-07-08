@@ -5,7 +5,7 @@ import br.eti.fml.joelingo.JsonCapable;
 /**
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
-public final class AgentType extends JsonCapable {
+public final class AgentType extends JsonCapable<AgentType> {
     private final String uuid;
     private final String name;
     private final String description;

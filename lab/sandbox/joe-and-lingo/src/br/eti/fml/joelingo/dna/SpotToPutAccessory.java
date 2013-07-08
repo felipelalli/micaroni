@@ -5,7 +5,7 @@ import br.eti.fml.joelingo.JsonCapable;
 /**
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
-public class SpotToPutAccessory extends JsonCapable {
+public class SpotToPutAccessory extends JsonCapable<SpotToPutAccessory> {
     private String uuidAgent;
 
     public void take(String uuidModifier) {
