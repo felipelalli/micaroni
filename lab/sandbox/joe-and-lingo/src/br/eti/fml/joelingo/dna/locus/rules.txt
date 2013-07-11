@@ -1,0 +1,1 @@
+The features is defined by a value between 0.0 and 1.0

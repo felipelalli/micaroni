@@ -127,7 +127,7 @@ public class Joelingo extends JsonCapable<Joelingo> {
     }
 
     public void removeModifierAgent(ModifierAgentOverTime agent) throws IOException, BadCodeException {
-        agent.deattach(this);
+        agent.detach(this);
         getActiveAgentsCache().remove(agent);
     }
 

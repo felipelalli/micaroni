@@ -37,7 +37,7 @@ public final class ModifierAgentOverTime extends JsonCapable<ModifierAgentOverTi
         initialCycle = joelingo.getCurrentSecondCycle();
     }
 
-    public void deattach(Joelingo joelingo) {
+    public void detach(Joelingo joelingo) {
         lastCycle = joelingo.getCurrentSecondCycle();
     }
 
