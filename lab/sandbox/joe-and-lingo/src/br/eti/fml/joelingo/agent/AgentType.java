@@ -12,9 +12,7 @@ public final class AgentType extends JsonCapable<AgentType> {
     private final Long version;
     private final boolean accessory;
 
-    private final String onAttachCode;
     private final String onCycleCode;
-    private final String onRemoveCode;
 
     /**
      *
@@ -40,9 +38,7 @@ public final class AgentType extends JsonCapable<AgentType> {
         this.description = description;
         this.version = version;
         this.accessory = accessory;
-        this.onAttachCode = onAttachCode;
         this.onCycleCode = onCycleCode;
-        this.onRemoveCode = onRemoveCode;
     }
 
     public String getUuid() {
@@ -61,16 +57,8 @@ public final class AgentType extends JsonCapable<AgentType> {
         return version;
     }
 
-    public String getOnAttachCode() {
-        return onAttachCode;
-    }
-
     public String getOnCycleCode() {
         return onCycleCode;
-    }
-
-    public String getOnRemoveCode() {
-        return onRemoveCode;
     }
 
     public boolean isAccessory() {

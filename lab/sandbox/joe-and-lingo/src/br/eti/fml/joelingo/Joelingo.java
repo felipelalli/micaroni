@@ -1,6 +1,5 @@
 package br.eti.fml.joelingo;
 
-import br.eti.fml.joelingo.agent.AttachmentResult;
 import br.eti.fml.joelingo.agent.ModifierAgentOverTime;
 import br.eti.fml.joelingo.dna.Genotype;
 import br.eti.fml.joelingo.dna.Phenotype;
@@ -118,20 +117,18 @@ public class Joelingo extends JsonCapable<Joelingo> {
         }
     }
 
-    public AttachmentResult tryToAttachModifierAgent(
-            ModifierAgentOverTime agent) throws IOException, BadCodeException {
+    public void attachModifierAgent(ModifierAgentOverTime agent) throws IOException, BadCodeException {
+        agent.attach(this);
+        agents.add(agent);
 
-        AttachmentResult result = agent.attachOn(this);
-
-        if (result == AttachmentResult.SUCCESS) {
-            agents.add(agent);
-
-            if (agent.isActive(this)) {
-                getActiveAgentsCache().add(agent);
-            }
+        if (agent.isActive(this)) {
+            getActiveAgentsCache().add(agent);
         }
+    }
 
-        return result;
+    public void removeModifierAgent(ModifierAgentOverTime agent) throws IOException, BadCodeException {
+        agent.deattach(this);
+        getActiveAgentsCache().remove(agent);
     }
 
     public long getCurrentSecondCycle() {
