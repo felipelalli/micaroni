@@ -8,7 +8,6 @@ import sisc.data.ImmutableString;
 import sisc.interpreter.SchemeException;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,18 +23,22 @@ public final class ModifierAgentOverTime extends JsonCapable<ModifierAgentOverTi
     /**
      * FeatureLocus position vs Changes
      */
-    private transient Map<Integer, List<ModificationOverFeature>> featureChanges; // TODO: think in how this will be persisted or mounted
-    //private transient Map<Integer, List<ModificationOverFeature>> accessoriesChanges; // TODO: THINK ON IT
+    private transient Map<Integer, ModificationOverFeature> featureChanges; // TODO: think in how this will be persisted or mounted
+    //private transient Map<Integer, ModificationOverFeature> accessoriesChanges; // TODO: THINK ON IT
 
     /**
      * Immutable initial params.
      */
     private Map<String, String> initialParams;
 
-    public Map<Integer, List<ModificationOverFeature>> getFeatureChanges() {
+    public Map<Integer, ModificationOverFeature> getFeatureChanges() {
         return featureChanges;
     }
 
+    /**
+     * This manipulates {@link #featureChanges}, using {@link #initialParams}, and
+     *
+     */
     public AttachmentResult attachOn(Joelingo joelingo) throws BadCodeException, IOException {
         initialCycle = joelingo.getCurrentSecondCycle();
         AttachmentResult result;

@@ -32,13 +32,11 @@ public class Description {
             Set<Integer> changes = activeAgent.getFeatureChanges().keySet();
 
             for (Integer position : changes) {
-                List<ModificationOverFeature> modifications = activeAgent.getFeatureChanges().get(position);
+                ModificationOverFeature modification = activeAgent.getFeatureChanges().get(position);
 
-                for (ModificationOverFeature modification : modifications) {
-                    Feature newFeature = new Feature();
-                    newFeature.setValue(modification.apply(modifiedPhenotype.getFeature(position).getValue()));
-                    modifiedPhenotype.setFeature(position, newFeature);
-                }
+                Feature newFeature = new Feature();
+                newFeature.setValue(modification.apply(modifiedPhenotype.getFeature(position).getValue()));
+                modifiedPhenotype.setFeature(position, newFeature);
             }
         }
 
