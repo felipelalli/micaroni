@@ -1,6 +1,6 @@
 package br.eti.fml.joelingo.dna.locus;
 
-public enum LocusGenesA1 {
+public enum LocusGenesA1 implements Locus {
     EYE_GREENING(0, false); // 1.300 average
 
     private final int position;
@@ -9,5 +9,13 @@ public enum LocusGenesA1 {
     private LocusGenesA1(int position, boolean deprecated) {
         this.position = position;
         this.deprecated = deprecated;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public boolean isDeprecated() {
+        return deprecated;
     }
 }

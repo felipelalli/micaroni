@@ -14,6 +14,8 @@ import java.util.Random;
 
 /**
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
+ *
+ * RETHINK ON IT: MAYBE EACH JOELINGO MUST HAVE YOUR OWN ENV
  */
 public class Environment extends JsonCapable<Environment> {
     private FeatureEnv[] featureEnvs = new FeatureEnv[LocusEnvironment.values().length];
@@ -25,7 +27,7 @@ public class Environment extends JsonCapable<Environment> {
     public ModifierAgentOverTime[] getInitialAgents(Genotype genotype) {
         // TODO: read it from jsons initial agent
 
-        // TODO: will use something like "tendency to aging" to generate a specific agent
+        // TODO: will use something like "tendency to aging" gene to generate a specific agent
 
         return null;
     }

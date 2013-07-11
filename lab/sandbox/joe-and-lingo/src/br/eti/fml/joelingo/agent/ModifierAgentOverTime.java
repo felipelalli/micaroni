@@ -7,6 +7,7 @@ import br.eti.fml.joelingo.engine.LifeEngine;
 import sisc.interpreter.SchemeException;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +23,7 @@ public final class ModifierAgentOverTime extends JsonCapable<ModifierAgentOverTi
     /**
      * Immutable initial params.
      */
-    private Map<String, String> initialParams;
+    private Map<String, BigDecimal> initialParams;
 
     /**
      * FeatureLocus position vs Changes
