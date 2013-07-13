@@ -1,9 +1,12 @@
 package br.eti.fml.joelingo.agent;
 
+import br.eti.fml.joelingo.DeathException;
 import br.eti.fml.joelingo.Joelingo;
 import br.eti.fml.joelingo.JsonCapable;
+import br.eti.fml.joelingo.NotBornException;
 import br.eti.fml.joelingo.engine.BadCodeException;
 import br.eti.fml.joelingo.engine.LifeEngine;
+import br.eti.fml.joelingo.env.Environment;
 import sisc.interpreter.SchemeException;
 
 import java.io.IOException;
@@ -25,39 +28,42 @@ public final class ModifierAgentOverTime extends JsonCapable<ModifierAgentOverTi
      */
     private Map<String, BigDecimal> initialParams;
 
-    /**
-     * FeatureLocus position vs Changes
-     */
-    private transient final Map<Integer, ModificationOverFeature> featureChanges = new HashMap<>();
+    // TODO: think in how to cache intermediate states
+    // TODO: this simulates whole life!
+    public Map<Integer, ModificationOverFeature> getFeatureChanges(Joelingo joelingo, Environment environment)
+            throws IOException, BadCodeException, NotBornException {
 
-    public Map<Integer, ModificationOverFeature> getFeatureChanges() {
+        Map<Integer, ModificationOverFeature> featureChanges = new HashMap<>();
+
+        long last = lastCycle != null ? lastCycle : joelingo.getAgeInSecondCycle(environment);
+
+        for (long i = initialCycle; i < last; i++) {
+            try {
+                // TODO: set SISC variables here
+                // TODO: the code should manipulate featureChanges
+
+                LifeEngine.getDefaultLifeEngine().eval(agentType.getOnCycleCode());
+            } catch (SchemeException e) {
+                throw new BadCodeException(e);
+            }
+        }
+
         return featureChanges;
     }
 
-    public void attach(Joelingo joelingo) {
-        initialCycle = joelingo.getCurrentSecondCycle();
+    public void attach(Joelingo joelingo, Environment environment) throws DeathException {
+        joelingo.assertIsAlive();
+        initialCycle = joelingo.getAgeInSecondCycle(environment);
     }
 
-    public void detach(Joelingo joelingo) {
-        lastCycle = joelingo.getCurrentSecondCycle();
+    public void detach(Joelingo joelingo, Environment environment) throws DeathException {
+        joelingo.assertIsAlive();
+        lastCycle = joelingo.getAgeInSecondCycle(environment);
     }
 
-    /**
-     * This manipulates {@link #featureChanges}, using {@link #initialParams}.
-     */
-    public void executeCycle(Joelingo joelingo) throws IOException, BadCodeException {
-        assert isActive(joelingo);
-
-        try {
-            LifeEngine.getDefaultLifeEngine().eval(agentType.getOnCycleCode());
-        } catch (SchemeException e) {
-            throw new BadCodeException(e);
-        }
-    }
-
-    public boolean isActive(Joelingo joelingo) {
-        return (initialCycle != null && joelingo.getCurrentSecondCycle() >= initialCycle)
-                && (lastCycle == null || joelingo.getCurrentSecondCycle() < lastCycle);
+    public boolean isActive(long ageInSeconds) {
+        return (initialCycle != null && ageInSeconds >= initialCycle)
+                && (lastCycle == null || ageInSeconds < lastCycle);
     }
 
     public AgentType getAgentType() {

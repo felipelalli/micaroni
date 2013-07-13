@@ -7,7 +7,6 @@ import br.eti.fml.joelingo.engine.BadCodeException;
 import br.eti.fml.joelingo.env.Environment;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -28,8 +27,6 @@ public class Joelingo extends JsonCapable<Joelingo> {
     private Long deathDateSecondCycle;    // when this joelingo has died
     private DeathReason deathReason;      // if any
 
-    private long currentSecondCycle = 0;  // age in seconds (94.608.000 = 3 years)
-
     private transient Random random;
 
     /**
@@ -37,14 +34,19 @@ public class Joelingo extends JsonCapable<Joelingo> {
      */
     private final List<ModifierAgentOverTime> agents = new LinkedList<>();
 
-    /**
-     * This is a cache built on demand. It keeps the
-     * actives agent to fast access.
-     */
-    private transient List<ModifierAgentOverTime> activeAgentsCache;
+    public List<ModifierAgentOverTime> getAgents() {
+        return agents;
+    }
 
-    private Random getRandom() {
-        assert genotype != null;
+    /**
+     * This is not useful to describe Joelingo. See {@link #describe(br.eti.fml.joelingo.env.Environment)} instead.
+     */
+    public Phenotype getInitialPhenotype() {
+        return initialPhenotype;
+    }
+
+    private Random getRandom() throws NotBornException {
+        assertIsBorn();
 
         if (random == null) {
             random = new Random(genotype.getLuckyNumber());
@@ -53,28 +55,34 @@ public class Joelingo extends JsonCapable<Joelingo> {
         return random;
     }
 
-    private List<ModifierAgentOverTime> getActiveAgentsCache() {
-        if (activeAgentsCache == null) {
-            List<ModifierAgentOverTime> newCache = new LinkedList<>();
+    /**
+     * Age in seconds (94.608.000 = 3 years)
+     */
+    public long getAgeInSecondCycle(Environment environment) throws NotBornException {
+        assertIsBorn();
+        long age;
 
-            for (ModifierAgentOverTime agent : agents) {
-                if (agent.isActive(this)) {
-                    newCache.add(agent);
-                }
-            }
-
-            activeAgentsCache = newCache;
+        if (isDead()) {
+            age = this.deathDateSecondCycle - this.birthdayDateSecondCycle;
+        } else {
+            age = environment.getGlobalSecondCycle() - this.birthdayDateSecondCycle;
         }
 
-        return activeAgentsCache;
+        return age;
     }
 
-    public void arises(Environment environment) throws AlreadyBornException {
+    public void arises(Environment environment, String name,
+                       String lastName, Genotype genotype) throws AlreadyBornException {
+
         if (isBorn()) {
             throw new AlreadyBornException();
         } else {
             birthdayDateSecondCycle = environment.getGlobalSecondCycle();
+            this.name = name;
+            this.lastName = lastName;
+            this.genotype = genotype;
 
+            // environment.getInitialAgents() TODO
             // TODO: copy genotype characteristics to phenotype
         }
     }
@@ -96,75 +104,51 @@ public class Joelingo extends JsonCapable<Joelingo> {
         return null;
     }
 
-    public void liveOneSecond(Environment environment) throws IOException, BadCodeException, DeathException {
-        // TODO: use env
-        assertIsAlive();
+    public void attachModifierAgent(ModifierAgentOverTime agent, Environment env)
+            throws IOException, BadCodeException, DeathException {
 
-        try {
-            Iterator<ModifierAgentOverTime> agents = getActiveAgentsCache().iterator();
-
-            while (agents.hasNext()) {
-                ModifierAgentOverTime agent = agents.next();
-
-                if (agent.isActive(this)) {
-                    agent.executeCycle(this);
-                } else {
-                    agents.remove();
-                }
-            }
-        } finally {
-            currentSecondCycle++;
-        }
-    }
-
-    public void attachModifierAgent(ModifierAgentOverTime agent) throws IOException, BadCodeException {
-        agent.attach(this);
+        agent.attach(this, env);
         agents.add(agent);
-
-        if (agent.isActive(this)) {
-            getActiveAgentsCache().add(agent);
-        }
     }
 
-    public void removeModifierAgent(ModifierAgentOverTime agent) throws IOException, BadCodeException {
-        agent.detach(this);
-        getActiveAgentsCache().remove(agent);
+    public void removeModifierAgent(ModifierAgentOverTime agent, Environment env)
+            throws IOException, BadCodeException, DeathException {
+
+        agent.detach(this, env);
     }
 
-    public long getCurrentSecondCycle() {
-        return this.currentSecondCycle;
-    }
-
-    public long getBirthdayDateSecondCycle() {
-        assert birthdayDateSecondCycle != null;
+    public long getBirthdayDateSecondCycle() throws NotBornException {
+        assertIsBorn();
         return birthdayDateSecondCycle;
     }
 
     public boolean isBorn() {
-        return birthdayDateSecondCycle != null;
+        return birthdayDateSecondCycle != null
+                && name != null && lastName != null && genotype != null && initialPhenotype != null;
     }
 
     public boolean isDead() {
-        return deathDateSecondCycle != null;
+        return deathDateSecondCycle != null && deathReason != null;
     }
 
     public boolean isAlive() {
         return isBorn() && !isDead();
     }
 
-    public Description describe() {
-        return new Description(initialPhenotype, getActiveAgentsCache());
+    public Description describe(Environment env) throws DeathException {
+        return new Description(this, env);
+    }
+
+    public void assertIsBorn() throws NotBornException {
+        if (!isBorn()) {
+            throw new NotBornException();
+        }
     }
 
     public void assertIsAlive() throws DeathException {
-        assert name != null && lastName != null && genotype != null && initialPhenotype != null;
-
-        if (!isBorn()) {
-            throw new DeathException(DeathReason.NOT_BORN);
-        }
+        assertIsBorn();
 
         if (isDead()) {
-            assert deathReason != null;
             throw new DeathException(deathReason);
         }
     }

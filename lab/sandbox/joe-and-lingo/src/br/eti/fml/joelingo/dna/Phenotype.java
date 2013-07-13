@@ -1,34 +1,45 @@
 package br.eti.fml.joelingo.dna;
 
 import br.eti.fml.joelingo.JsonCapable;
-import br.eti.fml.joelingo.NeedAppUpdateException;
+import br.eti.fml.joelingo.agent.ModifierAgentOverTime;
 import br.eti.fml.joelingo.dna.locus.LocusFeatures;
 import br.eti.fml.joelingo.dna.locus.LocusSpots;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
 public class Phenotype extends JsonCapable<Phenotype> {
-    private Feature[] features = new Feature[LocusFeatures.values().length];
-    private SpotToPutAccessory[] accessories = new SpotToPutAccessory[LocusSpots.values().length];
+    private Map<Integer, Feature> features = new HashMap<>();
+    private Map<Integer, ModifierAgentOverTime> accessories = new HashMap<>();
 
-    public Feature getFeature(int position) throws NeedAppUpdateException {
-        if (!hasFeature(position)) {
-            throw new NeedAppUpdateException("Invalid feature position to get: " + position);
-        }
-
-        return features[position];
+    public void setFeature(LocusFeatures locus, Feature feature) {
+        features.put(locus.getPosition(), feature);
     }
 
-    private boolean hasFeature(int position) {
-        return position < features.length && position >= 0;
+    public Feature getFeature(LocusFeatures locus) {
+        return features.get(locus.getPosition());
     }
 
-    public void setFeature(int position, Feature feature) throws NeedAppUpdateException {
-        if (!hasFeature(position)) {
-            throw new NeedAppUpdateException("Invalid feature position to set: " + position);
-        }
+    private boolean hasFeature(LocusFeatures locus) {
+        return features.containsKey(locus.getPosition());
+    }
 
-        features[position] = feature;
+    public void clearAccessory(LocusSpots locus) {
+        accessories.put(locus.getPosition(), null);
+    }
+
+    public void setAccessory(LocusSpots locus, ModifierAgentOverTime modifierAgentOverTime) {
+        accessories.put(locus.getPosition(), modifierAgentOverTime);
+    }
+
+    public ModifierAgentOverTime getAccessory(LocusSpots locus) {
+        return accessories.get(locus.getPosition());
+    }
+
+    private boolean isFree(LocusSpots locus) {
+        return !features.containsKey(locus.getPosition());
     }
 }

@@ -30,12 +30,18 @@ public class Genotype extends JsonCapable<Genotype> {
     private ChromosomePair<ChromosomeUnknown, ChromosomeUnknown> o;
 
     public ChromosomePair<ChromosomeX, ChromosomeY> getXY() {
-        assert getSex() == Sex.MALE;
+        if (getSex() != Sex.MALE) {
+            throw new IllegalStateException("To use XY it should be MALE");
+        }
+
         return xy;
     }
 
     public ChromosomePair<ChromosomeX, ChromosomeX> getXX() {
-        assert getSex() == Sex.FEMALE;
+        if (getSex() != Sex.FEMALE) {
+            throw new IllegalStateException("To use XX it should be FEMALE");
+        }
+
         return xx;
     }
 
