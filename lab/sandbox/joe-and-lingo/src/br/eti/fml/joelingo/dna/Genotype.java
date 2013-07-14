@@ -1,57 +1,199 @@
 package br.eti.fml.joelingo.dna;
 
+import br.eti.fml.joelingo.HomossexualException;
 import br.eti.fml.joelingo.JsonCapable;
+import br.eti.fml.joelingo.dna.locus.ChromosomePairLocus;
+import br.eti.fml.joelingo.dna.locus.Locus;
+import br.eti.fml.joelingo.dna.locus.LocusGenesA;
+import br.eti.fml.joelingo.dna.locus.LocusGenesB;
+import br.eti.fml.joelingo.dna.locus.LocusGenesC;
+import br.eti.fml.joelingo.dna.locus.LocusGenesD;
+import br.eti.fml.joelingo.dna.locus.LocusGenesE;
+import br.eti.fml.joelingo.dna.locus.LocusGenesF;
+import br.eti.fml.joelingo.dna.locus.LocusGenesG;
+import br.eti.fml.joelingo.dna.locus.LocusGenesH;
+import br.eti.fml.joelingo.dna.locus.LocusGenesI;
+import br.eti.fml.joelingo.dna.locus.LocusGenesJ;
+import br.eti.fml.joelingo.dna.locus.LocusGenesK;
+import br.eti.fml.joelingo.dna.locus.LocusGenesL;
+import br.eti.fml.joelingo.dna.locus.LocusGenesM;
+import br.eti.fml.joelingo.dna.locus.LocusGenesN;
+import br.eti.fml.joelingo.dna.locus.LocusGenesO;
+
+import java.security.SecureRandom;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
 public class Genotype extends JsonCapable<Genotype> {
+    private static SecureRandom random = new SecureRandom();
+    public static final int NUMBER_OF_GENES_PER_CHROMOSOME = 2000;
+
     private Long luckyNumber; // used to random seed
 
-    // 16 pairs of chromosomes, 32 chromosomes
+    private SexualChromosomePair sexualChromosomePair = new SexualChromosomePair();
+    private Map<Integer, ChromosomePair> chromosomes = new HashMap<>(15);
 
-    private ChromosomePair<ChromosomeX, ChromosomeY> xy;
-    private ChromosomePair<ChromosomeX, ChromosomeX> xx;
+    public static Genotype createRandomGenotype(Sex sex) {
+        Genotype genotype = new Genotype();
+        genotype.luckyNumber = random.nextLong();
 
-    private ChromosomePair<ChromosomeA1, ChromosomeA2> a;
-    private ChromosomePair<ChromosomeUnknown, ChromosomeUnknown> b;
-    private ChromosomePair<ChromosomeUnknown, ChromosomeUnknown> c;
-    private ChromosomePair<ChromosomeUnknown, ChromosomeUnknown> d;
-    private ChromosomePair<ChromosomeUnknown, ChromosomeUnknown> e;
-    private ChromosomePair<ChromosomeUnknown, ChromosomeUnknown> f;
-    private ChromosomePair<ChromosomeUnknown, ChromosomeUnknown> g;
-    private ChromosomePair<ChromosomeUnknown, ChromosomeUnknown> h;
-    private ChromosomePair<ChromosomeUnknown, ChromosomeUnknown> i;
-    private ChromosomePair<ChromosomeUnknown, ChromosomeUnknown> j;
-    private ChromosomePair<ChromosomeUnknown, ChromosomeUnknown> k;
-    private ChromosomePair<ChromosomeUnknown, ChromosomeUnknown> l;
-    private ChromosomePair<ChromosomeUnknown, ChromosomeUnknown> m;
-    private ChromosomePair<ChromosomeUnknown, ChromosomeUnknown> n;
-    private ChromosomePair<ChromosomeUnknown, ChromosomeUnknown> o;
+        if (sex == Sex.MALE) {
+            genotype.sexualChromosomePair.left = new Chromosome<>();
+            genotype.sexualChromosomePair.rightY = new Chromosome<>();
 
-    public ChromosomePair<ChromosomeX, ChromosomeY> getXY() {
-        if (getSex() != Sex.MALE) {
-            throw new IllegalStateException("To use XY it should be MALE");
+            randomize(genotype.sexualChromosomePair.left);
+            randomize(genotype.sexualChromosomePair.rightY);
+        } else if (sex == Sex.FEMALE) {
+            genotype.sexualChromosomePair.left = new Chromosome<>();
+            genotype.sexualChromosomePair.rightX = new Chromosome<>();
+
+            randomize(genotype.sexualChromosomePair.left);
+            randomize(genotype.sexualChromosomePair.rightX);
         }
 
-        return xy;
+        genotype.chromosomes.put(ChromosomePairLocus.A.getPosition(),
+                Genotype.<LocusGenesA>createRandomPair(LocusGenesA.class));
+
+        genotype.chromosomes.put(ChromosomePairLocus.B.getPosition(),
+                Genotype.<LocusGenesB>createRandomPair(LocusGenesB.class));
+
+        genotype.chromosomes.put(ChromosomePairLocus.C.getPosition(),
+                Genotype.<LocusGenesC>createRandomPair(LocusGenesC.class));
+
+        genotype.chromosomes.put(ChromosomePairLocus.D.getPosition(),
+                Genotype.<LocusGenesD>createRandomPair(LocusGenesD.class));
+
+        genotype.chromosomes.put(ChromosomePairLocus.E.getPosition(),
+                Genotype.<LocusGenesE>createRandomPair(LocusGenesE.class));
+
+        genotype.chromosomes.put(ChromosomePairLocus.F.getPosition(),
+                Genotype.<LocusGenesF>createRandomPair(LocusGenesF.class));
+
+        genotype.chromosomes.put(ChromosomePairLocus.G.getPosition(),
+                Genotype.<LocusGenesG>createRandomPair(LocusGenesG.class));
+
+        genotype.chromosomes.put(ChromosomePairLocus.H.getPosition(),
+                Genotype.<LocusGenesH>createRandomPair(LocusGenesH.class));
+
+        genotype.chromosomes.put(ChromosomePairLocus.I.getPosition(),
+                Genotype.<LocusGenesI>createRandomPair(LocusGenesI.class));
+
+        genotype.chromosomes.put(ChromosomePairLocus.J.getPosition(),
+                Genotype.<LocusGenesJ>createRandomPair(LocusGenesJ.class));
+
+        genotype.chromosomes.put(ChromosomePairLocus.K.getPosition(),
+                Genotype.<LocusGenesK>createRandomPair(LocusGenesK.class));
+
+        genotype.chromosomes.put(ChromosomePairLocus.L.getPosition(),
+                Genotype.<LocusGenesL>createRandomPair(LocusGenesL.class));
+
+        genotype.chromosomes.put(ChromosomePairLocus.M.getPosition(),
+                Genotype.<LocusGenesM>createRandomPair(LocusGenesM.class));
+
+        genotype.chromosomes.put(ChromosomePairLocus.N.getPosition(),
+                Genotype.<LocusGenesN>createRandomPair(LocusGenesN.class));
+
+        genotype.chromosomes.put(ChromosomePairLocus.O.getPosition(),
+                Genotype.<LocusGenesO>createRandomPair(LocusGenesO.class));
+
+        return genotype;
     }
 
-    public ChromosomePair<ChromosomeX, ChromosomeX> getXX() {
-        if (getSex() != Sex.FEMALE) {
-            throw new IllegalStateException("To use XX it should be FEMALE");
+    private static <T extends Locus> ChromosomePair<T> createRandomPair(Class<T> clazz) {
+        ChromosomePair<T> chromosomePair = new ChromosomePair<>();
+        chromosomePair.left = new Chromosome<>();
+        chromosomePair.right = new Chromosome<>();
+        randomize(chromosomePair.left);
+        randomize(chromosomePair.right);
+
+        return chromosomePair;
+    }
+
+    private static <T extends Locus> void randomize(Chromosome<T> chromosome) {
+        for (int i = 0; i < NUMBER_OF_GENES_PER_CHROMOSOME; i++) {
+            chromosome.setGene(i, (byte) (random.nextBoolean() ? 1 : 0));
+        }
+    }
+
+    public static Genotype createGenotype(
+            Genotype g1, Genotype g2, double mutationProbabilityForEachGene) throws HomossexualException {
+
+        Genotype male = g1.getSex() == Sex.MALE ? g1 : g2;
+        Genotype female = g1.getSex() == Sex.FEMALE ? g1 : g2;
+
+        Genotype genotype = new Genotype();
+        genotype.luckyNumber = random.nextLong();
+
+        if (male.getSex() != Sex.MALE || female.getSex() != Sex.FEMALE) {
+            throw new HomossexualException("You need a male and female genotype to make a baby");
         }
 
-        return xx;
+        if (random.nextDouble() < 0.5) {
+            genotype.sexualChromosomePair.left = female.sexualChromosomePair.left.clone();
+        } else {
+            genotype.sexualChromosomePair.left = female.sexualChromosomePair.rightX.clone();
+        }
+
+        if (random.nextDouble() < 0.5) {
+            genotype.sexualChromosomePair.rightY = male.sexualChromosomePair.rightY.clone();
+        } else {
+            genotype.sexualChromosomePair.rightX = male.sexualChromosomePair.left.clone();
+        }
+
+        for (ChromosomePairLocus locus : ChromosomePairLocus.values()) {
+            ChromosomePair chromosomePair = new ChromosomePair();
+
+            if (random.nextDouble() < 0.5) {
+                chromosomePair.left = (Chromosome) female.chromosomes.get(locus.getPosition()).left.clone();
+            } else {
+                chromosomePair.left = (Chromosome) female.chromosomes.get(locus.getPosition()).right.clone();
+            }
+
+            if (random.nextDouble() < 0.5) {
+                chromosomePair.right = (Chromosome) male.chromosomes.get(locus.getPosition()).left.clone();
+            } else {
+                chromosomePair.right = (Chromosome) male.chromosomes.get(locus.getPosition()).right.clone();
+            }
+
+            applyMutation(chromosomePair, mutationProbabilityForEachGene);
+            genotype.chromosomes.put(locus.getPosition(), chromosomePair);
+        }
+
+        return genotype;
+    }
+
+    private static void applyMutation(ChromosomePair chromosomePair, double mutationProbabilityForEachGene) {
+        applyMutation(chromosomePair.left, mutationProbabilityForEachGene);
+        applyMutation(chromosomePair.right, mutationProbabilityForEachGene);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void applyMutation(Chromosome chromosome, double mutationProbabilityForEachGene) {
+        byte[] genes = chromosome.getGenes();
+
+        for (int position = 0; position < genes.length; position++) {
+            byte gene = genes[position];
+
+            if (random.nextDouble() < mutationProbabilityForEachGene) {
+                gene = (byte) (random.nextBoolean() ? 1 : 0);
+            }
+
+            chromosome.setGene(position, gene);
+        }
     }
 
     public Sex getSex() {
         Sex sex;
 
-        if (xy != null) {
+        if (sexualChromosomePair.rightY != null) {
             sex = Sex.MALE;
-        } else {
+        } else if (sexualChromosomePair.rightX != null) {
             sex = Sex.FEMALE;
+        } else {
+            sex = Sex.UNDETERMINED;
         }
 
         return sex;

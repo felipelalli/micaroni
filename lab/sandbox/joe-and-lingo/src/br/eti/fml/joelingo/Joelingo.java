@@ -1,8 +1,10 @@
 package br.eti.fml.joelingo;
 
 import br.eti.fml.joelingo.agent.ModifierAgentOverTime;
+import br.eti.fml.joelingo.dna.Feature;
 import br.eti.fml.joelingo.dna.Genotype;
 import br.eti.fml.joelingo.dna.Phenotype;
+import br.eti.fml.joelingo.dna.locus.LocusFeatures;
 import br.eti.fml.joelingo.engine.BadCodeException;
 import br.eti.fml.joelingo.env.Environment;
 
@@ -82,7 +84,16 @@ public class Joelingo extends JsonCapable<Joelingo> {
             this.lastName = lastName;
             this.genotype = genotype;
 
-            // environment.getInitialAgents() TODO
+            agents.addAll(environment.getInitialAgents(genotype));
+
+            Phenotype phenotype = new Phenotype();
+
+            for (LocusFeatures feature : LocusFeatures.values()) {
+                phenotype.setFeature(feature, new Feature(feature.getDefaultValue()));
+            }
+
+            this.initialPhenotype = phenotype;
+
             // TODO: copy genotype characteristics to phenotype
         }
     }

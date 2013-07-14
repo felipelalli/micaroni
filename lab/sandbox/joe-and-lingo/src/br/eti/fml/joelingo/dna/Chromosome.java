@@ -3,20 +3,25 @@ package br.eti.fml.joelingo.dna;
 import br.eti.fml.joelingo.JsonCapable;
 import br.eti.fml.joelingo.dna.locus.Locus;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
-public class Chromosome<T extends Chromosome, L extends Locus> extends JsonCapable<T> {
-    private Map<Integer, Gene> genes = new HashMap<>();
+public class Chromosome<L extends Locus> extends JsonCapable<Chromosome<L>> {
+    private byte[] genes = new byte[Genotype.NUMBER_OF_GENES_PER_CHROMOSOME];
 
-    public void setGene(L locus, Gene gene) {
-        genes.put(locus.getPosition(), gene);
+    byte[] getGenes() {
+        return genes;
     }
 
-    public Gene getGene(L locus) {
-        return genes.get(locus.getPosition());
+    void setGene(int position, byte gene) {
+        genes[position] = gene;
+    }
+
+    public void setGene(L locus, byte gene) {
+        genes[locus.getPosition()] = gene;
+    }
+
+    public byte getGene(L locus) {
+        return genes[locus.getPosition()];
     }
 }

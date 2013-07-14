@@ -10,6 +10,12 @@ import java.math.BigDecimal;
 public class Feature extends JsonCapable<Feature> {
     private BigDecimal value;
 
+    public Feature() {}
+
+    public Feature(BigDecimal value) {
+        this.value = value;
+    }
+
     public BigDecimal getValue() {
         return value.min(new BigDecimal(1.0)).max(new BigDecimal(0.0));
     }

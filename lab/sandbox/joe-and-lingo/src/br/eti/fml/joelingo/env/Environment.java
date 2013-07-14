@@ -5,6 +5,7 @@ import br.eti.fml.joelingo.agent.ModifierAgentOverTime;
 import br.eti.fml.joelingo.data.genesis.Genesis;
 import br.eti.fml.joelingo.dna.Genotype;
 
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -21,7 +22,7 @@ public class Environment extends JsonCapable<Environment> {
 
     private long globalSecondCycle = 0; // seconds since begin
 
-    public ModifierAgentOverTime[] getInitialAgents(Genotype genotype) {
+    public List<ModifierAgentOverTime> getInitialAgents(Genotype genotype) {
         // TODO: read it from jsons initial agent
 
         // TODO: will use something like "tendency to aging" gene to generate a specific agent

@@ -5,5 +5,6 @@ package br.eti.fml.joelingo.dna;
  */
 public enum Sex {
     MALE,
-    FEMALE
+    FEMALE,
+    UNDETERMINED
 }
