@@ -12,5 +12,15 @@ public class SexualChromosomePair {
     public Chromosome<LocusGenesX> rightX;
     public Chromosome<LocusGenesY> rightY;
 
-    // TODO: study to understand
+    public GenePair getPairXX(LocusGenesX locus) {
+        return new GenePair(left.getGene(locus), rightX.getGene(locus));
+    }
+
+    public GenePair getPairXY(LocusGenesX locus) {
+        return new GenePair(left.getGene(locus), (byte) 0);
+    }
+
+    public GenePair getPairXY(LocusGenesY locus) {
+        return new GenePair((byte) 0, rightY.getGene(locus));
+    }
 }

@@ -19,6 +19,8 @@ import br.eti.fml.joelingo.dna.locus.LocusGenesL;
 import br.eti.fml.joelingo.dna.locus.LocusGenesM;
 import br.eti.fml.joelingo.dna.locus.LocusGenesN;
 import br.eti.fml.joelingo.dna.locus.LocusGenesO;
+import br.eti.fml.joelingo.dna.locus.LocusGenesX;
+import br.eti.fml.joelingo.dna.locus.LocusGenesY;
 
 import java.security.SecureRandom;
 import java.util.HashMap;
@@ -42,13 +44,17 @@ public class Genotype extends JsonCapable<Genotype> {
 
         if (sex == Sex.MALE) {
             genotype.sexualChromosomePair.left = new Chromosome<>();
+            genotype.sexualChromosomePair.left.lastActiveGenePosition = LocusGenesX.values().length - 1;
             genotype.sexualChromosomePair.rightY = new Chromosome<>();
+            genotype.sexualChromosomePair.rightY.lastActiveGenePosition = LocusGenesY.values().length - 1;
 
             randomize(genotype.sexualChromosomePair.left);
             randomize(genotype.sexualChromosomePair.rightY);
         } else if (sex == Sex.FEMALE) {
             genotype.sexualChromosomePair.left = new Chromosome<>();
+            genotype.sexualChromosomePair.left.lastActiveGenePosition = LocusGenesX.values().length - 1;
             genotype.sexualChromosomePair.rightX = new Chromosome<>();
+            genotype.sexualChromosomePair.rightX.lastActiveGenePosition = LocusGenesX.values().length - 1;
 
             randomize(genotype.sexualChromosomePair.left);
             randomize(genotype.sexualChromosomePair.rightX);
@@ -106,6 +112,10 @@ public class Genotype extends JsonCapable<Genotype> {
         ChromosomePair<T> chromosomePair = new ChromosomePair<>();
         chromosomePair.left = new Chromosome<>();
         chromosomePair.right = new Chromosome<>();
+
+        chromosomePair.left.lastActiveGenePosition = clazz.getEnumConstants().length - 1;
+        chromosomePair.right.lastActiveGenePosition = clazz.getEnumConstants().length - 1;
+
         randomize(chromosomePair.left);
         randomize(chromosomePair.right);
 
