@@ -90,6 +90,7 @@ public enum LocusFeatures implements Locus {
     BOREDOM_FEELING         (74, false, new BigDecimal(0.0)), // 0.0 no hunger, 1.0 starving
     TAIL_SIZE               (75, false, new BigDecimal(0.3)), // 0.0 no tail, 0.3 normal
     IMMUNE_EFFICIENCY       (79, false, new BigDecimal(0.8)), // 0.0 is aids, 0.5 is normal, 0.8 very healthy
+    ACCUMULATED_KNOWLEDGE   (82, false, new BigDecimal(0.0)), // 0.0 when born, 0.3 smart, 0.6 very smart, 1.0 genius
 
     ;
 

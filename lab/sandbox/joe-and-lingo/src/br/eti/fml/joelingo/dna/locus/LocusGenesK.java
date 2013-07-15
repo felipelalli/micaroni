@@ -1,7 +1,17 @@
 package br.eti.fml.joelingo.dna.locus;
 
 public enum LocusGenesK implements Locus {
-    EYE_GREENING(0, false); // 1.300 average
+    BRISTLE_GREEN_B1  (0, false), // green 01001101 e.g. is 30% green
+    BRISTLE_GREEN_B2  (1, false),
+    BRISTLE_GREEN_B3  (2, false),
+    BRISTLE_GREEN_B4  (3, false),
+    BRISTLE_GREEN_B5  (4, false),
+    BRISTLE_GREEN_B6  (5, false),
+    BRISTLE_GREEN_B7  (6, false),
+    BRISTLE_GREEN_B8  (7, false),
+    HANDS_SIZE_P2     (8, false),
+
+    ;
 
     private final int position;
     private final boolean deprecated;

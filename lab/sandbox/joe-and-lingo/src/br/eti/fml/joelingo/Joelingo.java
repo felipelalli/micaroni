@@ -111,6 +111,7 @@ public class Joelingo extends JsonCapable<Joelingo> {
 
         // TODO: create a new joelingo, arises it, crosses, make mutation etc.
         // TODO: if gene of parent is absent when crossing, make new genes random
+        // TODO: takes into account genitalia size, efficiency etc.
 
         return null;
     }
