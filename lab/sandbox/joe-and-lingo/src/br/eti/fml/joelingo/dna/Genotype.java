@@ -23,6 +23,7 @@ import br.eti.fml.joelingo.dna.locus.LocusGenesX;
 import br.eti.fml.joelingo.dna.locus.LocusGenesY;
 
 import java.security.SecureRandom;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,7 +32,6 @@ import java.util.Map;
  */
 public class Genotype extends JsonCapable<Genotype> {
     private static SecureRandom random = new SecureRandom();
-    public static final int NUMBER_OF_GENES_PER_CHROMOSOME = 2000;
 
     private Long luckyNumber; // used to random seed
 
@@ -48,16 +48,16 @@ public class Genotype extends JsonCapable<Genotype> {
             genotype.sexualChromosomePair.rightY = new Chromosome<LocusGenesY>();
             genotype.sexualChromosomePair.rightY.lastActiveGenePosition = LocusGenesY.values().length - 1;
 
-            randomize(genotype.sexualChromosomePair.left);
-            randomize(genotype.sexualChromosomePair.rightY);
+            randomize(LocusGenesX.class, genotype.sexualChromosomePair.left);
+            randomize(LocusGenesY.class, genotype.sexualChromosomePair.rightY);
         } else if (sex == Sex.FEMALE) {
             genotype.sexualChromosomePair.left = new Chromosome<LocusGenesX>();
             genotype.sexualChromosomePair.left.lastActiveGenePosition = LocusGenesX.values().length - 1;
             genotype.sexualChromosomePair.rightX = new Chromosome<LocusGenesX>();
             genotype.sexualChromosomePair.rightX.lastActiveGenePosition = LocusGenesX.values().length - 1;
 
-            randomize(genotype.sexualChromosomePair.left);
-            randomize(genotype.sexualChromosomePair.rightX);
+            randomize(LocusGenesX.class, genotype.sexualChromosomePair.left);
+            randomize(LocusGenesX.class, genotype.sexualChromosomePair.rightX);
         }
 
         genotype.chromosomes.put(ChromosomePairLocus.A.getPosition(),
@@ -116,15 +116,15 @@ public class Genotype extends JsonCapable<Genotype> {
         chromosomePair.left.lastActiveGenePosition = clazz.getEnumConstants().length - 1;
         chromosomePair.right.lastActiveGenePosition = clazz.getEnumConstants().length - 1;
 
-        randomize(chromosomePair.left);
-        randomize(chromosomePair.right);
+        randomize(clazz, chromosomePair.left);
+        randomize(clazz, chromosomePair.right);
 
         return chromosomePair;
     }
 
-    private static <T extends Locus> void randomize(Chromosome<T> chromosome) {
-        for (int i = 0; i < NUMBER_OF_GENES_PER_CHROMOSOME; i++) {
-            chromosome.setGene(i, (byte) (random.nextBoolean() ? 1 : 0));
+    private static <T extends Locus> void randomize(Class<T> locus, Chromosome<T> chromosome) {
+        for (int i = 0; i < locus.getEnumConstants().length; i++) {
+            chromosome.setGene(i, random.nextBoolean());
         }
     }
 
@@ -182,13 +182,13 @@ public class Genotype extends JsonCapable<Genotype> {
 
     @SuppressWarnings("unchecked")
     private static void applyMutation(Chromosome chromosome, double mutationProbabilityForEachGene) {
-        byte[] genes = chromosome.getGenes();
+        BitSet genes = chromosome.getGenes();
 
-        for (int position = 0; position < genes.length; position++) {
-            byte gene = genes[position];
+        for (int position = 0; position < genes.length(); position++) {
+            boolean gene = genes.get(position);
 
             if (random.nextDouble() < mutationProbabilityForEachGene) {
-                gene = (byte) (random.nextBoolean() ? 1 : 0);
+                gene = !gene;
             }
 
             chromosome.setGene(position, gene);

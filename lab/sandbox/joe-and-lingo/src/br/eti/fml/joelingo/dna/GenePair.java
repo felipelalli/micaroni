@@ -4,15 +4,27 @@ package br.eti.fml.joelingo.dna;
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
 public class GenePair {
-    private byte left;
-    private byte right;
+    private boolean left;
+    private boolean right;
 
-    public GenePair(byte left, byte right) {
-        this.left = (byte) (left == 0 ? 0 : 1);
-        this.right = (byte) (right == 0 ? 0 : 1);
+    public GenePair(boolean left, boolean right) {
+        this.left = left;
+        this.right = right;
     }
 
     public boolean isDominant() {
-        return left != 0 || right != 0;
+        return left || right;
+    }
+
+    public boolean isRecessive() {
+        return !left && !right;
+    }
+
+    public boolean getLeft() {
+        return left;
+    }
+
+    public boolean getRight() {
+        return right;
     }
 }

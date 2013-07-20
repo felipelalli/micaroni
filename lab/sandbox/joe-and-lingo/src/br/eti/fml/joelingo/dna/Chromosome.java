@@ -3,11 +3,13 @@ package br.eti.fml.joelingo.dna;
 import br.eti.fml.joelingo.JsonCapable;
 import br.eti.fml.joelingo.dna.locus.Locus;
 
+import java.util.BitSet;
+
 /**
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
 public class Chromosome<L extends Locus> extends JsonCapable<Chromosome<L>> {
-    private byte[] genes = new byte[Genotype.NUMBER_OF_GENES_PER_CHROMOSOME];
+    private BitSet genes = new BitSet();
 
     /**
      * This is the last active gene position, defined on born. Genes
@@ -19,19 +21,19 @@ public class Chromosome<L extends Locus> extends JsonCapable<Chromosome<L>> {
      */
     public int lastActiveGenePosition;
 
-    byte[] getGenes() {
+    BitSet getGenes() {
         return genes;
     }
 
-    void setGene(int position, byte gene) {
-        genes[position] = gene;
+    void setGene(int position, boolean gene) {
+        genes.set(position, gene);
     }
 
     public void setGene(L locus, byte gene) {
-        genes[locus.getPosition()] = gene;
+        genes.set(locus.getPosition(), gene);
     }
 
-    public byte getGene(L locus) {
-        return genes[locus.getPosition()];
+    public boolean getGene(L locus) {
+        return genes.get(locus.getPosition());
     }
 }

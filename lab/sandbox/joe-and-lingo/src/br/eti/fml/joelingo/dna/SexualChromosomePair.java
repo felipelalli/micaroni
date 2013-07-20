@@ -17,10 +17,10 @@ public class SexualChromosomePair {
     }
 
     public GenePair getPairXY(LocusGenesX locus) {
-        return new GenePair(left.getGene(locus), (byte) 0);
+        return new GenePair(left.getGene(locus), false);
     }
 
     public GenePair getPairXY(LocusGenesY locus) {
-        return new GenePair((byte) 0, rightY.getGene(locus));
+        return new GenePair(false, rightY.getGene(locus));
     }
 }
