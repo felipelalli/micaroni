@@ -10,6 +10,7 @@ public enum LocusGenesK implements Locus {
     BRISTLE_GREEN_B7  (6, false),
     BRISTLE_GREEN_B8  (7, false),
     HANDS_SIZE_P2     (8, false),
+    FINS_P1           (9, false), // k9k9,l9l9 -> has fins
 
     ;
 

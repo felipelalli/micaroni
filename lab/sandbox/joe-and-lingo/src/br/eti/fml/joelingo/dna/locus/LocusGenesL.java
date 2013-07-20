@@ -10,6 +10,7 @@ public enum LocusGenesL implements Locus {
     BRISTLE_RED_B7  (6, false),
     BRISTLE_RED_B8  (7, false),
     HANDS_SIZE_P3   (8, false),
+    FINS_P2         (9, false),
 
     ;
 

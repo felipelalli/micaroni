@@ -10,6 +10,7 @@ public enum LocusGenesJ implements Locus {
     SKIN_ALBINO_P2       (6, false),
     SUPER_PANCREAS       (7, false), // j7j7 -> super pancreas
     HANDS_SIZE_P1        (8, false), // j8j8,k8k8,l8l8 -> 0,0,0 -> very short, 1,1,1 -> very long
+    WINGS_P2             (9, false), // i9i9,j9j9 -> has wings
 
     ;
 

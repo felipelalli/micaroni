@@ -11,6 +11,7 @@ public enum LocusGenesI implements Locus {
     BRAIN_P1            (6, false), // i6i6,n5n5,o5o5 - 0,0,0 -> level 0, 1,1,1 -> level 7
     KIDNEY_EFFICIENCY_P1(7, false), // i7i7,o7o7 - 1,1 -> very good, 0,1 -> bad, 1,0 -> good, 0,0 -> normal
     FEET_SIZE_P3        (8, false),
+    WINGS_P1            (9, false), // i9i9,j9j9 -> has wings
 
     ;
 

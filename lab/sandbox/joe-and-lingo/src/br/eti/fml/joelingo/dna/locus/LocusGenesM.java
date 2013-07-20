@@ -10,6 +10,7 @@ public enum LocusGenesM implements Locus {
     BRISTLE_BLUE_B7  (6, false),
     BRISTLE_BLUE_B8  (7, false),
     POINTED_NAILS    (8, false), // m8m8 -> pointed nails
+    THORNS           (9, false), // m9m9 -> has thorns
 
     ;
 
