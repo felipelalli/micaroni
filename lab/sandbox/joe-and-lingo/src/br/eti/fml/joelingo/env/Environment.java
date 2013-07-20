@@ -5,6 +5,7 @@ import br.eti.fml.joelingo.agent.ModifierAgentOverTime;
 import br.eti.fml.joelingo.data.genesis.Genesis;
 import br.eti.fml.joelingo.dna.Genotype;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -27,7 +28,7 @@ public class Environment extends JsonCapable<Environment> {
 
         // TODO: will use something like "tendency to aging" gene to generate a specific agent
 
-        return null;
+        return new ArrayList<>(0);
     }
 
     public long getGlobalSecondCycle() {

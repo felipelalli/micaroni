@@ -1,5 +1,7 @@
 package br.eti.fml.joelingo;
 
+import br.eti.fml.joelingo.dna.Genotype;
+import br.eti.fml.joelingo.dna.Sex;
 import br.eti.fml.joelingo.env.Environment;
 import sisc.data.Quantity;
 import sisc.interpreter.AppContext;
@@ -27,11 +29,14 @@ public class Main {
         Environment env = new Environment();
 
         Joelingo joelingo = new Joelingo();
-        joelingo.arises(env, "Joe", "Campobelo", null);
+        Genotype genotype = Genotype.createRandomGenotype(Sex.MALE);
+
+        joelingo.arises(env, "Joe", "Campobelo", genotype);
 
         Description description = joelingo.describe(env);
 
-        System.out.println("Description: " + description);
+        System.out.println("Joelingo: " + joelingo);
+        //System.out.println("Description: " + description);
     }
 
 }
