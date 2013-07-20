@@ -34,7 +34,7 @@ public class Joelingo extends JsonCapable<Joelingo> {
     /**
      * This list is like a history, always increasing and never decrease in size.
      */
-    private final List<ModifierAgentOverTime> agents = new LinkedList<>();
+    private final List<ModifierAgentOverTime> agents = new LinkedList<ModifierAgentOverTime>();
 
     public List<ModifierAgentOverTime> getAgents() {
         return agents;

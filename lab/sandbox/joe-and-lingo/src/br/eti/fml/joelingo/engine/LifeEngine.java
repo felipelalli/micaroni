@@ -19,7 +19,7 @@ public class LifeEngine {
 
     private final HistoryTable historyTable;
     private final Interpreter interpreter;
-    private final BlockingQueue<Command> pendentCommands = new LinkedBlockingQueue<>();
+    private final BlockingQueue<Command> pendentCommands = new LinkedBlockingQueue<Command>();
 
     public static void setDefaultLifeEngine(LifeEngine lifeEngine) {
         defaultLifeEngine = lifeEngine;

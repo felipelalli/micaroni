@@ -18,8 +18,4 @@ public class HomossexualException extends Exception {
     public HomossexualException(Throwable cause) {
         super(cause);
     }
-
-    public HomossexualException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
 }

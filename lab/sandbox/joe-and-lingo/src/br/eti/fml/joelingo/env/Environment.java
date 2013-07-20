@@ -28,7 +28,7 @@ public class Environment extends JsonCapable<Environment> {
 
         // TODO: will use something like "tendency to aging" gene to generate a specific agent
 
-        return new ArrayList<>(0);
+        return new ArrayList<ModifierAgentOverTime>(0);
     }
 
     public long getGlobalSecondCycle() {

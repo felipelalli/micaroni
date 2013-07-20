@@ -94,10 +94,10 @@ public enum LocusFeatures implements Locus {
 
     ;
 
-    private static final Map<Integer, LocusFeatures> LOCUS_CACHE = new HashMap<>();
+    private static final Map<Integer, LocusFeatures> LOCUS_CACHE = new HashMap<Integer, LocusFeatures>();
 
     static {
-        Set<Integer> usedPositions = new HashSet<>();
+        Set<Integer> usedPositions = new HashSet<Integer>();
 
         for (LocusFeatures locusFeatures : LocusFeatures.values()) {
             int position = locusFeatures.getPosition();

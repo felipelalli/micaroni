@@ -12,8 +12,8 @@ import java.util.Map;
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
 public class Phenotype extends JsonCapable<Phenotype> {
-    private Map<Integer, Feature> features = new HashMap<>();
-    private Map<Integer, ModifierAgentOverTime> accessories = new HashMap<>();
+    private Map<Integer, Feature> features = new HashMap<Integer, Feature>();
+    private Map<Integer, ModifierAgentOverTime> accessories = new HashMap<Integer, ModifierAgentOverTime>();
 
     public void setFeature(LocusFeatures locus, Feature feature) {
         features.put(locus.getPosition(), feature);

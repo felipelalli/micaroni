@@ -36,24 +36,24 @@ public class Genotype extends JsonCapable<Genotype> {
     private Long luckyNumber; // used to random seed
 
     private SexualChromosomePair sexualChromosomePair = new SexualChromosomePair();
-    private Map<Integer, ChromosomePair> chromosomes = new HashMap<>(15);
+    private Map<Integer, ChromosomePair> chromosomes = new HashMap<Integer, ChromosomePair>(15);
 
     public static Genotype createRandomGenotype(Sex sex) {
         Genotype genotype = new Genotype();
         genotype.luckyNumber = random.nextLong();
 
         if (sex == Sex.MALE) {
-            genotype.sexualChromosomePair.left = new Chromosome<>();
+            genotype.sexualChromosomePair.left = new Chromosome<LocusGenesX>();
             genotype.sexualChromosomePair.left.lastActiveGenePosition = LocusGenesX.values().length - 1;
-            genotype.sexualChromosomePair.rightY = new Chromosome<>();
+            genotype.sexualChromosomePair.rightY = new Chromosome<LocusGenesY>();
             genotype.sexualChromosomePair.rightY.lastActiveGenePosition = LocusGenesY.values().length - 1;
 
             randomize(genotype.sexualChromosomePair.left);
             randomize(genotype.sexualChromosomePair.rightY);
         } else if (sex == Sex.FEMALE) {
-            genotype.sexualChromosomePair.left = new Chromosome<>();
+            genotype.sexualChromosomePair.left = new Chromosome<LocusGenesX>();
             genotype.sexualChromosomePair.left.lastActiveGenePosition = LocusGenesX.values().length - 1;
-            genotype.sexualChromosomePair.rightX = new Chromosome<>();
+            genotype.sexualChromosomePair.rightX = new Chromosome<LocusGenesX>();
             genotype.sexualChromosomePair.rightX.lastActiveGenePosition = LocusGenesX.values().length - 1;
 
             randomize(genotype.sexualChromosomePair.left);
@@ -109,9 +109,9 @@ public class Genotype extends JsonCapable<Genotype> {
     }
 
     private static <T extends Locus> ChromosomePair<T> createRandomPair(Class<T> clazz) {
-        ChromosomePair<T> chromosomePair = new ChromosomePair<>();
-        chromosomePair.left = new Chromosome<>();
-        chromosomePair.right = new Chromosome<>();
+        ChromosomePair<T> chromosomePair = new ChromosomePair<T>();
+        chromosomePair.left = new Chromosome<T>();
+        chromosomePair.right = new Chromosome<T>();
 
         chromosomePair.left.lastActiveGenePosition = clazz.getEnumConstants().length - 1;
         chromosomePair.right.lastActiveGenePosition = clazz.getEnumConstants().length - 1;

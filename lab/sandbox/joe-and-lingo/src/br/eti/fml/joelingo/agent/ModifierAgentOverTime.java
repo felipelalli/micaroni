@@ -33,7 +33,7 @@ public final class ModifierAgentOverTime extends JsonCapable<ModifierAgentOverTi
     public Map<Integer, ModificationOverFeature> getFeatureChanges(Joelingo joelingo, Environment environment)
             throws IOException, BadCodeException, NotBornException {
 
-        Map<Integer, ModificationOverFeature> featureChanges = new HashMap<>();
+        Map<Integer, ModificationOverFeature> featureChanges = new HashMap<Integer, ModificationOverFeature>();
 
         long last = lastCycle != null ? lastCycle : joelingo.getAgeInSecondCycle(environment);
 

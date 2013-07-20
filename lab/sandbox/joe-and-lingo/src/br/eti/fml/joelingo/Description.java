@@ -22,7 +22,7 @@ import java.util.Set;
 public class Description {
     private final Joelingo joelingo;
     private final Environment env;
-    private final List<ModifierAgentOverTime> activeAgents = new ArrayList<>();
+    private final List<ModifierAgentOverTime> activeAgents = new ArrayList<ModifierAgentOverTime>();
 
     public Description(Joelingo joelingo, Environment env) throws NotBornException {
         this.joelingo = joelingo.clone();
