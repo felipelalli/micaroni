@@ -11,16 +11,6 @@ import java.util.BitSet;
 public class Chromosome<L extends Locus> extends JsonCapable<Chromosome<L>> {
     private BitSet genes = new BitSet();
 
-    /**
-     * This is the last active gene position, defined on born. Genes
-     * in position greater than specified here cannot be used to determine
-     * how a {@link br.eti.fml.joelingo.agent.ModifierAgentOverTime} can behavior.
-     * This is to avoid a unpredictable behavior after a core update. For example:
-     * if the last active gene position is 20, genes in position > 20 cannot be
-     * used as input entry in {@link br.eti.fml.joelingo.agent.ModifierAgentOverTime}.
-     */
-    public int lastActiveGenePosition;
-
     BitSet getGenes() {
         return genes;
     }

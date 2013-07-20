@@ -44,17 +44,13 @@ public class Genotype extends JsonCapable<Genotype> {
 
         if (sex == Sex.MALE) {
             genotype.sexualChromosomePair.left = new Chromosome<LocusGenesX>();
-            genotype.sexualChromosomePair.left.lastActiveGenePosition = LocusGenesX.values().length - 1;
             genotype.sexualChromosomePair.rightY = new Chromosome<LocusGenesY>();
-            genotype.sexualChromosomePair.rightY.lastActiveGenePosition = LocusGenesY.values().length - 1;
 
             randomize(LocusGenesX.class, genotype.sexualChromosomePair.left);
             randomize(LocusGenesY.class, genotype.sexualChromosomePair.rightY);
         } else if (sex == Sex.FEMALE) {
             genotype.sexualChromosomePair.left = new Chromosome<LocusGenesX>();
-            genotype.sexualChromosomePair.left.lastActiveGenePosition = LocusGenesX.values().length - 1;
             genotype.sexualChromosomePair.rightX = new Chromosome<LocusGenesX>();
-            genotype.sexualChromosomePair.rightX.lastActiveGenePosition = LocusGenesX.values().length - 1;
 
             randomize(LocusGenesX.class, genotype.sexualChromosomePair.left);
             randomize(LocusGenesX.class, genotype.sexualChromosomePair.rightX);
@@ -112,9 +108,6 @@ public class Genotype extends JsonCapable<Genotype> {
         ChromosomePair<T> chromosomePair = new ChromosomePair<T>();
         chromosomePair.left = new Chromosome<T>();
         chromosomePair.right = new Chromosome<T>();
-
-        chromosomePair.left.lastActiveGenePosition = clazz.getEnumConstants().length - 1;
-        chromosomePair.right.lastActiveGenePosition = clazz.getEnumConstants().length - 1;
 
         randomize(clazz, chromosomePair.left);
         randomize(clazz, chromosomePair.right);
