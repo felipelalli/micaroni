@@ -1,7 +1,7 @@
 package br.eti.fml.joelingo.env;
 
 import br.eti.fml.joelingo.JsonCapable;
-import br.eti.fml.joelingo.agent.ModifierAgentOverTime;
+import br.eti.fml.joelingo.timeagent.ModifierAgentOverTime;
 import br.eti.fml.joelingo.data.genesis.Genesis;
 import br.eti.fml.joelingo.dna.Genotype;
 

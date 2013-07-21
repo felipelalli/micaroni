@@ -10,6 +10,8 @@ import sisc.interpreter.Interpreter;
 import sisc.interpreter.SchemeException;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 
@@ -28,15 +30,24 @@ public class Main {
     public static void main(String[] args) throws Exception {
         Environment env = new Environment();
 
-        Joelingo joelingo = new Joelingo();
-        Genotype genotype = Genotype.createRandomGenotype(Sex.MALE);
+        Joelingo joe = new Joelingo();
+        joe.arises(env, null, null, Genotype.createRandomGenotype(Sex.MALE));
 
-        joelingo.arises(env, "Joe", "Campobelo", genotype);
+        Joelingo lingo = new Joelingo();
+        lingo.arises(env, null, null, Genotype.createRandomGenotype(Sex.FEMALE));
 
-        Description description = joelingo.describe(env);
+        List<Joelingo> kids = new ArrayList<Joelingo>();
 
-        System.out.println("Joelingo: " + joelingo);
-        //System.out.println("Description: " + description);
+        for (int i = 0; i < 10; i++) {
+            kids.add(joe.crosses(env, lingo));
+        }
+
+        System.out.println("Joe: " + joe);
+        System.out.println("Lingo: " + lingo);
+
+        for (Joelingo kid : kids) {
+            System.out.println("Kid: " + kid);
+        }
     }
 
 }

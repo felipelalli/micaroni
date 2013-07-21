@@ -1,7 +1,7 @@
 package br.eti.fml.joelingo.dna;
 
 import br.eti.fml.joelingo.JsonCapable;
-import br.eti.fml.joelingo.agent.ModifierAgentOverTime;
+import br.eti.fml.joelingo.timeagent.ModifierAgentOverTime;
 import br.eti.fml.joelingo.dna.locus.LocusFeatures;
 import br.eti.fml.joelingo.dna.locus.LocusSpots;
 
@@ -20,7 +20,14 @@ public class Phenotype extends JsonCapable<Phenotype> {
     }
 
     public Feature getFeature(LocusFeatures locus) {
-        return features.get(locus.getPosition());
+        Feature feature = features.get(locus.getPosition());
+
+        if (feature == null) {
+            feature = new Feature(locus.getDefaultValue());
+            features.put(locus.getPosition(), feature);
+        }
+
+        return feature;
     }
 
     private boolean hasFeature(LocusFeatures locus) {

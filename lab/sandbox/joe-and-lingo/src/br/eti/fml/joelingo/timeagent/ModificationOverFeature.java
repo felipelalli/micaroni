@@ -1,4 +1,4 @@
-package br.eti.fml.joelingo.agent;
+package br.eti.fml.joelingo.timeagent;
 
 import br.eti.fml.joelingo.JsonCapable;
 

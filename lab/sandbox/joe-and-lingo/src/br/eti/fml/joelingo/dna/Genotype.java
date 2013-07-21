@@ -31,16 +31,15 @@ import java.util.Map;
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
 public class Genotype extends JsonCapable<Genotype> {
+    private static final int NUMBER_OF_CHROMOSOMES = 16;
     private static SecureRandom random = new SecureRandom();
 
-    private Long luckyNumber; // used to random seed
-
     private SexualChromosomePair sexualChromosomePair = new SexualChromosomePair();
-    private Map<Integer, ChromosomePair> chromosomes = new HashMap<Integer, ChromosomePair>(15);
+    private Map<Integer, ChromosomePair> chromosomes
+            = new HashMap<Integer, ChromosomePair>(NUMBER_OF_CHROMOSOMES - 1); // one is the sexual chromosome
 
     public static Genotype createRandomGenotype(Sex sex) {
         Genotype genotype = new Genotype();
-        genotype.luckyNumber = random.nextLong();
 
         if (sex == Sex.MALE) {
             genotype.sexualChromosomePair.left = new Chromosome<LocusGenesX>();
@@ -128,7 +127,6 @@ public class Genotype extends JsonCapable<Genotype> {
         Genotype female = g1.getSex() == Sex.FEMALE ? g1 : g2;
 
         Genotype genotype = new Genotype();
-        genotype.luckyNumber = random.nextLong();
 
         if (male.getSex() != Sex.MALE || female.getSex() != Sex.FEMALE) {
             throw new HomossexualException("You need a male and female genotype to make a baby");
@@ -202,7 +200,19 @@ public class Genotype extends JsonCapable<Genotype> {
         return sex;
     }
 
-    public Long getLuckyNumber() {
-        return luckyNumber;
+    public SexualChromosomePair getSexualChromosomePair() {
+        return sexualChromosomePair;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Locus> ChromosomePair<T> getChromosomePair(Locus locus) {
+        ChromosomePair pair = chromosomes.get(locus.getPosition());
+
+        if (pair == null) {
+            pair = Genotype.createRandomPair((Class<T>) locus.getClass());
+            chromosomes.put(locus.getPosition(), pair);
+        }
+
+        return (ChromosomePair<T>) pair;
     }
 }

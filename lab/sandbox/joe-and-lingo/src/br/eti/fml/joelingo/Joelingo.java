@@ -1,90 +1,73 @@
 package br.eti.fml.joelingo;
 
-import br.eti.fml.joelingo.agent.ModifierAgentOverTime;
 import br.eti.fml.joelingo.dna.Feature;
 import br.eti.fml.joelingo.dna.Genotype;
 import br.eti.fml.joelingo.dna.Phenotype;
+import br.eti.fml.joelingo.dna.Sex;
 import br.eti.fml.joelingo.dna.locus.LocusFeatures;
-import br.eti.fml.joelingo.engine.BadCodeException;
 import br.eti.fml.joelingo.env.Environment;
 
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import java.util.UUID;
 
 /**
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
 public class Joelingo extends JsonCapable<Joelingo> {
     private String uuid;                  // UUID
+    private String uuidFather;
+    private String uuidMother;
 
-    private String name;                  // Generated name
-    private String lastName;              // Generated name
+    private Name name;                  // Generated name
+    private Name lastName;              // Generated name
 
     private Genotype genotype;            // DNA
-    private Phenotype initialPhenotype;   // The initial phenotype is immutable.
+    private Phenotype phenotype;          // The current phenotype
 
     private Long birthdayDateSecondCycle; // when this joelingo has born
     private Long deathDateSecondCycle;    // when this joelingo has died
+    private Long ageInSecondCycle = 0L;   // current age in second cycle
+
     private DeathReason deathReason;      // if any
 
-    private transient Random random;
-
-    /**
-     * This list is like a history, always increasing and never decrease in size.
-     */
-    private final List<ModifierAgentOverTime> agents = new LinkedList<ModifierAgentOverTime>();
-
-    public List<ModifierAgentOverTime> getAgents() {
-        return agents;
-    }
-
-    /**
-     * This is not useful to describe Joelingo. See {@link #describe(br.eti.fml.joelingo.env.Environment)} instead.
-     */
-    public Phenotype getInitialPhenotype() {
-        return initialPhenotype;
-    }
-
-    private Random getRandom() throws NotBornException {
-        assertIsBorn();
-
-        if (random == null) {
-            random = new Random(genotype.getLuckyNumber());
-        }
-
-        return random;
+    public Phenotype getPhenotype() {
+        return phenotype;
     }
 
     /**
      * Age in seconds (94.608.000 = 3 years)
      */
-    public long getAgeInSecondCycle(Environment environment) throws NotBornException {
-        assertIsBorn();
-        long age;
-
-        if (isDead()) {
-            age = this.deathDateSecondCycle - this.birthdayDateSecondCycle;
-        } else {
-            age = environment.getGlobalSecondCycle() - this.birthdayDateSecondCycle;
-        }
-
-        return age;
+    public long getAgeInSecondCycle() {
+        return ageInSecondCycle;
     }
 
-    public void arises(Environment environment, String name,
-                       String lastName, Genotype genotype) throws AlreadyBornException {
+    public Name getName() {
+        return name;
+    }
+
+    public Name getLastName() {
+        return lastName;
+    }
+
+    public void arises(Environment environment, Joelingo father,
+                       Joelingo mother, Genotype genotype) throws AlreadyBornException {
 
         if (isBorn()) {
             throw new AlreadyBornException();
         } else {
             birthdayDateSecondCycle = environment.getGlobalSecondCycle();
-            this.name = name;
-            this.lastName = lastName;
-            this.genotype = genotype;
 
-            agents.addAll(environment.getInitialAgents(genotype));
+            if (father == null || mother == null) {
+                this.name = genotype.getSex() == Sex.MALE ? Name.JOE : Name.LINGO;
+                this.lastName = Name.generateName();
+            } else {
+                this.uuidFather = father.uuid;
+                this.uuidMother = mother.uuid;
+                this.name = Name.generateName();
+                this.lastName = Name.generateName(mother.getLastName(), father.getLastName());
+            }
+
+            this.uuid = UUID.randomUUID().toString();
+            this.genotype = genotype.clone();
 
             Phenotype phenotype = new Phenotype();
 
@@ -92,7 +75,7 @@ public class Joelingo extends JsonCapable<Joelingo> {
                 phenotype.setFeature(feature, new Feature(feature.getDefaultValue()));
             }
 
-            this.initialPhenotype = phenotype;
+            this.phenotype = phenotype;
 
             // TODO: copy genotype characteristics to phenotype
         }
@@ -105,28 +88,22 @@ public class Joelingo extends JsonCapable<Joelingo> {
         this.deathReason = reason;
     }
 
-    public Joelingo crosses(Environment environment, Joelingo joelingo) throws DeathException {
+    public Joelingo crosses(Environment environment, Joelingo joelingo) throws DeathException, HomossexualException, AlreadyBornException {
         assertIsAlive();
         joelingo.assertIsAlive();
+
+        Joelingo son = new Joelingo();
+
+        Joelingo father = this.genotype.getSex() == Sex.MALE ? this : joelingo;
+        Joelingo mother = this.genotype.getSex() == Sex.FEMALE ? this : joelingo;
+
+        son.arises(environment, father, mother, Genotype.createGenotype(father.genotype, mother.genotype, 0.05));
 
         // TODO: create a new joelingo, arises it, crosses, make mutation etc.
         // TODO: if gene of parent is absent when crossing, make new genes random
         // TODO: takes into account genitalia size, efficiency etc.
 
-        return null;
-    }
-
-    public void attachModifierAgent(ModifierAgentOverTime agent, Environment env)
-            throws IOException, BadCodeException, DeathException {
-
-        agent.attach(this, env);
-        agents.add(agent);
-    }
-
-    public void removeModifierAgent(ModifierAgentOverTime agent, Environment env)
-            throws IOException, BadCodeException, DeathException {
-
-        agent.detach(this, env);
+        return son;
     }
 
     public long getBirthdayDateSecondCycle() throws NotBornException {
@@ -136,7 +113,7 @@ public class Joelingo extends JsonCapable<Joelingo> {
 
     public boolean isBorn() {
         return birthdayDateSecondCycle != null
-                && name != null && lastName != null && genotype != null && initialPhenotype != null;
+                && name != null && lastName != null && genotype != null && phenotype != null;
     }
 
     public boolean isDead() {
@@ -145,10 +122,6 @@ public class Joelingo extends JsonCapable<Joelingo> {
 
     public boolean isAlive() {
         return isBorn() && !isDead();
-    }
-
-    public Description describe(Environment env) throws DeathException {
-        return new Description(this, env);
     }
 
     public void assertIsBorn() throws NotBornException {
@@ -164,5 +137,11 @@ public class Joelingo extends JsonCapable<Joelingo> {
             throw new DeathException(deathReason);
         }
     }
+
+    public String toString() {
+        return this.getName() + " " + this.getLastName();
+    }
+
+    // TODO: back to add here LIVE ONE SECOND
 }
 

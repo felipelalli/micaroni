@@ -1,4 +1,4 @@
-package br.eti.fml.joelingo.agent;
+package br.eti.fml.joelingo.timeagent;
 
 import br.eti.fml.joelingo.DeathException;
 import br.eti.fml.joelingo.Joelingo;
@@ -35,7 +35,7 @@ public final class ModifierAgentOverTime extends JsonCapable<ModifierAgentOverTi
 
         Map<Integer, ModificationOverFeature> featureChanges = new HashMap<Integer, ModificationOverFeature>();
 
-        long last = lastCycle != null ? lastCycle : joelingo.getAgeInSecondCycle(environment);
+        long last = lastCycle != null ? lastCycle : joelingo.getAgeInSecondCycle();
 
         for (long i = initialCycle; i < last; i++) {
             try {
@@ -53,12 +53,12 @@ public final class ModifierAgentOverTime extends JsonCapable<ModifierAgentOverTi
 
     public void attach(Joelingo joelingo, Environment environment) throws DeathException {
         joelingo.assertIsAlive();
-        initialCycle = joelingo.getAgeInSecondCycle(environment);
+        initialCycle = joelingo.getAgeInSecondCycle();
     }
 
     public void detach(Joelingo joelingo, Environment environment) throws DeathException {
         joelingo.assertIsAlive();
-        lastCycle = joelingo.getAgeInSecondCycle(environment);
+        lastCycle = joelingo.getAgeInSecondCycle();
     }
 
     public boolean isActive(long ageInSeconds) {

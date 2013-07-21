@@ -3,7 +3,7 @@ package br.eti.fml.joelingo;
 /**
  * @author Felipe Micaroni Lalli (micaroni@gmail.com)
  */
-public class SimpleTextDescribing implements Describing {
+public class SimpleTextDescribing implements Describing<String> {
     private final LevelDetail levelDetail;
 
     public SimpleTextDescribing(LevelDetail levelDetail) {
@@ -11,7 +11,7 @@ public class SimpleTextDescribing implements Describing {
     }
 
     @Override
-    public String describe(Description description) {
+    public String describe(Joelingo joelingo) {
         StringBuilder text = new StringBuilder();
 
         return text.toString();
