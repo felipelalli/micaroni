@@ -1,11 +1,11 @@
 package br.eti.fml.joelingo;
 
+import br.eti.fml.joelingo.dna.AppearanceAge;
 import br.eti.fml.joelingo.dna.Feature;
 import br.eti.fml.joelingo.dna.Genotype;
 import br.eti.fml.joelingo.dna.Phenotype;
 import br.eti.fml.joelingo.dna.Sex;
 import br.eti.fml.joelingo.dna.locus.LocusFeatures;
-import br.eti.fml.joelingo.env.Environment;
 
 import java.util.Date;
 import java.util.UUID;
@@ -24,12 +24,9 @@ public class Joelingo extends JsonCapable<Joelingo> {
     private Genotype genotype;            // DNA
     private Phenotype phenotype;          // The current phenotype
 
-    private Long birthdayDateSecondCycle; // when this joelingo has born
-    private Long deathDateSecondCycle;    // when this joelingo has died
-    private Long ageInSecondCycle = 0L;   // current age in second cycle
-
     private Long birthdayTimestamp; // when this joelingo has born (Java timestamp)
     private Long deathTimestamp;    // when this joelingo has died (Java timestamp)
+    private Long ageInSecondCycle = 0L;   // current age in second cycle
 
     private DeathReason deathReason;      // if any
 
@@ -37,36 +34,11 @@ public class Joelingo extends JsonCapable<Joelingo> {
         return phenotype;
     }
 
-    /**
-     * Age in seconds (94.608.000 = 3 years)
-     */
-    public long getAgeInSecondCycle() {
-        return ageInSecondCycle;
-    }
-
-    public Date getBirthday() {
-        return new Date(birthdayTimestamp);
-    }
-
-    public Date getDeath() {
-        return new Date(deathTimestamp);
-    }
-
-    public Name getName() {
-        return name;
-    }
-
-    public Name getLastName() {
-        return lastName;
-    }
-
-    public void arises(Environment environment, Joelingo father,
-                       Joelingo mother, Genotype genotype) throws AlreadyBornException {
+    public void arises(Joelingo father, Joelingo mother, Genotype genotype) throws AlreadyBornException {
 
         if (isBorn()) {
             throw new AlreadyBornException();
         } else {
-            birthdayDateSecondCycle = environment.getGlobalSecondCycle();
             birthdayTimestamp = System.currentTimeMillis();
 
             if (father == null || mother == null) {
@@ -94,7 +66,7 @@ public class Joelingo extends JsonCapable<Joelingo> {
         }
     }
 
-    public void die(Environment environment, DeathReason reason) throws DeathException {
+    public void die(DeathReason reason) throws DeathException {
         this.getPhenotype().setFeature(LocusFeatures.IN_EGG, 0.0); // crash the egg if is inside one
         assertIsAlive();
 
@@ -102,12 +74,11 @@ public class Joelingo extends JsonCapable<Joelingo> {
             throw new IllegalArgumentException("You cannot kill a joelingo with reason 'not born'");
         }
 
-        this.deathDateSecondCycle = environment.getGlobalSecondCycle();
         this.deathTimestamp = System.currentTimeMillis();
         this.deathReason = reason;
     }
 
-    public Joelingo crosses(Environment environment, Joelingo joelingo)
+    public Joelingo crosses(Joelingo joelingo)
             throws DeathException, HomossexualException, AlreadyBornException {
 
         assertIsAlive();
@@ -118,7 +89,7 @@ public class Joelingo extends JsonCapable<Joelingo> {
         Joelingo father = this.genotype.getSex() == Sex.MALE ? this : joelingo;
         Joelingo mother = this.genotype.getSex() == Sex.FEMALE ? this : joelingo;
 
-        son.arises(environment, father, mother, Genotype.createGenotype(father.genotype, mother.genotype, 0.05));
+        son.arises(father, mother, Genotype.createGenotype(father.genotype, mother.genotype, 0.05));
 
         // TODO: create a new joelingo, arises it, crosses, make mutation etc.
         // TODO: if gene of parent is absent when crossing, make new genes random
@@ -127,19 +98,30 @@ public class Joelingo extends JsonCapable<Joelingo> {
         return son;
     }
 
-    public long getBirthdayDateSecondCycle() throws NotBornException {
-        assertIsBorn();
-        return birthdayDateSecondCycle;
+    public void liveUntilNow() {
+        long nowInSec = System.currentTimeMillis() / 1000;
+        long birthday = this.birthdayTimestamp / 1000;
+        long diff = Math.max(0, nowInSec - birthday);
+
+        for (int i = 0; i < diff; i++) {
+            liveOneSecond();
+        }
+    }
+
+    private void liveOneSecond() {
+
+
+        ageInSecondCycle++;
     }
 
     public boolean isBorn() {
-        return birthdayDateSecondCycle != null
+        return birthdayTimestamp != null
                 && name != null && lastName != null && genotype != null && phenotype != null
                 && getPhenotype().getFeature(LocusFeatures.IN_EGG).getDoubleValue() < .5; // not inside an egg
     }
 
     public boolean isDead() {
-        return deathDateSecondCycle != null && deathReason != null;
+        return deathTimestamp != null && deathReason != null;
     }
 
     public boolean isAlive() {
@@ -160,18 +142,58 @@ public class Joelingo extends JsonCapable<Joelingo> {
         }
     }
 
-    public DeathReason getDeathReason() {
-        return deathReason;
+    /**
+     * Age in seconds (94.608.000 = 3 years)
+     */
+    public long getAgeInSecondCycle() {
+        return ageInSecondCycle * 60L * 60L * 24L; // TODO: for test
     }
 
-    public String toString() {
-        return new SimpleTextDescribing(LevelDetail.NORMAL).describe(this);
+    public DeathReason getDeathReason() {
+        return deathReason;
     }
 
     public Genotype getGenotype() {
         return genotype;
     }
 
-    // TODO: back to add here LIVE ONE SECOND
+    public String getUuid() {
+        return uuid;
+    }
+
+    public String getUuidFather() {
+        return uuidFather;
+    }
+
+    public String getUuidMother() {
+        return uuidMother;
+    }
+
+    public Date getBirthday() {
+        return new Date(birthdayTimestamp);
+    }
+
+    public Date getDeath() {
+        return new Date(deathTimestamp);
+    }
+
+    public Name getName() {
+        return name;
+    }
+
+    public Name getLastName() {
+        return lastName;
+    }
+
+    public String toString() {
+        LevelDetail levelDetail = LevelDetail.values()[(int) (Math.random() * LevelDetail.values().length)];
+        String desc = new SimpleTextDescribing(levelDetail).describe(this);
+        return levelDetail + ": " + desc + " (" + desc.length() + " chars)";
+    }
+
+    public AppearanceAge getAppearanceAge() {
+        return AppearanceAge.calculateAgeAppearance(getPhenotype()
+                .getFeature(LocusFeatures.TENDENCY_TO_AGE).getDoubleValue(), getAgeInSecondCycle());
+    }
 }
 

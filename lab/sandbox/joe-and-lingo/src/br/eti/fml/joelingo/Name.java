@@ -16,16 +16,16 @@ public class Name extends JsonCapable<Name> {
     private static final SecureRandom RANDOM = new SecureRandom();
 
     private static final String[] SYLLABLES = new String[] {
-            "a", "am", "ax", "ai", "ae", "at", "ali", "ami", "amy", "ar",
-            "e", "em", "ex", "ei", "ee", "et", "eli", "emi", "emy", "er",
-            "i", "im", "ix", "ii", "ie", "it", "ili", "imi", "imy", "ir",
-            "o", "om", "ox", "oi", "oe", "ot", "oli", "omi", "omy", "or",
+            "a", "am", "ax", "ai", "ae", "at", "ali", "ami", "amy", "ar", "ao", "au",
+            "e", "em", "ex", "ei", "ee", "eli", "emi", "emy", "er", "eo", "eu",
+            "i", "im", "ix", "ii", "ie", "it", "ili", "imi", "imy", "ir", "io", "iu",
+            "o", "om", "ox", "oi", "oe", "ot", "oli", "omi", "omy", "or", "ou",
             "u", "um", "ux", "ui", "ue", "ut", "uli", "umi", "umy", "ur", "ul",
             "ba", "be", "bi", "bo", "bu", "ba", "be", "bi", "bo", "bu",
             "bam", "bak", "bre", "bru", "bum", "bis", "bom", "bum", "bip", "ber",
             "ca", "ce", "ci", "co", "cu", "ca", "ce", "ci", "co", "cu", "cam",
-            "cra", "cram", "cem", "cet", "cim", "com", "cop", "cry", "ces",
-            "cru", "crem", "da", "de", "di", "do", "du", "da", "de", "di", "do", "du", "dam", "deo", "dim", "ds", "doi",
+            "cra", "cram", "cem", "cim", "com", "cop", "cry", "ces",
+            "cru", "crem", "da", "de", "di", "do", "du", "da", "de", "di", "do", "du", "dam", "deo", "dim", "doi", "dis",
             "den", "dan", "dom", "dum", "duk", "dra", "dru", "dil", "des", "fa", "fe", "fi", "fo", "fu",
             "fa", "fe", "fi", "fo", "fu", "foo", "fau", "fei", "fom", "fui", "fra", "fam", "fat", "fim", "few", "fus", "fuz",
             "fow", "ga", "ge", "gi", "go", "gu", "ga", "ge", "gi", "go", "gu", "gra", "gam", "gre", "grem", "gem", "gez",
@@ -43,10 +43,10 @@ public class Name extends JsonCapable<Name> {
             "rat", "row", "roq", "rok", "rock", "rol", "raw", "sa", "se", "si", "so", "su", "sa", "se", "si", "so", "su", "sam", "san", "sh",
             "sat", "sei", "sem", "sim", "sum", "sax", "sex", "sox", "sul", "ta", "te", "ti", "to",
             "tu", "ta", "te", "ti", "to", "tu", "tum", "tam", "tex", "tin", "tim", "tip", "tee", "tox", "tux", "tra", "tro", "tri",
-            "wa", "we", "wi", "wo", "wu", "wow", "wua", "war", "woi", "wux", "wap",
+            "wa", "we", "wi", "wo", "wu", "wow", "wua", "war", "woi", "wap",
             "va", "ve", "vi", "vo", "vu", "vam", "van", "vux", "vua", "voa", "vua", "vow",
-            "ya", "yu", "ye", "you", "yui", "xa", "xe", "xi", "xo", "xu", "xux", "xuz", "xam", "xou", "xow",
-            "xol", "xoks", "za", "ze", "zi", "zo", "zu", "zux", "zoo", "zap", "zao"
+            "ya", "yu", "ye", "you", "yui", "xa", "xe", "xi", "xo", "xu", "xam", "xou", "xow",
+            "xol", "xoks", "za", "ze", "zi", "zo", "zu", "zoo", "zap", "zao"
     };
 
     private List<String> syllables = new ArrayList<String>(10);
@@ -70,7 +70,7 @@ public class Name extends JsonCapable<Name> {
 
     public static Name generateName() {
         Name newName = new Name();
-        int n = Math.min(5, Math.max(1, ((int) ((RANDOM.nextGaussian() * 1) + 3))));
+        int n = Math.min(4, Math.max(1, ((int) ((RANDOM.nextGaussian() * 1) + 3))));
 
         for (int i = 0; i < n; i++) {
             String randomSyllable = SYLLABLES[RANDOM.nextInt(SYLLABLES.length)];

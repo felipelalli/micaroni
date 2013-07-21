@@ -16,7 +16,7 @@ public enum LocusFeatures implements Locus {
     EYE_EFFICIENCY          (55, false, new BigDecimal("0.8")), // 0.0 is blind, 0.5 = normal, 0.8 = very healthy
     EYELASHES_SIZE          (12, false, new BigDecimal("0.3")), // 0.0 is no eyelashes, 0.3 = normal, 1.0 = is so big eyelashes
     EYEBROW_SIZE            (13, false, new BigDecimal("0.3")), // 0.0 is no eyebrow, 0.3 = normal, 0.7 = is unibrow, 1.0 is huge unibrow
-    TENDENCY_TO_AGE         ( 2, false, new BigDecimal("0.5")), // 1.0 die very soon
+    TENDENCY_TO_AGE         ( 2, false, new BigDecimal("0.2")), // 1.0 die very soon
     HAIR_STRAIGHTNESS       ( 3, false, new BigDecimal("1.0")), // 1.0 is totally straight
     HAIR_SIZE               ( 4, false, new BigDecimal("0.3")), // 0.0 is without hair, 0.3 is normal, 1.0 is max long
     HAIR_VOLUME             (70, false, new BigDecimal("0.5")), // 0.0 no hair, 1.0 very bulky
@@ -86,7 +86,7 @@ public enum LocusFeatures implements Locus {
     HEALTHY_APPEARANCE      (69, false, new BigDecimal("0.8")), // 0.0 very sick, 0.5 normal, 0.8 healthy
     ANGER_FEELING           (71, false, new BigDecimal("0.3")), // 0.0 zen, 0.3 normal, 0.5 anger, 1.0 crazy
     MOTIVATION_FEELING      (72, false, new BigDecimal("0.3")), // 0.0 zero motivation, 0.3 normal, 0.5 motivated, 1.0 amazing
-    HUNGER_FEELING          (73, false, new BigDecimal("0.0")), // 0.0 no hunger, 1.0 starving
+    HUNGER_FEELING          (73, false, new BigDecimal("0.0")), // 0.0 is totally full, 0.3 is normal, 0.6 is hungry, 0.8 starving
     BOREDOM_FEELING         (74, false, new BigDecimal("0.0")), // 0.0 no hunger, 1.0 starving
     TAIL_SIZE               (75, false, new BigDecimal("0.3")), // 0.0 no tail, 0.3 normal
     IMMUNE_EFFICIENCY       (79, false, new BigDecimal("0.8")), // 0.0 is aids, 0.5 is normal, 0.8 very healthy
