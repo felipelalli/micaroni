@@ -26,7 +26,7 @@ public class Name extends JsonCapable<Name> {
             "ca", "ce", "ci", "co", "cu", "ca", "ce", "ci", "co", "cu", "cam",
             "cra", "cram", "cem", "cim", "com", "cop", "cry", "ces",
             "cru", "crem", "da", "de", "di", "do", "du", "da", "de", "di", "do", "du", "dam", "deo", "dim", "doi", "dis",
-            "den", "dan", "dom", "dum", "duk", "dra", "dru", "dil", "des", "fa", "fe", "fi", "fo", "fu",
+            "den", "dan", "dom", "dum", "duk", "dra", "dro", "dru", "dil", "des", "fa", "fe", "fi", "fo", "fu",
             "fa", "fe", "fi", "fo", "fu", "foo", "fau", "fei", "fom", "fui", "fra", "fam", "fat", "fim", "few", "fus", "fuz",
             "fow", "ga", "ge", "gi", "go", "gu", "ga", "ge", "gi", "go", "gu", "gra", "gam", "gre", "grem", "gem", "gez",
             "gom", "goi", "gum", "gus", "gap", "gep", "ha", "he", "hi", "ho", "hu", "huz",
@@ -45,7 +45,7 @@ public class Name extends JsonCapable<Name> {
             "tu", "ta", "te", "ti", "to", "tu", "tum", "tam", "tex", "tin", "tim", "tip", "tee", "tox", "tux", "tra", "tro", "tri",
             "wa", "we", "wi", "wo", "wu", "wow", "wua", "war", "woi", "wap",
             "va", "ve", "vi", "vo", "vu", "vam", "van", "vux", "vua", "voa", "vua", "vow",
-            "ya", "yu", "ye", "you", "yui", "xa", "xe", "xi", "xo", "xu", "xam", "xou", "xow",
+            "ya", "yu", "ye", "you", "xa", "xe", "xi", "xo", "xu", "xam", "xou", "xow",
             "xol", "xoks", "za", "ze", "zi", "zo", "zu", "zoo", "zap", "zao"
     };
 

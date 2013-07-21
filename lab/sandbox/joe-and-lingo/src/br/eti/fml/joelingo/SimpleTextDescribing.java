@@ -39,19 +39,20 @@ public class SimpleTextDescribing extends Describing<String> {
 
         if (!describeDeath(joelingo, finalText)) {
             String life = describeLife(random, joelingo);
-
-            if (life.length() == 0) {
-                life += " e";
-            }
-
             finalText.append(life);
-            String states = describeStates(random, joelingo);
 
-            if (states.length() == 0) {
-                finalText.append(" só.");
+            if (life.length() > 0) {
+                finalText.append(" e");
             }
 
+            String states = describeStates(random, joelingo);
             finalText.append(states);
+
+            if (life.length() > 0 && states.length() == 0) {
+                finalText.append(" só.");
+            } else if (life.length() == 0 && states.length() == 0) {
+                finalText.append(" está vivo.");
+            }
         }
 
         String text = finalText.toString();
@@ -69,23 +70,23 @@ public class SimpleTextDescribing extends Describing<String> {
         }
 
         if (joelingo.getAppearanceAge() == AppearanceAge.BABY) {
-            finalText.append(" é um bebê e");
+            finalText.append(gender(joelingo, " é um bebê", " é uma bebê"));
         } else if (joelingo.getAppearanceAge() == AppearanceAge.CHILD
                 && levelDetail.ordinal() >= LevelDetail.NORMAL.ordinal()) {
-            finalText.append(" é um filhote e");
+            finalText.append(gender(joelingo, " é um filhote", " é uma filhote"));
         } else if (joelingo.getAppearanceAge() == AppearanceAge.TEEN
                 && levelDetail.ordinal() >= LevelDetail.NORMAL.ordinal()) {
-            finalText.append(" é adolescente e");
+            finalText.append(" é adolescente");
         } else if (joelingo.getAppearanceAge() == AppearanceAge.ADULT && levelDetail == LevelDetail.FULL) {
-            finalText.append(" é adulto e");
+            finalText.append(gender(joelingo, " é adulto", " é adulta"));
         } else if (joelingo.getAppearanceAge() == AppearanceAge.OLD) {
-            finalText.append(" está bem " + gender(joelingo, "velhinho", "velhinha") + " e");
+            finalText.append(" está bem " + gender(joelingo, "velhinho", "velhinha"));
         }
 
         if (levelDetail == LevelDetail.FULL && joelingo.getAgeInSecondCycle() > 1) {
-            finalText.append(" tem ");
+            finalText.append(", tem ");
             finalText.append(age(joelingo.getAgeInSecondCycle()));
-            finalText.append(" de vida. E " + getPronoum(joelingo));
+            finalText.append(" de vida,");
         }
 
         return finalText.toString();
@@ -219,8 +220,8 @@ public class SimpleTextDescribing extends Describing<String> {
                     new Condition(LocusFeatures.HUNGER_FEELING, Goodness.GOOD, 0.0, 0.3, Importance.HIGH,
                             gender(joelingo, "totalmente cheio", "totalmente cheia"),
                             gender(joelingo, "lotado de comida", "lotada de comida"),
-                            gender(joelingo, "super satisfeito", "super satisfeita")),
-                    new Condition(LocusFeatures.HUNGER_FEELING, Goodness.GOOD, 0.3, 0.6, Importance.LOW,
+                            "com a barriga cheia"),
+                    new Condition(LocusFeatures.HUNGER_FEELING, Goodness.NEUTRAL, 0.3, 0.6, Importance.LOW,
                             "sem fome"),
                     new Condition(LocusFeatures.HUNGER_FEELING, Goodness.BAD, 0.6, 0.8, Importance.HIGH,
                             "com fome",
@@ -239,13 +240,13 @@ public class SimpleTextDescribing extends Describing<String> {
                             "totalmente sem forças",
                             "totalmente sem ânimo",
                             gender(joelingo, "muito desanimado", "muito desanimada")),
-                    new Condition(LocusFeatures.MOTIVATION_FEELING, Goodness.BAD, 0.3, 0.5, Importance.LOW,
+                    new Condition(LocusFeatures.MOTIVATION_FEELING, Goodness.BAD, 0.3, 0.4, Importance.LOW,
                             gender(joelingo, "desmotivado", "desmotivada"),
                             "carente",
                             "sem forças",
                             "sem ânimo",
                             gender(joelingo, "desanimado", "desanimada")),
-                    new Condition(LocusFeatures.MOTIVATION_FEELING, Goodness.GOOD, 0.5, 0.8, Importance.LOW,
+                    new Condition(LocusFeatures.MOTIVATION_FEELING, Goodness.GOOD, 0.6, 0.8, Importance.LOW,
                             gender(joelingo, "animado", "amimada"),
                             gender(joelingo, "empolgado", "empolgada"),
                             gender(joelingo, "motivado", "motivada")),
@@ -253,6 +254,40 @@ public class SimpleTextDescribing extends Describing<String> {
                             gender(joelingo, "super animado", "super amimada"),
                             gender(joelingo, "super empolgado", "super empolgada"),
                             gender(joelingo, "muito motivado", "muito motivada"))
+            ));
+
+            description.add(new Description(random, levelDetail, joelingo,
+                    new Condition(LocusFeatures.FEAR, Goodness.GOOD, 0.0, 0.2, Importance.LOW,
+                            gender(joelingo, "muito corajoso", "muito corajosa"),
+                            "sem medo nenhum"),
+                    new Condition(LocusFeatures.FEAR, Goodness.BAD, 0.7, 0.8, Importance.LOW,
+                            "com medo"),
+                    new Condition(LocusFeatures.FEAR, Goodness.BAD, 0.8, 1.0, Importance.HIGH,
+                            "com muito medo",
+                            "morrendo de medo",
+                            gender(joelingo, "apavorado", "apavorada"),
+                            "em pânico")
+            ));
+
+            description.add(new Description(random, levelDetail, joelingo,
+                    new Condition(LocusFeatures.FEELING_COLD, Goodness.BAD, 0.0, 0.2, Importance.SEVERE,
+                            "morrendo de calor",
+                            "derretendo de calor",
+                            "passando mal de calor",
+                            "com muito calor",
+                            "sentindo muito calor"),
+                    new Condition(LocusFeatures.FEELING_COLD, Goodness.BAD, 0.2, 0.4, Importance.HIGH,
+                            "com calor",
+                            "sentindo calor"),
+                    new Condition(LocusFeatures.FEELING_COLD, Goodness.BAD, 0.6, 0.8, Importance.HIGH,
+                            "com frio",
+                            "sentindo frio"),
+                    new Condition(LocusFeatures.FEELING_COLD, Goodness.BAD, 0.8, 1.0, Importance.SEVERE,
+                            "morrendo de frio",
+                            "congelando",
+                            "sentindo muito frio",
+                            "tremendo de frio",
+                            "batendo os dentes de frio")
             ));
         }
 
@@ -296,8 +331,13 @@ public class SimpleTextDescribing extends Describing<String> {
                             if (opposite) {
                                 result.append(randomize(random,
                                         COMMA + " mas", COMMA + " mas", COMMA + " mas", COMMA + " mas",
+                                        COMMA + " mas", COMMA + " mas", COMMA + " mas", COMMA + " mas",
                                         COMMA + " porém", COMMA + " porém", COMMA + " todavia", COMMA + " só que",
-                                        COMMA + " apesar de"));
+                                        COMMA + " apesar de",
+                                        StringUtils.trim(MessageFormat.format(". Porém {0} também {1}",
+                                                joelingo.getName(), randomize(random, introduction))),
+                                        StringUtils.trim(MessageFormat.format(". Mas {0} ainda {1}",
+                                                getPronoum(joelingo), randomize(random, introduction)))));
                             } else {
                                 result.append(randomize(random,
                                         COMMA, COMMA, COMMA, COMMA, COMMA, COMMA, COMMA, COMMA, COMMA,
