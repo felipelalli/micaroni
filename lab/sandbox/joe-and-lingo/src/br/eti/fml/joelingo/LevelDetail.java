@@ -7,5 +7,5 @@ public enum LevelDetail {
     /**
      * 140 chars
      */
-    SMS_TWITTER, NORMAL, FULL
+    SMS_TWITTER, NORMAL, FULL;
 }

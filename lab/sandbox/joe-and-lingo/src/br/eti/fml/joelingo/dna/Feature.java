@@ -16,11 +16,21 @@ public class Feature extends JsonCapable<Feature> {
         this.value = value;
     }
 
+    public double getDoubleValue() {
+        return value.min(new BigDecimal(1.0)).max(new BigDecimal(0.0)).doubleValue();
+    }
+
     public BigDecimal getValue() {
         return value.min(new BigDecimal(1.0)).max(new BigDecimal(0.0));
     }
 
-    public void setValue(BigDecimal value) {
+    public Feature setValue(BigDecimal value) {
         this.value = value;
+        return this;
+    }
+
+    public Feature setValue(double value) {
+        this.value = new BigDecimal(String.valueOf(value));
+        return this;
     }
 }

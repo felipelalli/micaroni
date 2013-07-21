@@ -10,6 +10,11 @@ public class DeathException extends Exception {
         this.deathReason = deathReason;
     }
 
+    public DeathException(DeathReason deathReason, String message) {
+        super(message);
+        this.deathReason = deathReason;
+    }
+
     @Override
     public String toString() {
         return "DeathException{" +

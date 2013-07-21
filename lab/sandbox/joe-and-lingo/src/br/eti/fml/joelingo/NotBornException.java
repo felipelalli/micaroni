@@ -7,4 +7,8 @@ public class NotBornException extends DeathException {
     public NotBornException() {
         super(DeathReason.NOT_BORN);
     }
+
+    public NotBornException(String message) {
+        super(DeathReason.NOT_BORN, message);
+    }
 }

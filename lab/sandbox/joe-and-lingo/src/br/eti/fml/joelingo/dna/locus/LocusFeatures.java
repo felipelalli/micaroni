@@ -92,6 +92,9 @@ public enum LocusFeatures implements Locus {
     IMMUNE_EFFICIENCY       (79, false, new BigDecimal("0.8")), // 0.0 is aids, 0.5 is normal, 0.8 very healthy
     ACCUMULATED_KNOWLEDGE   (82, false, new BigDecimal("0.0")), // 0.0 when born, 0.3 smart, 0.6 very smart, 1.0 genius
     SLEEPY                  (83, false, new BigDecimal("0.0")), // 0.0 is no sleepy, 0.3 is normal, 0.5 is sleepy, 1.0 is sleeping
+    WINGS_SIZE              (84, false, new BigDecimal("0.0")), // 0.0 is no wings, 0.3 is normal, 1.0 huge
+    FINS_SIZE               (85, false, new BigDecimal("0.0")), // 0.0 is no fins, 0.3 is normal, 1.0 huge
+    THORNS_SIZE             (86, false, new BigDecimal("0.0")), // 0.0 is no thorns, 0.3 is normal, 1.0 huge
 
     ;
 
