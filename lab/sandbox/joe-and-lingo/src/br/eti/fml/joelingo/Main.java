@@ -58,6 +58,7 @@ public class Main {
             kid.getPhenotype().setFeature(LocusFeatures.HAPPINESS, random.nextDouble());
             kid.getPhenotype().setFeature(LocusFeatures.ANGER_FEELING, random.nextDouble());
             kid.getPhenotype().setFeature(LocusFeatures.HUNGER_FEELING, random.nextDouble());
+            kid.getPhenotype().setFeature(LocusFeatures.MOTIVATION_FEELING, random.nextDouble());
         }
 
         System.out.println("Joe: " + joe);

@@ -45,7 +45,6 @@ public class SimpleTextDescribing extends Describing<String> {
             }
 
             finalText.append(life);
-
             String states = describeStates(random, joelingo);
 
             if (states.length() == 0) {
@@ -167,74 +166,93 @@ public class SimpleTextDescribing extends Describing<String> {
         // TODO: if twitter, randomize X descriptions only
 
         description.add(new Description(random, levelDetail, joelingo,
-                new Condition(LocusFeatures.SLEEPY, false, 0.0, 0.3, Importance.LOW,
+                new Condition(LocusFeatures.SLEEPY, Goodness.NEUTRAL, 0.0, 0.3, Importance.LOW,
                         gender(joelingo, "bem acordado", "bem acordada"),
                         gender(joelingo, "ligadão", "ligadona"),
                         gender(joelingo, "acordadão", "acordadona")),
-                new Condition(LocusFeatures.SLEEPY, false, 0.3, 0.5, Importance.LOW,
+                new Condition(LocusFeatures.SLEEPY, Goodness.NEUTRAL, 0.3, 0.5, Importance.LOW,
                         gender(joelingo, "acordado", "acordada"),
                         "de olho aberto"),
-                new Condition(LocusFeatures.SLEEPY, false, 0.5, 0.8, Importance.HIGH,
+                new Condition(LocusFeatures.SLEEPY, Goodness.BAD, 0.5, 0.8, Importance.HIGH,
                         "com muito sono", gender(joelingo, "sonolento", "sonolenta"), "caindo de sono"),
-                new Condition(LocusFeatures.SLEEPY, false, 0.8, 1.0, Importance.SEVERE, "dormindo", "cochilando")
+                new Condition(LocusFeatures.SLEEPY, Goodness.NEUTRAL, 0.8, 1.0, Importance.SEVERE, "dormindo", "cochilando")
         ));
 
         if (joelingo.getPhenotype().getFeature(LocusFeatures.SLEEPY).getDoubleValue() < 0.8) {
             // do not describe others emotional states if is sleeping
 
             description.add(new Description(random, levelDetail, joelingo,
-                    new Condition(LocusFeatures.HAPPINESS, false, 0.0, 0.2, Importance.SEVERE, "com depressão",
+                    new Condition(LocusFeatures.HAPPINESS, Goodness.BAD, 0.0, 0.2, Importance.SEVERE, "com depressão",
                             gender(joelingo, "deprimido", "deprimida"),
                             "muito triste",
                             gender(joelingo, "acabado emocionalmente", "acabada emocionalmente")),
-                    new Condition(LocusFeatures.HAPPINESS, false, 0.2, 0.4, Importance.HIGH,
+                    new Condition(LocusFeatures.HAPPINESS, Goodness.BAD, 0.2, 0.4, Importance.HIGH,
                             "triste",
                             gender(joelingo, "tristinho", "tristinha"),
                             gender(joelingo, "chateado", "chateada"),
                             gender(joelingo, "cabisbaixo", "cabisbaixa")),
-                    new Condition(LocusFeatures.HAPPINESS, false, 0.4, 0.7, Importance.LOW, "feliz", "alegre", "contente"),
-                    new Condition(LocusFeatures.HAPPINESS, false, 0.7, 1.0, Importance.HIGH,
+                    new Condition(LocusFeatures.HAPPINESS, Goodness.GOOD, 0.4, 0.7, Importance.LOW, "feliz", "alegre", "contente"),
+                    new Condition(LocusFeatures.HAPPINESS, Goodness.GOOD, 0.7, 1.0, Importance.HIGH,
                             "muito feliz", "radiante", "ultra feliz",  gender(joelingo, "felicíssimo", "felicíssima"),
                             "muito alegre", "muito contente")
             ));
 
-            boolean happy = joelingo.getPhenotype().getFeature(LocusFeatures.HAPPINESS).getDoubleValue() > 0.4;
-
             description.add(new Description(random, levelDetail, joelingo,
-                    new Condition(LocusFeatures.ANGER_FEELING, !happy, 0.0, 0.2, Importance.LOW,
+                    new Condition(LocusFeatures.ANGER_FEELING, Goodness.GOOD, 0.0, 0.2, Importance.LOW,
                             "zen",
                             gender(joelingo, "bem calmo", "bem calma"),
                             gender(joelingo, "super tranquilo", "super tranquila")),
-                    new Condition(LocusFeatures.ANGER_FEELING, !happy, 0.2, 0.6, Importance.LOW,
+                    new Condition(LocusFeatures.ANGER_FEELING, Goodness.GOOD, 0.2, 0.6, Importance.LOW,
                             gender(joelingo, "calmo", "calma"),
                             gender(joelingo, "tranquilo", "tranquila")),
-                    new Condition(LocusFeatures.ANGER_FEELING, happy, 0.6, 0.8, Importance.HIGH,
+                    new Condition(LocusFeatures.ANGER_FEELING, Goodness.BAD, 0.6, 0.8, Importance.HIGH,
                             "com raiva",
                             gender(joelingo, "raivoso", "raivosa"),
                             gender(joelingo, "irritado", "irritada")),
-                    new Condition(LocusFeatures.ANGER_FEELING, happy, 0.8, 1.0, Importance.SEVERE,
+                    new Condition(LocusFeatures.ANGER_FEELING, Goodness.BAD, 0.8, 1.0, Importance.SEVERE,
                             gender(joelingo, "louco de raiva", "louca de raiva"),
                             gender(joelingo, "insanamente raivoso", "insanamente irritada"),
                             "bufando de raiva")
             ));
 
-            boolean angry = joelingo.getPhenotype().getFeature(LocusFeatures.ANGER_FEELING).getDoubleValue() > 0.6;
-
             description.add(new Description(random, levelDetail, joelingo,
-                    new Condition(LocusFeatures.HUNGER_FEELING, angry, 0.0, 0.3, Importance.HIGH,
+                    new Condition(LocusFeatures.HUNGER_FEELING, Goodness.GOOD, 0.0, 0.3, Importance.HIGH,
                             gender(joelingo, "totalmente cheio", "totalmente cheia"),
                             gender(joelingo, "lotado de comida", "lotada de comida"),
                             gender(joelingo, "super satisfeito", "super satisfeita")),
-                    new Condition(LocusFeatures.HUNGER_FEELING, angry, 0.3, 0.6, Importance.LOW,
+                    new Condition(LocusFeatures.HUNGER_FEELING, Goodness.GOOD, 0.3, 0.6, Importance.LOW,
                             "sem fome"),
-                    new Condition(LocusFeatures.HUNGER_FEELING, !angry, 0.6, 0.8, Importance.HIGH,
+                    new Condition(LocusFeatures.HUNGER_FEELING, Goodness.BAD, 0.6, 0.8, Importance.HIGH,
                             "com fome",
                             gender(joelingo, "faminto", "faminta"),
                             "barriga roncando"),
-                    new Condition(LocusFeatures.HUNGER_FEELING, !angry, 0.8, 1.0, Importance.SEVERE,
+                    new Condition(LocusFeatures.HUNGER_FEELING, Goodness.BAD, 0.8, 1.0, Importance.SEVERE,
                             gender(joelingo, "morto de fome", "morta de fome"),
                             gender(joelingo, "desnutrido", "desnutrida"),
                             "morrendo de fome", "azul de fome")
+            ));
+
+            description.add(new Description(random, levelDetail, joelingo,
+                    new Condition(LocusFeatures.MOTIVATION_FEELING, Goodness.BAD, 0.0, 0.3, Importance.HIGH,
+                            gender(joelingo, "muito desmotivado", "muito desmotivada"),
+                            "muito carente",
+                            "totalmente sem forças",
+                            "totalmente sem ânimo",
+                            gender(joelingo, "muito desanimado", "muito desanimada")),
+                    new Condition(LocusFeatures.MOTIVATION_FEELING, Goodness.BAD, 0.3, 0.5, Importance.LOW,
+                            gender(joelingo, "desmotivado", "desmotivada"),
+                            "carente",
+                            "sem forças",
+                            "sem ânimo",
+                            gender(joelingo, "desanimado", "desanimada")),
+                    new Condition(LocusFeatures.MOTIVATION_FEELING, Goodness.GOOD, 0.5, 0.8, Importance.LOW,
+                            gender(joelingo, "animado", "amimada"),
+                            gender(joelingo, "empolgado", "empolgada"),
+                            gender(joelingo, "motivado", "motivada")),
+                    new Condition(LocusFeatures.MOTIVATION_FEELING, Goodness.GOOD, 0.8, 1.0, Importance.HIGH,
+                            gender(joelingo, "super animado", "super amimada"),
+                            gender(joelingo, "super empolgado", "super empolgada"),
+                            gender(joelingo, "muito motivado", "muito motivada"))
             ));
         }
 
@@ -265,14 +283,17 @@ public class SimpleTextDescribing extends Describing<String> {
 
                 if (d.isRelevant()) {
                     if (before != null && before.isRelevant()) {
+                        boolean opposite = d.getGoodness() == Goodness.BAD && before.getGoodness() == Goodness.GOOD
+                                        || d.getGoodness() == Goodness.GOOD && before.getGoodness() == Goodness.BAD;
+
                         if (levelDetail == LevelDetail.SMS_TWITTER) {
-                            if (d.isOpposite()) {
+                            if (opposite) {
                                 result.append(COMMA).append(" mas");
                             } else {
                                 result.append(COMMA);
                             }
                         } else {
-                            if (d.isOpposite()) {
+                            if (opposite) {
                                 result.append(randomize(random,
                                         COMMA + " mas", COMMA + " mas", COMMA + " mas", COMMA + " mas",
                                         COMMA + " porém", COMMA + " porém", COMMA + " todavia", COMMA + " só que",
@@ -353,19 +374,23 @@ public class SimpleTextDescribing extends Describing<String> {
         SEVERE, HIGH, LOW
     }
 
+    enum Goodness {
+        GOOD, BAD, NEUTRAL
+    }
+
     class Condition {
         private final LocusFeatures locusFeatures;
-        private final boolean opposite;
+        private final Goodness goodness;
         private final double min;
         private final double max;
         private final Importance importance;
         private final String[] description;
 
-        Condition(LocusFeatures locusFeatures, boolean opposite,
+        Condition(LocusFeatures locusFeatures, Goodness goodness,
                   double min, double max, Importance importance, String... description) {
 
             this.locusFeatures = locusFeatures;
-            this.opposite = opposite;
+            this.goodness = goodness;
             this.min = min;
             this.max = max;
             this.importance = importance;
@@ -386,18 +411,18 @@ public class SimpleTextDescribing extends Describing<String> {
             this.conditions = conditions;
         }
 
-        public boolean isOpposite() {
+        public Goodness getGoodness() {
             Phenotype phenotype = joelingo.getPhenotype();
-            boolean opposite = false;
+            Goodness goodness = Goodness.NEUTRAL;
 
             for (Condition condition : conditions) {
                 if (isBetween(phenotype, condition.locusFeatures, condition.min, condition.max)) {
-                    opposite = condition.opposite;
+                    goodness = condition.goodness;
                     break;
                 }
             }
 
-            return opposite;
+            return goodness;
         }
 
         public boolean isRelevant() {
