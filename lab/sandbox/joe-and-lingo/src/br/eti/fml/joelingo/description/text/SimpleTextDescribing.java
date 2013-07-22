@@ -42,26 +42,27 @@ public class SimpleTextDescribing extends Describing<String> {
 
         if (!describeDeath(joelingo, finalText)) {
             String life = describeLife(random, joelingo);
+            String states = describeStates(random, joelingo);
+            String appearence = describeAppearence(random, joelingo);
+
             finalText.append(life);
 
-            if (life.length() > 0) {
+            if (life.length() > 0 && (states.length() > 0 || appearence.length() > 0)) {
                 finalText.append(" e");
             }
 
-            String states = describeStates(random, joelingo);
             finalText.append(states);
 
-            if (states.length() > 0) {
-                finalText.append(MessageFormat.format(" E {0}", joelingo.getName()));
+            if (states.length() > 0 && appearence.length() > 0) {
+                finalText.append(randomize(random,
+                        MessageFormat.format(" E {0}", joelingo.getName()),
+                        MessageFormat.format(" E {0}", getPronoum(joelingo))));
             }
 
-            String appearence = describeAppearence(random, joelingo);
             finalText.append(appearence);
 
-            if ((life.length() > 0 && states.length() == 0 && appearence.length() == 0)
-                    || (states.length() > 0 && appearence.length() == 0)) {
-
-                finalText.append(" está com a aparência normal.");
+            if (life.length() == 0 && states.length() == 0 && appearence.length() == 0) {
+                finalText.append(" está normal");
             }
         }
 
@@ -172,29 +173,50 @@ public class SimpleTextDescribing extends Describing<String> {
         StringBuilder result = new StringBuilder();
         List<Description> description = new ArrayList<Description>(20);
 
-        description.add(new Description(random, levelDetail, joelingo,
+        description.add(new ConditionalDescription(random, levelDetail, joelingo,
                 new Condition(LocusFeatures.EYE_SIZE, Goodness.BAD, 0.0, 0.0, Importance.SEVERE,
                         "não tem olho"),
                 new Condition(LocusFeatures.EYE_SIZE, Goodness.NEUTRAL, 0.0, 0.15, Importance.SEVERE,
                         "tem olhos pequenos"),
-                new Condition(LocusFeatures.EYE_SIZE, Goodness.NEUTRAL, 0.15, 0.3, Importance.LOW,
-                        "tem olhos num tamanho normal"),
                 new Condition(LocusFeatures.EYE_SIZE, Goodness.NEUTRAL, 0.3, 0.5, Importance.LOW,
                         "tem olhos grandes"),
                 new Condition(LocusFeatures.EYE_SIZE, Goodness.NEUTRAL, 0.5, 1.0, Importance.HIGH,
                         "tem olhos gigantes")
         ));
 
-        description.add(new Description(random, levelDetail, joelingo,
+        description.add(new ConditionalDescription(random, levelDetail, joelingo,
                 new Condition(LocusFeatures.EYE_EFFICIENCY, Goodness.BAD, 0.0, 0.0, Importance.SEVERE,
                         gender(joelingo, "é cego", "é cega")),
                 new Condition(LocusFeatures.EYE_EFFICIENCY, Goodness.BAD, 0.0, 0.3, Importance.HIGH,
-                        gender(joelingo, "quase cego", "quase cega"),
+                        gender(joelingo, "é quase cego", "é quase cega"),
                         "enxerga muito mal"),
                 new Condition(LocusFeatures.EYE_EFFICIENCY, Goodness.GOOD, 0.8, 1.0, Importance.LOW,
                         "enxerga absurdamente bem",
                         "tem uma super visão",
                         "tem uma visão biônica")
+        ));
+
+        description.add(new ConditionalDescription(random, levelDetail, joelingo,
+                new Condition(LocusFeatures.EYE_GLOW, Goodness.NEUTRAL, 0.3, 0.5, Importance.LOW,
+                        "tem os olhos um pouco brilhantes"),
+                new Condition(LocusFeatures.EYE_GLOW, Goodness.NEUTRAL, 0.5, 0.8, Importance.LOW,
+                        "tem os olhos brilhantes"),
+                new Condition(LocusFeatures.EYE_GLOW, Goodness.GOOD, 0.8, 1.0, Importance.HIGH,
+                        "tem os olhos muito brilhantes",
+                        "tem os olhos super brilhantes",
+                        "tem os olhos brilhantes demais")
+        ));
+
+        description.add(new ColorDescription(levelDetail, Importance.HIGH, "o olho é {0}",
+                joelingo.getPhenotype().getFeature(LocusFeatures.EYE_REDDISH).getDoubleValue(),
+                joelingo.getPhenotype().getFeature(LocusFeatures.EYE_GREENISH).getDoubleValue(),
+                joelingo.getPhenotype().getFeature(LocusFeatures.EYE_BLUISH).getDoubleValue()
+        ));
+
+        description.add(new ColorDescription(levelDetail, Importance.LOW, "o couro é {0}",
+                joelingo.getPhenotype().getFeature(LocusFeatures.SKIN_REDDISH).getDoubleValue(),
+                joelingo.getPhenotype().getFeature(LocusFeatures.SKIN_GREENISH).getDoubleValue(),
+                joelingo.getPhenotype().getFeature(LocusFeatures.SKIN_BLUISH).getDoubleValue()
         ));
 
         result.append(split(random, joelingo, levelDetail, description));
@@ -208,7 +230,7 @@ public class SimpleTextDescribing extends Describing<String> {
 
         // TODO: if twitter, randomize X descriptions only
 
-        description.add(new Description(random, levelDetail, joelingo,
+        description.add(new ConditionalDescription(random, levelDetail, joelingo,
                 new Condition(LocusFeatures.SLEEPY, Goodness.NEUTRAL, 0.0, 0.3, Importance.LOW,
                         gender(joelingo, "bem acordado", "bem acordada"),
                         gender(joelingo, "ligadão", "ligadona"),
@@ -224,7 +246,7 @@ public class SimpleTextDescribing extends Describing<String> {
         if (joelingo.getPhenotype().getFeature(LocusFeatures.SLEEPY).getDoubleValue() < 0.8) {
             // do not describe others emotional states if is sleeping
 
-            description.add(new Description(random, levelDetail, joelingo,
+            description.add(new ConditionalDescription(random, levelDetail, joelingo,
                     new Condition(LocusFeatures.HAPPINESS, Goodness.BAD, 0.0, 0.2, Importance.SEVERE,
                             "com depressão",
                             gender(joelingo, "deprimido", "deprimida"),
@@ -241,7 +263,7 @@ public class SimpleTextDescribing extends Describing<String> {
                             "muito alegre", "muito contente")
             ));
 
-            description.add(new Description(random, levelDetail, joelingo,
+            description.add(new ConditionalDescription(random, levelDetail, joelingo,
                     new Condition(LocusFeatures.BOREDOM_FEELING, Goodness.BAD, 0.8, 1.0, Importance.HIGH,
                             gender(joelingo, "muito entediado", "muito entediada"),
                             "de bode",
@@ -253,7 +275,7 @@ public class SimpleTextDescribing extends Describing<String> {
                             "com tédio")
             ));
 
-            description.add(new Description(random, levelDetail, joelingo,
+            description.add(new ConditionalDescription(random, levelDetail, joelingo,
                     new Condition(LocusFeatures.ANGER_FEELING, Goodness.GOOD, 0.0, 0.2, Importance.LOW,
                             "zen",
                             gender(joelingo, "bem calmo", "bem calma"),
@@ -268,12 +290,12 @@ public class SimpleTextDescribing extends Describing<String> {
                             "bufando de raiva")
             ));
 
-            description.add(new Description(random, levelDetail, joelingo,
+            description.add(new ConditionalDescription(random, levelDetail, joelingo,
                     new Condition(LocusFeatures.HUNGER_FEELING, Goodness.GOOD, 0.0, 0.3, Importance.HIGH,
                             gender(joelingo, "totalmente cheio", "totalmente cheia"),
                             gender(joelingo, "lotado de comida", "lotada de comida"),
                             "com a barriga cheia"),
-                    new Condition(LocusFeatures.HUNGER_FEELING, Goodness.NEUTRAL, 0.3, 0.6, Importance.LOW,
+                    new Condition(LocusFeatures.HUNGER_FEELING, Goodness.GOOD, 0.3, 0.6, Importance.LOW,
                             "sem fome"),
                     new Condition(LocusFeatures.HUNGER_FEELING, Goodness.BAD, 0.6, 0.8, Importance.HIGH,
                             "com fome",
@@ -285,7 +307,7 @@ public class SimpleTextDescribing extends Describing<String> {
                             "morrendo de fome", "azul de fome")
             ));
 
-            description.add(new Description(random, levelDetail, joelingo,
+            description.add(new ConditionalDescription(random, levelDetail, joelingo,
                     new Condition(LocusFeatures.MOTIVATION_FEELING, Goodness.BAD, 0.0, 0.3, Importance.HIGH,
                             gender(joelingo, "muito desmotivado", "muito desmotivada"),
                             "muito carente",
@@ -308,7 +330,7 @@ public class SimpleTextDescribing extends Describing<String> {
                             gender(joelingo, "muito motivado", "muito motivada"))
             ));
 
-            description.add(new Description(random, levelDetail, joelingo,
+            description.add(new ConditionalDescription(random, levelDetail, joelingo,
                     new Condition(LocusFeatures.FEAR, Goodness.GOOD, 0.0, 0.2, Importance.LOW,
                             gender(joelingo, "muito corajoso", "muito corajosa"),
                             "sem medo nenhum"),
@@ -321,7 +343,7 @@ public class SimpleTextDescribing extends Describing<String> {
                             "em pânico")
             ));
 
-            description.add(new Description(random, levelDetail, joelingo,
+            description.add(new ConditionalDescription(random, levelDetail, joelingo,
                     new Condition(LocusFeatures.FEELING_COLD, Goodness.BAD, 0.0, 0.2, Importance.SEVERE,
                             "morrendo de calor",
                             "derretendo de calor",
@@ -342,7 +364,7 @@ public class SimpleTextDescribing extends Describing<String> {
                             "batendo os dentes de frio")
             ));
 
-            description.add(new Description(random, levelDetail, joelingo,
+            description.add(new ConditionalDescription(random, levelDetail, joelingo,
                     new Condition(LocusFeatures.HEALTHY_APPEARANCE, Goodness.GOOD, 0.8, 1.0, Importance.LOW,
                             "super saudável",
                             "muito saudável"),

@@ -8,8 +8,8 @@ import java.util.Set;
 
 @SuppressWarnings("UnusedDeclaration")
 public enum LocusFeatures implements Locus {
-    EYE_REDDISH             ( 0, false, new BigDecimal("0.19921875")),  // 0.0 is no red and 1.0 is very red
-    EYE_GREENISH            ( 1, false, new BigDecimal("0.098039216")), // 0.0 is no green and 1.0 is very green
+    EYE_REDDISH             ( 0, false, new BigDecimal("0.50")),  // 0.0 is no red and 1.0 is very red
+    EYE_GREENISH            ( 1, false, new BigDecimal("0.25")), // 0.0 is no green and 1.0 is very green
     EYE_BLUISH              (31, false, new BigDecimal("0.0")), // 0.0 is no blue and 1.0 is very blue
     EYE_GLOW                (26, false, new BigDecimal("0.0")), // 0.0 is normal and 1.0 is very glow
     EYE_SIZE                ( 8, false, new BigDecimal("0.3")), // 0.0 is no eyes, 0.3 = normal, 1.0 = is so big eyes

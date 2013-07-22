@@ -30,7 +30,7 @@ public class Name extends JsonCapable<Name> {
             "ma", "rik", "zu", "ker", "berg", "ste", "ca",
             "an", "dreas", "vi", "tor", "ma", "theus", "va", "gi", "na",
             "de", "us", "de", "ni", "se", "le", "o", "nar", "do",
-            "le", "an", "dro", "a", "nar", "qu", "is", "ta",
+            "le", "an", "dro", "a", "nar", "kis", "ta",
             "bit", "co", "in", "fus", "ca", "car", "ro", "bi", "ci", "cle", "ta",
             "gor", "do", "ma", "gro", "jo", "vi", "al", "mo", "vi", "le",
             "sau", "lo", "gos", "to", "so", "sa", "de", "li", "ca", "do",

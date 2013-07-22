@@ -66,6 +66,10 @@ public class Main {
 
             kid.getPhenotype().setFeature(LocusFeatures.EYE_SIZE, Math.abs(random.nextGaussian()));
             kid.getPhenotype().setFeature(LocusFeatures.EYE_EFFICIENCY, Math.abs(random.nextGaussian()));
+            kid.getPhenotype().setFeature(LocusFeatures.EYE_GLOW, Math.abs(random.nextGaussian()));
+            kid.getPhenotype().setFeature(LocusFeatures.EYE_REDDISH, random.nextDouble());
+            kid.getPhenotype().setFeature(LocusFeatures.EYE_GREENISH, random.nextDouble());
+            kid.getPhenotype().setFeature(LocusFeatures.EYE_BLUISH, random.nextDouble());
         }
 
         System.out.println("Joe: " + joe);
