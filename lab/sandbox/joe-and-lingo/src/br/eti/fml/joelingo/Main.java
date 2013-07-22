@@ -61,6 +61,8 @@ public class Main {
             kid.getPhenotype().setFeature(LocusFeatures.MOTIVATION_FEELING, random.nextDouble());
             kid.getPhenotype().setFeature(LocusFeatures.FEAR, random.nextDouble());
             kid.getPhenotype().setFeature(LocusFeatures.FEELING_COLD, random.nextDouble());
+            kid.getPhenotype().setFeature(LocusFeatures.HEALTHY_APPEARANCE, random.nextDouble());
+            kid.getPhenotype().setFeature(LocusFeatures.BOREDOM_FEELING, random.nextDouble());
         }
 
         System.out.println("Joe: " + joe);

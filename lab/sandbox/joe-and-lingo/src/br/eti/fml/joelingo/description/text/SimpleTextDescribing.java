@@ -186,7 +186,8 @@ public class SimpleTextDescribing extends Describing<String> {
             // do not describe others emotional states if is sleeping
 
             description.add(new Description(random, levelDetail, joelingo,
-                    new Condition(LocusFeatures.HAPPINESS, Goodness.BAD, 0.0, 0.2, Importance.SEVERE, "com depressão",
+                    new Condition(LocusFeatures.HAPPINESS, Goodness.BAD, 0.0, 0.2, Importance.SEVERE,
+                            "com depressão",
                             gender(joelingo, "deprimido", "deprimida"),
                             "muito triste",
                             gender(joelingo, "acabado emocionalmente", "acabada emocionalmente")),
@@ -202,13 +203,22 @@ public class SimpleTextDescribing extends Describing<String> {
             ));
 
             description.add(new Description(random, levelDetail, joelingo,
+                    new Condition(LocusFeatures.BOREDOM_FEELING, Goodness.BAD, 0.8, 1.0, Importance.HIGH,
+                            gender(joelingo, "muito entediado", "muito entediada"),
+                            "de bode",
+                            gender(joelingo, "muito chato", "muito chata"),
+                            "com um tédio infernal"),
+                    new Condition(LocusFeatures.BOREDOM_FEELING, Goodness.BAD, 0.6, 0.8, Importance.LOW,
+                            gender(joelingo, "entediado", "entediada"),
+                            gender(joelingo, "chato", "chata"),
+                            "com tédio")
+            ));
+
+            description.add(new Description(random, levelDetail, joelingo,
                     new Condition(LocusFeatures.ANGER_FEELING, Goodness.GOOD, 0.0, 0.2, Importance.LOW,
                             "zen",
                             gender(joelingo, "bem calmo", "bem calma"),
                             gender(joelingo, "super tranquilo", "super tranquila")),
-                    new Condition(LocusFeatures.ANGER_FEELING, Goodness.GOOD, 0.2, 0.6, Importance.LOW,
-                            gender(joelingo, "calmo", "calma"),
-                            gender(joelingo, "tranquilo", "tranquila")),
                     new Condition(LocusFeatures.ANGER_FEELING, Goodness.BAD, 0.6, 0.8, Importance.HIGH,
                             "com raiva",
                             gender(joelingo, "raivoso", "raivosa"),

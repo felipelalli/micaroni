@@ -87,7 +87,7 @@ public enum LocusFeatures implements Locus {
     ANGER_FEELING           (71, false, new BigDecimal("0.3")), // 0.0 zen, 0.3 normal, 0.5 anger, 1.0 crazy
     MOTIVATION_FEELING      (72, false, new BigDecimal("0.3")), // 0.0 lacking, 0.3 normal, 0.5 motivated, 1.0 amazing
     HUNGER_FEELING          (73, false, new BigDecimal("0.0")), // 0.0 is totally full, 0.3 is normal, 0.6 is hungry, 0.8 starving
-    BOREDOM_FEELING         (74, false, new BigDecimal("0.0")), // 0.0 no hunger, 1.0 starving
+    BOREDOM_FEELING         (74, false, new BigDecimal("0.0")), // 0.0 no boredom, 1.0 totally boredom
     TAIL_SIZE               (75, false, new BigDecimal("0.3")), // 0.0 no tail, 0.3 normal
     IMMUNE_EFFICIENCY       (79, false, new BigDecimal("0.8")), // 0.0 is aids, 0.5 is normal, 0.8 very healthy
     ACCUMULATED_KNOWLEDGE   (82, false, new BigDecimal("0.0")), // 0.0 when born, 0.3 smart, 0.6 very smart, 1.0 genius
