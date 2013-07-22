@@ -1,5 +1,6 @@
 package br.eti.fml.joelingo;
 
+import br.eti.fml.joelingo.description.text.SimpleTextDescribing;
 import br.eti.fml.joelingo.dna.AppearanceAge;
 import br.eti.fml.joelingo.dna.Feature;
 import br.eti.fml.joelingo.dna.Genotype;

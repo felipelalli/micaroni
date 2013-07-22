@@ -1,5 +1,8 @@
-package br.eti.fml.joelingo;
+package br.eti.fml.joelingo.description.text;
 
+import br.eti.fml.joelingo.Joelingo;
+import br.eti.fml.joelingo.LevelDetail;
+import br.eti.fml.joelingo.description.Describing;
 import br.eti.fml.joelingo.dna.AppearanceAge;
 import br.eti.fml.joelingo.dna.Phenotype;
 import br.eti.fml.joelingo.dna.Sex;
@@ -51,7 +54,7 @@ public class SimpleTextDescribing extends Describing<String> {
             if (life.length() > 0 && states.length() == 0) {
                 finalText.append(" só.");
             } else if (life.length() == 0 && states.length() == 0) {
-                finalText.append(" está vivo.");
+                finalText.append(gender(joelingo, " está vivo.", " está viva."));
             }
         }
 
@@ -289,6 +292,25 @@ public class SimpleTextDescribing extends Describing<String> {
                             "tremendo de frio",
                             "batendo os dentes de frio")
             ));
+
+            description.add(new Description(random, levelDetail, joelingo,
+                    new Condition(LocusFeatures.HEALTHY_APPEARANCE, Goodness.GOOD, 0.8, 1.0, Importance.LOW,
+                            "super saudável",
+                            "muito saudável"),
+                    new Condition(LocusFeatures.HEALTHY_APPEARANCE, Goodness.GOOD, 0.5, 0.8, Importance.LOW,
+                            "saudável"),
+                    new Condition(LocusFeatures.HEALTHY_APPEARANCE, Goodness.BAD, 0.3, 0.5, Importance.LOW,
+                            gender(joelingo, "fisicamente acabado", "fisicamente acabada"),
+                            "com a aparência meio acabada",
+                            "um pouco doente"),
+                    new Condition(LocusFeatures.HEALTHY_APPEARANCE, Goodness.BAD, 0.0, 0.3, Importance.SEVERE,
+                            "muito doente",
+                            gender(joelingo, "destruído fisicamente", "destruída fisicamente"),
+                            gender(joelingo, "debilitado", "debilitada"),
+                            "de cama",
+                            "com a aparência horrível",
+                            "com profundas olheiras")
+            ));
         }
 
         if (!isAllEmpty(description)) {
@@ -397,12 +419,12 @@ public class SimpleTextDescribing extends Describing<String> {
         return isEmpty;
     }
 
-    private boolean isBetween(Phenotype phenotype, LocusFeatures locusFeatures, double min, double max) {
+    public static boolean isBetween(Phenotype phenotype, LocusFeatures locusFeatures, double min, double max) {
         double value = phenotype.getFeature(locusFeatures).getDoubleValue();
         return value >= min && value <= max;
     }
 
-    private String randomize(Random random, String ... what) {
+    public static String randomize(Random random, String ... what) {
         if (what.length == 0) {
             return "";
         } else {
@@ -410,95 +432,4 @@ public class SimpleTextDescribing extends Describing<String> {
         }
     }
 
-    enum Importance {
-        SEVERE, HIGH, LOW
-    }
-
-    enum Goodness {
-        GOOD, BAD, NEUTRAL
-    }
-
-    class Condition {
-        private final LocusFeatures locusFeatures;
-        private final Goodness goodness;
-        private final double min;
-        private final double max;
-        private final Importance importance;
-        private final String[] description;
-
-        Condition(LocusFeatures locusFeatures, Goodness goodness,
-                  double min, double max, Importance importance, String... description) {
-
-            this.locusFeatures = locusFeatures;
-            this.goodness = goodness;
-            this.min = min;
-            this.max = max;
-            this.importance = importance;
-            this.description = description;
-        }
-    }
-
-    class Description {
-        private final Random random;
-        private final LevelDetail levelDetail;
-        private final Joelingo joelingo;
-        private final Condition[] conditions;
-
-        Description(Random random, LevelDetail levelDetail, Joelingo joelingo, Condition... conditions) {
-            this.random = random;
-            this.levelDetail = levelDetail;
-            this.joelingo = joelingo;
-            this.conditions = conditions;
-        }
-
-        public Goodness getGoodness() {
-            Phenotype phenotype = joelingo.getPhenotype();
-            Goodness goodness = Goodness.NEUTRAL;
-
-            for (Condition condition : conditions) {
-                if (isBetween(phenotype, condition.locusFeatures, condition.min, condition.max)) {
-                    goodness = condition.goodness;
-                    break;
-                }
-            }
-
-            return goodness;
-        }
-
-        public boolean isRelevant() {
-            Phenotype phenotype = joelingo.getPhenotype();
-            boolean relevant = false;
-
-            for (Condition condition : conditions) {
-                if (isBetween(phenotype, condition.locusFeatures, condition.min, condition.max)) {
-                    if (condition.importance == Importance.SEVERE) {
-                        relevant = true;
-                    } else if (condition.importance == Importance.HIGH && levelDetail.ordinal() > LevelDetail.SMS_TWITTER.ordinal()) {
-                        relevant = true;
-                    } else if (levelDetail == LevelDetail.FULL) {
-                        relevant = true;
-                    }
-
-                    break;
-                }
-            }
-
-            return relevant;
-        }
-
-        @Override
-        public String toString() {
-            String result = "";
-            Phenotype phenotype = joelingo.getPhenotype();
-
-            for (Condition condition : conditions) {
-                if (isBetween(phenotype, condition.locusFeatures, condition.min, condition.max)) {
-                    result = randomize(random, condition.description);
-                    break;
-                }
-            }
-
-            return result;
-        }
-    }
 }

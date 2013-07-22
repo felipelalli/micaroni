@@ -1,4 +1,6 @@
-package br.eti.fml.joelingo;
+package br.eti.fml.joelingo.description;
+
+import br.eti.fml.joelingo.Joelingo;
 
 import java.security.SecureRandom;
 import java.util.Random;
