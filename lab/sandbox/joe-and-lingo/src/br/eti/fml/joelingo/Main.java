@@ -63,6 +63,9 @@ public class Main {
             kid.getPhenotype().setFeature(LocusFeatures.FEELING_COLD, random.nextDouble());
             kid.getPhenotype().setFeature(LocusFeatures.HEALTHY_APPEARANCE, random.nextDouble());
             kid.getPhenotype().setFeature(LocusFeatures.BOREDOM_FEELING, random.nextDouble());
+
+            kid.getPhenotype().setFeature(LocusFeatures.EYE_SIZE, Math.abs(random.nextGaussian()));
+            kid.getPhenotype().setFeature(LocusFeatures.EYE_EFFICIENCY, Math.abs(random.nextGaussian()));
         }
 
         System.out.println("Joe: " + joe);

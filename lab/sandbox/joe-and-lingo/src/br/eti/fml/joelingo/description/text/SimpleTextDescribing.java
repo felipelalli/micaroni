@@ -51,10 +51,17 @@ public class SimpleTextDescribing extends Describing<String> {
             String states = describeStates(random, joelingo);
             finalText.append(states);
 
-            if (life.length() > 0 && states.length() == 0) {
-                finalText.append(" só.");
-            } else if (life.length() == 0 && states.length() == 0) {
-                finalText.append(gender(joelingo, " está vivo.", " está viva."));
+            if (states.length() > 0) {
+                finalText.append(MessageFormat.format(" E {0}", joelingo.getName()));
+            }
+
+            String appearence = describeAppearence(random, joelingo);
+            finalText.append(appearence);
+
+            if ((life.length() > 0 && states.length() == 0 && appearence.length() == 0)
+                    || (states.length() > 0 && appearence.length() == 0)) {
+
+                finalText.append(" está com a aparência normal.");
             }
         }
 
@@ -83,7 +90,7 @@ public class SimpleTextDescribing extends Describing<String> {
         } else if (joelingo.getAppearanceAge() == AppearanceAge.ADULT && levelDetail == LevelDetail.FULL) {
             finalText.append(gender(joelingo, " é adulto", " é adulta"));
         } else if (joelingo.getAppearanceAge() == AppearanceAge.OLD) {
-            finalText.append(" está bem " + gender(joelingo, "velhinho", "velhinha"));
+            finalText.append(" está bem ").append(gender(joelingo, "velhinho", "velhinha"));
         }
 
         if (levelDetail == LevelDetail.FULL && joelingo.getAgeInSecondCycle() > 1) {
@@ -138,11 +145,10 @@ public class SimpleTextDescribing extends Describing<String> {
             dead = true;
 
             if (levelDetail == LevelDetail.SMS_TWITTER) {
-                finalText.append(" está " + gender(joelingo, "morto", "morta"));
+                finalText.append(" está ").append(gender(joelingo, "morto", "morta"));
             } else {
-                finalText.append(" morreu com " + age(joelingo.getAgeInSecondCycle()));
-
-                finalText.append(" em " + DATE_FORMAT.format(joelingo.getDeath()));
+                finalText.append(" morreu com ").append(age(joelingo.getAgeInSecondCycle()));
+                finalText.append(" em ").append(DATE_FORMAT.format(joelingo.getDeath()));
 
                 switch (joelingo.getDeathReason()) {
                     case NOT_BORN:
@@ -162,10 +168,43 @@ public class SimpleTextDescribing extends Describing<String> {
         return dead;
     }
 
+    private String describeAppearence(Random random, Joelingo joelingo) {
+        StringBuilder result = new StringBuilder();
+        List<Description> description = new ArrayList<Description>(20);
+
+        description.add(new Description(random, levelDetail, joelingo,
+                new Condition(LocusFeatures.EYE_SIZE, Goodness.BAD, 0.0, 0.0, Importance.SEVERE,
+                        "não tem olho"),
+                new Condition(LocusFeatures.EYE_SIZE, Goodness.NEUTRAL, 0.0, 0.15, Importance.SEVERE,
+                        "tem olhos pequenos"),
+                new Condition(LocusFeatures.EYE_SIZE, Goodness.NEUTRAL, 0.15, 0.3, Importance.LOW,
+                        "tem olhos num tamanho normal"),
+                new Condition(LocusFeatures.EYE_SIZE, Goodness.NEUTRAL, 0.3, 0.5, Importance.LOW,
+                        "tem olhos grandes"),
+                new Condition(LocusFeatures.EYE_SIZE, Goodness.NEUTRAL, 0.5, 1.0, Importance.HIGH,
+                        "tem olhos gigantes")
+        ));
+
+        description.add(new Description(random, levelDetail, joelingo,
+                new Condition(LocusFeatures.EYE_EFFICIENCY, Goodness.BAD, 0.0, 0.0, Importance.SEVERE,
+                        gender(joelingo, "é cego", "é cega")),
+                new Condition(LocusFeatures.EYE_EFFICIENCY, Goodness.BAD, 0.0, 0.3, Importance.HIGH,
+                        gender(joelingo, "quase cego", "quase cega"),
+                        "enxerga muito mal"),
+                new Condition(LocusFeatures.EYE_EFFICIENCY, Goodness.GOOD, 0.8, 1.0, Importance.LOW,
+                        "enxerga absurdamente bem",
+                        "tem uma super visão",
+                        "tem uma visão biônica")
+        ));
+
+        result.append(split(random, joelingo, levelDetail, description));
+
+        return result.toString();
+    }
+
     private String describeStates(Random random, Joelingo joelingo) {
         StringBuilder result = new StringBuilder();
-
-        List<Description> description = new ArrayList<Description>(100);
+        List<Description> description = new ArrayList<Description>(20);
 
         // TODO: if twitter, randomize X descriptions only
 
@@ -345,13 +384,11 @@ public class SimpleTextDescribing extends Describing<String> {
             result.append(randomize(random, introduction));
             Description before = null;
 
-            for (int i = 0; i < description.size(); i++) {
-                Description d = description.get(i);
-
+            for (Description d : description) {
                 if (d.isRelevant()) {
                     if (before != null && before.isRelevant()) {
                         boolean opposite = d.getGoodness() == Goodness.BAD && before.getGoodness() == Goodness.GOOD
-                                        || d.getGoodness() == Goodness.GOOD && before.getGoodness() == Goodness.BAD;
+                                || d.getGoodness() == Goodness.GOOD && before.getGoodness() == Goodness.BAD;
 
                         if (levelDetail == LevelDetail.SMS_TWITTER) {
                             if (opposite) {
@@ -386,9 +423,7 @@ public class SimpleTextDescribing extends Describing<String> {
                         }
                     }
 
-                    result.append(" ")
-                          .append(d.toString());
-
+                    result.append(" ").append(d.toString());
                     before = d;
                 }
             }
