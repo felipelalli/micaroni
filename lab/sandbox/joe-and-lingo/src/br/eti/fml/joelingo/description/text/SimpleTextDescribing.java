@@ -241,6 +241,27 @@ public class SimpleTextDescribing extends Describing<String> {
                         gender(joelingo, "é musculoso", "é musculosa"))
         ));
 
+        // if isn't strong, so it can be fat
+        if (joelingo.getPhenotype().getFeature(LocusFeatures.MUSCLE).getDoubleValue() < 0.5) {
+            description.add(new ConditionalDescription(random, levelDetail, joelingo,
+                    new Condition(LocusFeatures.BODY_FAT, Goodness.NEUTRAL, 0.5, 0.7, Importance.HIGH,
+                            gender(joelingo, "é gordo", "é gorda"),
+                            gender(joelingo, "é obeso", "é obesa")),
+                    new Condition(LocusFeatures.BODY_FAT, Goodness.BAD, 0.7, 1.0, Importance.SEVERE,
+                            gender(joelingo, "é absurdamente gordo", "é absurdamente gorda"),
+                            gender(joelingo, "é muito gordo", "é muito gorda"),
+                            gender(joelingo, "é muito pesado", "é muito pesada"))
+            ));
+        }
+
+        description.add(new ConditionalDescription(random, levelDetail, joelingo,
+                new Condition(LocusFeatures.BODY_FAT, Goodness.BAD, 0.0, 0.1, Importance.HIGH,
+                        gender(joelingo, "é muito magro", "é muito magra"),
+                        gender(joelingo, "é magro demais", "é magra demais")),
+                new Condition(LocusFeatures.BODY_FAT, Goodness.NEUTRAL, 0.1, 0.2, Importance.LOW,
+                        gender(joelingo, "é magro", "é magra"))
+        ));
+
         result.append(split(random, joelingo, levelDetail, description));
 
         return result.toString();
@@ -249,8 +270,6 @@ public class SimpleTextDescribing extends Describing<String> {
     private String describeStates(Random random, Joelingo joelingo) {
         StringBuilder result = new StringBuilder();
         List<Description> description = new ArrayList<Description>(20);
-
-        // TODO: if twitter, randomize X descriptions only
 
         description.add(new ConditionalDescription(random, levelDetail, joelingo,
                 new Condition(LocusFeatures.SLEEPY, Goodness.NEUTRAL, 0.0, 0.3, Importance.LOW,
