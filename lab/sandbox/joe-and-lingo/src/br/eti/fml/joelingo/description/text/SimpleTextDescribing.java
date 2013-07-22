@@ -207,16 +207,38 @@ public class SimpleTextDescribing extends Describing<String> {
                         "tem os olhos brilhantes demais")
         ));
 
-        description.add(new ColorDescription(levelDetail, Importance.HIGH, "o olho é {0}",
+        description.add(new ColorDescription(levelDetail, Importance.HIGH, "tem o olho {0}",
                 joelingo.getPhenotype().getFeature(LocusFeatures.EYE_REDDISH).getDoubleValue(),
                 joelingo.getPhenotype().getFeature(LocusFeatures.EYE_GREENISH).getDoubleValue(),
                 joelingo.getPhenotype().getFeature(LocusFeatures.EYE_BLUISH).getDoubleValue()
         ));
 
-        description.add(new ColorDescription(levelDetail, Importance.LOW, "o couro é {0}",
+        description.add(new ColorDescription(levelDetail, Importance.LOW, "tem uma pele de couro {0}",
                 joelingo.getPhenotype().getFeature(LocusFeatures.SKIN_REDDISH).getDoubleValue(),
                 joelingo.getPhenotype().getFeature(LocusFeatures.SKIN_GREENISH).getDoubleValue(),
                 joelingo.getPhenotype().getFeature(LocusFeatures.SKIN_BLUISH).getDoubleValue()
+        ));
+
+        description.add(new ColorDescription(levelDetail, Importance.HIGH, "tem pêlos {0}",
+                joelingo.getPhenotype().getFeature(LocusFeatures.BRISTLE_REDDISH).getDoubleValue(),
+                joelingo.getPhenotype().getFeature(LocusFeatures.BRISTLE_GREENISH).getDoubleValue(),
+                joelingo.getPhenotype().getFeature(LocusFeatures.BRISTLE_BLUISH).getDoubleValue()
+        ));
+
+        description.add(new ConditionalDescription(random, levelDetail, joelingo,
+                new Condition(LocusFeatures.MUSCLE, Goodness.BAD, 0.0, 0.2, Importance.SEVERE,
+                        "tem fraqueza muscular",
+                        gender(joelingo, "é fraco como uma borboleta", "é fraca como uma borboleta"),
+                        gender(joelingo, "é totalmente sedentário", "é totalmente sedentária")),
+                new Condition(LocusFeatures.MUSCLE, Goodness.GOOD, 0.5, 0.8, Importance.LOW,
+                        "é forte",
+                        gender(joelingo, "é fortinho", "é fortinha")),
+                new Condition(LocusFeatures.MUSCLE, Goodness.GOOD, 0.8, 1.0, Importance.HIGH,
+                        gender(joelingo, "é forte como um touro", "é forte como uma gorila"),
+                        "é ridiculamente forte",
+                        "é absurdamente forte",
+                        "é um trator de forte",
+                        gender(joelingo, "é musculoso", "é musculosa"))
         ));
 
         result.append(split(random, joelingo, levelDetail, description));
@@ -292,7 +314,7 @@ public class SimpleTextDescribing extends Describing<String> {
 
             description.add(new ConditionalDescription(random, levelDetail, joelingo,
                     new Condition(LocusFeatures.HUNGER_FEELING, Goodness.GOOD, 0.0, 0.3, Importance.HIGH,
-                            gender(joelingo, "totalmente cheio", "totalmente cheia"),
+                            gender(joelingo, "totalmente saciado", "totalmente saciada"),
                             gender(joelingo, "lotado de comida", "lotada de comida"),
                             "com a barriga cheia"),
                     new Condition(LocusFeatures.HUNGER_FEELING, Goodness.GOOD, 0.3, 0.6, Importance.LOW,
@@ -378,9 +400,28 @@ public class SimpleTextDescribing extends Describing<String> {
                             "muito doente",
                             gender(joelingo, "destruído fisicamente", "destruída fisicamente"),
                             gender(joelingo, "debilitado", "debilitada"),
-                            "de cama",
+                            gender(joelingo, "fraquinho e de cama", "fraquinha e de cama"),
                             "com a aparência horrível",
                             "com profundas olheiras")
+            ));
+
+            description.add(new ConditionalDescription(random, levelDetail, joelingo,
+                    new Condition(LocusFeatures.DIRT_LEVEL, Goodness.NEUTRAL, 0.0, 0.3, Importance.LOW,
+                            gender(joelingo, "super limpo", "super limpa"),
+                            gender(joelingo, "limpíssimo", "limpíssima"),
+                            gender(joelingo, "brilhante de limpo", "brilhante de limpa"),
+                            gender(joelingo, "impecavelmente limpo", "impecavelmente limpa")),
+                    new Condition(LocusFeatures.DIRT_LEVEL, Goodness.BAD, 0.7, 0.9, Importance.HIGH,
+                            gender(joelingo, "fedido", "fedida"),
+                            gender(joelingo, "sujo", "suja")),
+                    new Condition(LocusFeatures.DIRT_LEVEL, Goodness.BAD, 0.9, 1.0, Importance.SEVERE,
+                            gender(joelingo, "sujismundo", "sujismunda"),
+                            gender(joelingo, "muito fedido", "muito fedida"),
+                            "cheirando podre",
+                            "cheirando esgoto",
+                            gender(joelingo, "imundo", "imunda"),
+                            gender(joelingo, "sujo e nojento", "suja e nojenta"),
+                            gender(joelingo, "completamente sujo", "completamente suja"))
             ));
         }
 

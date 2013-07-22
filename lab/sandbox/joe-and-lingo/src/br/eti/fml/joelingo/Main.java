@@ -63,6 +63,8 @@ public class Main {
             kid.getPhenotype().setFeature(LocusFeatures.FEELING_COLD, random.nextDouble());
             kid.getPhenotype().setFeature(LocusFeatures.HEALTHY_APPEARANCE, random.nextDouble());
             kid.getPhenotype().setFeature(LocusFeatures.BOREDOM_FEELING, random.nextDouble());
+            kid.getPhenotype().setFeature(LocusFeatures.DIRT_LEVEL, random.nextDouble());
+            kid.getPhenotype().setFeature(LocusFeatures.MUSCLE, random.nextDouble());
 
             kid.getPhenotype().setFeature(LocusFeatures.EYE_SIZE, Math.abs(random.nextGaussian()));
             kid.getPhenotype().setFeature(LocusFeatures.EYE_EFFICIENCY, Math.abs(random.nextGaussian()));
@@ -70,6 +72,12 @@ public class Main {
             kid.getPhenotype().setFeature(LocusFeatures.EYE_REDDISH, random.nextDouble());
             kid.getPhenotype().setFeature(LocusFeatures.EYE_GREENISH, random.nextDouble());
             kid.getPhenotype().setFeature(LocusFeatures.EYE_BLUISH, random.nextDouble());
+            kid.getPhenotype().setFeature(LocusFeatures.SKIN_REDDISH, random.nextDouble());
+            kid.getPhenotype().setFeature(LocusFeatures.SKIN_GREENISH, random.nextDouble());
+            kid.getPhenotype().setFeature(LocusFeatures.SKIN_BLUISH, random.nextDouble());
+            kid.getPhenotype().setFeature(LocusFeatures.BRISTLE_REDDISH, random.nextDouble());
+            kid.getPhenotype().setFeature(LocusFeatures.BRISTLE_GREENISH, random.nextDouble());
+            kid.getPhenotype().setFeature(LocusFeatures.BRISTLE_BLUISH, random.nextDouble());
         }
 
         System.out.println("Joe: " + joe);

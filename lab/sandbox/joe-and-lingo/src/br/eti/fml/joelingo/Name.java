@@ -56,7 +56,12 @@ public class Name extends JsonCapable<Name> {
             "si", "mo", "ne", "ta", "gi", "a", "cin", "to", "ge", "o", "va", "na", "pi", "tu", "xa", "da",
             "ni", "ela", "nei", "mar", "sid", "ney", "tio", "tia", "su", "pla", "e", "du", "ar", "do", "mo", "ni", "ca",
             "car", "do", "zo", "ba", "ba", "ca", "ri", "car", "do", "lin", "do", "mar", "pi", "ra", "nha", "xo",
-            "xo", "ta", "tra", "vis", "ti", "gre", "le", "ao", "tar", "ta", "ru", "ga", "gor", "gon", "zo", "la"
+            "xo", "ta", "tra", "vis", "ti", "gre", "le", "ao", "tar", "ta", "ru", "ga", "gor", "gon", "zo", "la",
+            "son", "ga", "mon", "ga", "ma", "ca", "co", "e", "ri", "ka", "hey", "ko", "da", "no", "ni", "nho",
+            "fo", "fao", "fa", "ro", "fa", "ti", "co", "li", "no", "mi", "ki", "mil", "ki", "bin", "go", "ti", "a",
+            "zi", "nha", "pin", "go", "to", "bi", "bo", "bi", "fra", "jo", "la", "piu", "piu", "ju", "ca", "na",
+            "ta", "li", "no", "vi", "o", "le", "ta", "jor", "ge", "lan", "gui", "la", "gui", "lher", "me", "mu", "lher",
+            "ho", "mem"
     };
 
     private List<String> syllables = new ArrayList<String>(10);

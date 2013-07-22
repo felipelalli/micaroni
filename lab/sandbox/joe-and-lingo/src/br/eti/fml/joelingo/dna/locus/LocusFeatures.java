@@ -8,8 +8,8 @@ import java.util.Set;
 
 @SuppressWarnings("UnusedDeclaration")
 public enum LocusFeatures implements Locus {
-    EYE_REDDISH             ( 0, false, new BigDecimal("0.50")),  // 0.0 is no red and 1.0 is very red
-    EYE_GREENISH            ( 1, false, new BigDecimal("0.25")), // 0.0 is no green and 1.0 is very green
+    EYE_REDDISH             ( 0, false, new BigDecimal("0.66")),  // 0.0 is no red and 1.0 is very red
+    EYE_GREENISH            ( 1, false, new BigDecimal("0.33")), // 0.0 is no green and 1.0 is very green
     EYE_BLUISH              (31, false, new BigDecimal("0.0")), // 0.0 is no blue and 1.0 is very blue
     EYE_GLOW                (26, false, new BigDecimal("0.0")), // 0.0 is normal and 1.0 is very glow
     EYE_SIZE                ( 8, false, new BigDecimal("0.3")), // 0.0 is no eyes, 0.3 = normal, 1.0 = is so big eyes
@@ -39,9 +39,9 @@ public enum LocusFeatures implements Locus {
     TEETH_POINTED           (23, false, new BigDecimal("0.3")), // 0.0 is no pointed, 0.3 = normal, 1.0 is very pointed
     TEETH_EFFICIENCY        (24, false, new BigDecimal("0.5")), // 0.0 does not work, 0.5 = normal, 1.0 very efficient
     SKIN_ROUGHNESS          (27, false, new BigDecimal("0.5")), // 0.0 is totally smooth, 0.5 is normal, 1.0 is very roughness
-    SKIN_GREENISH           (28, false, new BigDecimal("0.8125")), // 0.0 is no green, 1.0 is totally green
-    SKIN_BLUISH             (29, false, new BigDecimal("0.80859375")), // 0.0 is no blue, 1.0 is totally blue
-    SKIN_REDDISH            (30, false, new BigDecimal("0.93359375")), // 0.0 is no red, 1.0 is totally red
+    SKIN_REDDISH            (30, false, new BigDecimal("0.9")), // 0.0 is no red, 1.0 is totally red
+    SKIN_GREENISH           (28, false, new BigDecimal("0.66")), // 0.0 is no green, 1.0 is totally green
+    SKIN_BLUISH             (29, false, new BigDecimal("0.33")), // 0.0 is no blue, 1.0 is totally blue
     BRISTLE_SIZE            (80, false, new BigDecimal("0.1")), // 0.0 is no bristle, 0.1 = short, 1.0 is very long bristle
     BRISTLE_SMOOTHNESS      (32, false, new BigDecimal("0.3")), // 0.0 is so hard, 1.0 is totally smooth
     BRISTLE_REDDISH         (76, false, new BigDecimal("0.6")), // color R
