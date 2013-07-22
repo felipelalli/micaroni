@@ -237,7 +237,7 @@ public class SimpleTextDescribing extends Describing<String> {
                         gender(joelingo, "é forte como um touro", "é forte como uma gorila"),
                         "é ridiculamente forte",
                         "é absurdamente forte",
-                        "é um trator de forte",
+                        "é um trator de tão forte",
                         gender(joelingo, "é musculoso", "é musculosa"))
         ));
 
@@ -362,11 +362,11 @@ public class SimpleTextDescribing extends Describing<String> {
                             "sem ânimo",
                             gender(joelingo, "desanimado", "desanimada")),
                     new Condition(LocusFeatures.MOTIVATION_FEELING, Goodness.GOOD, 0.6, 0.8, Importance.LOW,
-                            gender(joelingo, "animado", "amimada"),
+                            gender(joelingo, "agitado", "agitada"),
                             gender(joelingo, "empolgado", "empolgada"),
                             gender(joelingo, "motivado", "motivada")),
                     new Condition(LocusFeatures.MOTIVATION_FEELING, Goodness.GOOD, 0.8, 1.0, Importance.HIGH,
-                            gender(joelingo, "super animado", "super amimada"),
+                            gender(joelingo, "super agitado", "super agitada"),
                             gender(joelingo, "super empolgado", "super empolgada"),
                             gender(joelingo, "muito motivado", "muito motivada"))
             ));
