@@ -1,9 +1,0 @@
-{
-    "uuid" : "a3042f30-5097-4bb0-bf6f-183062378461",
-    "name" : "age",
-    "description" : "aging",
-    "version" : 1,
-    "accessory" : false,
-    "valid_initial_params" : "('speed_to_die)",
-    "on_cycle_code" : "(+ 1 1)"
-}
