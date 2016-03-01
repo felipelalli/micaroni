@@ -1,7 +1,12 @@
 (import (scheme base)
         (scheme write)
         (scheme file)
-        (scheme load))
+        (scheme load)
+        (laa i18n))
 
-(display (read-line))
+(define tr (make-i18n (load "res/dic.scm") "pt"))
+
+(display (tr "intro1"))
 (newline)
+
+
