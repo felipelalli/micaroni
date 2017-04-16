@@ -1,0 +1,18 @@
+# Temporary files:
+*~
+.bak
+
+# Project files:
+private/
+.idea/
+*.iml
+*.eml
+.project
+.classpath
+out/
+
+# Compilation result
+deploy/
+build/
+dist/
+*.class

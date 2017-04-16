@@ -1,0 +1,6 @@
+The algorithm must be deterministic, i. e., predictable,
+with the same result if executed multiple times with the same input.
+If you use random calculation, you should use a single seed, called
+"lucky number" which is the genotype of the Tamagotchi. Do not use
+any external data during execution. Codes do not deterministic can
+cause sudden death.
