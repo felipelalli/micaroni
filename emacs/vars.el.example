@@ -1,0 +1,17 @@
+;; -*- mode: Lisp; -*-
+
+; Org Gcal vars, see https://github.com/myuhe/org-gcal.el/blob/master/README.org for more info.
+
+(defvar google-agenda-id "EDIT HERE" "The Google Agenda API client id.")
+(defvar google-agenda-secret "EDIT HERE" "The Google Agenda API client secret.")
+(defvar google-email "EDIT HERE" "The Google email. ")
+(defvar org-gcal-schedule-path "schedule.org" "The ORG Gcal schedule file path")
+
+; Agenda and Orgmode paths
+
+(defvar org-file-path "EDIT HERE" "The main ORG file path")
+(defvar org-remember-file-path "EDIT HERE" "The remember ORG file path")
+(defvar org-archive-dir-path "EDIT HERE" "The archive dir ORG file path")
+
+
+
