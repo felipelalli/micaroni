@@ -4,7 +4,7 @@
 ;; INSTRUCTION:
 ;;
 ;; - Copy vars.el.example to ~/.emacs.d/vars.el
-;; - Edit paswords.el and insert your credentials.
+;; - Edit vars.el and insert your credentials.
 ;; - Create a symlink ~/.emacs.d/lib -> <micaroni-repo-path>/emacs/lib
 ;;
 
