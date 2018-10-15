@@ -230,7 +230,9 @@
 (require 'request)
 (require 'alert)
 (require 'ox-org)
-(require 'org-mind-map)
+
+; Mind map
+(load (expand-file-name "lib/org-mind-map.el" user-emacs-directory))
 
 ; Open URL on Google Chrome by default
 (setq browse-url-browser-function 'browse-url-chromium)
