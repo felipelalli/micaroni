@@ -90,6 +90,9 @@
 ; Font size
 (set-face-attribute 'default nil :height 170)
 
+; Colorize source code inside orgmode
+(setq org-src-fontify-natively t)
+
 ; General configs
 ; ===============
 
