@@ -280,6 +280,7 @@
 ;; Ignore modification-time-only changes in files, i.e. ones that
 ;; don't really change the contents.  This happens often with
 ;; switching between different VC buffers.
+;; Tip from https://stackoverflow.com/a/29556894/450148
 
 (defun update-buffer-modtime-if-byte-identical ()
   (let* ((size      (buffer-size))
