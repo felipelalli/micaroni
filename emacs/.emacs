@@ -267,6 +267,16 @@
 (eval-after-load "org"
  '(require 'ox-md nil t))
 
+;;
+;; Tip from https://emacs.stackexchange.com/a/29877/17985
+;;
+(defun region-bytes ()
+  (interactive)
+  (let ((strg  (if (use-region-p)
+                   (buffer-substring-no-properties (region-beginning) (region-end))
+                 "")))
+    (message "Region has %d bytes" (string-bytes strg))))
+
 ;; Ignore modification-time-only changes in files, i.e. ones that
 ;; don't really change the contents.  This happens often with
 ;; switching between different VC buffers.
