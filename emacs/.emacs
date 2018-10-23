@@ -223,6 +223,14 @@
       org-gcal-client-secret google-agenda-secret
       org-gcal-file-alist `((,google-email . ,org-gcal-schedule-path)))
 
+(defun org-gcal-fetch-and-sync ()
+       "Fetch and sync values from Google Calendar."
+       (org-gcal-fetch)
+       (org-gcal-fetch) ; there is a bug where the fetch should be called twice.
+       (org-gcal-sync))
+
+(run-with-timer 0 (* 30 60) 'org-gcal-fetch-and-sync) ; automatically sync each 30 min.
+
 ; Enabling habits on orgmode
 (setq org-modules (cons 'org-habit org-modules))
 
