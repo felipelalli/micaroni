@@ -242,7 +242,15 @@
 (run-with-timer 0 (* 30 60) 'org-gcal-fetch-and-sync) ; automatically sync each 30 min.
 
 ; Enabling habits on orgmode
-(setq org-modules (cons 'org-habit org-modules))
+(require 'org)
+(require 'org-install)
+(require 'org-habit)
+(add-to-list 'org-modules "org-habit")
+(setq org-habit-preceding-days 60
+      org-habit-following-days 7
+      org-habit-graph-column 80
+      org-habit-show-habits-only-for-today t
+      org-habit-show-all-today nil)
 
 ; Other useful libraries
 (require 'request)
