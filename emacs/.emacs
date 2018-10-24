@@ -158,6 +158,16 @@
 (setq load-path (cons (expand-file-name "lib/dash-2.8.0" user-emacs-directory) load-path))
 (require 'dash)
 
+; ht (hash table)
+(setq load-path (cons (expand-file-name "lib/ht.el" user-emacs-directory) load-path))
+(require 'ht)
+
+; emacs-emojify
+(setq load-path (cons (expand-file-name "lib/emacs-emojify" user-emacs-directory) load-path))
+(require 'emojify)
+(add-hook 'after-init-hook #'global-emojify-mode)
+(setq emojify-display-style 'image)
+
 ; cider (nrepls)
 (setq load-path (cons (expand-file-name "lib/cider-0.7.0" user-emacs-directory) load-path))
 (require 'cider)
