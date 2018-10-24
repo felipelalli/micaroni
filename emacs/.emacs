@@ -333,3 +333,8 @@
   (unless (update-buffer-modtime-if-byte-identical)
     (apply original arguments)))
 (advice-add 'ask-user-about-supersession-threat :around #'ask-user-about-supersession-threat--ignore-byte-identical)
+
+; Beautify orgmode
+; Tips from: https://zzamboni.org/post/beautifying-org-mode-in-emacs/
+;            http://www.howardism.org/Technical/Emacs/orgmode-wordprocessor.html
+(setq org-hide-emphasis-markers t)
