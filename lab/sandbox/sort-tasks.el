@@ -43,7 +43,7 @@ See also: `-flatten-n'"
   (let ((sorted-list
 	 (cond ((<= (length task-list) 1) task-list)
                ((= (length task-list) 2)
-		(if (y-or-n-p (format "IS '%s' *MORE IMPORTANT THAN* '%s'?"
+		(if (y-or-n-p (format "'%s' *SHOULD BE DONE BEFORE* '%s'?"
 				      (aref (nth 0 task-list) 0)
 				      (aref (nth 1 task-list) 0)))
 		    task-list
@@ -59,7 +59,7 @@ See also: `-flatten-n'"
 						      (nth pivot task-list)
 						      (sort-tasks/sort-list right-list)))
 					       (t (progn
-						    (if (y-or-n-p (format "IS '%s' *MORE IMPORTANT THAN* '%s'?"
+						    (if (y-or-n-p (format "IS '%s' *SHOULD BE DONE BEFORE* '%s'?"
 									  (aref (nth c task-list) 0)
 									  (aref (nth pivot task-list) 0)))
 							(setq left-list (cons (nth c task-list) left-list))
@@ -80,11 +80,19 @@ See also: `-flatten-n'"
                          (buffer-substring (org-element-property :begin task)
                                            (org-element-property :end task)))
 	       nil))))
-	(sorted-list (sort-tasks/sort-list list-of-tasks)))
+	 (sorted-list (sort-tasks/sort-list list-of-tasks))
+	 (element-content (buffer-substring (org-element-property :begin element)
+                                            (org-element-property :end element))))
     (with-current-buffer final-buffer
+;      (insert "#-*- mode: org -*-\n")
+      (insert element-content)
       (mapcar (lambda (c)
      		(insert (format "%s" (aref c 1))))
-     	      sorted-list))))
+     	      sorted-list)
+      (beginning-of-buffer)
+;      (next-line)
+;      (org-cycle)
+      )))
 
 (defun sort-tasks ()
   "Sort a list of tasks in the selected region or under the headline on cursor."
