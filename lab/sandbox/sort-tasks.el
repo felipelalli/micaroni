@@ -1,4 +1,10 @@
 ;;
+;; DEPRECATED
+;;
+;; MOVED TO: https://github.com/felipelalli/org-sort-tasks
+;;
+
+;;
 ;; From https://github.com/magnars/dash.el
 ;;
 (defmacro sort-tasks/--map (form list)
@@ -80,18 +86,16 @@ See also: `-flatten-n'"
                          (buffer-substring (org-element-property :begin task)
                                            (org-element-property :end task)))
 	       nil))))
-	 (sorted-list (sort-tasks/sort-list list-of-tasks))
-	 (element-content (buffer-substring (org-element-property :begin element)
-                                            (org-element-property :end element))))
+	 (sorted-list (sort-tasks/sort-list list-of-tasks)))
     (with-current-buffer final-buffer
-;      (insert "#-*- mode: org -*-\n")
-      (insert element-content)
+      (insert (format "* %s\n" (car (org-element-property :title element))))
       (mapcar (lambda (c)
      		(insert (format "%s" (aref c 1))))
      	      sorted-list)
       (beginning-of-buffer)
-;      (next-line)
-;      (org-cycle)
+      (org-mode)
+      (org-cycle)
+      (message "Done!")
       )))
 
 (defun sort-tasks ()
