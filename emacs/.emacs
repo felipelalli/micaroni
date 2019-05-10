@@ -35,6 +35,7 @@
    ["#2d3743" "#ff4242" "#74af68" "#dbdb95" "#34cae2" "#008b8b" "#00ede1" "#e1e1e0"])
  '(column-number-mode t)
  '(custom-enabled-themes (quote (misterioso)))
+ '(package-selected-packages (quote (ox-gfm org-pomodoro htmlize)))
  '(quack-browse-url-browser-function (quote browse-url-lynx-xterm))
  '(quack-default-program "zsh")
  '(quack-fontify-style nil)
@@ -55,8 +56,7 @@
       ("DELEGATED" . "light gray")
       ("DONE" . "green")
       ("DEPRECATED" . "gray")
-      ("DOING" . "white"))
-     )))
+      ("DOING" . "white")))))
  '(show-paren-mode t)
  '(visual-line-mode t t))
 
@@ -68,8 +68,8 @@
  '(default ((t (:inherit nil :stipple nil box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 140 :width normal :foundry "apple" :family "Ubuntu Mono")))))
 
 ;; Adding transparency variable
-(set-frame-parameter (selected-frame) 'alpha '(92 . 85))
-(add-to-list 'default-frame-alist '(alpha . (92 . 85)))
+(set-frame-parameter (selected-frame) 'alpha '(90 . 85))
+(add-to-list 'default-frame-alist '(alpha . (90 . 85)))
 
 ;; Toggle transparency function
 (defun toggle-transparency ()
@@ -82,7 +82,7 @@
                     ;; Also handle undocumented (<active> <inactive>) form.
                     ((numberp (cadr alpha)) (cadr alpha)))
               100)
-         '(95 . 85) '(100 . 100)))))
+         '(90 . 85) '(100 . 100)))))
 
 ; It can be useful if your wallpaper is NSFW
 (global-set-key (kbd "C-c t") 'toggle-transparency)
@@ -289,6 +289,10 @@
 (define-key input-decode-map "\e[1;5C" [C-right])
 (define-key input-decode-map "\e[1;5D" [C-left])
 
+;; Fix mouse wheel
+(global-set-key (kbd "C-M-(") (kbd "<mouse-4>"))
+(global-set-key (kbd "C-M-)") (kbd "<mouse-5>"))
+
 (eval-after-load "org"
  '(require 'ox-md nil t))
 
@@ -337,4 +341,37 @@
 ; Beautify orgmode
 ; Tips from: https://zzamboni.org/post/beautifying-org-mode-in-emacs/
 ;            http://www.howardism.org/Technical/Emacs/orgmode-wordprocessor.html
-(setq org-hide-emphasis-markers t)
+;(setq org-hide-emphasis-markers t)
+
+(setq show-trailing-whitespace t)
+
+; Auto backup:
+
+(setq vc-make-backup-files t)
+
+(setq version-control t ;; Use version numbers for backups.
+      kept-new-versions 10 ;; Number of newest versions to keep.
+      kept-old-versions 0 ;; Number of oldest versions to keep.
+      delete-old-versions t ;; Don't ask to delete excess backup versions.
+      backup-by-copying t) ;; Copy all files, don't rename them.
+
+;; Default and per-save backups go here:
+(setq backup-directory-alist '(("" . "~/.emacs.d/backup/per-save")))
+
+(defun force-backup-of-buffer ()
+  ;; Make a special "per session" backup at the first save of each
+  ;; emacs session.
+  (when (not buffer-backed-up)
+    ;; Override the default parameters for per-session backups.
+    (let ((backup-directory-alist '(("" . "~/.emacs.d/backup/per-session")))
+          (kept-new-versions 3))
+      (backup-buffer)))
+  ;; Make a "per save" backup on each save.  The first save results in
+  ;; both a per-session and a per-save backup, to keep the numbering
+  ;; of per-save backups consistent.
+  (let ((buffer-backed-up nil))
+    (backup-buffer)))
+
+(add-hook 'before-save-hook  'force-backup-of-buffer)
+
+(setq org-pomodoro-ticking-sound-p nil)
