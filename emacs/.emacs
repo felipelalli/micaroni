@@ -270,6 +270,10 @@
 ; Open URL on Google Chrome by default
 (setq browse-url-browser-function 'browse-url-chromium)
 
+; org-sort-tasks
+(setq load-path (cons (expand-file-name "lib/org-sort-tasks" user-emacs-directory) load-path))
+(require 'org-sort-tasks)
+
 ; Hacks
 ; =====
 
