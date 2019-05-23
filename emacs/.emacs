@@ -383,3 +383,5 @@
 
 (setq org-pomodoro-ticking-sound-p nil)
 (setq-default indent-tabs-mode nil)
+
+(require 'ox-taskjuggler)
