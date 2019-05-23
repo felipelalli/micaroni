@@ -35,7 +35,10 @@
    ["#2d3743" "#ff4242" "#74af68" "#dbdb95" "#34cae2" "#008b8b" "#00ede1" "#e1e1e0"])
  '(column-number-mode t)
  '(custom-enabled-themes (quote (misterioso)))
- '(package-selected-packages (quote (ox-gfm org-pomodoro htmlize)))
+ '(debug-on-error t)
+ '(package-selected-packages
+   (quote
+    (org-plus-contrib use-package ox-gfm org-pomodoro htmlize)))
  '(quack-browse-url-browser-function (quote browse-url-lynx-xterm))
  '(quack-default-program "zsh")
  '(quack-fontify-style nil)
