@@ -381,6 +381,7 @@
 
 (add-hook 'before-save-hook  'force-backup-of-buffer)
 
+(require 'org-pomodoro)
 (setq org-pomodoro-ticking-sound-p nil)
 (setq-default indent-tabs-mode nil)
 
