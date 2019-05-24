@@ -201,12 +201,7 @@
 (add-to-list 'package-archives
              '("melpa-stable" . "http://stable.melpa.org/packages/") t)
 
-(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
-
 (package-initialize)
-
-(package-install 'use-package)
-(use-package org :ensure org-plus-contrib)
 
 ;; Recent files
 (require 'recentf)
