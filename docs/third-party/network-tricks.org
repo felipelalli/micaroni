@@ -1,0 +1,331 @@
+#+TITLE:       Network  Tricks for server application developers
+#+AUTHOR:      Igor H. V. R. (igorhvr@iasylum.net)
+
+FILE COPIED FROM: http://www.iasylum.net/writings/network-tricks.org
+
+* Network  Tricks for server application developers
+Knowing the tricks below will make your life much easier during
+development and debugging, and also give you a less expensive
+temporary way out in several kinds of emergencies. 
+** Receiving connections in a machine where you are logged (local machine), and processing them on a remote machine - and vice-versa.
+
+ssh -L8080:www.iasylum.net:80 -v -v -g -N igorhvr@www.iasylum.net
+
+This will make your local machine listen on port 8080, and redirect
+all traffic to port 80 in the remote server (www.iasylum.net in the
+example). 
+
+ssh -R8080:www.scheme.org:80 -v -v -g -N igorhvr@www.iasylum.net
+
+This will make "www.iasylum.net" listen on port 8585, and proxy any
+connections on that machine to port 80 in www.scheme.org through
+whatever place you are running this command on (local machine where
+you are typing the ssh command). 
+
+Unfortunately, it is usually the case that in standard ssh
+configuration Remote forward sockets are bound to the remote machine
+only (loopback interface) for security reasons. 
+
+Because of the restriction mentioned above on remote forwards, often
+it is useful to chain both remote and local ssh port forwards
+together, doing stuff similar to: 
+
+ssh -R2000:localhost:8080 igorhvr@www.iasylum.net "ssh -N -g -L4000:localhost:2000 igorhvr@localhost"
+
+In this example, I am making port 8080 in my development machine where
+I am running this command (behind a NAT and a Firewall, no less!)
+available to everyone on the internet under
+http://www.iasylum.net:4000 
+
+The way this works is that first I do an SSH that redirects traffic
+from remote machine port 2000 to my dev machine at 8080 (inside the
+ssh connection itself), and inside this SSH session I ask the remote
+machine to redirect any traffic from port 4000 to the port 2000 (which
+in turn will be tunneled to my port 8080). 
+*** From the SSH man page
+Reading "man ssh" will prove very instructive. Some highlights:
+
+    Local port forwarding
+    -L [bind_address:]port:host:hostport
+    Specifies that the given port on the local (client) host is to be
+    forwarded to the given host and port on the remote side. This
+    works by allocating a socket to listen to port on the local side,
+    optionally bound to the specified bind_address. Whenever a con
+    nection is made to this port, the connection is forwarded over
+    the secure channel, and a connection is made to host port
+    hostport from the remote machine. Port forwardings can also be
+    specified in the configuration file. IPv6 addresses can be spec
+    ified by enclosing the address in square brackets. Only the
+    superuser can forward privileged ports. By default, the local
+    port is bound in accordance with the GatewayPorts setting. How
+    ever, an explicit bind_address may be used to bind the connection
+    to a specific address. The bind_address of localhost indicates
+    that the listening port be bound for local use only, while an
+    empty address or * indicates that the port should be available
+    from all interfaces.
+    Remote port forwarding
+    -R [bind_address:]port:host:hostport
+    Specifies that the given port on the remote (server) host is to
+    be forwarded to the given host and port on the local side. This
+    works by allocating a socket to listen to port on the remote
+    side, and whenever a connection is made to this port, the connec‐
+    tion is forwarded over the secure channel, and a connection is
+    made to host port hostport from the local machine.
+
+    Port forwardings can also be specified in the configuration file.
+    Privileged ports can be forwarded only when logging in as root on
+    the remote machine. IPv6 addresses can be specified by enclosing
+    the address in square braces.
+
+    By default, the listening socket on the server will be bound to
+    the loopback interface only. This may be overridden by specify‐
+    ing a bind_address. An empty bind_address, or the address '*',
+    indicates that the remote socket should listen on all interfaces.
+    Specifying a remote bind_address will only succeed if the
+    server's GatewayPorts option is enabled (see sshd_config(5)).
+
+    If the port argument is '0', the listen port will be dynamically
+    allocated on the server and reported to the client at run time.
+    When used together with -O forward the allocated port will be
+    printed to the standard output.
+** Making an entire machine behave like another (including having relevant access and the same source IP) in regards to network access.
+ sshuttle is a small wonderful tool that works like a VPN, minus the
+ pain to setup.
+
+ Running ./sshuttle –dns -vvr igorhvr@www.iasylum.net 0/0 from
+ anywhere (after simply doing a git clone
+ git://github.com/apenwarr/sshuttle.git && cd sshuttle)
+
+ makes the
+ machine where I am running this command behave exactly like a VPN
+ that proxies all network traffic setup would, including tunneling of
+ DNS queries.  
+** Making your Java application do every network access through a proxy with JVM settings (no code changes!).
+You should use a command similar to: java -DsocksProxyHost=localhost -DsocksProxyPort=5000 ….standardStuffHere…
+
+With this, the JVM will try to connect to a socks proxy running on
+port 5000 of localhost, and do every network access inside the entire
+JVM using it. No changes of any kind in your application is
+necessary - you just need to add those two JVM parameters.  
+
+This is very powerful in combination with the ssh socks support. It
+means that you can, for instance, test an application that needs
+access to multiple resources (database, queue server, etc, etc) from
+your home, as long as you have ssh access to a machine inside the
+corporate network. 
+
+You can also use this together with reverse SSH proxies (see above) to
+run a applications on a cloud computing service such as EC2 or
+Rackspace cloud without needing to drill permanent holes in your
+firewall setup. This is very useful - imagine you had a spike on
+demand, and urgently would like to use some cloud service to put more
+instances of whatever you are running up. However, much of your stuff
+depends on other services, which run inside your network and are
+firewalled/under NAT/etc/etc/etc. 
+
+In the past I did stuff similar to
+
+ssh -N -f -D4000 igorhvr@localhost # This inside some machine in the main datacenter I was using. I now have a SOCKS server running on port 4000.
+ssh -R2000:localhost:4000 -N -f igorhvr@machine-in-some-cloud-service # Now the port 2000 there will end up proxies to my local SOCKS server.
+ssh igorhvr@machine-in-some-cloud-service java
+-DsocksProxyHost=localhost -DsocksProxyPort=2000 my.app.MainClass
+
+the end result: I have my application running in the cloud service,
+but behaving exactly like it would in my main datacenter. This
+includes access to databases, queue services, and pretty much anything
+you could need. 
+
+As a last note, you might want your JVM to tunnel everything through
+the SOCKS proxy, except traffic for a specific machine. You can add
+exceptions using the -DsocksNonProxyHosts:155.119.100.255 flag. 
+
+Thus you can use something similar to: java -DsocksProxyHost=localhost
+-DsocksProxyPort=5000 -DsocksNonProxyHosts:155.119.100.255
+….standardStuffHere… 
+
+And when your application is running every network access will happen
+through the SOCKS proxy, except for anything directed to the
+155.119.100.255 IP. 
+** Faking a slow connection for testing purposes
+ [[http://monkey.org/~marius/pages/?page=trickle][trickle]] is a little known tool that will do the trick for arbitrary applications.
+** Blocking network packet flow for testing purposes
+   Frequently it is useful to simulate that some machine or service is
+   unresponsive, or that you have some network issue to test error
+   cases. 
+
+   The easiest way to do this is using iptables:
+
+    1 - To create a rule that discards packets: iptables -A OUTPUT -p tcp --dport portNumber -j DROP
+    2 - Perform your tests
+    3 - Erase the rule afterwards: iptables -D OUTPUT  -p tcp --dport portNumber -j DROP
+
+    You will want to replace portNumber with something before running
+    those commands. You can see the status (what is currently blocked,
+    etc) using: iptables -L 
+
+    If you want to see your packets being rejected instead of silently
+    dropped  (they will return to the originating host with an error
+    instead of disappearing and generating timeouts), replace DROP
+    with REJECT (in both command lines above). 
+** tcpdump - rationale
+Logs lie (unintentionally, generally speaking), and are frequently
+incomplete. It is also sometimes painful to parse different formats
+that developers dream up, and depending on the volume of data you
+need to analyze you have to do this. In some cases there are no logs,
+either, or you don't know where they are stored (specially if you are
+dealing with legacy and unsupported applications).
+
+Learning to use tcpdump very well and how to filter and transform its
+output is extremely valuable in such cases. After some time doing
+this out of necessity I found myself using tcpdump as the first tool,
+even for systems I knew well. The main challenge is filtering, but
+once you get used to it
+(http://matt.might.net/articles/sculpting-text/ can help, too) there
+is no coming back.
+
+The only caveat is that dealing with SSL connections becomes
+distinctly painful once you are used to this. More often than not I
+go back to the logs in such cases (the alternative is dealing with
+certificates, certificate authority generation, MTM proxies and a
+host of other things which are generally not easy to setup
+transparently).
+** tcpdump - basic usage
+Lists the interfaces, look for the "any" interface, write down the
+number:
+
+tcpdump -D
+
+Replace the 5 with the number you wrote down above:
+tcpdump -n -nn -S -tttt -s 0 -v -A -i 5
+
+That is it. You will have all the information regarding the network
+communications of the machine where you are runnning this.
+** Making sense of tcp connections in a network dump
+http://www.tcptrace.org/manual/index.html helps you understand what
+is happening with connections (connections dropped, for instance),
+making easier to diagnose network issues.
+
+Usage example (this was from a real life debugging session, I
+replaced host information with x):
+
+tcpdump -i 1 host xxx.xxx.xxx.xxx -s 0 -w dump.bin
+
+Replace xxx.etc in the command above with the IP you are interested
+in, leave this running for 30 seconds or so, then Ctrl+C to stop
+it.
+
+and finally:
+tcptrace -l dump | grep -B 4 -A 38 -i reset | less
+
+In my example this was showing for many of the connections that
+were established during the period when tcpdump was running):
+
+================================
+TCP connection 55:
+host de: xxxxxxxxxxxxxxxxxxxx:35613
+host df: xxxxxxxxxxxxxxx:8080
+complete conn: RESET (SYNs: 0) (FINs: 1)
+first packet: Wed Oct 5 23:44:16.814946 2011
+last packet: Wed Oct 5 23:44:20.895743 2011
+elapsed time: 0:00:04.080796
+total packets: 3
+filename: dump.bin
+de->df: df->de:
+total packets: 2 total packets: 1
+resets sent: 1 resets sent: 0
+ack pkts sent: 2 ack pkts sent: 1
+… a lot more interesting output - …
+================================
+
+The key information in this case was that the connections where
+being reset, which eventually let me to trace issues in a
+NAT-inside-a-NAT.
+** Using tcpdump and storing the information on a remote machine.
+tcpdump -n -S -ttt -s 65535 -vvv -A -i 6 not host 100.1.3.44 2>&1 | ssh -C igor.ribeiro@100.1.3.44 "tee > /data/dump"
+
+In this case the dump will be stored in the remote 100.1.3.44 machine
+(also a Linux host), in the /data/dump file. The above command is
+careful enough to not create a loop (the traffic generated for
+transfering the tcpdump information itself is supressed using the "not
+host IP" sequence). 
+
+This is useful for resource (disk, mainly) constrained machines, and
+also if you are running tcpdump on several machines and want to
+analyze the results in a single one.  
+   
+** A man-in-the-middle proxy (allowing inspection/tinkering w/ fake SSL certificates) for *everything* running in a machine.
+
+Flow: everything in the machine -> iptables tunneling
+      iptables tunneling -> REDSOCKS SOCKS proxy
+      REDSOCKS SOCKS proxy -> delegated SOCKS->HTTP proxy converter (listens at 8888)
+      delegated SOCKS->HTTP proxy converter (listens at 8888) -> zap (HTTP proxy, listens at 8118)
+      zap (HTTP proxy, listens at 8118) -> ssh SOCKS proxy (port 7171)
+
+So a request hits (because of iptables) the redsocks proxy, which tunnels requests to delegated, which tunnels requests to zap, which tunnels requests to our ssh proxy.
+
+With this you have your entire machine traffic available for inspection/tinkering using zap.
+
+*** ssh setup:
+ssh -C -vvv -D7171 -N igorhvr@207.210.106.8
+*** zap setup
+ In zap ( https://code.google.com/p/zaproxy/ ) change the command line in the run script to 
+#+BEGIN_EXAMPLE
+exec java -DsocksProxyHost=localhost -DsocksProxyPort=7171 ${JMEM} -XX:PermSize=256M -jar "${BASEDIR}/zap.jar" "$@"
+#+END_EXAMPLE
+*** delegated
+We now use Delegate ( www.delegate.org ) to have a PROXY SOCKS->PROXY HTTP converter using:
+#+BEGIN_EXAMPLE
+./delegated -P8888 SERVER=socks FORWARD="ssltunnel://localhost:8118/-_-*:*:*"
+#+END_EXAMPLE
+*** redsocks
+
+Download redsocks from http://darkk.net.ru/redsocks/ and run
+redsocks -c redsocks.conf
+
+where redsocks.conf is
+
+#+BEGIN_EXAMPLE
+base {
+log_debug = on; log_info = on; log = "file:/home/igorhvr/tmp/redsocks.log";
+daemon = on; redirector = iptables;
+}redsocks {
+      local_ip = 127.0.0.1;
+      local_port = 5555;
+      ip = 127.0.0.1;
+      port = 8888;
+      type = socks5;
+}
+#+END_EXAMPLE
+*** iptables setup
+#+BEGIN_EXAMPLE
+igorhvr:redsocks-configuration/ $ cat redsocks-iptables.sh
+sudo iptables -t nat -N REDSOCKS
+ 
+# Ignore LANs and some other reserved addresses.
+sudo iptables -t nat -A REDSOCKS -d 0.0.0.0/8 -j RETURN
+sudo iptables -t nat -A REDSOCKS -d 10.0.0.0/8 -j RETURN
+sudo iptables -t nat -A REDSOCKS -d 127.0.0.0/8 -j RETURN
+sudo iptables -t nat -A REDSOCKS -d 169.254.0.0/16 -j RETURN
+sudo iptables -t nat -A REDSOCKS -d 172.16.0.0/12 -j RETURN
+sudo iptables -t nat -A REDSOCKS -d 192.168.0.0/16 -j RETURN
+sudo iptables -t nat -A REDSOCKS -d 224.0.0.0/4 -j RETURN
+sudo iptables -t nat -A REDSOCKS -d 240.0.0.0/4 -j RETURN
+ 
+# Anything else should be redirected to port 5555
+sudo iptables -t nat -A REDSOCKS -p tcp -j REDIRECT --to-ports 5555
+
+# Any tcp connection made by 'user' should be redirected, put your username here.
+sudo iptables -t nat -A OUTPUT -p tcp -m owner --uid-owner igorhvr -j REDSOCKS
+
+igorhvr:redsocks-configuration/ $ cat redsocks-iptables-reset.sh
+sudo iptables -P INPUT ACCEPT
+sudo iptables -P FORWARD ACCEPT
+sudo iptables -P OUTPUT ACCEPT
+sudo iptables -t nat -F
+sudo iptables -t mangle -F
+sudo iptables -F
+sudo iptables -X
+
+igorhvr:redsocks-configuration/ $    
+
+#+END_EXAMPLE
