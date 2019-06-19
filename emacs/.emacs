@@ -386,3 +386,6 @@
 (setq-default indent-tabs-mode nil)
 
 (require 'ox-taskjuggler)
+
+(setenv "SOCKS5_PASSWORD" "")
+(setq default-input-method "portuguese-prefix")
