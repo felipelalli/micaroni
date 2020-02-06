@@ -38,7 +38,7 @@
  '(debug-on-error t)
  '(package-selected-packages
    (quote
-    (org-plus-contrib use-package ox-gfm org-pomodoro htmlize)))
+    (magit org-plus-contrib use-package ox-gfm org-pomodoro htmlize)))
  '(quack-browse-url-browser-function (quote browse-url-lynx-xterm))
  '(quack-default-program "zsh")
  '(quack-fontify-style nil)
@@ -389,3 +389,4 @@
 
 (setenv "SOCKS5_PASSWORD" "")
 (setq default-input-method "portuguese-prefix")
+(setq ispell-dictionary "american")
