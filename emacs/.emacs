@@ -59,6 +59,27 @@
       ("DELEGATED" . "light gray")
       ("DONE" . "green")
       ("DEPRECATED" . "gray")
+      ("POSTPONED" . "gray")
+      ("DOING" . "white")
+      ("S" . "green")
+      ("F" . "red"))
+     (org-todo-keyword-faces
+      ("CANCELED" . "gray")
+      ("UNFINISHED" . "light gray")
+      ("WAITING" . "orange")
+      ("DELEGATED" . "light gray")
+      ("DONE" . "green")
+      ("DEPRECATED" . "gray")
+      ("DOING" . "white")
+      ("S" . "green")
+      ("F" . "red"))
+     (org-todo-keyword-faces
+      ("CANCELED" . "gray")
+      ("UNFINISHED" . "light gray")
+      ("WAITING" . "orange")
+      ("DELEGATED" . "light gray")
+      ("DONE" . "green")
+      ("DEPRECATED" . "gray")
       ("DOING" . "white")))))
  '(show-paren-mode t)
  '(visual-line-mode t t))
@@ -390,3 +411,8 @@
 (setenv "SOCKS5_PASSWORD" "")
 (setq default-input-method "portuguese-prefix")
 (setq ispell-dictionary "american")
+
+; Tip from: https://emacs.stackexchange.com/a/58332/17985
+; This opens the agenda by default
+(setq enable-local-eval t)
+(setq safe-local-eval-forms '((progn (org-agenda-list) (other-window 1))))
