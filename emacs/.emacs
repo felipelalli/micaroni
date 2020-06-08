@@ -16,6 +16,10 @@
 (if (not (file-exists-p (expand-file-name "lib/org-gcal.el" user-emacs-directory)))
     (error "ERROR: Files under ~/.emacs.d/lib/* are missing. See \"INSTRUCTIONS\" on Emacs init file."))
 
+; Fonts
+; See https://www.gnu.org/software/emacs/manual/html_node/efaq/How-to-add-fonts.html
+(add-to-list 'bdf-directory-list "/usr/share/emacs/fonts/bdf")
+
 ; Cosmetic configs
 ; ================
 
@@ -82,6 +86,7 @@
       ("DEPRECATED" . "gray")
       ("DOING" . "white")))))
  '(show-paren-mode t)
+ '(tool-bar-mode nil)
  '(visual-line-mode t t))
 
 (custom-set-faces
@@ -89,7 +94,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 140 :width normal :foundry "apple" :family "Ubuntu Mono")))))
+ '(default ((t (:inherit nil :stipple nil box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 102 :width normal :foundry "PfEd" :family "DejaVu Sans Mono")))))
 
 ;; Adding transparency variable
 (set-frame-parameter (selected-frame) 'alpha '(90 . 85))
@@ -112,7 +117,7 @@
 (global-set-key (kbd "C-c t") 'toggle-transparency)
 
 ; Font size
-(set-face-attribute 'default nil :height 170)
+(set-face-attribute 'default nil :height 100)
 
 ; Colorize source code inside orgmode
 (setq org-src-fontify-natively t)
@@ -292,7 +297,7 @@
   ;; (setq org-mind-map-engine "circo")  ; Circular Layout
 
 ; Open URL on Google Chrome by default
-(setq browse-url-browser-function 'browse-url-chromium)
+(setq browse-url-browser-function 'browse-url-firefox)
 
 ; org-sort-tasks
 (setq load-path (cons (expand-file-name "lib/org-sort-tasks" user-emacs-directory) load-path))
@@ -416,3 +421,5 @@
 ; This opens the agenda by default
 (setq enable-local-eval t)
 (setq safe-local-eval-forms '((progn (org-agenda-list) (other-window 1))))
+
+(set-scroll-bar-mode 'right)
