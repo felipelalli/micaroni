@@ -275,8 +275,8 @@
 (require 'org-install)
 (require 'org-habit)
 (add-to-list 'org-modules "org-habit")
-(setq org-habit-preceding-days 30
-      org-habit-graph-column 40
+(setq org-habit-preceding-days 40
+      org-habit-graph-column 50
       org-habit-following-days 7
       org-habit-show-habits-only-for-today t
       org-habit-show-all-today nil)
@@ -423,3 +423,4 @@
 (setq safe-local-eval-forms '((progn (org-agenda-list) (other-window 1))))
 
 (set-scroll-bar-mode 'right)
+(set-cursor-color "#aaaaff")
