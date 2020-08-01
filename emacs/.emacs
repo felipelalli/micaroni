@@ -424,3 +424,6 @@
 
 (set-scroll-bar-mode 'right)
 (set-cursor-color "#aaaaff")
+
+;; From https://stackoverflow.com/a/34589105/450148
+(setq-default show-trailing-whitespace t)
