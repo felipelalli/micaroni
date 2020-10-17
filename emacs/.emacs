@@ -8,13 +8,13 @@
 ;; - Create a symlink ~/.emacs.d/lib -> <micaroni-repo-path>/emacs/lib
 ;;
 
-(if (not (file-exists-p "~/.emacs.d/vars.el"))
+(if (not (file-exists-p (expand-file-name "vars.el" user-emacs-directory)))
     (error "ERROR: The file vars.el is missing. Please see vars.el.example, edit and remove .example extension."))
 
-(load-file (expand-file-name "vars.el" user-emacs-directory))
-
-(if (not (file-exists-p (expand-file-name "lib/org-gcal.el" user-emacs-directory)))
+(if (not (file-exists-p (expand-file-name "lib/org-caldav.el" user-emacs-directory)))
     (error "ERROR: Files under ~/.emacs.d/lib/* are missing. See \"INSTRUCTIONS\" on Emacs init file."))
+
+(load-file (expand-file-name "vars.el" user-emacs-directory))
 
 ; Fonts
 ; See https://www.gnu.org/software/emacs/manual/html_node/efaq/How-to-add-fonts.html
@@ -27,7 +27,7 @@
 (setq inhibit-startup-message t)
 
 ;; removing tool-bar and scroll-bar
-(tool-bar-mode -1) 
+(tool-bar-mode -1)
 (menu-bar-mode -1)
 
 (custom-set-variables
@@ -42,7 +42,7 @@
  '(debug-on-error t)
  '(package-selected-packages
    (quote
-    (magit org-plus-contrib use-package ox-gfm org-pomodoro htmlize)))
+    (oauth2 magit org-plus-contrib use-package ox-gfm org-pomodoro htmlize)))
  '(quack-browse-url-browser-function (quote browse-url-lynx-xterm))
  '(quack-default-program "zsh")
  '(quack-fontify-style nil)
@@ -117,7 +117,7 @@
 (global-set-key (kbd "C-c t") 'toggle-transparency)
 
 ; Font size
-(set-face-attribute 'default nil :height 100)
+(set-face-attribute 'default nil :height 110)
 
 ; Colorize source code inside orgmode
 (setq org-src-fontify-natively t)
@@ -251,24 +251,17 @@
 (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
 
 ; Agenda & Orgmode
-(setq org-agenda-files (list org-file-path org-gcal-schedule-path))
+(setq org-agenda-files (list org-file-path org-caldav-inbox))
 (setq org-default-notes-file org-remember-file-path)
 (setq org-archive-location (concat org-archive-dir-path "/%s_archive::"))
 
 ; Google Calendar sync
-(require 'org-gcal)
 
-(setq org-gcal-client-id google-agenda-id
-      org-gcal-client-secret google-agenda-secret
-      org-gcal-file-alist `((,google-email . ,org-gcal-schedule-path)))
+(require 'org-caldav)
+(setq org-icalendar-timezone "America/Sao_Paulo")
+(setq plstore-cache-passphrase-for-symmetric-encryption t)
 
-(defun org-gcal-fetch-and-sync ()
-       "Fetch and sync values from Google Calendar."
-       (org-gcal-fetch)
-       (org-gcal-fetch) ; there is a bug where the fetch should be called twice.
-       (org-gcal-sync))
-
-(run-with-timer 0 (* 30 60) 'org-gcal-fetch-and-sync) ; automatically sync each 30 min.
+;(run-with-timer 0 (* 30 60) 'org-caldav-sync) ; automatically sync each 30 min.
 
 ; Enabling habits on orgmode
 (require 'org)
