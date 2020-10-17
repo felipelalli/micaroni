@@ -11,9 +11,6 @@
 (if (not (file-exists-p (expand-file-name "vars.el" user-emacs-directory)))
     (error "ERROR: The file vars.el is missing. Please see vars.el.example, edit and remove .example extension."))
 
-(if (not (file-exists-p (expand-file-name "lib/org-caldav.el" user-emacs-directory)))
-    (error "ERROR: Files under ~/.emacs.d/lib/* are missing. See \"INSTRUCTIONS\" on Emacs init file."))
-
 (load-file (expand-file-name "vars.el" user-emacs-directory))
 
 ; Fonts
@@ -251,17 +248,9 @@
 (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
 
 ; Agenda & Orgmode
-(setq org-agenda-files (list org-file-path org-caldav-inbox))
+(setq org-agenda-files (list org-file-path))
 (setq org-default-notes-file org-remember-file-path)
 (setq org-archive-location (concat org-archive-dir-path "/%s_archive::"))
-
-; Google Calendar sync
-
-(require 'org-caldav)
-(setq org-icalendar-timezone "America/Sao_Paulo")
-(setq plstore-cache-passphrase-for-symmetric-encryption t)
-
-;(run-with-timer 0 (* 30 60) 'org-caldav-sync) ; automatically sync each 30 min.
 
 ; Enabling habits on orgmode
 (require 'org)

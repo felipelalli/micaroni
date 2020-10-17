@@ -1,18 +1,5 @@
 ;; -*- mode: Lisp; -*-
 
-; Org caldav vars, see https://github.com/dengste/org-caldav for more info.
-
-(defvar org-caldav-oauth2-client-id
-  "XXX"
-  "The Google Agenda API client id.")
-
-(defvar org-caldav-oauth2-client-secret
-  "XXX" "The Google Agenda API client secret.")
-
-(defvar org-caldav-url 'google)
-(defvar org-caldav-calendar-id "XXX")
-(defvar org-caldav-inbox "XXX" "The ORG Gcal schedule file path")
-
 ; Agenda and Orgmode paths
 
 (defvar org-file-path "XXX" "The main ORG file path")
