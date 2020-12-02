@@ -22,6 +22,7 @@
 
 (setq inhibit-splash-screen t)
 (setq inhibit-startup-message t)
+(setq org-list-allow-alphabetical t)
 
 ;; removing tool-bar and scroll-bar
 (tool-bar-mode -1)
@@ -255,8 +256,9 @@
 ; Enabling habits on orgmode
 (require 'org)
 (require 'org-install)
-(require 'org-habit)
-(add-to-list 'org-modules "org-habit")
+
+(setq org-modules '(org-habit))
+
 (setq org-habit-preceding-days 40
       org-habit-graph-column 50
       org-habit-following-days 7
@@ -409,3 +411,5 @@
 
 ;; From https://stackoverflow.com/a/34589105/450148
 (setq-default show-trailing-whitespace t)
+
+(global-set-key (kbd "C--") 'org-ctrl-c-minus)
