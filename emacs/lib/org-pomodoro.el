@@ -3,7 +3,7 @@
 ;; Author: Arthur Leonard Andersen <leoc.git@gmail.com>, Marcin Koziej <marcin at lolownia dot org>
 ;; URL: https://github.com/lolownia/org-pomodoro
 ;; Created: May 10, 2013
-;; Version: 2.1.0
+;; Version: 2.1.0-FL001
 ;; Package-Requires: ((alert "0.5.10") (cl-lib "0.5"))
 
 ;; This file is free software; you can redistribute it and/or modify
@@ -578,6 +578,28 @@ kill the current timer, this may be a break or a running pomodoro."
      (t (let ((current-prefix-arg '(4)))
           (call-interactively 'org-clock-in))))
     (org-pomodoro-start :pomodoro)))
+
+;;
+;; Tip from: https://emacs.stackexchange.com/a/62338/17985
+;;
+(defun ndk/org-set-effort-in-pomodoros (&optional n)
+  "This `fn` facilitate to define efforts in tasks in pomodoros units.
+
+You can use interactively by typing `C-c C-x e` or by sending parameter as `M-3 C-c C-x e`."
+  (interactive "P")
+  (setq n (or n (string-to-number (read-from-minibuffer "How many pomodoros? " nil nil nil nil "1" nil))))
+  (let* ((mins-per-pomodoro (if org-pomodoro-length
+                                org-pomodoro-length
+                              25)))
+    (org-set-effort nil (org-duration-from-minutes (* n mins-per-pomodoro)))))
+
+;;
+;; Redefine the key binding `C-c C-x e' which was originally bound to `org-set-effort'
+;;  to the pomodoro function
+;;
+;; See also `ndk/org-set-effort-in-pomodoros` fn for more info.
+;;
+(define-key org-mode-map (kbd "C-c C-x e") #'ndk/org-set-effort-in-pomodoros)
 
 (provide 'org-pomodoro)
 
