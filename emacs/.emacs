@@ -36,25 +36,22 @@
  '(ansi-color-names-vector
    ["#2d3743" "#ff4242" "#74af68" "#dbdb95" "#34cae2" "#008b8b" "#00ede1" "#e1e1e0"])
  '(column-number-mode t)
- '(custom-enabled-themes (quote (misterioso)))
+ '(custom-enabled-themes '(misterioso))
  '(debug-on-error t)
  '(package-selected-packages
-   (quote
-    (oauth2 magit org-plus-contrib use-package ox-gfm org-pomodoro htmlize)))
- '(quack-browse-url-browser-function (quote browse-url-lynx-xterm))
+   '(seq oauth2 magit org-plus-contrib use-package ox-gfm org-pomodoro htmlize))
+ '(quack-browse-url-browser-function 'browse-url-lynx-xterm)
  '(quack-default-program "zsh")
  '(quack-fontify-style nil)
  '(quack-pretty-lambda-p nil)
  '(quack-programs
-   (quote
-    ("zsh" "bigloo" "csi" "csi -hygienic" "gosh" "gsi" "gsi ~~/syntax-case.scm -" "guile" "kawa" "mit-scheme" "mred -z" "mzscheme" "mzscheme -M errortrace" "rs" "scheme" "scheme48" "scsh" "sisc" "stklos" "sxi")))
+   '("zsh" "bigloo" "csi" "csi -hygienic" "gosh" "gsi" "gsi ~~/syntax-case.scm -" "guile" "kawa" "mit-scheme" "mred -z" "mzscheme" "mzscheme -M errortrace" "rs" "scheme" "scheme48" "scsh" "sisc" "stklos" "sxi"))
  '(quack-remap-find-file-bindings-p nil)
  '(quack-remember-new-programs-p nil)
  '(quack-smart-open-paren-p nil)
- '(quack-switch-to-scheme-method (quote other-window))
+ '(quack-switch-to-scheme-method 'other-window)
  '(safe-local-variable-values
-   (quote
-    ((org-todo-keyword-faces
+   '((org-todo-keyword-faces
       ("CANCELED" . "gray")
       ("UNFINISHED" . "light gray")
       ("WAITING" . "orange")
@@ -82,7 +79,7 @@
       ("DELEGATED" . "light gray")
       ("DONE" . "green")
       ("DEPRECATED" . "gray")
-      ("DOING" . "white")))))
+      ("DOING" . "white"))))
  '(show-paren-mode t)
  '(tool-bar-mode nil)
  '(visual-line-mode t t))
@@ -172,7 +169,7 @@
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
 ; Quack setup
-(require 'quack)
+;(require 'quack)
 
 ; clojure-mode setup
 (setq load-path (cons (expand-file-name "lib/clojure-mode-3.0.0" user-emacs-directory) load-path))
@@ -196,8 +193,8 @@
 (setq emojify-display-style 'image)
 
 ; cider (nrepls)
-(setq load-path (cons (expand-file-name "lib/cider-0.7.0" user-emacs-directory) load-path))
-(require 'cider)
+;(setq load-path (cons (expand-file-name "lib/cider-0.7.0" user-emacs-directory) load-path))
+;(require 'cider)
 
 ; Agenda
 (global-set-key "\C-cl" 'org-store-link)
@@ -413,3 +410,6 @@
 (setq-default show-trailing-whitespace t)
 
 (global-set-key (kbd "C--") 'org-ctrl-c-minus)
+
+;; Tip from https://github.com/hlissner/doom-emacs/issues/3872#issuecomment-684176505
+(electric-indent-mode -1)
