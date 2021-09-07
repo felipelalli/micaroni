@@ -1,6 +1,6 @@
-;;; ledger-mode.el --- Helper code for use with the "ledger" command-line tool
+;;; ledger-occur.el --- Helper code for use with the "ledger" command-line tool  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2003-2014 John Wiegley (johnw AT gnu DOT org)
+;; Copyright (C) 2003-2016 John Wiegley (johnw AT gnu DOT org)
 
 ;; This file is not part of GNU Emacs.
 
@@ -29,13 +29,14 @@
 
 ;;; Code:
 
-(require 'cl)
+(require 'cl-lib)
 (require 'ledger-navigate)
 
 (defconst ledger-occur-overlay-property-name 'ledger-occur-custom-buffer-grep)
 
 (defcustom ledger-occur-use-face-shown t
-  "If non-nil, use a custom face for xacts shown in `ledger-occur' mode using ledger-occur-xact-face."
+  "If non-nil, use a custom face for xacts shown in `ledger-occur' mode.
+This uses `ledger-occur-xact-face'."
   :type 'boolean
   :group 'ledger)
 (make-variable-buffer-local 'ledger-occur-use-face-shown)
@@ -52,16 +53,16 @@
 
 (define-minor-mode ledger-occur-mode
   "A minor mode which display only transactions matching `ledger-occur-current-regex'."
-  nil
-  (:eval (format " Ledger-Narrow(%s)" ledger-occur-current-regex))
-  ledger-occur-mode-map
+  :init-value nil
+  :lighter (:eval (format " Ledger-Narrow(%s)" ledger-occur-current-regex))
+  :keymap ledger-occur-mode-map
   (if (and ledger-occur-current-regex ledger-occur-mode)
       (ledger-occur-refresh)
     (ledger-occur-remove-overlays)
     (message "Showing all transactions")))
 
-(define-key ledger-occur-mode-map (kbd "C-c C-g") 'ledger-occur-refresh)
-(define-key ledger-occur-mode-map (kbd "C-c C-f") 'ledger-occur-mode)
+(define-key ledger-occur-mode-map (kbd "C-c C-g") #'ledger-occur-refresh)
+(define-key ledger-occur-mode-map (kbd "C-c C-f") #'ledger-occur-mode)
 
 (defun ledger-occur-refresh ()
   "Re-apply the current narrowing expression."
@@ -106,7 +107,8 @@ currently active."
 (defun ledger-occur-make-visible-overlay (beg end)
   (let ((ovl (make-overlay beg end (current-buffer))))
     (overlay-put ovl ledger-occur-overlay-property-name t)
-    (overlay-put ovl 'face 'ledger-occur-xact-face)))
+    (when ledger-occur-use-face-shown
+      (overlay-put ovl 'font-lock-face 'ledger-occur-xact-face))))
 
 (defun ledger-occur-make-invisible-overlay (beg end)
   (let ((ovl (make-overlay beg end (current-buffer))))
@@ -117,8 +119,8 @@ currently active."
   "Create the overlays for the visible transactions.
 Argument OVL-BOUNDS contains bounds for the transactions to be left visible."
   (let* ((beg (caar ovl-bounds))
-         (end (cadar ovl-bounds)))
-		(ledger-occur-remove-overlays)
+         (end (cl-cadar ovl-bounds)))
+    (ledger-occur-remove-overlays)
     (ledger-occur-make-invisible-overlay (point-min) (1- beg))
     (dolist (visible (cdr ovl-bounds))
       (ledger-occur-make-visible-overlay beg end)
@@ -143,25 +145,25 @@ Argument OVL-BOUNDS contains bounds for the transactions to be left visible."
       (while (not (eobp))
         ;; if something found
         (when (setq endpoint (re-search-forward regex nil 'end))
-					(setq bounds (ledger-navigate-find-element-extents endpoint))
-					(push bounds lines)
-					;; move to the end of the xact, no need to search inside it more
+          (setq bounds (ledger-navigate-find-element-extents endpoint))
+          (push bounds lines)
+          ;; move to the end of the xact, no need to search inside it more
           (goto-char (cadr bounds))))
       (nreverse lines))))
 
 (defun ledger-occur-compress-matches (buffer-matches)
   "identify sequential xacts to reduce number of overlays required"
-	(if buffer-matches
-			(let ((points (list))
-						(current-beginning (caar buffer-matches))
-						(current-end (cadar buffer-matches)))
-				(dolist (match (cdr buffer-matches))
-					(if (< (- (car match) current-end) 2)
-							(setq current-end (cadr match))
-						(push (list current-beginning current-end) points)
-						(setq current-beginning (car match))
-						(setq current-end (cadr match))))
-				(nreverse (push (list current-beginning current-end) points)))))
+  (if buffer-matches
+      (let ((points (list))
+            (current-beginning (caar buffer-matches))
+            (current-end (cl-cadar buffer-matches)))
+        (dolist (match (cdr buffer-matches))
+          (if (< (- (car match) current-end) 2)
+              (setq current-end (cadr match))
+            (push (list current-beginning current-end) points)
+            (setq current-beginning (car match))
+            (setq current-end (cadr match))))
+        (nreverse (push (list current-beginning current-end) points)))))
 
 (provide 'ledger-occur)
 

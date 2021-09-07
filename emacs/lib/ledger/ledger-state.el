@@ -1,6 +1,6 @@
-;;; ledger-state.el --- Helper code for use with the "ledger" command-line tool
+;;; ledger-state.el --- Helper code for use with the "ledger" command-line tool  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2003-2014 John Wiegley (johnw AT gnu DOT org)
+;; Copyright (C) 2003-2016 John Wiegley (johnw AT gnu DOT org)
 
 ;; This file is not part of GNU Emacs.
 
@@ -24,6 +24,8 @@
 ;; Utilities for dealing with transaction and posting status.
 
 ;;; Code:
+(require 'ledger-navigate)
+(require 'ledger-context)
 
 (defcustom ledger-clear-whole-transactions nil
   "If non-nil, clear whole transactions, not individual postings."
@@ -67,10 +69,10 @@
 
 
 (defun ledger-state-from-string (state-string)
-  "Get state from STATE-CHAR."
+  "Get state from STATE-STRING."
   (when state-string
     (cond
-     ((string-match "\\!" state-string) 'pending)
+     ((string-match "!" state-string) 'pending)
      ((string-match "\\*" state-string) 'cleared)
      ((string-match ";" state-string) 'comment)
      (t nil))))
@@ -114,8 +116,8 @@ dropped."
           (when (not (eq (ledger-state-from-char (char-after)) 'comment))
             (insert (ledger-char-from-state cur-status) " ")
             (if (and (search-forward "  " (line-end-position) t)
-										 (looking-at "  "))
-								(delete-char 2)))
+                     (looking-at "  "))
+                (delete-char 2)))
           (forward-line))
         (setq new-status nil)))
 

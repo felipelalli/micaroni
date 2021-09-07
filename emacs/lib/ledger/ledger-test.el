@@ -1,6 +1,6 @@
 ;;; ledger-test.el --- Helper code for use with the "ledger" command-line tool
 
-;; Copyright (C) 2003-2014 John Wiegley (johnw AT gnu DOT org)
+;; Copyright (C) 2003-2016 John Wiegley (johnw AT gnu DOT org)
 
 ;; This file is not part of GNU Emacs.
 
@@ -24,10 +24,8 @@
 ;;; Code:
 
 (declare-function ledger-mode "ledger-mode") ; TODO: fix this cyclic dependency
-(declare-function org-narrow-to-subtree "org")
-(declare-function org-entry-get "org")
-(declare-function outline-back-to-heading "outline")
-(declare-function outline-next-heading "outline")
+(require 'org)
+(require 'outline)
 
 (defgroup ledger-test nil
   "Definitions for the Ledger testing framework"

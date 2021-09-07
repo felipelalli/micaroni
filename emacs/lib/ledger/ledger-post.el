@@ -1,6 +1,6 @@
-;;; ledger-post.el --- Helper code for use with the "ledger" command-line tool
+;;; ledger-post.el --- Helper code for use with the "ledger" command-line tool  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2003-2014 John Wiegley (johnw AT gnu DOT org)
+;; Copyright (C) 2003-2016 John Wiegley (johnw AT gnu DOT org)
 
 ;; This file is not part of GNU Emacs.
 
@@ -24,6 +24,9 @@
 ;; Utility functions for dealing with postings.
 
 (require 'ledger-regex)
+(require 'ledger-navigate)
+
+(declare-function ledger-string-to-number "ledger-commodities" (str &optional decimal-comma))
 
 ;;; Code:
 
@@ -41,34 +44,22 @@
   :type 'integer
   :group 'ledger-post)
 
-(defcustom ledger-post-use-completion-engine :built-in
-  "Which completion engine to use, :iswitchb or :ido chose those engines.
-:built-in uses built-in Ledger-mode completion"
-  :type '(radio (const :tag "built in completion" :built-in)
-                (const :tag "ido completion" :ido)
-                (const :tag "iswitchb completion" :iswitchb) )
+(defcustom ledger-post-amount-alignment-at :end
+  "Position at which the amount is aligned.
+
+Can be :end to align on the last number of the amount (can be
+followed by unaligned commodity) or :decimal to align at the
+decimal separator."
+  :type '(radio (const :tag "align at the end of amount" :end)
+                (const :tag "align at the decimal separator" :decimal))
   :group 'ledger-post)
 
-(declare-function iswitchb-read-buffer "iswitchb"
-                  (prompt &optional default require-match start matches-set))
-
-(defvar iswitchb-temp-buflist)
-
-(defun ledger-post-completing-read (prompt choices)
-  "Use iswitchb as a `completing-read' replacement to choose from choices.
-PROMPT is a string to prompt with.  CHOICES is a list of strings
-to choose from."
-  (cond ((eq ledger-post-use-completion-engine :iswitchb)
-         (let* ((iswitchb-use-virtual-buffers nil)
-                (iswitchb-make-buflist-hook
-                 (lambda ()
-                   (setq iswitchb-temp-buflist choices))))
-           (iswitchb-read-buffer prompt)))
-        ((eq ledger-post-use-completion-engine :ido)
-         (ido-completing-read prompt choices))
-        (t
-         (completing-read prompt choices))))
-
+(defcustom ledger-post-auto-align t
+  "When non-nil, realign post amounts when indenting or completing."
+  :type 'boolean
+  :group 'ledger-post
+  :package-version '(ledger-mode . "4.0.0")
+  :safe 'booleanp)
 
 (defun ledger-next-amount (&optional end)
   "Move point to the next amount, as long as it is not past END.
@@ -79,80 +70,91 @@ point at beginning of the commodity."
     (when (re-search-forward ledger-amount-regex end t)
       (goto-char (match-beginning 0))
       (skip-syntax-forward " ")
-      (- (or (match-end 4)
-             (match-end 3)) (point)))))
+      (cond
+       ((eq ledger-post-amount-alignment-at :end)
+        (- (or (match-end 4) (match-end 3)) (point)))
+       ((eq ledger-post-amount-alignment-at :decimal)
+        (- (match-end 3) (point)))))))
 
 (defun ledger-next-account (&optional end)
-  "Move to the beginning of the posting, or status marker, limit to END.
+  "Move to the beginning of the posting, or status marker.
 Return the column of the beginning of the account and leave point
-at beginning of account"
-  (if (> end (point))
-      (when (re-search-forward ledger-account-any-status-regex (1+ end) t)
-        ;; the 1+ is to make sure we can catch the newline
-        (if (match-beginning 1)
-            (goto-char (match-beginning 1))
-          (goto-char (match-beginning 2)))
-        (current-column))))
+at beginning of account.
+Looks only as far as END, if supplied, otherwise `point-max'."
+  (let ((end (or end (point-max))))
+    (if (> end (point))
+        (when (re-search-forward ledger-account-any-status-regex (1+ end) t)
+          ;; the 1+ is to make sure we can catch the newline
+          (if (match-beginning 1)
+              (goto-char (match-beginning 1))
+            (goto-char (match-beginning 2)))
+          (current-column)))))
 
 (defun ledger-post-align-xact (pos)
-	"Align all the posting in the xact at POS."
-	(interactive "d")
+  "Align all the posting in the xact at POS."
+  (interactive "d")
   (let ((bounds (ledger-navigate-find-xact-extents pos)))
     (ledger-post-align-postings (car bounds) (cadr bounds))))
 
-(defun ledger-post-align-postings (&optional beg end)
-  "Align all accounts and amounts between BEG and END, or the current line."
+(defun ledger-post-align-postings (beg end)
+  "Align all accounts and amounts between BEG and END, or the current region, or, if no region, the current line."
+  (interactive "r")
+  (save-match-data
+    (save-excursion
+      (let ((inhibit-modification-hooks t)
+            ;; Extend region to whole lines
+            (beg (save-excursion (goto-char beg) (line-beginning-position)))
+            (end (save-excursion (goto-char end) (move-end-of-line 1) (point-marker))))
+        (untabify beg end)
+        (goto-char beg)
+        (while (< (point) end)
+          (when (looking-at-p " ")
+            ;; fix spaces at beginning of line:
+            (just-one-space ledger-post-account-alignment-column)
+            ;; fix spaces before amount if any:
+            (when (re-search-forward "\t\\|  \\| \t" (line-end-position) t)
+              (goto-char (match-beginning 0))
+              (let ((acct-end-column (current-column))
+                    (amt-width (ledger-next-amount (line-end-position)))
+                    amt-adjust)
+                (when amt-width
+                  (if (/= 0 (setq amt-adjust (- (if (> (- ledger-post-amount-alignment-column amt-width)
+                                                       (+ 2 acct-end-column))
+                                                    ledger-post-amount-alignment-column ;;we have room
+                                                  (+ acct-end-column 2 amt-width))
+                                                amt-width
+                                                (current-column))))
+                      (if (> amt-adjust 0)
+                          (insert (make-string amt-adjust ? ))
+                        (delete-char amt-adjust)))))))
+          (forward-line 1))))))
+
+(defun ledger-indent-line ()
+  "Indent the current line."
+  ;; Ensure indent if the previous line was indented
+  (let ((indent-level (save-excursion (if (and (zerop (forward-line -1))
+                                               (memq (ledger-thing-at-point) '(transaction posting)))
+                                          ledger-post-account-alignment-column
+                                        0))))
+    (unless (= (current-indentation) indent-level)
+      (back-to-indentation)
+      (delete-horizontal-space t)
+      (indent-to indent-level)))
+  (when ledger-post-auto-align
+    (ledger-post-align-postings (line-beginning-position) (line-end-position))))
+
+(defun ledger-post-align-dwim ()
+  "Align all the posting of the current xact or the current region.
+
+If the point is in a comment, fill the comment paragraph as
+regular text."
   (interactive)
-
-  (save-excursion
-    (if (or (not (mark))
-            (not (use-region-p)))
-        (set-mark (point)))
-
-    (let ((inhibit-modification-hooks t)
-          (mark-first (< (mark) (point)))
-          acct-start-column acct-end-column acct-adjust amt-width amt-adjust
-          (lines-left 1))
-
-      (unless beg (setq beg (if mark-first (mark) (point))))
-      (unless end (setq end (if mark-first (mark) (point))))
-
-      ;; Extend region to whole lines
-      (let ((start-marker (set-marker (make-marker) (save-excursion
-                                                      (goto-char beg)
-                                                      (line-beginning-position))))
-            (end-marker (set-marker (make-marker) (save-excursion
-                                                    (goto-char end)
-                                                    (line-end-position)))))
-        (untabify start-marker end-marker)
-        (goto-char start-marker)
-
-        ;; This is the guts of the alignment loop
-        (while (and (or (setq acct-start-column (ledger-next-account (line-end-position)))
-                        lines-left)
-                    (< (point) end-marker))
-          (when acct-start-column
-            (setq acct-end-column (save-excursion
-                                    (goto-char (match-end 2))
-                                    (current-column)))
-            (when (/= (setq acct-adjust (- ledger-post-account-alignment-column acct-start-column)) 0)
-              (setq acct-end-column (+ acct-end-column acct-adjust))  ;;adjust the account ending column
-              (if (> acct-adjust 0)
-                  (insert (make-string acct-adjust ? ))
-                (delete-char acct-adjust)))
-            (when (setq amt-width (ledger-next-amount (line-end-position)))
-              (if (/= 0 (setq amt-adjust (- (if (> (- ledger-post-amount-alignment-column amt-width)
-                                                   (+ 2 acct-end-column))
-                                                ledger-post-amount-alignment-column ;;we have room
-                                              (+ acct-end-column 2 amt-width))
-                                            amt-width
-                                            (current-column))))
-                  (if (> amt-adjust 0)
-                      (insert (make-string amt-adjust ? ))
-                    (delete-char amt-adjust)))))
-          (forward-line)
-          (setq lines-left (not (eobp)))))
-      (setq inhibit-modification-hooks nil))))
+  (cond
+   ((nth 4 (syntax-ppss))
+    (call-interactively 'ledger-post-align-postings)
+    (fill-paragraph))
+   ((use-region-p) (call-interactively 'ledger-post-align-postings))
+   (t (call-interactively 'ledger-post-align-xact))))
 
 (defun ledger-post-edit-amount ()
   "Call 'calc-mode' and push the amount in the posting to the top of stack."
@@ -166,12 +168,16 @@ at beginning of account"
           (let ((val-string (match-string 0)))
             (goto-char (match-beginning 0))
             (delete-region (match-beginning 0) (match-end 0))
+            (push-mark)
             (calc)
-            (calc-eval val-string 'push)) ;; edit the amount
+            ;; edit the amount, first removing thousands separators and
+            ;; converting decimal commas to calc's input format
+            (calc-eval (number-to-string (ledger-string-to-number val-string)) 'push))
         (progn ;;make sure there are two spaces after the account name and go to calc
           (if (search-backward "  " (- (point) 3) t)
               (goto-char (line-end-position))
             (insert "  "))
+          (push-mark)
           (calc))))))
 
 (provide 'ledger-post)

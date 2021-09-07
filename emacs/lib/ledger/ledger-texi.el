@@ -1,6 +1,6 @@
-;;; ledger-texi.el --- Helper code for use with the "ledger" command-line tool
+;;; ledger-texi.el --- Helper code for use with the "ledger" command-line tool  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2003-2014 John Wiegley (johnw AT gnu DOT org)
+;; Copyright (C) 2003-2016 John Wiegley (johnw AT gnu DOT org)
 
 ;; This file is not part of GNU Emacs.
 
@@ -19,25 +19,30 @@
 ;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 ;; MA 02110-1301 USA.
 
+;;; Commentary:
+;;
+
+;;; Code:
+(defvar ledger-binary-path)
+
 (defgroup ledger-texi nil
   "Options for working on Ledger texi documentation"
   :group 'ledger)
 
 (defcustom ledger-texi-sample-doc-path "~/ledger/doc/sample.dat"
-  "Location for sample data to be used in texi tests"
+  "Location for sample data to be used in texi tests."
   :type 'file
   :group 'ledger-texi)
 
 (defcustom ledger-texi-normalization-args "--args-only --columns 80"
-  "texi normalization for producing ledger output"
+  "Texi normalization for producing ledger output."
   :type 'string
   :group 'ledger-texi)
 
 (defun ledger-update-test ()
   (interactive)
   (goto-char (point-min))
-  (let ((command (buffer-substring (point-min) (line-end-position)))
-        input)
+  (let ((command (buffer-substring (point-min) (line-end-position))))
     (re-search-forward "^<<<\n")
     (let ((beg (point)) end)
       (re-search-forward "^>>>")
@@ -131,9 +136,8 @@
     (while (re-search-forward "^@c \\(\\(?:sm\\)?ex\\) \\(\\S-+\\): \\(.*\\)" nil t)
       (let ((section (match-string 1))
             (example-name (match-string 2))
-            (command (match-string 3)) expanded-command
-            (data-file ledger-texi-sample-doc-path)
-            input output)
+            (command (match-string 3))
+            (data-file ledger-texi-sample-doc-path))
         (goto-char (match-end 0))
         (forward-line)
         (when (looking-at "@\\(\\(?:small\\)?example\\)")
@@ -166,7 +170,9 @@
                   "@end " section-name ?\n))
 
         ;; Update the regression test associated with this example
-        (ledger-texi-write-test example-name command input output
+        (ledger-texi-write-test example-name command nil nil
                                 "../test/manual")))))
 
 (provide 'ledger-texi)
+
+;;; ledger-texi.el ends here

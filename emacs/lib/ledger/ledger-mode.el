@@ -1,8 +1,10 @@
-;;; ledger-mode.el --- Helper code for use with the "ledger" command-line tool
+;;; ledger-mode.el --- Helper code for use with the "ledger" command-line tool  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2003-2014 John Wiegley (johnw AT gnu DOT org)
+;; Copyright (C) 2003-2016 John Wiegley (johnw AT gnu DOT org)
 
 ;; This file is not part of GNU Emacs.
+
+;; Package-Requires: ((emacs "25.1"))
 
 ;; This is free software; you can redistribute it and/or modify it under
 ;; the terms of the GNU General Public License as published by the Free
@@ -19,18 +21,13 @@
 ;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 ;; MA 02110-1301 USA.
 
-
-
 ;;; Commentary:
 ;; Most of the general ledger-mode code is here.
 
 ;;; Code:
 
 (require 'ledger-regex)
-(require 'cus-edit)
-(require 'esh-util)
-(require 'esh-arg)
-(require 'easymenu)
+(require 'org)
 (require 'ledger-commodities)
 (require 'ledger-complete)
 (require 'ledger-context)
@@ -49,6 +46,9 @@
 (require 'ledger-texi)
 (require 'ledger-xact)
 (require 'ledger-schedule)
+(require 'ledger-check)
+
+(declare-function custom-group-members "cus-edit" (symbol groups-only))
 
 ;;; Code:
 
@@ -59,15 +59,16 @@
 (defconst ledger-version "3.0"
   "The version of ledger.el currently loaded.")
 
-(defconst ledger-mode-version "3.0.0")
+(defconst ledger-mode-version "4.0.0")
 
 (defun ledger-mode-dump-variable (var)
   "Format VAR for dump to buffer."
-	(if var
+  (if var
       (insert (format "         %s: %S\n" (symbol-name var) (eval var)))))
 
 (defun ledger-mode-dump-group (group)
   "Dump GROUP customizations to current buffer."
+  (require 'cus-edit)
   (let ((members (custom-group-members group nil)))
     (dolist (member members)
       (cond ((eq (cadr member) 'custom-group)
@@ -78,61 +79,55 @@
 
 (defun ledger-mode-dump-configuration ()
   "Dump all customizations."
-	(interactive)
+  (interactive)
   (find-file "ledger-mode-dump")
   (ledger-mode-dump-group 'ledger))
 
-
-(defun ledger-current-year ()
-  "The default current year for adding transactions."
-  (format-time-string "%Y"))
-
-(defun ledger-current-month ()
-  "The default current month for adding transactions."
-  (format-time-string "%m"))
-
-(defvar ledger-year (ledger-current-year)
-  "Start a ledger session with the current year, but make it customizable to ease retro-entry.")
-
-(defvar ledger-month (ledger-current-month)
-  "Start a ledger session with the current month, but make it customizable to ease retro-entry.")
-
 (defun ledger-read-account-with-prompt (prompt)
   "Read an account from the minibuffer with PROMPT."
-	(let ((context (ledger-context-at-point)))
-    (ledger-read-string-with-default prompt
-																		 (if (eq (ledger-context-current-field context) 'account)
-																				 (regexp-quote (ledger-context-field-value context 'account))
-																			 nil))))
+  (let* ((context (ledger-context-at-point))
+         (account (ledger-context-field-value context 'account)))
+    (ledger-completing-read-with-default prompt
+                                         (when account
+                                           (regexp-quote account))
+                                         (ledger-accounts-list))))
 
 (defun ledger-read-date (prompt)
-  "Return user-supplied date after `PROMPT', defaults to today."
-  (let* ((default (ledger-year-and-month))
-         (date (read-string prompt default
-                            'ledger-minibuffer-history)))
-    (if (or (string= date default)
-            (string= "" date))
-        (format-time-string
-         (or (cdr (assoc "date-format" ledger-environment-alist))
-             ledger-default-date-format))
-      date)))
+  "Return user-supplied date after `PROMPT', defaults to today.
+This uses `org-read-date', which see."
+  (ledger-format-date (let ((org-read-date-prefer-future nil))
+                        (org-read-date nil t nil prompt))))
+
+(defun ledger-get-minibuffer-prompt (prompt default)
+  "Return a string composing of PROMPT and DEFAULT appropriate for a minibuffer prompt."
+  (concat prompt
+          (if default
+              (concat " (" default "): ")
+            ": ")))
+
+(defun ledger-completing-read-with-default (prompt default collection)
+  "Return a user supplied string after PROMPT, or DEFAULT while providing completions from COLLECTION."
+  (completing-read (ledger-get-minibuffer-prompt prompt default)
+                   collection nil nil nil 'ledger-minibuffer-history default))
 
 (defun ledger-read-string-with-default (prompt default)
   "Return user supplied string after PROMPT, or DEFAULT."
-  (read-string (concat prompt
-                       (if default
-                           (concat " (" default "): ")
-                         ": "))
+  (read-string (ledger-get-minibuffer-prompt prompt default)
                nil 'ledger-minibuffer-history default))
 
-(defun ledger-display-balance-at-point ()
+(defun ledger-display-balance-at-point (&optional arg)
   "Display the cleared-or-pending balance.
-And calculate the target-delta of the account being reconciled."
-  (interactive)
+And calculate the target-delta of the account being reconciled.
+
+With ARG (\\[universal-argument]) ask for the target commodity and convert
+the balance into that."
+  (interactive "P")
   (let* ((account (ledger-read-account-with-prompt "Account balance to show"))
-         (buffer (current-buffer))
+         (target-commodity (when arg (ledger-read-commodity-with-prompt "Target commodity: ")))
+         (buffer (find-file-noselect (ledger-master-file)))
          (balance (with-temp-buffer
-                    (ledger-exec-ledger buffer (current-buffer) "cleared" account)
+                    (apply 'ledger-exec-ledger buffer (current-buffer) "cleared" account
+                           (when target-commodity (list "-X" target-commodity)))
                     (if (> (buffer-size) 0)
                         (buffer-substring-no-properties (point-min) (1- (point-max)))
                       (concat account " is empty.")))))
@@ -143,30 +138,16 @@ And calculate the target-delta of the account being reconciled."
   "Display the cleared-or-pending balance.
 And calculate the target-delta of the account being reconciled."
   (interactive)
-  (let* ((buffer (current-buffer))
+  (let* ((buffer (find-file-noselect (ledger-master-file)))
          (balance (with-temp-buffer
                     (ledger-exec-ledger buffer (current-buffer) "stats")
                     (buffer-substring-no-properties (point-min) (1- (point-max))))))
     (when balance
       (message balance))))
 
-(defun ledger-magic-tab (&optional interactively)
-  "Decide what to with with <TAB>, INTERACTIVELY.
-Can indent, complete or align depending on context."
-  (interactive "p")
-  (if (= (point) (line-beginning-position))
-      (indent-to ledger-post-account-alignment-column)
-    (if (and (> (point) 1)
-             (looking-back "\\([^ \t]\\)" 1))
-        (ledger-pcomplete interactively)
-      (ledger-post-align-postings))))
-
 (defvar ledger-mode-abbrev-table)
 
-(defvar ledger-date-string-today
-  (format-time-string (or
-                       (cdr (assoc "date-format" ledger-environment-alist))
-                       ledger-default-date-format)))
+(defvar ledger-date-string-today (ledger-format-date))
 
 (defun ledger-remove-effective-date ()
   "Remove the effective date from a transaction or posting."
@@ -222,7 +203,7 @@ With a prefix argument, remove the effective date."
 
 (defun ledger-mode-remove-extra-lines ()
   "Get rid of multiple empty lines."
-	(goto-char (point-min))
+  (goto-char (point-min))
   (while (re-search-forward "\n\n\\(\n\\)+" nil t)
     (replace-match "\n\n")))
 
@@ -231,12 +212,12 @@ With a prefix argument, remove the effective date."
   (interactive)
   (let ((start (point-min-marker))
         (end (point-max-marker)))
-    (goto-char start)
     (ledger-navigate-beginning-of-xact)
     (beginning-of-line)
     (let ((target (buffer-substring (point) (progn
                                               (end-of-line)
                                               (point)))))
+      (goto-char start)
       (untabify start end)
       (ledger-sort-buffer)
       (ledger-post-align-postings start end)
@@ -253,38 +234,38 @@ With a prefix argument, remove the effective date."
 
 (defvar ledger-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map [(control ?c) (control ?a)] 'ledger-add-transaction)
-    (define-key map [(control ?c) (control ?b)] 'ledger-post-edit-amount)
-    (define-key map [(control ?c) (control ?c)] 'ledger-toggle-current)
-    (define-key map [(control ?c) (control ?d)] 'ledger-delete-current-transaction)
-    (define-key map [(control ?c) (control ?e)] 'ledger-toggle-current-transaction)
-    (define-key map [(control ?c) (control ?f)] 'ledger-occur)
-    (define-key map [(control ?c) (control ?k)] 'ledger-copy-transaction-at-point)
-    (define-key map [(control ?c) (control ?m)] 'ledger-set-month)
-    (define-key map [(control ?c) (control ?r)] 'ledger-reconcile)
-    (define-key map [(control ?c) (control ?s)] 'ledger-sort-region)
-    (define-key map [(control ?c) (control ?t)] 'ledger-insert-effective-date)
-    (define-key map [(control ?c) (control ?u)] 'ledger-schedule-upcoming)
-    (define-key map [(control ?c) (control ?y)] 'ledger-set-year)
-    (define-key map [(control ?c) (control ?p)] 'ledger-display-balance-at-point)
-    (define-key map [(control ?c) (control ?l)] 'ledger-display-ledger-stats)
-    (define-key map [(control ?c) (control ?q)] 'ledger-post-align-xact)
+    (define-key map (kbd "C-c C-a") #'ledger-add-transaction)
+    (define-key map (kbd "C-c C-b") #'ledger-post-edit-amount)
+    (define-key map (kbd "C-c C-c") #'ledger-toggle-current)
+    (define-key map (kbd "C-c C-d") #'ledger-delete-current-transaction)
+    (define-key map (kbd "C-c C-e") #'ledger-toggle-current-transaction)
+    (define-key map (kbd "C-c C-f") #'ledger-occur)
+    (define-key map (kbd "C-c C-k") #'ledger-copy-transaction-at-point)
+    (define-key map (kbd "C-c C-r") #'ledger-reconcile)
+    (define-key map (kbd "C-c C-s") #'ledger-sort-region)
+    (define-key map (kbd "C-c C-t") #'ledger-insert-effective-date)
+    (define-key map (kbd "C-c C-u") #'ledger-schedule-upcoming)
+    (define-key map (kbd "C-c C-p") #'ledger-display-balance-at-point)
+    (define-key map (kbd "C-c C-l") #'ledger-display-ledger-stats)
+    (define-key map (kbd "C-c C-q") #'ledger-post-align-xact)
 
-    (define-key map [tab] 'ledger-magic-tab)
-    (define-key map [(control tab)] 'ledger-post-align-xact)
-    (define-key map [(control ?i)] 'ledger-magic-tab)
-    (define-key map [(control ?c) tab] 'ledger-fully-complete-xact)
-    (define-key map [(control ?c) (control ?i)] 'ledger-fully-complete-xact)
+    (define-key map (kbd "C-TAB") #'ledger-post-align-xact)
+    (define-key map (kbd "C-c TAB") #'ledger-fully-complete-xact)
+    (define-key map (kbd "C-c C-i") #'ledger-fully-complete-xact)
 
-    (define-key map [(control ?c) (control ?o) (control ?a)] 'ledger-report-redo)
-    (define-key map [(control ?c) (control ?o) (control ?e)] 'ledger-report-edit)
-    (define-key map [(control ?c) (control ?o) (control ?g)] 'ledger-report-goto)
-    (define-key map [(control ?c) (control ?o) (control ?k)] 'ledger-report-kill)
-    (define-key map [(control ?c) (control ?o) (control ?r)] 'ledger-report)
-    (define-key map [(control ?c) (control ?o) (control ?s)] 'ledger-report-save)
+    (define-key map (kbd "C-c C-o C-a") #'ledger-report-redo)
+    (define-key map (kbd "C-c C-o C-e") #'ledger-report-edit-report)
+    (define-key map (kbd "C-c C-o C-g") #'ledger-report-goto)
+    (define-key map (kbd "C-c C-o C-k") #'ledger-report-quit)
+    (define-key map (kbd "C-c C-o C-r") #'ledger-report)
+    (define-key map (kbd "C-c C-o C-s") #'ledger-report-save)
 
-    (define-key map [(meta ?p)] 'ledger-navigate-prev-xact-or-directive)
-    (define-key map [(meta ?n)] 'ledger-navigate-next-xact-or-directive)
+    (define-key map (kbd "M-p") #'ledger-navigate-prev-xact-or-directive)
+    (define-key map (kbd "M-n") #'ledger-navigate-next-xact-or-directive)
+    (define-key map (kbd "M-q") #'ledger-post-align-dwim)
+
+    ;; Reset the `text-mode' override of this standard binding
+    (define-key map (kbd "C-M-i") 'completion-at-point)
     map)
   "Keymap for `ledger-mode'.")
 
@@ -310,6 +291,7 @@ With a prefix argument, remove the effective date."
     ["Copy Trans at Point" ledger-copy-transaction-at-point]
     "---"
     ["Clean-up Buffer" ledger-mode-clean-buffer]
+    ["Check Buffer" ledger-check-buffer ledger-works]
     ["Align Region" ledger-post-align-postings mark-active]
     ["Align Xact" ledger-post-align-xact]
     ["Sort Region" ledger-sort-region mark-active]
@@ -319,56 +301,33 @@ With a prefix argument, remove the effective date."
     ["Set effective date" ledger-insert-effective-date]
     "---"
     ["Customize Ledger Mode" (lambda () (interactive) (customize-group 'ledger))]
-    ["Set Year" ledger-set-year ledger-works]
-    ["Set Month" ledger-set-month ledger-works]
     "---"
     ["Run Report" ledger-report ledger-works]
     ["Goto Report" ledger-report-goto ledger-works]
     ["Re-run Report" ledger-report-redo ledger-works]
     ["Save Report" ledger-report-save ledger-works]
-    ["Edit Report" ledger-report-edit ledger-works]
-    ["Kill Report" ledger-report-kill ledger-works]))
+    ["Edit Report" ledger-report-edit-report ledger-works]
+    ["Quit Report" ledger-report-quit ledger-works]))
 
 ;;;###autoload
 (define-derived-mode ledger-mode text-mode "Ledger"
   "A mode for editing ledger data files."
   (ledger-check-version)
-  (when (boundp 'font-lock-defaults)
-    (setq font-lock-defaults
-          '(ledger-font-lock-keywords t t nil nil
-                                      (font-lock-fontify-region-function . ledger-fontify-buffer-part))))
-
-	(set (make-local-variable 'pcomplete-parse-arguments-function) 'ledger-parse-arguments)
-	(set (make-local-variable 'pcomplete-command-completion-function) 'ledger-complete-at-point)
-  (add-hook 'completion-at-point-functions 'pcomplete-completions-at-point nil t)
-	(add-hook 'after-save-hook 'ledger-report-redo)
+  (setq font-lock-defaults
+        '(ledger-font-lock-keywords t nil nil nil))
+  (add-hook 'font-lock-extend-region-functions 'ledger-fontify-extend-region)
+  (add-hook 'completion-at-point-functions #'ledger-complete-at-point nil t)
+  (add-hook 'after-save-hook 'ledger-report-redo nil t)
 
   (add-hook 'post-command-hook 'ledger-highlight-xact-under-point nil t)
 
   (ledger-init-load-init-file)
-  (setq comment-start ";")
+  (setq-local comment-start ";")
+  (setq-local indent-line-function #'ledger-indent-line)
+  (setq-local indent-region-function 'ledger-post-align-postings))
 
-  (set (make-local-variable 'indent-region-function) 'ledger-post-align-postings))
-
-
-
-(defun ledger-set-year (newyear)
-  "Set ledger's idea of the current year to the prefix argument NEWYEAR."
-  (interactive "p")
-  (setq ledger-year
-        (if (= newyear 1)
-            (read-string "Year: " (ledger-current-year))
-          (number-to-string newyear))))
-
-(defun ledger-set-month (newmonth)
-  "Set ledger's idea of the current month to the prefix argument NEWMONTH."
-  (interactive "p")
-  (setq ledger-month
-        (if (= newmonth 1)
-            (read-string "Month: " (ledger-current-month))
-          (format "%02d" newmonth))))
-
-
+;;;###autoload
+(add-to-list 'auto-mode-alist '("\\.ledger\\'" . ledger-mode))
 
 (provide 'ledger-mode)
 
