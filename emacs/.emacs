@@ -51,7 +51,11 @@
  '(quack-smart-open-paren-p nil)
  '(quack-switch-to-scheme-method 'other-window)
  '(safe-local-variable-values
-   '((org-todo-keyword-faces
+   '((ledger-schedule-file . "../schedule.ledger")
+     (ledger-schedule-file . "schedule.ledger")
+     (ledger-reconcile-default-commodity . "R$")
+     (ledger-default-date-format . "%Y-%m-%d")
+     (org-todo-keyword-faces
       ("CANCELED" . "gray")
       ("UNFINISHED" . "light gray")
       ("WAITING" . "orange")
@@ -236,6 +240,22 @@
 (autoload 'tex-mode-flyspell-verify "flyspell" "" t) 
 
 ; Ledger
+(setq load-path (cons (expand-file-name "lib/ledger" user-emacs-directory) load-path))
+(require 'ledger-mode)
+(setq ledger-default-date-format "%Y-%m-%d")
+(setq ledger-reconcile-default-commodity "R$")
+(make-variable-buffer-local 'ledger-default-date-format)
+(make-variable-buffer-local 'ledger-reconcile-default-commodity)
+(make-variable-buffer-local 'ledger-schedule-file)
+
+(defun insert-year-month-for-ledger ()
+  "Insert string for today's year-month in Ledger style,
+e.g. 2021-09"
+  (interactive)                 ; permit invocation in minibuffer
+  (insert (format-time-string "%Y-%m")))
+
+(global-set-key "\C-c\C-y" 'insert-year-month-for-ledger)
+
 (autoload 'ledger-mode "ledger-mode" "A major mode for Ledger" t)
 (add-to-list 'load-path (expand-file-name "lib/ledger"))
 (add-to-list 'auto-mode-alist '("\\.ledger$" . ledger-mode))
