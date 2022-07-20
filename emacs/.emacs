@@ -96,8 +96,8 @@
  '(default ((t (:inherit nil :stipple nil box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 102 :width normal :foundry "PfEd" :family "DejaVu Sans Mono")))))
 
 ;; Adding transparency variable
-(set-frame-parameter (selected-frame) 'alpha '(95 . 85))
-(add-to-list 'default-frame-alist '(alpha . (95 . 85)))
+(set-frame-parameter (selected-frame) 'alpha '(92 . 85))
+(add-to-list 'default-frame-alist '(alpha . (92 . 85)))
 
 ;; Toggle transparency function
 (defun toggle-transparency ()
@@ -110,7 +110,7 @@
                     ;; Also handle undocumented (<active> <inactive>) form.
                     ((numberp (cadr alpha)) (cadr alpha)))
               100)
-         '(90 . 85) '(100 . 100)))))
+         '(95 . 90) '(100 . 100)))))
 
 ; It can be useful if your wallpaper is NSFW
 (global-set-key (kbd "C-c t") 'toggle-transparency)
