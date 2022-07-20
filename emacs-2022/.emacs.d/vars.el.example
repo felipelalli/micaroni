@@ -1,0 +1,7 @@
+;; -*- mode: Lisp; -*-
+
+; Agenda and Orgmode paths
+
+(defvar org-file-path "XXX" "The main ORG file path")
+(defvar org-remember-file-path "XXX" "The remember ORG file path")
+(defvar org-archive-dir-path "XXX" "The archive dir ORG file path")
