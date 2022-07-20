@@ -1,0 +1,10 @@
+.emacs.d/vars.el
+.emacs.d/auto-save-list
+.emacs.d/backup
+.emacs.d/eln-cache
+.emacs.d/recentf
+*recentf*
+\#.*
+ido.last
+.zsh*
+.zcompdump
