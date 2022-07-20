@@ -1,0 +1,4 @@
+\babel@toc {english}{}
+\contentsline {section}{\numberline {1}Jabuti}{1}{section.1}%
+\contentsline {section}{\numberline {2}Cavalo branco}{1}{section.2}%
+\contentsline {section}{\numberline {3}Tartaruga amarela}{1}{section.3}%
