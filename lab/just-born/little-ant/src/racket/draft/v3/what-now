@@ -1,0 +1,8 @@
+#!/bin/sh
+# This script was created by make-mzscheme-launcher
+
+# {{{ bindir
+bindir="/home/felipelalli/app/racket-8.5/bin"
+# }}} bindir
+
+exec "${bindir}/racket" -N "$0" '/home/felipelalli/wa/micaroni/lab/just-born/little-ant/src/racket/what-now.rkt'  ${1+"$@"}

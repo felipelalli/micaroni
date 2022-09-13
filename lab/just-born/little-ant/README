@@ -3,3 +3,12 @@
 =============
 - Racket
 - Dolthub
+=============
+- Gambit Scheme (-> JS)
+- NodeJS
+- DynamoDB
+(to be compatible with Lambda)
+
+
+"inch by inch anything's a cinch"
+"de grão em grão a galinha enche o papo"
