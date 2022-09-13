@@ -377,8 +377,6 @@ e.g. 2021-09"
 ;            http://www.howardism.org/Technical/Emacs/orgmode-wordprocessor.html
 ;(setq org-hide-emphasis-markers t)
 
-(setq show-trailing-whitespace t)
-
 ; Auto backup:
 
 (setq vc-make-backup-files t)
@@ -427,6 +425,7 @@ e.g. 2021-09"
 (set-cursor-color "#aaaaff")
 
 ;; From https://stackoverflow.com/a/34589105/450148
+(setq show-trailing-whitespace t)
 (setq-default show-trailing-whitespace t)
 
 (global-set-key (kbd "C--") 'org-ctrl-c-minus)

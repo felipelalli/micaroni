@@ -42,7 +42,6 @@
 (setq remember-save-after-remembering t)
 (setq show-paren-mode t)
 (setq show-paren-style 'expression)
-(setq show-trailing-whitespace t)
 (setq tool-bar-mode nil)
 (setq visual-line-mode t)
 (setq word-wrap t)
@@ -104,7 +103,21 @@
 
 ; Custom font
 (custom-set-faces
- '(default ((t (:inherit nil :stipple nil box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 102 :width normal :foundry "PfEd" :family "DejaVu Sans Mono")))))
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:inherit nil :stipple nil box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 102 :width normal :foundry "PfEd" :family "DejaVu Sans Mono"))))
+ '(rainbow-delimiters-depth-1-face ((t (:inherit rainbow-delimiters-base-face :foreground "yellow"))))
+ '(rainbow-delimiters-depth-2-face ((t (:inherit rainbow-delimiters-base-face :foreground "green"))))
+ '(rainbow-delimiters-depth-3-face ((t (:inherit rainbow-delimiters-base-face :foreground "deep sky blue"))))
+ '(rainbow-delimiters-depth-4-face ((t (:inherit rainbow-delimiters-base-face :foreground "chocolate"))))
+ '(rainbow-delimiters-depth-5-face ((t (:inherit rainbow-delimiters-base-face :foreground "olive drab"))))
+ '(rainbow-delimiters-depth-6-face ((t (:inherit rainbow-delimiters-base-face :foreground "hot pink"))))
+ '(rainbow-delimiters-depth-7-face ((t (:inherit rainbow-delimiters-base-face :foreground "cyan3"))))
+ '(rainbow-delimiters-depth-8-face ((t (:inherit rainbow-delimiters-base-face :foreground "orchid4"))))
+ '(rainbow-delimiters-depth-9-face ((t (:inherit rainbow-delimiters-base-face :foreground "orange"))))
+ '(rainbow-delimiters-unmatched-face ((t (:inherit rainbow-delimiters-base-error-face :foreground "red")))))
 
 (set-face-attribute 'default nil :height 110)
 
@@ -215,6 +228,20 @@ e.g. 2021-09"
 ; M-x run-scheme -> open zsh shell, and you can open your favorite scheme implementation.
 (setq scheme-program-name "zsh")
 (require 'racket-mode)
+(require 'racket-xp)
+    (add-hook 'racket-mode-hook #'racket-xp-mode)
+
+(setq tab-always-indent 'complete)
+(require 'scribble-mode)
+
+; Geiser
+(setq geiser-active-implementations '(racket guile chicken))
+
+; Rainbow delimiters
+(require 'rainbow-delimiters)
+(add-hook 'racket-mode-hook 'rainbow-delimiters-mode)
+(add-hook 'scheme-mode-hook 'rainbow-delimiters-mode)
+(add-hook 'elisp-mode-hook 'rainbow-delimiters-mode)
 
 ; ========================================================
 
@@ -252,3 +279,74 @@ e.g. 2021-09"
 (setq org-pomodoro-ticking-sound-p nil)
 (setq-default indent-tabs-mode nil)
 
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(geiser-mode-smart-tab-p t)
+ '(package-selected-packages
+   '(clojure-mode scribble-mode rainbow-delimiters emojify tabbar session pod-mode muttrc-mode mutt-alias markdown-mode initsplit htmlize graphviz-dot-mode geiser folding eproject diminish csv-mode company color-theme-modern browse-kill-ring boxquote bm bar-cursor apache-mode recentf-ext racket-mode org-pomodoro ledger-mode exec-path-from-shell dockerfile-mode))
+ '(safe-local-variable-values
+   '((ledger-schedule-file . "../schedule.ledger")
+     (ledger-schedule-file . "schedule.ledger")
+     (ledger-reconcile-default-commodity . "R$")
+     (ledger-default-date-format . "%Y-%m-%d")
+     (org-todo-keyword-faces
+      ("CANCELED" . "gray")
+      ("UNFINISHED" . "light gray")
+      ("WAITING" . "orange")
+      ("DELEGATED" . "light gray")
+      ("DONE" . "green")
+      ("DEPRECATED" . "gray")
+      ("POSTPONED" . "gray")
+      ("DOING" . "white")
+      ("S" . "green")
+      ("F" . "red")))))
+
+; ========================================================
+
+(require 'clojure-mode)
+(add-to-list 'auto-mode-alist '("\\.edn\\'" . clojure-mode))
+(add-to-list 'auto-mode-alist '("\\.clj\\'" . clojure-mode))
+(add-to-list 'auto-mode-alist '("\\.clojure\\'" . clojure-mode))
+
+; ========================================================
+
+; emacs-emojify
+(require 'emojify)
+(add-hook 'after-init-hook #'global-emojify-mode)
+(setq emojify-display-style 'image)
+
+; ========================================================
+
+; Extends org-pomodoro. More info:
+; https://github.com/marcinkoziej/org-pomodoro/pull/94/files
+
+;;
+;; Tip from: https://emacs.stackexchange.com/a/62338/17985
+;;
+(defun ndk/org-set-effort-in-pomodoros (&optional n)
+  "This `fn` facilitate to define efforts in tasks in pomodoros units.
+You can use interactively by typing `C-c C-x e` or by sending parameter as `M-3 C-c C-x e`."
+  (interactive "P")
+  (setq n (or n (string-to-number (read-from-minibuffer "How many pomodoros? " nil nil nil nil "1" nil))))
+  (let* ((mins-per-pomodoro (if org-pomodoro-length
+                                org-pomodoro-length
+                              25)))
+    (org-set-effort nil (org-duration-from-minutes (* n mins-per-pomodoro)))))
+
+;;
+;; Redefine the key binding `C-c C-x e' which was originally bound to `org-set-effort'
+;;  to the pomodoro function
+;;
+;; See also `ndk/org-set-effort-in-pomodoros` fn for more info.
+;;
+(define-key org-mode-map (kbd "C-c C-x e") #'ndk/org-set-effort-in-pomodoros)
+
+(desktop-save-mode 1)
+(setq tramp-verbose 10)
+
+;; From https://stackoverflow.com/a/34589105/450148
+(setq show-trailing-whitespace t)
+(setq-default show-trailing-whitespace t)
