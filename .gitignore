@@ -16,3 +16,6 @@ deploy/
 build/
 dist/
 *.class
+
+# Hidden files:
+.*
