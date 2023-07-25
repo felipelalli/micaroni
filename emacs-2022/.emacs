@@ -22,6 +22,8 @@
               '("melpa" . "https://melpa.org/packages/")
               t)
 
+(package-initialize)
+
 ; ========================================================
 
 ; general configs
@@ -51,9 +53,9 @@
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 
-; ========================================================
+;; ========================================================
 
-; org-mode custom configs
+;; org-mode custom configs
 
 (setq org-todo-keyword-faces
       '(("CANCELED" . "gray")
@@ -75,9 +77,6 @@
 (setq safe-local-eval-forms '((progn (org-agenda-list) (other-window 1))))
 
 ; Enabling habits on orgmode
-(require 'org)
-(require 'org-install)
-
 (setq org-modules '(org-habit))
 
 (setq org-habit-preceding-days 40
@@ -107,7 +106,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 102 :width normal :foundry "PfEd" :family "DejaVu Sans Mono"))))
+ '(default ((t (:inherit nil :stipple nil box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 160 :width normal :foundry "PfEd" :family "DejaVu Sans Mono"))))
  '(rainbow-delimiters-depth-1-face ((t (:inherit rainbow-delimiters-base-face :foreground "yellow"))))
  '(rainbow-delimiters-depth-2-face ((t (:inherit rainbow-delimiters-base-face :foreground "green"))))
  '(rainbow-delimiters-depth-3-face ((t (:inherit rainbow-delimiters-base-face :foreground "deep sky blue"))))
@@ -242,6 +241,8 @@ e.g. 2021-09"
 (add-hook 'racket-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'scheme-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'elisp-mode-hook 'rainbow-delimiters-mode)
+(add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
+(add-hook 'rust-mode-hook 'rainbow-delimiters-mode)
 
 ; ========================================================
 
@@ -286,9 +287,20 @@ e.g. 2021-09"
  ;; If there is more than one, they won't work right.
  '(geiser-mode-smart-tab-p t)
  '(package-selected-packages
-   '(clojure-mode scribble-mode rainbow-delimiters emojify tabbar session pod-mode muttrc-mode mutt-alias markdown-mode initsplit htmlize graphviz-dot-mode geiser folding eproject diminish csv-mode company color-theme-modern browse-kill-ring boxquote bm bar-cursor apache-mode recentf-ext racket-mode org-pomodoro ledger-mode exec-path-from-shell dockerfile-mode))
+   '(dracula-theme flycheck-rust yasnippet flycheck flymake-easy pomodoro use-package rustic lsp-mode clojure-mode scribble-mode rainbow-delimiters emojify tabbar session pod-mode muttrc-mode mutt-alias markdown-mode initsplit htmlize graphviz-dot-mode geiser folding eproject diminish csv-mode company color-theme-modern browse-kill-ring boxquote bm bar-cursor apache-mode recentf-ext racket-mode org-pomodoro ledger-mode exec-path-from-shell dockerfile-mode))
  '(safe-local-variable-values
-   '((ledger-schedule-file . "../schedule.ledger")
+   '((org-todo-keyword-faces
+      ("CANCELED" . "gray")
+      ("UNFINISHED" . "light green")
+      ("WAITING" . "orange")
+      ("DELEGATED" . "light gray")
+      ("DONE" . "green")
+      ("DEPRECATED" . "gray")
+      ("POSTPONED" . "gray")
+      ("DOING" . "white")
+      ("S" . "green")
+      ("F" . "red"))
+     (ledger-schedule-file . "../schedule.ledger")
      (ledger-schedule-file . "schedule.ledger")
      (ledger-reconcile-default-commodity . "R$")
      (ledger-default-date-format . "%Y-%m-%d")
@@ -350,3 +362,31 @@ You can use interactively by typing `C-c C-x e` or by sending parameter as `M-3 
 ;; From https://stackoverflow.com/a/34589105/450148
 (setq show-trailing-whitespace t)
 (setq-default show-trailing-whitespace t)
+
+;; Rust support
+(use-package yasnippet
+  :ensure t
+  :init
+    (yas-global-mode 1))
+
+(require 'lsp-mode)
+(setq lsp-rust-server 'rust-analyzer)
+(require 'rustic)
+(use-package flycheck :ensure)
+
+(with-eval-after-load 'rust-mode
+  (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
+  (setq flycheck-rust-check-tests t)
+  (setq flycheck-cargo-args '("--all-targets" "--all-features"))
+  )
+
+(setq flycheck-rust-check-tests nil)
+(setq flycheck-rust-crate-type "lib")
+(setq flycheck-rust-clippy-executable "/run/current-system/sw/bin/cargo-clippy")
+
+;; Format-all (Format code)
+(require 'format-all)
+
+;; Hidding annoying warning messages
+(setq warning-minimum-level :emergency)
+
