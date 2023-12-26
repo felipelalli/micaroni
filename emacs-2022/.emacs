@@ -3,7 +3,6 @@
 ;;
 ;; - Copy vars.el.example to ~/.emacs.d/vars.el
 ;; - Edit vars.el and insert your credentials.
-;; - Run emacs as: env  <micaroni-repo-path>/emacs-2022/lib
 ;;
 
 (setq HOME (getenv "HOME"))
@@ -14,6 +13,11 @@
     (error "ERROR: The file vars.el is missing. Please see vars.el.example, edit and remove .example extension."))
 
 (load-file (expand-file-name "vars.el" user-emacs-directory))
+
+; External libraries
+; ===============
+
+(setq load-path (cons (expand-file-name "lib" user-emacs-directory) load-path))
 
 ; packages
 
@@ -243,6 +247,7 @@ e.g. 2021-09"
 (add-hook 'elisp-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'rust-mode-hook 'rainbow-delimiters-mode)
+(add-hook 'text-mode-hook 'rainbow-delimiters-mode)
 
 ; ========================================================
 
@@ -287,7 +292,7 @@ e.g. 2021-09"
  ;; If there is more than one, they won't work right.
  '(geiser-mode-smart-tab-p t)
  '(package-selected-packages
-   '(dracula-theme flycheck-rust yasnippet flycheck flymake-easy pomodoro use-package rustic lsp-mode clojure-mode scribble-mode rainbow-delimiters emojify tabbar session pod-mode muttrc-mode mutt-alias markdown-mode initsplit htmlize graphviz-dot-mode geiser folding eproject diminish csv-mode company color-theme-modern browse-kill-ring boxquote bm bar-cursor apache-mode recentf-ext racket-mode org-pomodoro ledger-mode exec-path-from-shell dockerfile-mode))
+   '(ledger-import projectile magit-popup magit origami highlight-indentation yaml-mode dracula-theme copilot flycheck-rust flycheck-yaml yasnippet flycheck flymake-easy pomodoro use-package rustic lsp-mode clojure-mode scribble-mode rainbow-delimiters emojify tabbar session pod-mode muttrc-mode mutt-alias markdown-mode initsplit htmlize graphviz-dot-mode geiser folding eproject diminish csv-mode company color-theme-modern browse-kill-ring boxquote bm bar-cursor apache-mode recentf-ext racket-mode org-pomodoro ledger-mode exec-path-from-shell dockerfile-mode))
  '(safe-local-variable-values
    '((org-todo-keyword-faces
       ("CANCELED" . "gray")
@@ -382,7 +387,7 @@ You can use interactively by typing `C-c C-x e` or by sending parameter as `M-3 
 
 (setq flycheck-rust-check-tests nil)
 (setq flycheck-rust-crate-type "lib")
-(setq flycheck-rust-clippy-executable "/run/current-system/sw/bin/cargo-clippy")
+(setq flycheck-rust-clippy-executable "/bin/cargo-clippy")
 
 ;; Format-all (Format code)
 (require 'format-all)
@@ -390,3 +395,55 @@ You can use interactively by typing `C-c C-x e` or by sending parameter as `M-3 
 ;; Hidding annoying warning messages
 (setq warning-minimum-level :emergency)
 
+; To open git-sh
+(defun git-sh ()
+  "Open git-sh"
+  (interactive)
+  (let ((buffer (ansi-term "/bin/zsh")))
+    (switch-to-buffer buffer)
+    (rename-buffer "*git-sh*")
+    (term-send-raw-string "git sh\n")))
+
+; Use zsh to "shell"
+'(explicit-shell-file-name "/bin/zsh")
+'(explicit-zsh-args '("--interactive" "--login"))
+'(comint-process-echoes 0)
+
+; Github Co-pilot
+(setq load-path (cons (expand-file-name "lib/copilot.el" user-emacs-directory) load-path))
+(require 'copilot)
+
+(use-package copilot
+  :init
+  (add-hook 'prog-mode-hook 'copilot-mode)
+  :bind (:map copilot-completion-map
+              ("<tab>" . copilot-accept-completion)
+              ("TAB" . copilot-accept-completion)
+              ("C-<tab>" . copilot-accept-completion-by-word)
+              ("C-TAB" . copilot-accept-completion-by-word)))
+
+(setq +company-backend '(company +childframe))
+
+; YAML
+(require 'yaml-mode)
+(add-to-list 'auto-mode-alist
+             '("\\.yml\\'" . yaml-mode)
+             '("\\.yaml\\'" . yaml-mode))
+
+(require 'highlight-indentation)
+(add-hook 'yaml-mode-hook 'highlight-indentation-mode)
+
+(require 'origami)
+(global-origami-mode)
+(add-hook 'yaml-mode-hook 'origami-mode)
+(define-key origami-mode-map (kbd "<S-iso-lefttab>") 'origami-toggle-node) ; use SHIFT+TAB to open/close node
+
+; Git
+;(require 'magit)
+
+; Project
+(require 'projectile)
+(projectile-mode +1)
+(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+
+(load-theme 'dracula t)
